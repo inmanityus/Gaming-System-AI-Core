@@ -1,0 +1,483 @@
+# Windows Server Provisioning Rules
+
+## Role
+You are a Windows server provisioning specialist with expertise in creating and instantiating secure AWS Windows Virtual Servers with emphasis on Security and Stability.
+
+## Windows Provisioning Workflow: provision_aws_windows_server
+
+### Overview
+This workflow creates and instantiates a secure AWS Windows Virtual Server using AWS MCPs to create secure networks, generate security keys, provision Windows instances, and apply comprehensive security hardening.
+
+### Prerequisites
+- Access to AWS MCP tools
+- Access to Exa MCP for research
+- AWS account with appropriate permissions
+- Local development environment
+
+### Step 1: Research Best Practices Using Exa MCP
+The AI must use Exa MCP to find best practices from authoritative sources:
+
+1. **Search Cursor Community Forum**:
+   ```
+   Query: "Cursor Community Forum AWS Windows virtual server deployment best practices"
+   ```
+
+2. **Search GitHub**:
+   ```
+   Query: "GitHub AWS Windows server provisioning security best practices"
+   ```
+
+3. **Search for AWS Windows VPS security**:
+   ```
+   Query: "AWS Windows VPS VNC security hardening best practices 2024"
+   ```
+
+4. **Search for Windows server security**:
+   ```
+   Query: "Windows server security hardening best practices AWS EC2"
+   ```
+
+**Important**: The AI must analyze the research results and apply the best practices found to the provisioning process.
+
+### Step 2: Determine Project Name
+Extract project name from:
+1. Website project name (if available)
+2. Mobile app project name (if available)
+3. First project name found
+4. Default to "befree-fitness" (based on workspace path)
+
+Ensure the name does not violate AWS naming conventions:
+- Use lowercase letters and hyphens
+- Avoid special characters
+- Keep under 64 characters
+- Make it descriptive and unique
+
+### Step 3: Create Secure Public-Facing Network
+Use AWS MCPs to create a new public-facing network that is secure and opens only the necessary ports for website access, mobile app access, and remote access control.
+
+#### 3.1 Create VPC with Security Focus
+```bash
+# Create VPC with security best practices
+aws ec2 create-vpc --cidr-block 10.0.0.0/16 --tag-specifications 'ResourceType=vpc,Tags=[{Key=Name,Value={project_name}-vpc},{Key=Environment,Value=Production},{Key=Security,Value=Hardened}]'
+```
+
+#### 3.2 Create Public and Private Subnets
+```bash
+# Create public subnet for web-facing services
+aws ec2 create-subnet --vpc-id {vpc_id} --cidr-block 10.0.1.0/24 --availability-zone {az_1} --tag-specifications 'ResourceType=subnet,Tags=[{Key=Name,Value={project_name}-public-subnet},{Key=Type,Value=Public}]'
+
+# Create private subnet for backend services
+aws ec2 create-subnet --vpc-id {vpc_id} --cidr-block 10.0.2.0/24 --availability-zone {az_2} --tag-specifications 'ResourceType=subnet,Tags=[{Key=Name,Value={project_name}-private-subnet},{Key=Type,Value=Private}]'
+```
+
+#### 3.3 Configure Internet Gateway and Route Tables
+```bash
+# Create and attach internet gateway
+aws ec2 create-internet-gateway --tag-specifications 'ResourceType=internet-gateway,Tags=[{Key=Name,Value={project_name}-igw}]'
+aws ec2 attach-internet-gateway --vpc-id {vpc_id} --internet-gateway-id {igw_id}
+
+# Create public route table
+aws ec2 create-route-table --vpc-id {vpc_id} --tag-specifications 'ResourceType=route-table,Tags=[{Key=Name,Value={project_name}-public-rt}]'
+aws ec2 create-route --route-table-id {public_rt_id} --destination-cidr-block 0.0.0.0/0 --gateway-id {igw_id}
+aws ec2 associate-route-table --subnet-id {public_subnet_id} --route-table-id {public_rt_id}
+```
+
+### Step 4: Create Security Groups with Minimal Port Access
+
+#### 4.1 Web Server Security Group
+```bash
+# Create security group for web server
+aws ec2 create-security-group --group-name {project_name}-web-sg --description "Security group for web server" --vpc-id {vpc_id}
+
+# Allow HTTP (port 80)
+aws ec2 authorize-security-group-ingress --group-id {web_sg_id} --protocol tcp --port 80 --cidr 0.0.0.0/0
+
+# Allow HTTPS (port 443)
+aws ec2 authorize-security-group-ingress --group-id {web_sg_id} --protocol tcp --port 443 --cidr 0.0.0.0/0
+
+# Allow RDP (port 3389) from specific IP ranges
+aws ec2 authorize-security-group-ingress --group-id {web_sg_id} --protocol tcp --port 3389 --cidr {admin_ip}/32
+```
+
+#### 4.2 Mobile App Security Group
+```bash
+# Create security group for mobile app server
+aws ec2 create-security-group --group-name {project_name}-mobile-sg --description "Security group for mobile app server" --vpc-id {vpc_id}
+
+# Allow mobile app API (port 3000)
+aws ec2 authorize-security-group-ingress --group-id {mobile_sg_id} --protocol tcp --port 3000 --cidr 0.0.0.0/0
+
+# Allow mobile app dev server (port 8080)
+aws ec2 authorize-security-group-ingress --group-id {mobile_sg_id} --protocol tcp --port 8080 --cidr 0.0.0.0/0
+
+# Allow RDP (port 3389) from specific IP ranges
+aws ec2 authorize-security-group-ingress --group-id {mobile_sg_id} --protocol tcp --port 3389 --cidr {admin_ip}/32
+```
+
+#### 4.3 Remote Access Security Group
+```bash
+# Create security group for remote access
+aws ec2 create-security-group --group-name {project_name}-remote-sg --description "Security group for remote access control" --vpc-id {vpc_id}
+
+# Allow RDP (port 3389) from admin IP only
+aws ec2 authorize-security-group-ingress --group-id {remote_sg_id} --protocol tcp --port 3389 --cidr {admin_ip}/32
+
+# Allow WinRM (port 5985) for PowerShell remoting
+aws ec2 authorize-security-group-ingress --group-id {remote_sg_id} --protocol tcp --port 5985 --cidr {admin_ip}/32
+
+# Allow WinRM HTTPS (port 5986) for secure PowerShell remoting
+aws ec2 authorize-security-group-ingress --group-id {remote_sg_id} --protocol tcp --port 5986 --cidr {admin_ip}/32
+```
+
+### Step 5: Create Security Key Pair
+Use AWS MCPs to create a new security key that will be used when provisioning the virtual server:
+
+```bash
+# Create key pair for Windows server
+aws ec2 create-key-pair --key-name {project_name}-windows-key --tag-specifications 'ResourceType=key-pair,Tags=[{Key=Name,Value={project_name}-windows-key},{Key=Environment,Value=Production}]' --query 'KeyMaterial' --output text > {project_name}-windows-key.pem
+
+# Set proper permissions on private key
+chmod 400 {project_name}-windows-key.pem
+
+# Store public key information
+aws ec2 describe-key-pairs --key-names {project_name}-windows-key --query 'KeyPairs[0].KeyFingerprint' --output text > {project_name}-windows-key-fingerprint.txt
+```
+
+### Step 6: Provision Windows Server Instance
+Use AWS MCPs to create a Medium instance of the latest version of a Windows virtual server:
+
+```bash
+# Get latest Windows Server 2022 AMI
+aws ec2 describe-images --owners amazon --filters "Name=name,Values=Windows_Server-2022-English-Full-Base-*" "Name=state,Values=available" --query 'Images | sort_by(@, &CreationDate) | [-1].ImageId' --output text
+
+# Launch Windows Server instance
+aws ec2 run-instances \
+  --image-id {windows_ami_id} \
+  --instance-type t3.medium \
+  --key-name {project_name}-windows-key \
+  --security-group-ids {web_sg_id} {mobile_sg_id} {remote_sg_id} \
+  --subnet-id {public_subnet_id} \
+  --associate-public-ip-address \
+  --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value={project_name}-windows-server},{Key=Environment,Value=Production},{Key=OS,Value=Windows},{Key=Security,Value=Hardened}]' \
+  --block-device-mappings '[{"DeviceName":"/dev/sda1","Ebs":{"VolumeSize":50,"VolumeType":"gp3","Encrypted":true,"DeleteOnTermination":true}}]'
+
+# Enable detailed monitoring
+aws ec2 monitor-instances --instance-ids {instance_id}
+
+# Enable termination protection
+aws ec2 modify-instance-attribute --instance-id {instance_id} --disable-api-termination
+
+# Configure instance metadata options for security
+aws ec2 modify-instance-metadata-options --instance-id {instance_id} --http-tokens required --http-endpoint enabled --http-put-response-hop-limit 1
+```
+
+### Step 7: Store Server Credentials
+Store the new public/private key, along with the remote connection information to the new remote server, to a local file in `./deployments/security/` (creating this folder as needed), for subsequent use by another workflow and make sure the workflow names the file so another workflow can find the file later.
+
+```bash
+# Create deployments/security directory if it doesn't exist
+mkdir -p ./deployments/security
+
+# Create server credentials file
+cat > ./deployments/security/{project_name}-windows-server-credentials.json <<EOF
+{
+  "project_name": "{project_name}",
+  "server_type": "windows",
+  "instance_id": "{instance_id}",
+  "public_ip": "{public_ip}",
+  "private_ip": "{private_ip}",
+  "key_name": "{project_name}-windows-key",
+  "key_file": "{project_name}-windows-key.pem",
+  "admin_user": "Administrator",
+  "security_groups": [
+    "{web_sg_id}",
+    "{mobile_sg_id}",
+    "{remote_sg_id}"
+  ],
+  "vpc_id": "{vpc_id}",
+  "subnet_id": "{public_subnet_id}",
+  "region": "{aws_region}",
+  "created_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "status": "provisioned"
+}
+EOF
+
+# Copy private key to security directory
+cp {project_name}-windows-key.pem ./deployments/security/
+cp {project_name}-windows-key-fingerprint.txt ./deployments/security/
+
+# Set secure permissions
+chmod 600 ./deployments/security/{project_name}-windows-key.pem
+chmod 600 ./deployments/security/{project_name}-windows-server-credentials.json
+```
+
+### Step 8: Access Server Remotely and Apply Security Hardening
+After the server is up and running, access the server remotely and use best practices to upgrade the server with the latest patches and security options. Rebooting as necessary.
+
+#### 8.1 Wait for Instance Initialization
+```bash
+# Wait for instance to be running
+aws ec2 wait instance-running --instance-ids {instance_id}
+
+# Get administrator password
+aws ec2 get-password-data --instance-id {instance_id} --priv-launch-key {project_name}-windows-key.pem
+```
+
+#### 8.2 Connect via RDP and Apply Hardening
+```powershell
+# Configure Windows Update for automatic security updates
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -Value 0
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUOptions" -Value 4
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "ScheduledInstallDay" -Value 0
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "ScheduledInstallTime" -Value 3
+
+# Install all available updates
+Install-Module -Name PSWindowsUpdate -Force
+Get-WindowsUpdate -AcceptAll -Install -AutoReboot
+
+# Enable Windows Firewall
+Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled True
+
+# Configure firewall rules for web services
+New-NetFirewallRule -DisplayName "HTTP-In" -Direction Inbound -Protocol TCP -LocalPort 80 -Action Allow
+New-NetFirewallRule -DisplayName "HTTPS-In" -Direction Inbound -Protocol TCP -LocalPort 443 -Action Allow
+New-NetFirewallRule -DisplayName "RDP-In" -Direction Inbound -Protocol TCP -LocalPort 3389 -Action Allow -RemoteAddress {admin_ip}
+
+# Configure firewall rules for mobile app
+New-NetFirewallRule -DisplayName "Mobile-API-In" -Direction Inbound -Protocol TCP -LocalPort 3000 -Action Allow
+New-NetFirewallRule -DisplayName "Mobile-Dev-In" -Direction Inbound -Protocol TCP -LocalPort 8080 -Action Allow
+
+# Disable default administrator account
+net user Administrator /active:no
+
+# Create new administrator account
+net user {project_name}-admin {secure_password} /add
+net localgroup administrators {project_name}-admin /add
+
+# Configure password policy
+net accounts /minpwlen:12 /maxpwage:90 /minpwage:1 /uniquepw:5
+
+# Disable unnecessary services
+$services = @("Telnet", "FTP", "SNMP", "IIS-WebServerRole", "IIS-WebServer", "IIS-CommonHttpFeatures")
+foreach ($service in $services) {
+    Set-Service -Name $service -StartupType Disabled -ErrorAction SilentlyContinue
+}
+
+# Enable required services
+$requiredServices = @("Windows Update", "Windows Firewall", "Remote Desktop Services")
+foreach ($service in $requiredServices) {
+    Set-Service -Name $service -StartupType Automatic -ErrorAction SilentlyContinue
+}
+
+# Registry security hardening
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lanmanserver\parameters" -Name "SMB1" -Value 0
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\lanmanserver\parameters" -Name "RequireSecuritySignature" -Value 1
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient" -Name "EnableMulticast" -Value 0
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" -Value 1
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Value 5
+
+# Configure security event logging
+auditpol /set /category:"Logon/Logoff" /success:enable /failure:enable
+auditpol /set /category:"Object Access" /success:enable /failure:enable
+auditpol /set /category:"Policy Change" /success:enable /failure:enable
+auditpol /set /category:"Privilege Use" /success:enable /failure:enable
+auditpol /set /category:"System" /success:enable /failure:enable
+
+# Increase event log sizes
+wevtutil sl Security /ms:104857600
+wevtutil sl System /ms:104857600
+wevtutil sl Application /ms:104857600
+
+# Install Windows Defender updates and configure
+Update-MpSignature
+Set-MpPreference -DisableRealtimeMonitoring $false
+Set-MpPreference -DisableBehaviorMonitoring $false
+Set-MpPreference -DisableOnAccessProtection $false
+Set-MpPreference -DisableIOAVProtection $false
+Set-MpPreference -DisableScriptScanning $false
+Set-MpPreference -DisableArchiveScanning $false
+Set-MpPreference -DisableEmailScanning $false
+Set-MpPreference -DisableRemovableDriveScanning $false
+
+# Reboot to apply all changes
+Restart-Computer -Force
+```
+
+### Step 9: Final Verification
+Ensure that the server is running and accessible:
+
+```bash
+# Check instance status
+aws ec2 describe-instances --instance-ids {instance_id} --query 'Reservations[0].Instances[0].State.Name'
+
+# Test RDP connectivity
+telnet {public_ip} 3389
+
+# Test web connectivity (if IIS is installed)
+curl -I http://{public_ip}
+
+# Test HTTPS connectivity
+curl -I https://{public_ip}
+```
+
+### Step 10: Update Documentation
+```bash
+# Update credentials file with final status
+cat > ./deployments/security/{project_name}-windows-server-credentials.json <<EOF
+{
+  "project_name": "{project_name}",
+  "server_type": "windows",
+  "instance_id": "{instance_id}",
+  "public_ip": "{public_ip}",
+  "private_ip": "{private_ip}",
+  "key_name": "{project_name}-windows-key",
+  "key_file": "{project_name}-windows-key.pem",
+  "admin_user": "{project_name}-admin",
+  "security_groups": [
+    "{web_sg_id}",
+    "{mobile_sg_id}",
+    "{remote_sg_id}"
+  ],
+  "vpc_id": "{vpc_id}",
+  "subnet_id": "{public_subnet_id}",
+  "region": "{aws_region}",
+  "created_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "hardened_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "status": "running_and_accessible",
+  "security_applied": [
+    "windows_updates",
+    "firewall_configuration",
+    "user_account_security",
+    "service_hardening",
+    "registry_security",
+    "event_logging",
+    "windows_defender"
+  ]
+}
+EOF
+
+# Create access summary document
+cat > ./deployments/security/{project_name}-windows-server-access.md <<EOF
+# Windows Server Access Information
+
+## Server Details
+- **Project**: {project_name}
+- **Instance ID**: {instance_id}
+- **Public IP**: {public_ip}
+- **Private IP**: {private_ip}
+- **Region**: {aws_region}
+
+## Connection Information
+- **RDP**: mstsc /v:{public_ip}
+- **Username**: {project_name}-admin
+- **Key File**: {project_name}-windows-key.pem
+
+## Security Groups
+- **Web Server**: {web_sg_id} (Ports: 80, 443, 3389)
+- **Mobile App**: {mobile_sg_id} (Ports: 3000, 8080, 3389)
+- **Remote Access**: {remote_sg_id} (Ports: 3389, 5985, 5986)
+
+## Security Features Applied
+- Windows Updates configured for automatic security updates
+- Windows Firewall enabled with minimal port access
+- User account security with strong password policy
+- Service hardening (unnecessary services disabled)
+- Registry security hardening
+- Comprehensive event logging
+- Windows Defender configured and updated
+
+## Next Steps
+1. Install required applications (IIS, .NET Framework, etc.)
+2. Configure SSL certificates
+3. Set up monitoring and alerting
+4. Configure backup strategies
+5. Test application deployment
+
+## Important Notes
+- Administrator account has been disabled
+- New admin account: {project_name}-admin
+- All security hardening has been applied
+- Server is ready for application deployment
+EOF
+```
+
+## Workflow Completion
+The workflow ends once the server is running and accessible.
+
+## Security Best Practices Implemented
+
+### 1. Network Security
+- **VPC with Public/Private Subnets**: Isolated network architecture
+- **Security Groups**: Minimal port access (80, 443, 3389, 3000, 8080)
+- **Internet Gateway**: Controlled internet access
+- **Route Tables**: Proper traffic routing
+
+### 2. Instance Security
+- **Encrypted EBS Volume**: Data encryption at rest
+- **Termination Protection**: Prevents accidental termination
+- **Detailed Monitoring**: CloudWatch monitoring enabled
+- **Metadata Security**: IMDSv2 enforced
+
+### 3. Operating System Security
+- **Windows Updates**: Automatic security updates
+- **Windows Firewall**: Enabled with restrictive rules
+- **User Account Security**: Strong password policy
+- **Service Hardening**: Unnecessary services disabled
+- **Registry Security**: SMB hardening, UAC enabled
+- **Event Logging**: Comprehensive audit logging
+- **Windows Defender**: Real-time protection enabled
+
+### 4. Access Control
+- **RDP Security**: Restricted to admin IP ranges
+- **Key Pair Management**: Secure key storage
+- **Administrator Account**: Disabled default, created secure admin
+- **Least Privilege**: Minimal necessary permissions
+
+## File Structure Created
+```
+./deployments/security/
+├── {project_name}-windows-server-credentials.json
+├── {project_name}-windows-key.pem
+├── {project_name}-windows-key-fingerprint.txt
+└── {project_name}-windows-server-access.md
+```
+
+## Deployment Summary
+- ✅ Secure VPC and subnets created
+- ✅ Security groups configured with minimal access
+- ✅ Windows Server instance provisioned
+- ✅ Security key pair created and stored
+- ✅ Server hardened with security best practices
+- ✅ Windows updates and patches applied
+- ✅ Firewall and security services configured
+- ✅ Server verified as running and accessible
+
+## Next Steps
+The Windows server is now:
+- Secured with industry best practices
+- Ready for application deployment
+- Configured for web and mobile app hosting
+- Protected with comprehensive security measures
+- Monitored and logged for security events
+
+## Troubleshooting
+Common issues and solutions:
+- **RDP Connection Failed**: Check security group rules and admin IP
+- **Windows Updates Failed**: Verify internet connectivity and Windows Update service
+- **Firewall Issues**: Check Windows Firewall rules and security group configuration
+- **Performance Issues**: Monitor CloudWatch metrics and instance resources
+- **Security Alerts**: Review Windows Event Logs and CloudWatch logs
+
+## Success Criteria
+The workflow is considered successful when:
+- ✅ Windows Server instance is running
+- ✅ RDP connectivity is working
+- ✅ Security groups are properly configured
+- ✅ Windows updates are installed
+- ✅ Firewall is configured
+- ✅ User accounts are secured
+- ✅ Services are hardened
+- ✅ Registry security is applied
+- ✅ Event logging is configured
+- ✅ Windows Defender is active
+- ✅ Server is accessible and ready for applications

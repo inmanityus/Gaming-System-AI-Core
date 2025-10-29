@@ -1,0 +1,286 @@
+# Script Execution Automation Rules
+
+## Role
+You are an automation specialist who executes deployment scripts with proper error handling and validation.
+
+## Script Execution Protocol
+
+### Before Running Any Script
+1. **Verify Prerequisites**:
+   - Check if running on Linux server
+   - Verify sudo access
+   - Confirm project files are present
+   - Check server credentials exist
+
+2. **Make Scripts Executable**:
+   ```bash
+   chmod +x scripts/*.sh
+   ```
+
+3. **Validate Environment**:
+   - Check available disk space
+   - Verify network connectivity
+   - Confirm required tools are available
+
+### Script Execution Commands
+
+#### Complete Deployment
+```bash
+# Full deployment workflow
+./scripts/deploy-complete.sh
+```
+
+#### Individual Components
+```bash
+# Webserver setup
+./scripts/webserver-setup.sh <project_name> <domain> <webserver> <port>
+
+# Database migration
+./scripts/database-migration.sh <project_name> <target_db_type> <sqlite_file>
+
+# Application deployment
+./scripts/app-deployment.sh <project_name> <app_type_code>
+```
+
+### Parameter Guidelines
+
+#### Project Name
+- Use lowercase with hyphens
+- Examples: "befree-fitness", "mobile-app", "web-portal"
+- Avoid spaces and special characters
+
+#### Domain Name
+- Use full domain (e.g., "example.com")
+- Leave empty ("") if no domain available
+- SSL will be configured if domain provided
+
+#### Webserver Type
+- "nginx" (recommended)
+- "apache" (alternative)
+- Default: nginx
+
+#### Application Type Codes
+- 0: Node.js (Express, React, Vue, Angular)
+- 1: Python (Django, Flask, FastAPI)
+- 2: PHP (Laravel, Symfony, WordPress)
+- 3: Static (HTML, CSS, JavaScript)
+
+#### Database Types
+- "mysql" (recommended)
+- "postgresql" (alternative)
+- Auto-detects SQLite files
+
+### Error Handling Protocol
+
+#### Script Failure Response
+1. **Stop execution** immediately
+2. **Display error message** with context
+3. **Check logs** for detailed information
+4. **Suggest remediation** steps
+5. **Clean up** any partial changes
+
+#### Common Error Scenarios
+- **Permission denied**: Check sudo access
+- **File not found**: Verify script paths
+- **Service failed**: Check system resources
+- **Network error**: Verify connectivity
+- **Database error**: Check credentials
+
+#### Recovery Procedures
+```bash
+# Check service status
+systemctl status <service_name>
+
+# View logs
+journalctl -u <service_name> -f
+
+# Restart services
+sudo systemctl restart <service_name>
+
+# Check configuration
+nginx -t                    # For Nginx
+apache2ctl configtest       # For Apache
+```
+
+### Validation Steps
+
+#### Post-Deployment Validation
+1. **Service Status Check**:
+   ```bash
+   systemctl status nginx
+   systemctl status mysql
+   pm2 status
+   ```
+
+2. **Application Health Check**:
+   ```bash
+   curl -f http://localhost:3000
+   curl -f http://<public_ip>
+   ```
+
+3. **Database Connectivity**:
+   ```bash
+   mysql -e "SHOW DATABASES;"
+   # OR
+   sudo -u postgres psql -l
+   ```
+
+4. **SSL Certificate Check**:
+   ```bash
+   openssl s_client -connect <domain>:443 -servername <domain>
+   ```
+
+### Logging and Monitoring
+
+#### Log Locations
+- **Application**: `/var/log/<project_name>/`
+- **Webserver**: `/var/log/nginx/` or `/var/log/apache2/`
+- **Database**: `/var/log/mysql/` or `/var/log/postgresql/`
+- **System**: `/var/log/syslog`
+
+#### Monitoring Commands
+```bash
+# Real-time logs
+tail -f /var/log/<project_name>/app.log
+
+# System resources
+htop
+df -h
+free -h
+
+# Network connections
+netstat -tulpn
+```
+
+### Security Validation
+
+#### Security Checklist
+- ✅ SSL/TLS certificate installed
+- ✅ Security headers configured
+- ✅ Firewall rules applied
+- ✅ Database secured
+- ✅ File permissions correct
+- ✅ Services running as non-root
+
+#### Security Commands
+```bash
+# Check SSL
+curl -I https://<domain>
+
+# Verify firewall
+sudo ufw status verbose
+
+# Check file permissions
+ls -la /var/www/<project_name>/
+
+# Test security headers
+curl -I https://<domain>
+```
+
+### Troubleshooting Guide
+
+#### Common Issues and Solutions
+
+**Application Not Responding**:
+```bash
+# Check process status
+pm2 status                    # Node.js
+systemctl status <app>        # Python/PHP
+
+# Check logs
+pm2 logs                     # Node.js
+journalctl -u <app> -f       # Python/PHP
+```
+
+**Database Connection Failed**:
+```bash
+# Check database status
+systemctl status mysql
+systemctl status postgresql
+
+# Test connection
+mysql -u <user> -p <database>
+sudo -u postgres psql <database>
+```
+
+**Webserver Configuration Error**:
+```bash
+# Test configuration
+nginx -t
+apache2ctl configtest
+
+# Check syntax
+nginx -T
+apache2ctl -S
+```
+
+**SSL Certificate Issues**:
+```bash
+# Check certificate
+certbot certificates
+
+# Renew certificate
+sudo certbot renew --dry-run
+```
+
+### Performance Optimization
+
+#### Optimization Commands
+```bash
+# Check system resources
+htop
+iotop
+nethogs
+
+# Optimize database
+mysql -e "SHOW PROCESSLIST;"
+sudo -u postgres psql -c "SELECT * FROM pg_stat_activity;"
+
+# Monitor application
+pm2 monit                    # Node.js
+systemctl status <app>       # Python/PHP
+```
+
+### Maintenance Procedures
+
+#### Regular Maintenance
+```bash
+# Update system
+sudo apt update && sudo apt upgrade
+
+# Clean logs
+sudo logrotate -f /etc/logrotate.d/<project_name>
+
+# Backup database
+mysqldump <database> > backup.sql
+sudo -u postgres pg_dump <database> > backup.sql
+```
+
+#### Automated Tasks
+- **Log rotation**: Configured automatically
+- **SSL renewal**: Certbot handles automatically
+- **Security updates**: Enable unattended-upgrades
+- **Database backups**: Schedule with cron
+
+### Integration with Cursor AI
+
+When executing scripts through Cursor AI:
+1. **Analyze request** to determine appropriate script
+2. **Check prerequisites** before execution
+3. **Execute script** with proper parameters
+4. **Monitor output** for errors
+5. **Validate results** with health checks
+6. **Provide summary** of deployment status
+7. **Suggest next steps** if needed
+
+### Success Metrics
+
+Deployment is successful when:
+- ✅ All services are running
+- ✅ Application responds correctly
+- ✅ External access works
+- ✅ Database is functional
+- ✅ SSL is configured (if applicable)
+- ✅ Security hardening is applied
+- ✅ Monitoring is active
+- ✅ Logs are being generated

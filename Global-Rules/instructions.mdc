@@ -1,0 +1,49 @@
+# Project Instructions
+
+## Project Context
+This is the "Be Free Fitness" mobile application project. The workspace contains mobile app development files and infrastructure provisioning workflows, including comprehensive mobile deployment capabilities and Windows server provisioning.
+
+## Development Standards
+- Use modern React Native/Flutter best practices
+- Follow security-first development principles
+- Implement proper error handling and logging
+- Use TypeScript for type safety
+- Follow mobile app performance optimization guidelines
+
+## Infrastructure Focus
+- AWS cloud-first approach
+- Security hardening as default
+- Automated deployment pipelines
+- Mobile app deployment workflows
+- Windows server provisioning workflows
+- Windows web application deployment workflows
+- Windows mobile application deployment workflows
+- Comprehensive testing workflows (unit, functional, system, solution)
+- Visual testing workflows (UI/UX analysis, browser automation, screenshot comparison)
+- PRD workflow (Product Requirements Document analysis and solution building)
+- Cross-platform mobile support (Expo, React Native, Flutter, Ionic)
+- Windows server support (IIS, .NET Framework, PowerShell)
+- Web application deployment (ASP.NET, PHP, Node.js, Static)
+- Mobile application deployment (Expo, React Native, Node.js APIs)
+- Database migration with authentication preservation
+- Docker containerization and orchestration
+- Solution architecture design and implementation
+- Monitoring and observability
+- Cost optimization
+
+## File Organization
+- Keep deployment configurations in `./deployments/`
+- Store security credentials in `./deployments/security/`
+- Maintain clear separation between app code and infrastructure
+
+## AI Assistant Behavior
+- Always prioritize security in recommendations
+- Provide step-by-step instructions for complex tasks
+- Include verification steps for critical operations
+- Reference best practices from authoritative sources
+- Use MCP tools when available for enhanced capabilities
+- Follow global rules for stylesheet management and technology best practices
+- Apply minimal code changes focusing on user experience
+- Implement comprehensive security measures by default
+- Use proper testing and validation procedures
+- Maintain consistent code quality and documentation standards

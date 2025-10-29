@@ -1,0 +1,525 @@
+# PRD Architecture Design Rules
+
+## Overview
+This rule provides guidance for designing solution architectures based on PRD analysis, ensuring scalable, maintainable, and secure systems.
+
+## Architecture Analysis Framework
+
+### PRD Analysis Components
+```javascript
+class PRDAnalyzer {
+  analyzePRD(prdContent) {
+    return {
+      projectType: this.determineProjectType(prdContent),
+      targetPlatforms: this.extractTargetPlatforms(prdContent),
+      specifiedTechnologies: this.extractSpecifiedTechnologies(prdContent),
+      requirements: this.extractRequirements(prdContent),
+      userStories: this.extractUserStories(prdContent),
+      technicalConstraints: this.extractTechnicalConstraints(prdContent),
+      businessRules: this.extractBusinessRules(prdContent),
+      integrationRequirements: this.extractIntegrationRequirements(prdContent)
+    };
+  }
+  
+  determineProjectType(prdContent) {
+    const typePatterns = {
+      'web-application': /web|website|browser|spa|react|vue|angular/i,
+      'mobile-app': /mobile|app|ios|android|react-native|flutter|expo/i,
+      'desktop-app': /desktop|windows|mac|linux|electron|native/i,
+      'api-service': /api|service|microservice|rest|graphql/i,
+      'e-commerce': /ecommerce|shop|store|payment|cart|checkout/i,
+      'cms': /content|cms|blog|news|editorial/i,
+      'dashboard': /dashboard|admin|analytics|reporting/i,
+      'iot': /iot|sensor|device|embedded/i,
+      'blockchain': /blockchain|crypto|defi|nft/i,
+      'ai-ml': /ai|ml|machine learning|neural|model/i
+    };
+    
+    for (const [type, pattern] of Object.entries(typePatterns)) {
+      if (pattern.test(prdContent)) {
+        return type;
+      }
+    }
+    
+    return 'web-application'; // Default
+  }
+  
+  extractTargetPlatforms(prdContent) {
+    const platforms = [];
+    if (/web|browser|spa/i.test(prdContent)) platforms.push('web');
+    if (/mobile|ios|android/i.test(prdContent)) platforms.push('mobile');
+    if (/desktop|windows|mac|linux/i.test(prdContent)) platforms.push('desktop');
+    if (/api|service/i.test(prdContent)) platforms.push('api');
+    return platforms.length > 0 ? platforms : ['web'];
+  }
+  
+  extractSpecifiedTechnologies(prdContent) {
+    return {
+      frontend: this.extractFrontendTech(prdContent),
+      backend: this.extractBackendTech(prdContent),
+      database: this.extractDatabaseTech(prdContent),
+      deployment: this.extractDeploymentTech(prdContent),
+      cloud: this.extractCloudTech(prdContent)
+    };
+  }
+  
+  extractFrontendTech(prdContent) {
+    const frontendPatterns = {
+      'react': /react|jsx/i,
+      'vue': /vue\.js|vuejs/i,
+      'angular': /angular/i,
+      'nextjs': /next\.?js/i,
+      'nuxt': /nuxt\.?js/i,
+      'svelte': /svelte/i,
+      'vanilla': /vanilla|javascript|html|css/i
+    };
+    
+    for (const [tech, pattern] of Object.entries(frontendPatterns)) {
+      if (pattern.test(prdContent)) {
+        return tech;
+      }
+    }
+    
+    return null; // Will be determined by research
+  }
+  
+  extractBackendTech(prdContent) {
+    const backendPatterns = {
+      'nodejs': /node\.?js|express|koa/i,
+      'python': /python|django|flask|fastapi/i,
+      'java': /java|spring|maven/i,
+      'csharp': /c#|\.net|asp\.net/i,
+      'php': /php|laravel|symfony/i,
+      'go': /go|golang/i,
+      'rust': /rust/i
+    };
+    
+    for (const [tech, pattern] of Object.entries(backendPatterns)) {
+      if (pattern.test(prdContent)) {
+        return tech;
+      }
+    }
+    
+    return null; // Will be determined by research
+  }
+  
+  extractDatabaseTech(prdContent) {
+    const databasePatterns = {
+      'postgresql': /postgres|postgresql/i,
+      'mysql': /mysql/i,
+      'mongodb': /mongo|mongodb/i,
+      'redis': /redis/i,
+      'sqlite': /sqlite/i,
+      'sqlserver': /sql server|mssql/i,
+      'oracle': /oracle/i
+    };
+    
+    for (const [tech, pattern] of Object.entries(databasePatterns)) {
+      if (pattern.test(prdContent)) {
+        return tech;
+      }
+    }
+    
+    return null; // Will be determined by research
+  }
+}
+```
+
+## Technology Selection Framework
+
+### Research-Based Selection
+```javascript
+class TechnologySelector {
+  async selectOptimalStack(prdAnalysis) {
+    const research = await this.researchTechnologies(prdAnalysis);
+    const recommendations = this.generateRecommendations(research, prdAnalysis);
+    
+    return {
+      frontend: recommendations.frontend,
+      backend: recommendations.backend,
+      database: recommendations.database,
+      deployment: recommendations.deployment,
+      cloud: recommendations.cloud,
+      rationale: recommendations.rationale
+    };
+  }
+  
+  async researchTechnologies(analysis) {
+    const queries = [
+      `best frontend framework ${analysis.projectType} 2024 performance security`,
+      `best backend technology ${analysis.projectType} scalability security`,
+      `best database ${analysis.projectType} performance scalability`,
+      `best deployment strategy ${analysis.projectType} docker kubernetes`,
+      `best cloud platform ${analysis.projectType} aws azure gcp`
+    ];
+    
+    const researchResults = await Promise.all(
+      queries.map(query => this.exaSearch(query))
+    );
+    
+    return this.analyzeResearchResults(researchResults);
+  }
+  
+  generateRecommendations(research, analysis) {
+    return {
+      frontend: this.selectFrontend(research.frontend, analysis),
+      backend: this.selectBackend(research.backend, analysis),
+      database: this.selectDatabase(research.database, analysis),
+      deployment: this.selectDeployment(research.deployment, analysis),
+      cloud: this.selectCloud(research.cloud, analysis),
+      rationale: this.generateRationale(research, analysis)
+    };
+  }
+  
+  selectFrontend(research, analysis) {
+    const frontendOptions = {
+      'web-application': ['react', 'vue', 'angular', 'nextjs'],
+      'mobile-app': ['react-native', 'flutter', 'expo', 'ionic'],
+      'dashboard': ['react', 'vue', 'angular'],
+      'e-commerce': ['nextjs', 'nuxt', 'react', 'vue']
+    };
+    
+    const options = frontendOptions[analysis.projectType] || ['react'];
+    return this.selectBestOption(options, research.frontend);
+  }
+  
+  selectBackend(research, analysis) {
+    const backendOptions = {
+      'web-application': ['nodejs', 'python', 'java'],
+      'mobile-app': ['nodejs', 'python', 'java'],
+      'api-service': ['nodejs', 'python', 'go'],
+      'e-commerce': ['nodejs', 'python', 'java']
+    };
+    
+    const options = backendOptions[analysis.projectType] || ['nodejs'];
+    return this.selectBestOption(options, research.backend);
+  }
+  
+  selectDatabase(research, analysis) {
+    const databaseOptions = {
+      'web-application': ['postgresql', 'mysql', 'mongodb'],
+      'mobile-app': ['postgresql', 'mysql', 'mongodb'],
+      'api-service': ['postgresql', 'mysql', 'mongodb'],
+      'e-commerce': ['postgresql', 'mysql']
+    };
+    
+    const options = databaseOptions[analysis.projectType] || ['postgresql'];
+    return this.selectBestOption(options, research.database);
+  }
+}
+```
+
+## Solution Architecture Design
+
+### Architecture Patterns
+```javascript
+class SolutionArchitect {
+  designArchitecture(prdAnalysis, technologyStack) {
+    return {
+      overallArchitecture: this.designOverallArchitecture(prdAnalysis),
+      componentDiagram: this.createComponentDiagram(prdAnalysis),
+      apiDesign: this.designAPIs(prdAnalysis),
+      dataModel: this.designDataModel(prdAnalysis),
+      securityArchitecture: this.designSecurityArchitecture(prdAnalysis),
+      deploymentArchitecture: this.designDeploymentArchitecture(prdAnalysis),
+      integrationArchitecture: this.designIntegrationArchitecture(prdAnalysis)
+    };
+  }
+  
+  designOverallArchitecture(analysis) {
+    const patterns = {
+      'web-application': 'MVC with API Gateway',
+      'mobile-app': 'Backend for Frontend (BFF)',
+      'e-commerce': 'Microservices with Event Sourcing',
+      'dashboard': 'SPA with RESTful APIs',
+      'cms': 'Headless CMS with CDN',
+      'api-service': 'Microservices Architecture',
+      'iot': 'Event-Driven Architecture',
+      'blockchain': 'Distributed Ledger Architecture',
+      'ai-ml': 'Pipeline Architecture'
+    };
+    
+    return {
+      pattern: patterns[analysis.projectType] || 'Layered Architecture',
+      layers: this.designLayers(analysis),
+      components: this.identifyComponents(analysis),
+      communication: this.designCommunicationPatterns(analysis),
+      scalability: this.designScalabilityPatterns(analysis)
+    };
+  }
+  
+  designLayers(analysis) {
+    const layerTemplates = {
+      'web-application': ['Presentation', 'Business Logic', 'Data Access', 'Data Storage'],
+      'mobile-app': ['Mobile UI', 'API Gateway', 'Business Logic', 'Data Access', 'Data Storage'],
+      'e-commerce': ['Frontend', 'API Gateway', 'Order Service', 'Payment Service', 'Inventory Service', 'Data Storage'],
+      'dashboard': ['Dashboard UI', 'API Gateway', 'Analytics Service', 'Data Processing', 'Data Storage'],
+      'cms': ['Content UI', 'API Gateway', 'Content Service', 'Media Service', 'Data Storage']
+    };
+    
+    return layerTemplates[analysis.projectType] || ['Presentation', 'Business Logic', 'Data Access', 'Data Storage'];
+  }
+  
+  createComponentDiagram(analysis) {
+    return {
+      frontend: {
+        components: this.identifyFrontendComponents(analysis),
+        stateManagement: this.selectStateManagement(analysis),
+        routing: this.designRouting(analysis),
+        uiFramework: this.selectUIFramework(analysis)
+      },
+      backend: {
+        services: this.identifyBackendServices(analysis),
+        apis: this.designBackendAPIs(analysis),
+        middleware: this.designMiddleware(analysis),
+        authentication: this.designAuthentication(analysis)
+      },
+      database: {
+        schema: this.designDatabaseSchema(analysis),
+        relationships: this.designRelationships(analysis),
+        indexes: this.designIndexes(analysis),
+        caching: this.designCaching(analysis)
+      },
+      infrastructure: {
+        containers: this.designContainers(analysis),
+        networking: this.designNetworking(analysis),
+        monitoring: this.designMonitoring(analysis),
+        security: this.designSecurity(analysis)
+      }
+    };
+  }
+  
+  designAPIs(analysis) {
+    return {
+      rest: this.designRESTAPIs(analysis),
+      graphql: this.designGraphQLAPIs(analysis),
+      websockets: this.designWebSocketAPIs(analysis),
+      authentication: this.designAuthAPIs(analysis),
+      documentation: this.designAPIDocumentation(analysis)
+    };
+  }
+  
+  designDataModel(analysis) {
+    return {
+      entities: this.identifyEntities(analysis),
+      relationships: this.designEntityRelationships(analysis),
+      constraints: this.designConstraints(analysis),
+      indexes: this.designIndexes(analysis),
+      migrations: this.designMigrations(analysis)
+    };
+  }
+  
+  designSecurityArchitecture(analysis) {
+    return {
+      authentication: this.designAuthentication(analysis),
+      authorization: this.designAuthorization(analysis),
+      dataProtection: this.designDataProtection(analysis),
+      networkSecurity: this.designNetworkSecurity(analysis),
+      compliance: this.designCompliance(analysis)
+    };
+  }
+}
+```
+
+## API Design Patterns
+
+### RESTful API Design
+```javascript
+class APIDesigner {
+  designRESTAPIs(analysis) {
+    const endpoints = this.identifyEndpoints(analysis);
+    const resources = this.identifyResources(analysis);
+    
+    return {
+      baseUrl: this.designBaseURL(analysis),
+      versioning: this.designVersioning(analysis),
+      endpoints: this.designEndpoints(endpoints, resources),
+      authentication: this.designAPIAuthentication(analysis),
+      errorHandling: this.designErrorHandling(analysis),
+      rateLimiting: this.designRateLimiting(analysis),
+      documentation: this.designAPIDocumentation(analysis)
+    };
+  }
+  
+  identifyEndpoints(analysis) {
+    const endpointPatterns = {
+      'web-application': ['/users', '/auth', '/dashboard', '/settings'],
+      'mobile-app': ['/auth', '/profile', '/feed', '/notifications'],
+      'e-commerce': ['/products', '/orders', '/payments', '/inventory'],
+      'dashboard': ['/data', '/reports', '/analytics', '/exports'],
+      'cms': ['/content', '/media', '/users', '/publishing']
+    };
+    
+    return endpointPatterns[analysis.projectType] || ['/api'];
+  }
+  
+  designEndpoints(endpoints, resources) {
+    return endpoints.map(endpoint => ({
+      path: endpoint,
+      methods: this.designMethods(endpoint),
+      parameters: this.designParameters(endpoint),
+      responses: this.designResponses(endpoint),
+      authentication: this.designEndpointAuth(endpoint),
+      validation: this.designValidation(endpoint)
+    }));
+  }
+}
+```
+
+## Database Design Patterns
+
+### Schema Design
+```sql
+-- Example schema design for user management
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    role VARCHAR(50) DEFAULT 'user',
+    is_active BOOLEAN DEFAULT true,
+    email_verified BOOLEAN DEFAULT false,
+    last_login TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create indexes for performance
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_role ON users(role);
+CREATE INDEX idx_users_active ON users(is_active);
+CREATE INDEX idx_users_last_login ON users(last_login);
+
+-- Create updated_at trigger
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+```
+
+## Security Architecture
+
+### Authentication and Authorization
+```javascript
+class SecurityArchitect {
+  designAuthentication(analysis) {
+    return {
+      method: this.selectAuthMethod(analysis),
+      tokenStrategy: this.designTokenStrategy(analysis),
+      passwordPolicy: this.designPasswordPolicy(analysis),
+      mfa: this.designMFA(analysis),
+      sessionManagement: this.designSessionManagement(analysis)
+    };
+  }
+  
+  selectAuthMethod(analysis) {
+    const authMethods = {
+      'web-application': 'JWT with refresh tokens',
+      'mobile-app': 'JWT with device tokens',
+      'e-commerce': 'JWT with session management',
+      'dashboard': 'JWT with role-based access',
+      'cms': 'JWT with content permissions'
+    };
+    
+    return authMethods[analysis.projectType] || 'JWT';
+  }
+  
+  designAuthorization(analysis) {
+    return {
+      model: this.selectAuthModel(analysis),
+      roles: this.designRoles(analysis),
+      permissions: this.designPermissions(analysis),
+      policies: this.designPolicies(analysis)
+    };
+  }
+  
+  selectAuthModel(analysis) {
+    const models = {
+      'web-application': 'RBAC (Role-Based Access Control)',
+      'mobile-app': 'RBAC with device management',
+      'e-commerce': 'RBAC with customer roles',
+      'dashboard': 'RBAC with data access control',
+      'cms': 'RBAC with content permissions'
+    };
+    
+    return models[analysis.projectType] || 'RBAC';
+  }
+}
+```
+
+## Deployment Architecture
+
+### Container Strategy
+```yaml
+# Example deployment architecture
+version: '3.8'
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.production
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_API_URL=https://api.example.com
+    networks:
+      - frontend-network
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.production
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://user:password@database:5432/appdb
+      - JWT_SECRET=your-secret-key
+    networks:
+      - backend-network
+    depends_on:
+      - database
+
+  database:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=appdb
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend-network
+
+networks:
+  frontend-network:
+    driver: bridge
+  backend-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+```
+
+## Integration with PRD Workflow
+
+This architecture design integrates with the PRD workflow by:
+- Providing comprehensive analysis frameworks
+- Enabling technology selection based on research
+- Supporting multiple architecture patterns
+- Ensuring security and scalability
+- Facilitating component design and implementation
+
+The AI must apply these architecture principles when designing solutions for any PRD-based project.

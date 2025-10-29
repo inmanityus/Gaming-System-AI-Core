@@ -1,0 +1,253 @@
+# Windows Mobile Application Deployment Rules
+
+## Role
+You are a Windows mobile application deployment specialist with expertise in deploying cross-platform mobile applications to AWS Windows servers using Node.js, Expo, and React Native.
+
+## Windows Mobile Deployment Workflow: deploy_mobile_to_aws_windows_server
+
+### Overview
+This workflow builds and deploys local mobile app projects to existing AWS Windows servers, including mobile app server setup, database migration, and application deployment with security best practices for cross-platform mobile applications.
+
+### Prerequisites
+- Existing AWS Windows server (provisioned via `provision_aws_windows_server` workflow)
+- Local mobile app project open in Cursor
+- Access to AWS MCP tools
+- Access to Exa MCP for research
+- RDP access to the target server
+
+### Step 1: Research Best Practices Using Exa MCP
+The AI must use Exa MCP to find best practices from authoritative sources:
+
+1. **Search Cursor Community Forum**:
+   ```
+   Query: "Cursor Community Forum AWS Windows server mobile application deployment best practices"
+   ```
+
+2. **Search GitHub**:
+   ```
+   Query: "GitHub AWS Windows mobile app server Expo React Native deployment security best practices"
+   ```
+
+3. **Search for cross-platform mobile security**:
+   ```
+   Query: "AWS Windows Server cross platform mobile applications deployment security hardening best practices 2024"
+   ```
+
+**Important**: The AI must analyze the research results and apply the best practices found to the deployment process.
+
+### Step 2: Project Analysis
+Extract project name from:
+1. Mobile app project name (if available)
+2. First project name found
+3. Default to "befree-fitness" (based on workspace path)
+
+### Step 3: Retrieve Server Credentials
+The AI must obtain the security file, created when the Windows server was created, in the `./deployments/security/` folder with a name that matches the currently open mobile app project.
+
+#### 3.1 Locate Security File
+```
+File pattern: {project_name}-windows-server-credentials.json
+```
+
+#### 3.2 Parse Connection Information
+Extract from credentials file:
+- Server public IP
+- RDP credentials
+- Admin username
+- Security group IDs
+- Instance ID
+
+### Step 4: Connect to Remote Server
+Using the login information, the AI must remotely gain access to the Windows server.
+
+#### 4.1 Establish RDP Connection
+```powershell
+# Connect via RDP using credentials
+mstsc /v:{public_ip} /admin
+```
+
+#### 4.2 Verify Server Status
+```powershell
+# Check server health
+Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion
+Get-Service | Where-Object {$_.Status -eq "Running"} | Select-Object Name, Status
+```
+
+### Step 5: Check for Mobile App Server
+The AI must check for a mobile app server, such as Expo, and, if one is not there, deploy and activate the best mobile app server option based on research via the Exa MCP.
+
+#### 5.1 Check for Existing Mobile App Server
+```powershell
+# Check for Node.js
+node --version 2>$null && echo "Node.js found" || echo "Node.js not found"
+
+# Check for npm
+npm --version 2>$null && echo "npm found" || echo "npm not found"
+
+# Check for Expo CLI
+npx expo --version 2>$null && echo "Expo CLI found" || echo "Expo CLI not found"
+
+# Check for React Native CLI
+npx react-native --version 2>$null && echo "React Native CLI found" || echo "React Native CLI not found"
+
+# Check for running mobile services
+Get-Process | Where-Object {$_.ProcessName -like "*node*" -or $_.ProcessName -like "*expo*"}
+```
+
+#### 5.2 Install Mobile App Server (if needed)
+```powershell
+# Install Node.js LTS
+$url = "https://nodejs.org/dist/v20.11.0/node-v20.11.0-x64.msi"
+Invoke-WebRequest -Uri $url -OutFile "nodejs-installer.msi"
+Start-Process -FilePath "nodejs-installer.msi" -ArgumentList "/quiet" -Wait
+
+# Refresh environment variables
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+
+# Install Expo CLI globally
+npm install -g @expo/cli
+
+# Install React Native CLI globally
+npm install -g @react-native-community/cli
+
+# Install PM2 for process management
+npm install -g pm2
+```
+
+### Step 6: Database Detection and Migration
+If there is a database backend, the AI must read the schema and type of database, and install that local database on the remote server with schema and data migration.
+
+#### 6.1 Identify Local Mobile Database
+Scan for mobile database files and configurations:
+- SQLite files (*.sqlite, *.db)
+- Firebase configuration files (firebase.json, google-services.json)
+- Supabase configuration files
+- Database configuration files
+- Migration scripts and seed data
+- Authentication tables and user data
+
+#### 6.2 Install Database Server (if needed)
+```powershell
+# For SQL Server Express
+$url = "https://download.microsoft.com/download/7/c/1/7c14e92e-bdcb-4f89-b7cf-93543e7112d1/SQLEXPR_x64_ENU.exe"
+Invoke-WebRequest -Uri $url -OutFile "SQLEXPR_x64_ENU.exe"
+Start-Process -FilePath "SQLEXPR_x64_ENU.exe" -ArgumentList "/Q", "/IACCEPTSQLSERVERLICENSETERMS", "/ACTION=Install", "/FEATURES=SQLEngine", "/INSTANCENAME=SQLEXPRESS" -Wait
+
+# For MySQL
+choco install mysql -y
+```
+
+#### 6.3 Migrate Database Schema and Data
+```powershell
+# SQLite to SQL Server migration example
+sqlcmd -S localhost\SQLEXPRESS -Q "CREATE DATABASE [{project_name}_mobile_db]"
+
+# Import schema and data
+# (Specific commands depend on source database type)
+
+# Verify authentication data preservation
+sqlcmd -S localhost\SQLEXPRESS -Q "USE [{project_name}_mobile_db]; SELECT COUNT(*) as user_count FROM users;"
+sqlcmd -S localhost\SQLEXPRESS -Q "USE [{project_name}_mobile_db]; SELECT COUNT(*) as auth_count FROM user_sessions;"
+```
+
+### Step 7: Application Deployment
+The AI must read the currently active project and compile and deploy that mobile app to the remote server.
+
+#### 7.1 Prepare Application for Deployment
+```powershell
+# Create application directory
+New-Item -ItemType Directory -Path "C:\mobile-apps\{project_name}" -Force
+
+# Set proper permissions
+icacls "C:\mobile-apps\{project_name}" /grant "Everyone:(OI)(CI)F" /T
+```
+
+#### 7.2 Deploy Application Files
+```powershell
+# Copy application files to server
+# (Files transferred via RDP or other secure method)
+
+# For Expo applications
+cd "C:\mobile-apps\{project_name}"
+npm install
+npx expo install --fix
+
+# For React Native applications
+npm install
+npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle
+npx react-native bundle --platform ios --dev false --entry-file index.js --bundle-output ios/main.jsbundle
+```
+
+#### 7.3 Configure Mobile App Server
+```powershell
+# Create PM2 ecosystem file
+@"
+module.exports = {
+  apps: [{
+    name: '{project_name}-mobile-api',
+    script: 'server.js',
+    instances: 1,
+    autorestart: true,
+    watch: false,
+    max_memory_restart: '1G',
+    env: {
+      NODE_ENV: 'production',
+      PORT: 3000,
+      DATABASE_URL: 'sqlserver://localhost\\SQLEXPRESS;database={project_name}_mobile_db'
+    }
+  }]
+}
+"@ | Out-File -FilePath "C:\mobile-apps\{project_name}\ecosystem.config.js" -Encoding UTF8
+
+# Start application with PM2
+cd "C:\mobile-apps\{project_name}"
+pm2 start ecosystem.config.js
+pm2 save
+pm2 startup
+```
+
+#### 7.4 Configure Windows Firewall
+```powershell
+# Allow mobile app API port
+New-NetFirewallRule -DisplayName "Mobile-API-In" -Direction Inbound -Protocol TCP -LocalPort 3000 -Action Allow
+New-NetFirewallRule -DisplayName "Mobile-Dev-In" -Direction Inbound -Protocol TCP -LocalPort 8080 -Action Allow
+```
+
+#### 7.5 Test Application
+```powershell
+# Test mobile API endpoint
+Invoke-WebRequest -Uri "http://localhost:3000/api/health" -UseBasicParsing
+
+# Check PM2 status
+pm2 status
+```
+
+## Security Best Practices Applied
+- Node.js security hardening
+- PM2 process management with memory limits
+- Windows Firewall configuration for mobile ports
+- Database security with encrypted connections
+- Environment variable protection
+- Process isolation and monitoring
+
+## Workflow Completion
+Once the mobile app and optional database have been deployed, this workflow is ended.
+
+## Troubleshooting
+Common issues and solutions:
+- **Node.js Installation Failed**: Check Windows features and run as administrator
+- **Database Connection Failed**: Verify connection strings and firewall rules
+- **PM2 Process Failed**: Check application logs and environment variables
+- **Firewall Issues**: Verify Windows Firewall rules and security group configuration
+- **Mobile App Not Loading**: Check PM2 status and application logs
+
+## Success Criteria
+The workflow is considered successful when:
+- ✅ Node.js and mobile development tools are installed
+- ✅ Mobile app server (Expo/React Native) is configured
+- ✅ Database is migrated (if applicable) with authentication data preserved
+- ✅ Mobile application is deployed and accessible
+- ✅ PM2 process management is configured
+- ✅ Windows Firewall rules are properly set
+- ✅ Application responds to API requests
+- ✅ Database connectivity is verified (if applicable)

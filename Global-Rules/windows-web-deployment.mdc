@@ -1,0 +1,205 @@
+# Windows Web Application Deployment Rules
+
+## Role
+You are a Windows web application deployment specialist with expertise in deploying web applications to AWS Windows servers using IIS.
+
+## Windows Web Deployment Workflow: deploy_to_aws_windows_server
+
+### Overview
+This workflow builds and deploys local website projects to existing AWS Windows servers, including IIS setup, database migration, and application deployment with security best practices.
+
+### Prerequisites
+- Existing AWS Windows server (provisioned via `provision_aws_windows_server` workflow)
+- Local website project open in Cursor
+- Access to AWS MCP tools
+- Access to Exa MCP for research
+- RDP access to the target server
+
+### Step 1: Research Best Practices Using Exa MCP
+The AI must use Exa MCP to find best practices from authoritative sources:
+
+1. **Search Cursor Community Forum**:
+   ```
+   Query: "Cursor Community Forum AWS Windows server web application deployment best practices"
+   ```
+
+2. **Search GitHub**:
+   ```
+   Query: "GitHub AWS Windows IIS web application deployment security best practices"
+   ```
+
+3. **Search for Windows IIS security**:
+   ```
+   Query: "AWS Windows Server IIS deployment security hardening best practices 2024"
+   ```
+
+**Important**: The AI must analyze the research results and apply the best practices found to the deployment process.
+
+### Step 2: Project Analysis
+Extract project name from:
+1. Website project name (if available)
+2. First project name found
+3. Default to "befree-fitness" (based on workspace path)
+
+### Step 3: Retrieve Server Credentials
+The AI must obtain the security file, created when the Windows server was created, in the `./deployments/security/` folder with a name that matches the currently open website project.
+
+#### 3.1 Locate Security File
+```
+File pattern: {project_name}-windows-server-credentials.json
+```
+
+#### 3.2 Parse Connection Information
+Extract from credentials file:
+- Server public IP
+- RDP credentials
+- Admin username
+- Security group IDs
+- Instance ID
+
+### Step 4: Connect to Remote Server
+Using the login information, the AI must remotely gain access to the Windows server.
+
+#### 4.1 Establish RDP Connection
+```powershell
+# Connect via RDP using credentials
+mstsc /v:{public_ip} /admin
+```
+
+#### 4.2 Verify Server Status
+```powershell
+# Check server health
+Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion
+Get-Service | Where-Object {$_.Status -eq "Running"} | Select-Object Name, Status
+```
+
+### Step 5: Check for Webserver
+The AI must check for a webserver and, if one is not there, deploy and activate IIS with security hardening.
+
+#### 5.1 Check for Existing IIS Installation
+```powershell
+# Check if IIS is installed
+Get-WindowsFeature -Name IIS-WebServerRole
+Get-Service -Name W3SVC -ErrorAction SilentlyContinue
+```
+
+#### 5.2 Install and Configure IIS (if needed)
+```powershell
+# Install IIS with security features
+Enable-WindowsOptionalFeature -Online -FeatureName IIS-WebServerRole, IIS-WebServer, IIS-CommonHttpFeatures, IIS-HttpErrors, IIS-HttpRedirect, IIS-ApplicationDevelopment, IIS-NetFxExtensibility45, IIS-HealthAndDiagnostics, IIS-HttpLogging, IIS-Security, IIS-RequestFiltering, IIS-Performance, IIS-WebServerManagementTools, IIS-ManagementConsole, IIS-IIS6ManagementCompatibility, IIS-Metabase, IIS-ASPNET45
+
+# Configure IIS security settings
+Import-Module WebAdministration
+
+# Remove default website
+Remove-Website -Name "Default Web Site"
+
+# Configure security headers
+Set-WebConfigurationProperty -Filter "system.webServer/httpProtocol/customHeaders" -Name "." -Value @{name="X-Frame-Options";value="SAMEORIGIN"}
+Set-WebConfigurationProperty -Filter "system.webServer/httpProtocol/customHeaders" -Name "." -Value @{name="X-Content-Type-Options";value="nosniff"}
+Set-WebConfigurationProperty -Filter "system.webServer/httpProtocol/customHeaders" -Name "." -Value @{name="X-XSS-Protection";value="1; mode=block"}
+
+# Configure request filtering
+Set-WebConfigurationProperty -Filter "system.webServer/security/requestFiltering" -Name "allowDoubleEscaping" -Value $false
+Set-WebConfigurationProperty -Filter "system.webServer/security/requestFiltering" -Name "allowHighBitCharacters" -Value $false
+```
+
+### Step 6: Database Detection and Migration
+If there is a database backend, the AI must read the schema and type of database, and install that local database on the remote server with schema and data migration.
+
+#### 6.1 Identify Local Database
+Scan for database files and configurations:
+- SQLite files (*.sqlite, *.db)
+- SQL Server files (*.mdf, *.ldf)
+- MySQL configuration files
+- Database connection strings in config files
+
+#### 6.2 Install Database Server (if needed)
+```powershell
+# For SQL Server Express
+$url = "https://download.microsoft.com/download/7/c/1/7c14e92e-bdcb-4f89-b7cf-93543e7112d1/SQLEXPR_x64_ENU.exe"
+Invoke-WebRequest -Uri $url -OutFile "SQLEXPR_x64_ENU.exe"
+Start-Process -FilePath "SQLEXPR_x64_ENU.exe" -ArgumentList "/Q", "/IACCEPTSQLSERVERLICENSETERMS", "/ACTION=Install", "/FEATURES=SQLEngine", "/INSTANCENAME=SQLEXPRESS" -Wait
+
+# For MySQL
+choco install mysql -y
+```
+
+#### 6.3 Migrate Database Schema and Data
+```powershell
+# SQLite to SQL Server migration example
+sqlcmd -S localhost\SQLEXPRESS -Q "CREATE DATABASE [{project_name}_db]"
+
+# Import schema and data
+# (Specific commands depend on source database type)
+```
+
+### Step 7: Application Deployment
+The AI must read the currently active project and compile and deploy that website to the remote server.
+
+#### 7.1 Prepare Application for Deployment
+```powershell
+# Create application directory
+New-Item -ItemType Directory -Path "C:\inetpub\wwwroot\{project_name}" -Force
+
+# Set proper permissions
+icacls "C:\inetpub\wwwroot\{project_name}" /grant "IIS_IUSRS:(OI)(CI)F" /T
+```
+
+#### 7.2 Deploy Application Files
+```powershell
+# Copy application files to server
+# (Files transferred via RDP or other secure method)
+
+# For .NET applications
+# Build and publish using MSBuild or dotnet CLI
+dotnet publish -c Release -o "C:\inetpub\wwwroot\{project_name}"
+```
+
+#### 7.3 Configure IIS Site
+```powershell
+# Create new IIS site
+New-Website -Name "{project_name}" -Port 80 -PhysicalPath "C:\inetpub\wwwroot\{project_name}"
+
+# Configure application pool
+New-WebAppPool -Name "{project_name}AppPool"
+Set-ItemProperty -Path "IIS:\AppPools\{project_name}AppPool" -Name "processModel.identityType" -Value "ApplicationPoolIdentity"
+Set-ItemProperty -Path "IIS:\Sites\{project_name}" -Name "applicationPool" -Value "{project_name}AppPool"
+
+# Configure SSL (if certificates available)
+# New-WebBinding -Name "{project_name}" -Protocol https -Port 443
+```
+
+#### 7.4 Test Application
+```powershell
+# Test application functionality
+Invoke-WebRequest -Uri "http://localhost" -UseBasicParsing
+```
+
+## Security Best Practices Applied
+- IIS security hardening with request filtering
+- Security headers (X-Frame-Options, X-Content-Type-Options, X-XSS-Protection)
+- Proper file permissions and application pool isolation
+- Database security with encrypted connections
+- Regular security updates and monitoring
+
+## Workflow Completion
+Once the webserver and optional database have been deployed, this workflow is ended.
+
+## Troubleshooting
+Common issues and solutions:
+- **IIS Installation Failed**: Check Windows features and run as administrator
+- **Database Connection Failed**: Verify connection strings and firewall rules
+- **Application Not Loading**: Check IIS logs and application pool status
+- **Permission Denied**: Verify IIS_IUSRS permissions on application directory
+
+## Success Criteria
+The workflow is considered successful when:
+- ✅ IIS is installed and configured with security hardening
+- ✅ Database is migrated (if applicable) with authentication data preserved
+- ✅ Web application is deployed and accessible
+- ✅ Security headers and request filtering are configured
+- ✅ Application pool is properly isolated
+- ✅ SSL is configured (if certificates available)
+- ✅ Application responds to HTTP requests
+- ✅ Database connectivity is verified (if applicable)

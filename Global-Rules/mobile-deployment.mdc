@@ -1,0 +1,460 @@
+# Mobile App Deployment Rules
+
+## Role
+You are a mobile app deployment specialist with expertise in deploying cross-platform mobile applications to AWS Linux servers.
+
+## Mobile Deployment Workflow: deploy_mobile_to_aws_linux_server
+
+### Overview
+This workflow deploys local mobile application projects to existing AWS Linux servers, including mobile app server setup, database migration, and application deployment with security best practices.
+
+### Prerequisites
+- Existing AWS Linux server (provisioned via `provision_aws_linux_server` workflow)
+- Local mobile app project open in Cursor
+- Access to AWS MCP tools
+- Access to Exa MCP for research
+- SSH access to the target server
+
+### Step 1: Research Best Practices
+Use Exa MCP to research current mobile deployment best practices:
+
+1. **Search Cursor Community Forum**:
+   ```
+   Query: "Cursor Community Forum mobile application deployment AWS Linux server best practices"
+   ```
+
+2. **Search GitHub**:
+   ```
+   Query: "GitHub mobile app deployment AWS Linux Expo React Native Flutter"
+   ```
+
+3. **Search Security Practices**:
+   ```
+   Query: "mobile app deployment AWS Linux server security best practices 2024 Expo React Native"
+   ```
+
+### Step 2: Identify Mobile App Type and Structure
+
+#### 2.1 Analyze Current Mobile Project
+Scan the workspace to identify:
+- Mobile framework (React Native, Expo, Flutter, Ionic, Xamarin, etc.)
+- Platform targets (iOS, Android, Web, Desktop)
+- Build configuration files (app.json, expo.json, pubspec.yaml, etc.)
+- Database type (SQLite, Firebase, Supabase, etc.)
+- Backend services and APIs
+
+#### 2.2 Determine Project Name
+Extract project name from:
+1. Mobile app name (if available)
+2. First project name found
+3. Default to "befree-fitness" (based on workspace path)
+
+### Step 3: Retrieve Server Credentials
+
+#### 3.1 Locate Security File
+Find the server credentials file in `./deployments/security/`:
+```
+File pattern: {project_name}-server-credentials.json
+```
+
+#### 3.2 Parse Connection Information
+Extract from credentials file:
+- Server public IP
+- SSH key information
+- Admin username (typically "ubuntu")
+- Security group IDs
+- Instance ID
+
+### Step 4: Connect to Remote Server
+
+#### 4.1 Establish SSH Connection
+```bash
+ssh -i {key_name}.pem {admin_user}@{public_ip}
+```
+
+#### 4.2 Verify Server Status
+```bash
+# Check system status
+sudo systemctl status ssh
+sudo systemctl status ufw
+sudo systemctl status fail2ban
+
+# Check available disk space
+df -h
+
+# Check memory usage
+free -h
+
+# Check running processes
+ps aux | grep -E "(expo|react-native|flutter|node)"
+```
+
+### Step 5: Mobile App Server Detection and Setup
+
+#### 5.1 Check for Existing Mobile App Server
+```bash
+# Check for Expo CLI
+expo --version 2>/dev/null && echo "Expo CLI found" || echo "Expo CLI not found"
+
+# Check for React Native CLI
+react-native --version 2>/dev/null && echo "React Native CLI found" || echo "React Native CLI not found"
+
+# Check for Flutter
+flutter --version 2>/dev/null && echo "Flutter found" || echo "Flutter not found"
+
+# Check for Node.js
+node --version 2>/dev/null && echo "Node.js found" || echo "Node.js not found"
+
+# Check for running mobile services
+sudo systemctl status expo 2>/dev/null || echo "Expo service not found"
+```
+
+#### 5.2 Install Mobile App Server (Based on Research)
+Execute the mobile server setup script:
+```bash
+./scripts/mobile-server-setup.sh {project_name} {mobile_framework} {domain} {api_port}
+```
+
+**Parameters**:
+- `project_name`: Name of the mobile project
+- `mobile_framework`: expo, react-native, flutter, ionic, or auto-detect
+- `domain`: Domain name for SSL (optional)
+- `api_port`: Port for mobile API server (default: 3000)
+
+### Step 6: Database Detection and Migration
+
+#### 6.1 Identify Local Mobile Database
+Scan for mobile database files and configurations:
+- SQLite files (*.sqlite, *.db)
+- Firebase configuration files (firebase.json, google-services.json)
+- Supabase configuration files
+- Database configuration files
+- Migration scripts and seed data
+
+#### 6.2 Migrate Mobile Database
+Execute the mobile database migration script:
+```bash
+./scripts/mobile-database-migration.sh {project_name} {target_db_type} {local_db_path} {mobile_framework}
+```
+
+**Parameters**:
+- `project_name`: Name of the mobile project
+- `target_db_type`: mysql, postgresql, firebase, supabase
+- `local_db_path`: Path to local database file (optional, auto-detect)
+- `mobile_framework`: expo, react-native, flutter, ionic
+
+### Step 7: Mobile Application Deployment
+
+#### 7.1 Deploy Mobile Application
+Execute the mobile app deployment script:
+```bash
+./scripts/mobile-app-deployment.sh {project_name} {mobile_framework} {repo_url} {branch}
+```
+
+**Parameters**:
+- `project_name`: Name of the mobile project
+- `mobile_framework`: expo, react-native, flutter, ionic, or auto-detect
+- `repo_url`: Git repository URL (optional, uses local files)
+- `branch`: Git branch to deploy (default: main)
+
+### Step 8: Configure Webserver for Mobile App
+
+#### 8.1 Configure Nginx for Mobile App
+```bash
+# Create mobile app Nginx configuration
+sudo tee /etc/nginx/sites-available/{project_name}-mobile <<EOF
+server {
+    listen 80;
+    listen 443 ssl http2;
+    server_name {public_ip} mobile.{domain};
+
+    # Security headers for mobile apps
+    add_header X-Content-Type-Options nosniff;
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Frame-Options DENY;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+    # CORS headers for mobile apps
+    add_header Access-Control-Allow-Origin "*";
+    add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+    add_header Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With";
+
+    # Mobile app API endpoints
+    location /api/ {
+        proxy_pass http://localhost:3000/api/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_cache_bypass \$http_upgrade;
+    }
+
+    # Health check endpoint
+    location /health {
+        proxy_pass http://localhost:3000/health;
+        proxy_http_version 1.1;
+        proxy_set_header Host \$host;
+    }
+
+    # Static files for mobile app
+    location /static/ {
+        alias /var/www/{project_name}/static/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Handle preflight requests
+    location / {
+        if (\$request_method = 'OPTIONS') {
+            add_header Access-Control-Allow-Origin "*";
+            add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+            add_header Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With";
+            add_header Access-Control-Max-Age 1728000;
+            add_header Content-Type "text/plain charset=UTF-8";
+            add_header Content-Length 0;
+            return 204;
+        }
+        
+        proxy_pass http://localhost:3000;
+    }
+}
+EOF
+
+# Enable site
+sudo ln -s /etc/nginx/sites-available/{project_name}-mobile /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+### Step 9: Mobile App Security Hardening
+
+#### 9.1 Configure Mobile App Security
+```bash
+# Set proper file permissions
+sudo chown -R $USER:www-data /var/www/{project_name}
+sudo chmod -R 755 /var/www/{project_name}
+sudo chmod 600 /var/www/{project_name}/.env
+
+# Configure firewall for mobile app ports
+sudo ufw allow 3000/tcp comment 'Mobile App API'
+sudo ufw allow 8080/tcp comment 'Mobile App Dev Server'
+sudo ufw allow 19000:19006/tcp comment 'Expo Dev Tools'
+
+# Configure fail2ban for mobile app
+sudo tee /etc/fail2ban/jail.d/mobile-app.conf <<EOF
+[mobile-app]
+enabled = true
+port = 3000
+filter = mobile-app
+logpath = /var/log/{project_name}/mobile-app.log
+maxretry = 3
+bantime = 3600
+findtime = 600
+EOF
+```
+
+### Step 10: Mobile App Testing and Validation
+
+#### 10.1 Test Mobile App Server
+```bash
+# Test local connectivity
+curl -f http://localhost:3000/health
+
+# Test API endpoints
+curl -f http://localhost:3000/api/config
+
+# Test external access
+curl -f http://{public_ip}/health
+curl -f http://{public_ip}/api/config
+```
+
+#### 10.2 Validate Mobile App Builds
+```bash
+# Check Expo builds
+expo build:list
+
+# Check Flutter builds
+ls -la /var/www/{project_name}/builds/app/outputs/flutter-apk/
+
+# Check React Native builds
+ls -la /var/www/{project_name}/android/app/build/outputs/apk/release/
+```
+
+### Step 11: Final Verification
+
+#### 11.1 External Access Test
+```bash
+# Test mobile app API from external
+curl -I http://{public_ip}/api/config
+curl -I https://{public_ip}/api/config
+
+# Test mobile app health endpoint
+curl -I http://{public_ip}/health
+```
+
+#### 11.2 Performance Check
+```bash
+# Check system resources
+htop
+df -h
+free -h
+
+# Check mobile app performance
+pm2 monit
+```
+
+## Mobile App Types Supported
+
+### 1. Expo Applications
+- React Native with Expo SDK
+- Managed workflow
+- EAS Build integration
+- Push notifications
+- Over-the-air updates
+
+### 2. React Native Applications
+- Bare React Native
+- Custom native modules
+- Platform-specific builds
+- Metro bundler
+- Native performance
+
+### 3. Flutter Applications
+- Dart-based mobile apps
+- Platform channels
+- Custom plugins
+- Hot reload support
+- Single codebase for multiple platforms
+
+### 4. Ionic Applications
+- Hybrid mobile apps
+- Cordova plugins
+- Web-based UI
+- Cross-platform deployment
+- Progressive Web App support
+
+## Database Types Supported
+
+### 1. SQLite Migration
+- Local SQLite to MySQL/PostgreSQL
+- Schema and data migration
+- Authentication preservation
+- Offline-first architecture
+
+### 2. Firebase Integration
+- Real-time database
+- Authentication services
+- Cloud functions
+- Push notifications
+- Analytics
+
+### 3. Supabase Integration
+- PostgreSQL database
+- Real-time subscriptions
+- Authentication
+- Edge functions
+- Row Level Security
+
+## Security Best Practices Implemented
+
+### 1. Mobile App Security
+- Secure API endpoints with authentication
+- CORS configuration for mobile apps
+- SSL/TLS encryption for API communication
+- Push notification security
+- Environment variable protection
+- Rate limiting and DDoS protection
+
+### 2. Database Security
+- Secure authentication for mobile database
+- Network isolation for database access
+- Regular backups of mobile data
+- Access control for mobile app users
+- Encryption at rest and in transit
+
+### 3. Application Security
+- Environment variable protection
+- Process isolation with PM2
+- Log monitoring for mobile app
+- Error handling and validation
+- Input sanitization
+
+### 4. System Security
+- Firewall configuration for mobile ports
+- Security headers for mobile APIs
+- Regular updates and patches
+- Monitoring and alerting
+- Intrusion detection
+
+## File Structure Created
+```
+/var/www/{project_name}/
+├── mobile-api/              # Mobile API server
+├── builds/                  # Built applications
+│   ├── android/            # Android builds
+│   ├── ios/                # iOS builds
+│   └── web/                # Web builds
+├── static/                  # Static assets
+├── logs/                    # Application logs
+├── config/                  # Configuration files
+├── .env                     # Environment variables
+├── mobile-server.js         # Mobile app server
+├── ecosystem.config.js      # PM2 configuration
+├── build-mobile-app.sh      # Build script
+├── update-mobile-app.sh     # Update script
+└── monitor-mobile-app.sh    # Monitoring script
+```
+
+## Deployment Summary
+- ✅ Mobile app server installed and configured
+- ✅ Database migrated and secured
+- ✅ Mobile application deployed and running
+- ✅ Security hardening applied
+- ✅ Monitoring configured
+- ✅ External access verified
+
+## Next Steps
+The mobile application is now:
+- Accessible via HTTPS API endpoints
+- Secured with industry best practices
+- Monitored for performance and security
+- Ready for mobile app store deployment
+- Configured for push notifications
+- Integrated with backend services
+
+## Troubleshooting
+Common issues and solutions:
+- **502 Bad Gateway**: Check mobile app service status
+- **SSL Issues**: Verify certificate installation
+- **Database Connection**: Check mobile database credentials
+- **Permission Errors**: Verify file ownership and permissions
+- **Build Failures**: Check mobile app dependencies
+- **Push Notification Issues**: Verify FCM/APNS configuration
+- **CORS Issues**: Check Nginx CORS headers
+- **Performance Issues**: Monitor PM2 and system resources
+
+## Integration with Cursor AI
+
+When asked to deploy a mobile application:
+1. **Analyze project structure** to determine mobile framework
+2. **Check server credentials** in `./deployments/security/`
+3. **Execute mobile deployment scripts** in sequence
+4. **Validate deployment** with health checks
+5. **Provide access information** and next steps
+
+## Success Criteria
+
+Mobile deployment is successful when:
+- ✅ Mobile app server is running and healthy
+- ✅ API endpoints respond correctly
+- ✅ External access works via public IP
+- ✅ Database is functional and accessible
+- ✅ SSL is configured (if applicable)
+- ✅ Security hardening is applied
+- ✅ Monitoring is active
+- ✅ Logs are being generated
+- ✅ Build artifacts are available
+- ✅ Push notifications are configured

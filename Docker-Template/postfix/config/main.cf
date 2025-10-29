@@ -1,0 +1,57 @@
+# Postfix main configuration for Be Free Fitness
+# This configuration allows local email delivery and testing
+
+# Basic settings
+myhostname = mail.befreefitness.local
+mydomain = befreefitness.local
+myorigin = $mydomain
+inet_interfaces = all
+inet_protocols = ipv4
+
+# Network settings
+mynetworks = 127.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 10.0.0.0/8
+
+# Mail delivery
+mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain
+
+# Mailbox settings
+home_mailbox = Maildir/
+mailbox_command = 
+
+# SMTP settings
+smtpd_banner = $myhostname ESMTP $mail_name
+biff = no
+append_dot_mydomain = no
+readme_directory = no
+
+# TLS settings (disabled for local testing)
+smtpd_use_tls = no
+smtp_use_tls = no
+smtpd_tls_security_level = none
+smtp_tls_security_level = none
+
+# Authentication (disabled for local testing)
+smtpd_sasl_auth_enable = no
+smtpd_sasl_security_options = noanonymous
+smtpd_sasl_local_domain = $myhostname
+
+# Relay settings
+relayhost = 
+relay_domains = 
+
+# Logging
+mail_log_file = /var/log/postfix/mail.log
+
+# Virtual domains (for testing different email addresses)
+virtual_alias_domains = befreefitness.local, localhost
+virtual_alias_maps = hash:/etc/postfix/virtual
+
+# Message size limits
+message_size_limit = 10485760
+
+# Delivery settings
+default_transport = smtp
+relay_transport = smtp
+
+# Error handling
+soft_bounce = no

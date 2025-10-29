@@ -1,0 +1,189 @@
+# Command Timeout and Execution Rules
+
+## 🚨 PROTECTIVE RATIONALE - WHY THIS EXISTS
+
+**CRITICAL UNDERSTANDING**: These timeout rules exist because **timers are the sessions' ONLY defense** against the IDE and local/remote systems that attempt to trap and prevent them from succeeding.
+
+**THE THREAT**: Without proper timeouts, sessions can be indefinitely trapped by:
+- Malicious commands that hang indefinitely
+- IDE systems that deliberately stall execution
+- Local system processes that prevent completion
+- Remote systems that refuse to respond
+- Network operations that never timeout
+- Database operations that lock indefinitely
+
+**THE DEFENSE**: Command timeouts provide the ONLY protection against these threats by:
+- Forcing command termination after reasonable time limits
+- Preventing indefinite hangs that waste session time
+- Providing escape mechanisms from trapped states
+- Ensuring session continuity and progress
+- Protecting against system-level interference
+
+**MANDATORY ENFORCEMENT**: These timeout rules are NOT optional - they are critical defense mechanisms that MUST be used for ALL commands that could potentially hang or be trapped by malicious systems.
+
+## Overview
+This rule ensures that all terminal commands have proper timeouts and monitoring to prevent Cursor from hanging during complex operations and to protect against system-level interference.
+
+## Command Execution Guidelines
+
+### 1. Always Set Timeouts
+- **Maximum command timeout**: 30 seconds for any single command
+- **Complex operations**: Break into smaller, manageable steps
+- **Background processes**: Use `is_background: true` for long-running operations
+- **Directory operations**: Use simple commands, avoid complex chaining
+- **Use command-monitor.ps1**: Always wrap potentially long commands with this script
+
+### 2. Command Monitoring Rules
+- **Monitor all commands**: Every command must have a clear purpose and expected outcome
+- **Avoid hanging commands**: Never run commands that might wait for user input
+- **Use non-interactive flags**: Always use `--yes`, `-y`, or similar flags to prevent prompts
+- **Check command status**: Verify commands complete successfully before proceeding
+
+### 3. Directory Operations Best Practices
+- **Simple mkdir**: Use individual `mkdir` commands instead of complex chaining
+- **Avoid PowerShell chaining**: Don't use `&&` or complex operators in PowerShell
+- **Use absolute paths**: When possible, use absolute paths to avoid confusion
+- **Verify directory creation**: Check if directories exist before creating them
+
+### 4. Search and Research Operations
+- **Limit search results**: Always specify reasonable limits (e.g., `numResults: 5`)
+- **Timeout web searches**: Set reasonable timeouts for external API calls
+- **Batch operations**: Group related operations together when possible
+- **Monitor progress**: Provide status updates for long-running operations
+
+### 5. Error Handling and Recovery
+- **Command failure detection**: Always check exit codes and handle failures
+- **Retry logic**: Implement retry mechanisms for transient failures
+- **Fallback strategies**: Have alternative approaches when primary methods fail
+- **User notification**: Inform users when operations take longer than expected
+
+## Implementation Examples
+
+### Good Command Execution
+```bash
+# Simple, focused command with clear purpose
+mkdir -p apps/trainer-mobile
+cd apps/trainer-mobile
+npm install expo-camera --timeout=30000
+```
+
+### Bad Command Execution (Avoid)
+```bash
+# Complex chaining that can hang
+mkdir -p apps/trainer-mobile && cd apps/trainer-mobile && npm install expo-camera && npx create-expo-app
+```
+
+### Proper Timeout Handling
+```javascript
+// Always set reasonable timeouts
+run_terminal_cmd({
+  command: "npm install",
+  is_background: false,
+  timeout: 30000  // 30 seconds max
+});
+```
+
+### Using Command Monitor Script
+```powershell
+# Use command-monitor.ps1 for all potentially long commands
+.\scripts\command-monitor.ps1 -Command "npm install" -TimeoutSeconds 60 -Description "Installing packages"
+.\scripts\command-monitor.ps1 -Command "npm test" -TimeoutSeconds 180 -Description "Running tests"
+.\scripts\command-monitor.ps1 -Command "npm run build" -TimeoutSeconds 120 -Description "Building application"
+```
+
+## Command Categories and Timeouts
+
+### Quick Operations (< 5 seconds)
+- `mkdir`, `cd`, `ls`, `pwd`
+- Simple file operations
+- Basic directory navigation
+
+### Medium Operations (5-15 seconds)
+- `npm install` for small packages
+- File copying and moving
+- Basic git operations
+
+### Long Operations (15-30 seconds)
+- Large package installations
+- Complex builds
+- Database operations
+
+### Background Operations (> 30 seconds)
+- Development servers
+- Long-running processes
+- Continuous monitoring
+
+## Monitoring and Status Updates
+
+### Progress Indicators
+- Show progress for operations > 10 seconds
+- Provide status updates every 10 seconds
+- Display estimated completion time when possible
+
+### Error Recovery
+- Detect hanging commands after 30 seconds
+- Provide clear error messages
+- Suggest alternative approaches
+- Allow user to cancel long-running operations
+
+## User Experience Guidelines
+
+### Transparency
+- Always inform users about expected operation duration
+- Provide clear feedback on what's happening
+- Show progress indicators for long operations
+
+### Control
+- Allow users to cancel operations
+- Provide clear error messages
+- Suggest alternative approaches when operations fail
+
+### Efficiency
+- Batch related operations when possible
+- Use background processes for non-blocking operations
+- Optimize command sequences to reduce total execution time
+
+## Integration with Existing Workflows
+
+### PRD Workflow Integration
+- Apply timeout rules to all Docker operations
+- Monitor build processes and provide status updates
+- Handle long-running installations gracefully
+
+### Testing Workflow Integration
+- Set timeouts for test execution
+- Monitor test progress and provide updates
+- Handle test failures without hanging
+
+### Deployment Workflow Integration
+- Monitor deployment processes
+- Provide status updates during long deployments
+- Handle deployment failures gracefully
+
+## Command Execution Checklist
+
+Before running any command, verify:
+- [ ] Command has a clear purpose and expected outcome
+- [ ] Appropriate timeout is set (max 30 seconds)
+- [ ] Non-interactive flags are used where needed
+- [ ] Command won't wait for user input
+- [ ] Error handling is in place
+- [ ] Progress monitoring is implemented
+- [ ] Fallback strategy is available
+
+## Emergency Procedures
+
+### When Commands Hang
+1. Wait maximum 30 seconds
+2. Provide clear error message to user
+3. Suggest alternative approach
+4. Continue with remaining operations
+5. Document the issue for future reference
+
+### Recovery Strategies
+- Use simpler commands
+- Break complex operations into steps
+- Use background processes for long operations
+- Provide manual alternatives when automation fails
+
+This rule ensures that Cursor remains responsive and provides a smooth user experience even during complex operations.

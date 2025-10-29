@@ -1,0 +1,342 @@
+# MCP Server Protection Rules
+**CRITICAL: Protect MCP Node.js servers from accidental termination**
+
+## 🚨 THE PROBLEM
+
+Model Context Protocol (MCP) servers run as Node.js processes. When you kill all Node.js processes to stop your application servers, **YOU DESTROY YOUR MCP SERVERS**, losing access to critical tools.
+
+## 🛡️ THE SOLUTION
+
+**NEVER kill all Node.js processes.** Instead, identify and kill ONLY your application servers.
+
+## ⚡ Quick Reference
+
+### ❌ NEVER DO THIS:
+```powershell
+# Windows
+Get-Process -Name "node" | Stop-Process -Force  # DESTROYS MCP SERVERS!
+taskkill /F /IM node.exe  # DESTROYS MCP SERVERS!
+
+# Linux/Mac
+killall node  # DESTROYS MCP SERVERS!
+pkill node  # DESTROYS MCP SERVERS!
+```
+
+### ✅ ALWAYS DO THIS:
+```powershell
+# Windows - Kill only application servers (ports 3000-4999)
+Get-Process -Name "node" | ForEach-Object {
+    try {
+        $cmdLine = (Get-WmiObject Win32_Process -Filter "ProcessId = $($_.Id)").CommandLine
+        if ($cmdLine -and ($cmdLine -match "npm|pnpm|nodemon|ts-node|next|vite|webpack|express|fastify")) {
+            Write-Host "Killing application server: $($_.Id)"
+            Stop-Process -Id $_.Id -Force
+        } else {
+            Write-Host "Preserving process: $($_.Id) (likely MCP server)"
+        }
+    } catch {
+        Write-Host "Preserving process: $($_.Id) (unable to determine type)"
+    }
+}
+
+# Linux/Mac - Kill only application servers
+for pid in $(pgrep node); do
+    cmdline=$(ps -p $pid -o args= 2>/dev/null)
+    if echo "$cmdline" | grep -qE "npm|pnpm|nodemon|ts-node|next|vite|webpack|express|fastify"; then
+        echo "Killing application server: $pid"
+        kill -9 $pid
+    else
+        echo "Preserving process: $pid (likely MCP server)"
+    fi
+done
+```
+
+## 🎯 Protection Strategies
+
+### Strategy 1: Port-Based Protection
+**Best for:** Applications with known ports (e.g., 3000-4999)
+
+```powershell
+# Windows
+Get-NetTCPConnection -State Listen | Where-Object {
+    $_.LocalPort -ge 3000 -and $_.LocalPort -le 4999
+} | ForEach-Object {
+    Write-Host "Killing process on port $($_.LocalPort)"
+    Stop-Process -Id $_.OwningProcess -Force
+}
+
+# Linux/Mac
+lsof -ti :3000-4999 | xargs kill -9
+```
+
+### Strategy 2: Command-Line Pattern Matching
+**Best for:** Identifying application servers by their startup command
+
+```powershell
+# Windows
+Get-Process -Name "node" | ForEach-Object {
+    $cmdLine = (Get-WmiObject Win32_Process -Filter "ProcessId = $($_.Id)").CommandLine
+    
+    # Application server patterns
+    if ($cmdLine -match "npm run dev|pnpm dev|nodemon|ts-node.*main\.ts") {
+        Stop-Process -Id $_.Id -Force
+    }
+    # MCP server patterns (preserve these)
+    elseif ($cmdLine -match "mcp|model-context-protocol") {
+        Write-Host "Preserving MCP server: $($_.Id)"
+    }
+}
+
+# Linux/Mac
+for pid in $(pgrep -f "npm run dev|pnpm dev|nodemon"); do
+    kill -9 $pid
+done
+```
+
+### Strategy 3: Process Age
+**Best for:** Recently started application servers
+
+```powershell
+# Windows - Kill Node processes started in last 5 minutes
+$cutoff = (Get-Date).AddMinutes(-5)
+Get-Process -Name "node" | Where-Object {
+    $_.StartTime -gt $cutoff
+} | Stop-Process -Force
+
+# Linux/Mac - Kill Node processes with low PID (recently started)
+# (Be cautious with this approach)
+```
+
+### Strategy 4: Working Directory
+**Best for:** Application servers in your project directory
+
+```powershell
+# Windows
+$projectPath = "E:\Vibe Code\My Project"
+Get-WmiObject Win32_Process -Filter "Name='node.exe'" | Where-Object {
+    $_.ExecutablePath -like "$projectPath*"
+} | ForEach-Object {
+    Stop-Process -Id $_.ProcessId -Force
+}
+
+# Linux/Mac
+lsof -c node | grep "/path/to/project" | awk '{print $2}' | xargs kill -9
+```
+
+## 📋 Startup Script Integration
+
+### Add to startup.ps1 or startup.sh:
+
+```powershell
+# Windows (startup.ps1)
+Write-Host "🛡️ MCP SERVER PROTECTION ACTIVE" -ForegroundColor Green
+Write-Host "  • Use safe-kill-servers.ps1 to stop application servers" -ForegroundColor Gray
+Write-Host "  • NEVER use: Get-Process node | Stop-Process" -ForegroundColor Red
+Write-Host ""
+
+# List MCP servers for reference
+Write-Host "📡 MCP Servers Running:" -ForegroundColor Cyan
+$mcpProcesses = Get-Process -Name "node" -ErrorAction SilentlyContinue | Where-Object {
+    $cmdLine = (Get-WmiObject Win32_Process -Filter "ProcessId = $($_.Id)").CommandLine
+    $cmdLine -match "mcp|model-context-protocol"
+}
+if ($mcpProcesses) {
+    $mcpProcesses | ForEach-Object {
+        Write-Host "  • PID: $($_.Id)" -ForegroundColor Green
+    }
+} else {
+    Write-Host "  • No MCP servers detected" -ForegroundColor Yellow
+}
+```
+
+## 🔧 Safe Kill Script Template
+
+Create `safe-kill-servers.ps1` in your project root:
+
+```powershell
+# safe-kill-servers.ps1
+# Safely stops application servers without killing MCP servers
+
+param(
+    [switch]$Force,
+    [string]$PortRange = "3000-4999",
+    [switch]$DryRun
+)
+
+Write-Host "🛡️ SAFE SERVER KILL - MCP Protected" -ForegroundColor Green
+Write-Host ""
+
+# Strategy 1: Kill by port range
+$ports = $PortRange -split "-"
+$startPort = [int]$ports[0]
+$endPort = [int]$ports[1]
+
+Write-Host "🔍 Finding servers on ports $startPort-$endPort..." -ForegroundColor Cyan
+$connections = Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue | Where-Object {
+    $_.LocalPort -ge $startPort -and $_.LocalPort -le $endPort
+}
+
+if ($connections) {
+    $connections | ForEach-Object {
+        $port = $_.LocalPort
+        $pid = $_.OwningProcess
+        $process = Get-Process -Id $pid -ErrorAction SilentlyContinue
+        
+        if ($DryRun) {
+            Write-Host "  [DRY RUN] Would kill: PID $pid on port $port ($($process.ProcessName))"
+        } else {
+            Write-Host "  ⛔ Killing: PID $pid on port $port ($($process.ProcessName))" -ForegroundColor Yellow
+            Stop-Process -Id $pid -Force
+        }
+    }
+} else {
+    Write-Host "  ✅ No servers found on ports $startPort-$endPort" -ForegroundColor Green
+}
+
+# Strategy 2: Kill by command pattern (application servers only)
+Write-Host ""
+Write-Host "🔍 Finding application server processes..." -ForegroundColor Cyan
+$appServers = Get-Process -Name "node" -ErrorAction SilentlyContinue | ForEach-Object {
+    $cmdLine = (Get-WmiObject Win32_Process -Filter "ProcessId = $($_.Id)").CommandLine
+    if ($cmdLine -and ($cmdLine -match "npm run dev|pnpm dev|nodemon|ts-node.*main\.ts|next dev")) {
+        [PSCustomObject]@{
+            PID = $_.Id
+            CommandLine = $cmdLine
+        }
+    }
+}
+
+if ($appServers) {
+    $appServers | ForEach-Object {
+        if ($DryRun) {
+            Write-Host "  [DRY RUN] Would kill: PID $($_.PID)"
+            Write-Host "    Command: $($_.CommandLine.Substring(0, [Math]::Min(80, $_.CommandLine.Length)))"
+        } else {
+            Write-Host "  ⛔ Killing: PID $($_.PID)" -ForegroundColor Yellow
+            Stop-Process -Id $_.PID -Force
+        }
+    }
+} else {
+    Write-Host "  ✅ No application server processes found" -ForegroundColor Green
+}
+
+# Verify MCP servers still running
+Write-Host ""
+Write-Host "✅ Verifying MCP servers..." -ForegroundColor Cyan
+$mcpProcesses = Get-Process -Name "node" -ErrorAction SilentlyContinue | Where-Object {
+    $cmdLine = (Get-WmiObject Win32_Process -Filter "ProcessId = $($_.Id)").CommandLine
+    $cmdLine -match "mcp|model-context-protocol"
+}
+
+if ($mcpProcesses) {
+    Write-Host "  ✅ MCP servers still running: $($mcpProcesses.Count)" -ForegroundColor Green
+    $mcpProcesses | ForEach-Object {
+        Write-Host "    • PID: $($_.Id)" -ForegroundColor Gray
+    }
+} else {
+    Write-Host "  ⚠️  No MCP servers detected (or not running)" -ForegroundColor Yellow
+}
+
+Write-Host ""
+Write-Host "✅ Safe kill complete!" -ForegroundColor Green
+```
+
+## 🎯 Integration with Universal Watchdog
+
+Add MCP protection to `universal-watchdog.ps1`:
+
+```powershell
+# In cleanup section, use safe kill
+if ($CleanupOnTimeout) {
+    Write-Host "⚠️ Timeout - Using SAFE kill (MCP protected)"
+    & "$PSScriptRoot\safe-kill-servers.ps1"
+}
+```
+
+## 📚 Best Practices
+
+### DO:
+✅ Use port-based killing for known application ports
+✅ Use command-line pattern matching
+✅ Create a dedicated safe-kill script
+✅ Verify MCP servers after cleanup
+✅ Document which ports your app uses
+✅ Add MCP protection warnings to startup
+✅ Use watchdog scripts with MCP protection
+
+### DON'T:
+❌ Use `killall node` or `pkill node`
+❌ Use `Get-Process node | Stop-Process`
+❌ Kill Node processes without checking command line
+❌ Assume all Node processes are your app
+❌ Skip verification after killing processes
+
+## 🔍 Identifying MCP Servers
+
+### How to Find MCP Server Processes:
+
+```powershell
+# Windows
+Get-Process -Name "node" | ForEach-Object {
+    $cmdLine = (Get-WmiObject Win32_Process -Filter "ProcessId = $($_.Id)").CommandLine
+    if ($cmdLine -match "mcp|model-context-protocol") {
+        [PSCustomObject]@{
+            PID = $_.Id
+            CommandLine = $cmdLine.Substring(0, [Math]::Min(100, $cmdLine.Length))
+        }
+    }
+}
+
+# Linux/Mac
+ps aux | grep node | grep -E "mcp|model-context-protocol"
+```
+
+### Common MCP Server Indicators:
+- Command line contains "mcp"
+- Command line contains "model-context-protocol"
+- Process not listening on typical app ports (3000-4999)
+- Started before your application
+- Running from Cursor directories
+
+## ⚠️ Emergency Recovery
+
+### If You Accidentally Killed MCP Servers:
+
+1. **Restart Cursor IDE** - MCP servers will restart
+2. **Check MCP status** - Verify tools are available
+3. **Document the incident** - Learn what went wrong
+4. **Update kill scripts** - Improve protection logic
+
+## 🎓 Example: Project-Specific Protection
+
+For **Be Free Fitness** (or any web app):
+
+```powershell
+# kill-bff-servers.ps1
+Write-Host "🛡️ Stopping Be Free Fitness servers (MCP protected)"
+
+# API server on port 4000
+Write-Host "Stopping API server..."
+$apiProc = Get-NetTCPConnection -LocalPort 4000 -ErrorAction SilentlyContinue
+if ($apiProc) {
+    Stop-Process -Id $apiProc.OwningProcess -Force
+}
+
+# Web server on port 3000
+Write-Host "Stopping Web server..."
+$webProc = Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue
+if ($webProc) {
+    Stop-Process -Id $webProc.OwningProcess -Force
+}
+
+# Verify MCP servers
+Write-Host "Verifying MCP servers still running..."
+$mcpCount = (Get-Process node -ErrorAction SilentlyContinue | Where-Object {
+    (Get-WmiObject Win32_Process -Filter "ProcessId = $($_.Id)").CommandLine -match "mcp"
+}).Count
+Write-Host "✅ MCP servers: $mcpCount still running"
+```
+
+---
+
+**REMEMBER:** MCP servers are Cursor's eyes and hands. Protect them at all costs!

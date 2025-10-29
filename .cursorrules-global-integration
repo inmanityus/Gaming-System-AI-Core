@@ -1,0 +1,90 @@
+# Global Rules Integration for Cursor AI
+
+## This file integrates global rules from Global-Rules/ into the active Cursor session
+
+### Rule 1: AWS Direct CLI Usage
+**Source**: `Global-Rules/AWS-Direct-CLI-Usage.md`
+
+**Summary**: Always use AWS CLI directly via PowerShell/Bash commands, NOT MCP servers.
+
+**Key Points**:
+- Use `aws ec2 ...` commands directly
+- Better transparency, debugging, and control
+- Full access to all AWS CLI features
+- Commands can be captured in scripts
+- Helper functions available in `Global-Scripts/aws-helpers.ps1`
+
+**Quick Reference**:
+```powershell
+# Load AWS helpers
+. .\Global-Scripts\aws-helpers.ps1
+
+# Common operations
+Get-AwsIdentity
+Get-Ec2Instance -InstanceId "i-XXXXX" -Region "us-east-1"
+Get-Ec2InstanceStatus -InstanceId "i-XXXXX"
+```
+
+---
+
+### Rule 2: Documentation Storage
+**Source**: `Global-Rules/Documentation-Storage-Rule.md`
+
+**Summary**: ALL documentation must be stored in `Project-Management/` folder (gitignored).
+
+**Key Points**:
+- NEVER place documentation in application folders that get deployed
+- Structure: `Project-Management/{Documentation,Research,AWS-Deployment,Media-Source,Archive}`
+- Add `Project-Management/` to `.gitignore`
+- Move any *-SUMMARY.md, *-STATUS.md, SESSION-*.md to Project-Management/Documentation/
+
+**File Patterns to Move**:
+- `*-SUMMARY.md`
+- `*-STATUS.md`
+- `*-COMPLETE.md`
+- `SESSION-*.md`
+- `*-FIX-*.md`
+- `*-IMPLEMENTATION-*.md`
+
+**Quick Reference**:
+```powershell
+# Check documentation placement
+.\Global-Scripts\check-documentation-placement.ps1
+
+# Auto-fix misplaced docs
+.\Global-Scripts\check-documentation-placement.ps1 -Fix
+
+# Create PM structure if missing
+.\Global-Scripts\create-project-management-structure.ps1
+```
+
+---
+
+## Integration with Startup
+
+The `startup.ps1` file should include:
+
+```powershell
+# Check documentation placement on startup
+if (Test-Path ".\Global-Scripts\check-documentation-placement.ps1") {
+    Write-Host "`nVerifying documentation placement..." -ForegroundColor Cyan
+    & .\Global-Scripts\check-documentation-placement.ps1
+}
+```
+
+---
+
+## Cursor AI Instructions
+
+When working in this project:
+
+1. **AWS Operations**: Use AWS CLI directly, never MCP AWS tools
+2. **Documentation**: Place all session outputs, summaries, status reports in `Project-Management/Documentation/`
+3. **Deployment Artifacts**: Place deployment logs, status in `Project-Management/AWS-Deployment/`
+4. **Before Deployment**: Run `check-documentation-placement.ps1` to verify nothing gets deployed accidentally
+
+---
+
+**Version**: 1.0  
+**Last Updated**: October 2025
+

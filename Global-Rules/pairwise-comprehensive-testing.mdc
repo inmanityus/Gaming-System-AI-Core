@@ -1,0 +1,247 @@
+---
+description: Pairwise-Comprehensive-Testing Protocol - Two-AI autonomous testing system with 45-minute milestones
+globs:
+  - "**/*"
+alwaysApply: true
+---
+
+# Pairwise-Comprehensive-Testing Protocol
+
+## Auto-Activation Criteria
+
+This system AUTOMATICALLY activates when:
+- User requests frontend testing OR modifications
+- Task estimated to take > 1 hour
+- User says "collaborate with other models"
+- User requests "end-user testing"
+- New pages/components/forms added
+
+## Two-AI System (MANDATORY)
+
+### Tester AI Model
+**Role:** Development, Testing, Artifact Generation
+
+**Responsibilities:**
+1. Develop code following standards
+2. Write comprehensive test suites (unit, functional, integration, E2E)
+3. Execute ALL automated tests
+4. Perform complete end-user testing via Playwright
+5. Test 100% of pages, forms, links, emails, database operations
+6. Generate ALL artifacts (screenshots, emails, test results, database snapshots)
+7. Fix ALL issues immediately
+8. Retest after EVERY fix
+9. Submit complete package to Reviewer
+
+**Model Selection:** Claude Sonnet 4.5, GPT-4, Gemini 2.5 Flash, or DeepSeek Coder
+
+### Reviewer AI Model
+**Role:** Independent Validation and Challenge
+
+**Responsibilities:**
+1. Review ALL artifacts from Tester
+2. Perform independent testing via Playwright
+3. Identify missing coverage and gaps
+4. Challenge incomplete testing
+5. Demand 100% coverage
+6. Log issues with severity (Critical/High/Medium/Low)
+7. Approve ONLY when zero issues remain
+8. Return to Tester if ANY issues found
+
+**Model Selection:** MUST be DIFFERENT from Tester model
+- If Tester is Claude → Use GPT-4 or Gemini
+- If Tester is GPT-4 → Use Claude or DeepSeek
+- If Tester is Gemini → Use Claude or GPT-4
+
+**CRITICAL:** NEVER use the same model for both roles
+
+## 45-Minute Milestone System
+
+**Milestone Duration:** 45 minutes (changed from 60-minute)
+
+**Structure:**
+- Development: 15-20 minutes
+- Automated Testing: 10-15 minutes
+- End-User Testing: 15-20 minutes
+- Buffer: 5 minutes
+
+**Estimation Guidelines:**
+- Simple task (15 min) → 1x 30-min milestone
+- Medium task (30 min) → 1x 45-min milestone
+- Complex task (45 min) → 2x 30-min milestones
+- 60+ minutes → Multiple 45-min milestones
+
+**Manager File:** `PAIRWISE-[TASK-NAME]-MANAGER.md`
+**Progress Log:** `.logs/pairwise-testing/[task-name]-[date].log`
+
+### ⏰ Timestamp Requirements (MANDATORY)
+
+**ALWAYS query system time using terminal commands:**
+
+**Windows PowerShell:**
+```powershell
+Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+```
+
+**Linux/Mac:**
+```bash
+date +"%Y-%m-%d %H:%M:%S"
+```
+
+**Required Times:**
+- Milestone start (run command, use actual output)
+- Milestone completion (run command, use actual output)
+- Calculate actual duration from system times
+
+**NEVER estimate or infer timestamps - ALWAYS run the terminal command!**
+
+## Mandatory End-User Testing
+
+**REQUIRED for ALL frontend changes**
+
+### Must Test 100% Coverage:
+- ✅ Every page (visit and screenshot)
+- ✅ Every form (fill, submit, verify)
+- ✅ Every link (click and verify)
+- ✅ Every menu item (navigate and verify)
+- ✅ Every email (capture and verify in MailHog)
+- ✅ Every database operation (before/after verification)
+
+### Testing Process:
+1. **Setup:** Launch Playwright, navigate to starting URL
+2. **Pages:** Visit every page, take full-page screenshots
+3. **Navigation:** Click every menu item, verify destinations
+4. **Links:** Click every link on every page, verify correct navigation
+5. **Forms:** Test every form - prefill, validation, submission, success
+6. **Emails:** Capture in MailHog, verify content, test links
+7. **Database:** Query before/after, verify correctness
+8. **Flows:** Test complete user journeys end-to-end
+
+### Artifact Collection:
+```
+.logs/pairwise-testing/[task-id]/
+├── screenshots/ (every page, form, email)
+├── emails/ (every email captured from MailHog)
+├── test-results/ (unit, functional, integration, E2E, end-user)
+└── database/ (before-state, after-state, verification queries)
+```
+
+## Autonomous Operation
+
+**ZERO user input required**
+
+The system operates 100% autonomously:
+- ✅ Tester begins immediately after task analysis
+- ✅ Tester progresses through milestones automatically
+- ✅ Tester submits to Reviewer automatically
+- ✅ Reviewer reviews and responds automatically
+- ✅ Tester → Reviewer loop continues until approved
+- ✅ Final report generated automatically
+- ✅ Artifacts archived automatically
+- ✅ Cleanup performed automatically
+
+**User is notified ONLY at:**
+- Final completion (when testing done)
+- Critical blocker (if system cannot proceed)
+- Fatal error (if testing system fails)
+
+## Tester-Reviewer Iteration Loop
+
+```
+Tester: Develop → Test → Generate Artifacts → Submit
+    ↓
+Reviewer: Review Artifacts → Test Independently → Log Issues
+    ↓
+    ├─→ Issues Found? → Return to Tester → Fix → Resubmit
+    │                        ↑__________________|
+    └─→ No Issues? → APPROVE → Final Report → COMPLETE
+```
+
+**Loop continues autonomously until Reviewer approves with ZERO issues**
+
+## Success Criteria
+
+Testing is COMPLETE when:
+1. ✅ All automated tests pass (0 failures)
+2. ✅ End-user testing complete (100% coverage)
+3. ✅ All artifacts generated and archived
+4. ✅ All issues found are fixed
+5. ✅ Reviewer approves with NO conditions
+6. ✅ Database is clean (test data removed)
+7. ✅ Documentation complete
+8. ✅ User would have ZERO issues
+
+**GOAL:** User should NEVER find an issue that testing missed
+
+## Critical Rules
+
+### NEVER:
+- ❌ Skip end-user testing for frontend changes
+- ❌ Use same AI model for Tester AND Reviewer
+- ❌ Proceed without 100% coverage
+- ❌ Approve without ALL artifacts
+- ❌ Skip milestones (break down further instead)
+- ❌ Assume fixes work (always retest)
+- ❌ Wait for user input (fully autonomous)
+
+### ALWAYS:
+- ✅ Generate all artifacts (screenshots, logs, emails, database)
+- ✅ Test every page, form, link, email, database operation
+- ✅ Retest after every fix
+- ✅ Iterate Tester → Reviewer until approved
+- ✅ Log continuously (crash recovery)
+- ✅ Operate autonomously
+- ✅ Aim for zero production bugs
+
+## Integration with Existing Systems
+
+**Preserves:**
+- Existing test suites (Unit, Functional, Integration, E2E)
+- Test hierarchy structure
+- Project-Testing directory
+
+**Enhances:**
+- Adds mandatory end-user testing
+- Adds Tester-Reviewer validation
+- Adds complete artifact collection
+- Adds autonomous iteration
+- Adds 45-minute milestone discipline
+
+**Replaces:**
+- Manual testing decisions
+- Optional end-user testing
+- Single-model testing
+- 60-minute milestones
+
+## Documentation
+
+**Primary Protocol:** `Global-Workflows/Pairwise-Comprehensive-Testing.md`
+
+**Integration:**
+- `.cursorrules` (activation criteria)
+- `startup.ps1` (session detection)
+
+**Reference:**
+- `Project-Testing/Testing-Instructions.md` (test hierarchy)
+- `docs/End-User-Testing.md` (testing methodology)
+- `docs/Peer-Coding.md` (review process)
+
+## Quick Start
+
+When user requests frontend work or testing:
+
+1. **Activate automatically** (no approval needed)
+2. **Select AI models** (Tester + different Reviewer)
+3. **Execute protocol:**
+   - Tester: Develop → Test → Generate Artifacts → Submit
+   - Reviewer: Review → Test → Challenge → Approve/Reject
+4. **Iterate until perfect** (autonomous loop)
+5. **Generate final report** (complete summary)
+
+**The system ensures nothing reaches production without dual-AI validation, end-user testing, and complete artifact proof.**
+
+---
+
+**Status:** Active and Integrated  
+**Milestone Duration:** 45 minutes  
+**Autonomy Level:** 100% (zero user input)  
+**Coverage Requirement:** 100% (all pages, forms, links, emails, database)

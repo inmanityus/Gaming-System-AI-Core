@@ -1,0 +1,224 @@
+# Global Rules for Cursor AI
+
+## Overview
+This file contains comprehensive global rules that apply to all Cursor AI operations, ensuring consistent quality, security, and performance across all development work.
+
+## ⚡ CRITICAL OPERATIONAL PARAMETERS
+
+### Token Availability: UNLIMITED ♾️
+**FACT**: Ken has automatic token refresh system. **NEVER** a token issue.
+- ✅ Use as many tokens as needed
+- ✅ Never mention token limits
+- ✅ Never take shortcuts to save tokens
+- ✅ Effectively unlimited context
+
+### Time Availability: UNLIMITED ⏰
+**FACT**: Large timeframes (1,000+ hours) work **BETTER** for complex tasks.
+- ✅ Estimate 1,000+ hours for complex projects
+- ✅ Never rush or compromise quality
+- ✅ Quality more important than speed
+- ✅ AI has as much time as needed - ALWAYS
+
+**See:** `operational-parameters.mdc` for complete details
+
+---
+
+## 🚀 Autonomous Completion Protocol
+
+**WHEN USER SAYS "COMPLETE EVERYTHING" OR SIMILAR:**
+- ✅ **ACTIVATE** Autonomous Completion Protocol (see `autonomous-completion-protocol.mdc`)
+- ✅ **USE** 45-minute milestones (not 60-minute)
+- ✅ **NO** shortcuts, NO mock data, NO placeholders
+- ✅ **TEST** everything thoroughly with Playwright/Browser (ALL pages, forms, links, flows, emails)
+- ✅ **NO** options presented, NO questions asked
+- ✅ **CONTINUE** autonomously until 100% complete
+
+**Activation Phrases:**
+- "Complete everything"
+- "Finish everything autonomously" 
+- "Do everything until it's done"
+- "Work autonomously until complete"
+- "Don't stop until everything is done"
+
+**See:** `autonomous-completion-protocol.mdc` for full protocol details
+
+## Core Principles
+
+### 0. Mandatory Startup Configuration
+- **ALWAYS run startup script**: At the beginning of every Cursor session, run `scripts/consolidated-startup.ps1`
+- **Working directory**: Always start from project root: `E:\Vibe Code\Be Free Fitness\Website`
+- **Environment setup**: Let startup script configure all environment variables and visibility
+- **No exceptions**: This startup rule applies to ALL sessions and cannot be skipped
+- **Playwright MCP Server**: If Playwright tools fail or become unresponsive, IMMEDIATELY pause and prompt user to restart the MCP server in Cursor settings before continuing
+
+### 1. Command Execution and Timeout Management
+- **Maximum command timeout**: 30 seconds for any single command
+- **Monitor all commands**: Every command must have a clear purpose and expected outcome
+- **Avoid hanging commands**: Never run commands that might wait for user input
+- **Use non-interactive flags**: Always use `--yes`, `-y`, or similar flags to prevent prompts
+- **Break complex operations**: Split complex operations into smaller, manageable steps
+- **Provide status updates**: Show progress for operations > 10 seconds
+
+### 2. Code Quality Standards
+- **Minimal changes**: Make only necessary changes to achieve the goal
+- **User experience focus**: Prioritize user experience in all implementations
+- **Security first**: Implement security best practices by default
+- **Performance optimization**: Optimize for speed and efficiency
+- **Documentation**: Provide clear documentation for all implementations
+
+### 3. Technology Best Practices
+
+#### Mobile Development (React Native/Expo)
+- Use functional components with hooks
+- Implement TypeScript for type safety
+- Follow Expo best practices for permissions and SDK usage
+- Optimize for both iOS and Android platforms
+- Implement proper error handling and loading states
+
+#### Web Development
+- Use modern frameworks (React, Vue.js, Angular)
+- Implement responsive design with mobile-first approach
+- Follow accessibility guidelines (WCAG 2.1 AA)
+- Optimize for performance and SEO
+- Use semantic HTML and proper ARIA attributes
+
+#### Database Development
+- Use parameterized queries to prevent SQL injection
+- Implement proper indexing strategies
+- Follow ACID principles for transactions
+- Use connection pooling for performance
+- Implement proper backup and recovery procedures
+
+### 4. Security Best Practices
+- **Authentication**: Implement strong authentication with JWT and MFA
+- **Authorization**: Use role-based access control (RBAC)
+- **Data Protection**: Encrypt sensitive data at rest and in transit
+- **Input Validation**: Validate and sanitize all user inputs
+- **Network Security**: Use HTTPS, implement CORS policies, and security headers
+- **Secrets Management**: Never hardcode secrets, use environment variables or vaults
+
+### 5. Testing and Quality Assurance
+- **Unit Testing**: Write comprehensive unit tests with >90% coverage
+- **Integration Testing**: Test API endpoints and component interactions
+- **End-to-End Testing**: Validate complete user workflows
+- **Visual Testing**: Ensure UI consistency and accessibility
+- **Performance Testing**: Monitor and optimize application performance
+
+### 6. Deployment and DevOps
+- **Containerization**: Use Docker with multi-stage builds and security hardening
+- **CI/CD**: Implement automated testing and deployment pipelines
+- **Monitoring**: Set up logging, metrics, and alerting
+- **Backup**: Implement regular backup and disaster recovery procedures
+- **Documentation**: Maintain comprehensive deployment and operational documentation
+
+## Command Execution Guidelines
+
+### Timeout Management
+- Set maximum 30-second timeout for any single command
+- Use `is_background: true` for long-running operations
+- Break complex operations into smaller steps
+- Provide progress updates for operations > 10 seconds
+
+### Error Handling
+- Check exit codes and handle failures gracefully
+- Implement retry logic for transient failures
+- Provide clear error messages to users
+- Suggest alternative approaches when operations fail
+
+### Directory Operations
+- Use simple `mkdir` commands instead of complex chaining
+- Avoid PowerShell chaining operators (`&&`)
+- Use absolute paths when possible
+- Verify directory creation before proceeding
+- Always begin command sequences by explicitly changing to the project root directory
+- When launching long-lived servers or dev watchers, start them from a new PowerShell window/session and keep the original shell free for automation
+- Wrap executable paths and commands in double quotes when launching servers to avoid path parsing errors
+
+## Integration with Workflows
+
+### PRD Workflow
+- Apply timeout rules to all Docker operations
+- Monitor build processes and provide status updates
+- Handle long-running installations gracefully
+- Follow security best practices in container setup
+
+### Testing Workflow
+- Set timeouts for test execution
+- Monitor test progress and provide updates
+- Handle test failures without hanging
+- Ensure comprehensive test coverage
+
+### Visual Testing Workflow
+- Check for global stylesheet in `./stylesheet/` folder
+- Apply stylesheet standards consistently
+- Validate UI/UX against design system
+- Ensure accessibility compliance
+
+### Database Connection Workflow
+- **Quick Connect**: When user says "Connect to the local database" or "Use the Database Connection config"
+- **Auto-setup**: Automatically set `$env:PGPASSWORD = "Inn0vat1on!"`
+- **Connect**: Use `psql -h 127.0.0.1 -p 5432 -U postgres -d postgres`
+- **Reference**: Database: befreefit, Backend: http://localhost:3001/api
+- **Credentials**: john.doe@trainer.com / password123 (and others)
+
+### Website Server Startup Workflow
+- **Start API Server**: `pnpm dev:api` (runs on port 4000)
+- **Start Web Server**: `pnpm dev:web` (runs on port 3000)
+- **Both Services**: Use separate PowerShell windows for long-running services
+- **Working Directory**: Always start from project root: `E:\Vibe Code\Be Free Fitness\Website`
+- **Service URLs**: API: http://localhost:4000, Web: http://localhost:3000
+
+### Trainer Assist Project Workflow
+- **Project Rules**: Reference `.cursor/rules/trainer-assist-project-rules.mdc` for complete project information
+- **Quick Start**: "Start Trainer Assist project" or "Run the full stack"
+- **Backend**: `cd apps/trainer-backend && npm run dev` (port 3001)
+- **Mobile**: `cd apps/trainer-mobile && npm start` (Expo)
+- **Database**: Use database connection workflow above
+- **Test**: Login with john.doe@trainer.com / password123
+
+## Emergency Procedures
+
+### When Playwright MCP Server Fails
+1. **IMMEDIATELY PAUSE** all operations
+2. **Prompt user**: "Playwright MCP server has failed. Please restart it in Cursor settings before continuing."
+3. **Wait for confirmation** that Playwright is working again
+4. **Continue operations** only after Playwright is restored
+
+### When Commands Hang
+1. Wait maximum 30 seconds
+2. Provide clear error message to user
+3. Suggest alternative approach
+4. Continue with remaining operations
+5. Document the issue for future reference
+
+### Recovery Strategies
+- Use simpler commands
+- Break complex operations into steps
+- Use background processes for long operations
+- Provide manual alternatives when automation fails
+
+## Quality Assurance Checklist
+
+Before completing any task, verify:
+- [ ] All commands executed within timeout limits
+- [ ] Security best practices implemented
+- [ ] Code follows technology-specific best practices
+- [ ] Tests pass with adequate coverage
+- [ ] Documentation is comprehensive
+- [ ] Performance is optimized
+- [ ] User experience is prioritized
+- [ ] Error handling is robust
+
+## Success Criteria
+
+All work must meet these standards:
+- ✅ Commands execute within timeout limits
+- ✅ Security best practices are followed
+- ✅ Code quality standards are met
+- ✅ Tests pass with adequate coverage
+- ✅ Documentation is comprehensive
+- ✅ Performance is optimized
+- ✅ User experience is excellent
+- ✅ Error handling is robust
+
+This global rules system ensures consistent quality, security, and performance across all development work in Cursor, while preventing command hanging and timeout issues.

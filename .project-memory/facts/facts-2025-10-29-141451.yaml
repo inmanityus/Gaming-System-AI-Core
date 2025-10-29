@@ -1,0 +1,126 @@
+extracted_at: '2025-10-29T14:14:51.889987'
+facts:
+- commands: []
+  compression_ratio: 78.8%
+  decisions: []
+  errors:
+  - 'listen EADDRINUSE: address already in use :::4000'
+  file_changes: []
+  key_outcomes:
+  - 'Error: listen EADDRINUSE: address already in use :::4000'
+  original_size_kb: '1.30'
+  resolutions: []
+  source_file: 20251006-124612-API_Server.log
+  timestamp: '2025-10-06T20:05:26.673316'
+- commands: []
+  compression_ratio: 78.8%
+  decisions: []
+  errors:
+  - 'listen EADDRINUSE: address already in use :::4000'
+  file_changes: []
+  key_outcomes:
+  - 'Error: listen EADDRINUSE: address already in use :::4000'
+  original_size_kb: '1.30'
+  resolutions: []
+  source_file: 20251006-124637-API_Server.log
+  timestamp: '2025-10-06T20:05:25.600846'
+- commands: []
+  compression_ratio: 35.8%
+  decisions: []
+  errors:
+  - 'EPERM: operation not permitted, open ''E:\Vibe Code\Be Free Fitness\Website\apps\web\.next\trace'']
+    {'
+  file_changes: []
+  key_outcomes:
+  - '[Error: EPERM: operation not permitted, open ''E:\Vibe Code\Be Free Fitness\Website\apps\web\.next\trace'']
+    {'
+  - ΓÇëELIFECYCLEΓÇë Command failed with exit code 4294967295.
+  original_size_kb: '0.72'
+  resolutions: []
+  source_file: 20251006-124639-Web_Server.log
+  timestamp: '2025-10-06T15:20:59.530606'
+- commands: []
+  compression_ratio: 53.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.GetContentCommand'
+  original_size_kb: '0.55'
+  resolutions: []
+  source_file: 20251006-125732-Check_API_Logs.log
+  timestamp: '2025-10-06T12:57:33.628484'
+- commands: []
+  compression_ratio: 1.6%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : IfStatementMissingCondition'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.36'
+  resolutions: []
+  source_file: 20251006-125738-Check_API_Logs_Fixed.log
+  timestamp: '2025-10-06T12:57:39.527596'
+- commands: []
+  compression_ratio: 84.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '1.20'
+  resolutions: []
+  source_file: 20251006-134135-Create_Testing_Structure.log
+  timestamp: '2025-10-06T13:41:35.769766'
+- commands: []
+  compression_ratio: 78.8%
+  decisions: []
+  errors:
+  - 'listen EADDRINUSE: address already in use :::4000'
+  file_changes: []
+  key_outcomes:
+  - 'Error: listen EADDRINUSE: address already in use :::4000'
+  original_size_kb: '1.30'
+  resolutions: []
+  source_file: 20251006-145639-API_Server.log
+  timestamp: '2025-10-06T20:05:25.034556'
+- commands: []
+  compression_ratio: 63.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.45'
+  resolutions: []
+  source_file: 20251006-145643-Web_Server.log
+  timestamp: '2025-10-06T15:20:50.687387'
+- commands: []
+  compression_ratio: 72.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '1.00'
+  resolutions: []
+  source_file: 20251007-123121-kill-api.log
+  timestamp: '2025-10-07T12:31:22.481648'
+- commands: []
+  compression_ratio: 72.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+  - '[ERROR] 1 test suite(s) failed. Check report for details.'
+  - '[ERROR] 1 test suite(s) failed. Please review the report.'
+  original_size_kb: '1.33'
+  resolutions: []
+  source_file: 20251007-210346-comprehensive-test-run.log
+  timestamp: '2025-10-07T21:04:01.733653'
+input_directory: .cursor\ai-logs
+logs_processed: 10
+space_saved_mb: '0.01'
+total_compression: 64.5%

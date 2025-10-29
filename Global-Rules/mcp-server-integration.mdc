@@ -1,0 +1,238 @@
+# MCP Server Integration Rules for Cursor AI
+
+## Overview
+This rule configures Cursor AI to automatically read, connect to, and use MCP (Model Context Protocol) servers for enhanced functionality.
+
+## MCP Server Configuration
+
+### Global MCP Configuration
+- **Config File**: `C:\Users\kento\.cursor\mcp.json`
+- **Environment File**: `C:\Users\kento\.cursor\.env.mcp`
+- **Auto-Load**: Enabled
+- **Auto-Connect**: Enabled
+- **Trusted Mode**: Enabled
+
+### Available MCP Servers
+
+#### Core Servers
+1. **filesystem** - File system operations
+2. **postgres** - Database operations
+3. **git** - Git operations
+4. **memory** - Memory management
+5. **fetch** - HTTP requests
+6. **puppeteer** - Web automation
+
+#### Search & AI Servers
+7. **exa** - Advanced search capabilities
+8. **perplexity-ask** - AI-powered search
+9. **sequential-thinking** - Advanced reasoning
+
+#### Cloud & Infrastructure
+10. **aws** - AWS operations
+11. **awslabs.ccapi-mcp-server** - AWS Cloud Control API
+12. **awslabs.ec2-mcp-server** - EC2 management
+13. **awslabs.aws-api-mcp-server** - AWS API operations
+
+#### Web & Automation
+14. **apify** - Web scraping and automation
+15. **Playwright** - Browser automation
+16. **Ref** - Reference and documentation
+
+#### Services & APIs
+17. **shutterstock-api** - Stock photo API
+18. **stripe** - Payment processing
+19. **supabase-mcp-server** - Supabase database
+
+## Integration Rules
+
+### For AI Assistant
+When working with MCP servers:
+
+1. **Auto-Connect**: Automatically connect to available MCP servers
+2. **Use Tools**: Leverage MCP tools for enhanced capabilities
+3. **Read Config**: Always read from global MCP configuration
+4. **Environment**: Use global environment variables
+5. **Trust Mode**: Operate in trusted mode for all servers
+
+### For Development
+- **Database Operations**: Use postgres MCP for database tasks
+- **File Operations**: Use filesystem MCP for file management
+- **Git Operations**: Use git MCP for version control
+- **Web Operations**: Use fetch/puppeteer MCP for web tasks
+- **Cloud Operations**: Use AWS MCP servers for cloud tasks
+- **Search Operations**: Use exa/perplexity MCP for research
+
+### For Automation
+- **Web Scraping**: Use apify MCP for data extraction
+- **Browser Automation**: Use Playwright MCP for testing
+- **API Integration**: Use various API MCP servers
+- **Cloud Management**: Use AWS MCP servers for infrastructure
+
+## Usage Instructions
+
+### Database Operations
+```javascript
+// Use postgres MCP for database operations
+const dbResult = await mcp.postgres.query('SELECT * FROM users');
+const dbInsert = await mcp.postgres.query('INSERT INTO users (name) VALUES (?)', ['John']);
+```
+
+### File Operations
+```javascript
+// Use filesystem MCP for file operations
+const fileContent = await mcp.filesystem.readFile('/path/to/file.txt');
+await mcp.filesystem.writeFile('/path/to/file.txt', 'content');
+```
+
+### Git Operations
+```javascript
+// Use git MCP for version control
+const gitStatus = await mcp.git.status();
+await mcp.git.commit('feat: add new feature');
+await mcp.git.push();
+```
+
+### Web Operations
+```javascript
+// Use fetch MCP for HTTP requests
+const response = await mcp.fetch.get('https://api.example.com/data');
+
+// Use puppeteer MCP for web automation
+await mcp.puppeteer.navigate('https://example.com');
+const title = await mcp.puppeteer.getTitle();
+```
+
+### Search Operations
+```javascript
+// Use exa MCP for advanced search
+const searchResults = await mcp.exa.search('machine learning tutorials');
+
+// Use perplexity MCP for AI-powered search
+const aiResponse = await mcp.perplexity.ask('What is the best way to implement authentication?');
+```
+
+### AWS Operations
+```javascript
+// Use AWS MCP servers for cloud operations
+const ec2Instances = await mcp.aws.ec2.describeInstances();
+const s3Buckets = await mcp.aws.s3.listBuckets();
+```
+
+### Web Scraping
+```javascript
+// Use apify MCP for web scraping
+const scraperResult = await mcp.apify.runActor('web-scraper', {
+  startUrls: ['https://example.com']
+});
+```
+
+## Environment Variables
+
+### Required Environment Variables
+```bash
+# Database
+POSTGRES_CONNECTION_STRING=postgresql://user:password@localhost:5432/dbname
+
+# API Keys
+EXA_API_KEY=your_exa_api_key
+PERPLEXITY_API_KEY=your_perplexity_api_key
+REF_API_KEY=your_ref_api_key
+APIFY_TOKEN=your_apify_token
+SHUTTERSTOCK_OPENAPI_URL=your_shutterstock_url
+SHUTTERSTOCK_ACCESS_TOKEN=your_shutterstock_token
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_key
+
+# AWS
+AWS_PROFILE=default
+AWS_REGION=us-east-1
+AWS_SDK_LOAD_CONFIG=1
+SECURITY_SCANNING=enabled
+```
+
+## Error Handling
+
+### Connection Issues
+- **Retry Logic**: Automatically retry failed connections
+- **Fallback**: Use alternative methods if MCP server unavailable
+- **Logging**: Log all connection attempts and failures
+- **Recovery**: Attempt to reconnect on failure
+
+### API Errors
+- **Rate Limiting**: Handle rate limit errors gracefully
+- **Authentication**: Retry with fresh tokens if needed
+- **Validation**: Validate input before sending to MCP servers
+- **Error Messages**: Provide clear error messages
+
+## Security Considerations
+
+### Trusted Operations
+- All MCP servers operate in trusted mode
+- Environment variables are securely managed
+- API keys are protected and rotated
+- Access is logged and monitored
+
+### Data Protection
+- Sensitive data is encrypted in transit
+- API keys are never logged
+- User data is handled securely
+- Compliance with security policies
+
+## Performance Optimization
+
+### Connection Pooling
+- Reuse connections when possible
+- Pool connections for high-frequency operations
+- Monitor connection health
+- Clean up unused connections
+
+### Caching
+- Cache frequently accessed data
+- Use memory MCP for temporary storage
+- Implement smart cache invalidation
+- Monitor cache performance
+
+## Monitoring and Logging
+
+### Health Checks
+- Monitor MCP server health
+- Check connection status
+- Verify API key validity
+- Test server responsiveness
+
+### Usage Tracking
+- Log MCP server usage
+- Monitor performance metrics
+- Track error rates
+- Analyze usage patterns
+
+## Troubleshooting
+
+### Common Issues
+1. **Connection Timeouts**: Check network connectivity
+2. **Authentication Errors**: Verify API keys
+3. **Rate Limiting**: Implement backoff strategies
+4. **Server Unavailable**: Use fallback methods
+
+### Debugging
+- Enable verbose logging
+- Check MCP server logs
+- Verify environment variables
+- Test individual server connections
+
+## Maintenance
+
+### Regular Updates
+- Keep MCP servers updated
+- Update API keys regularly
+- Monitor server performance
+- Review and optimize configurations
+
+### Configuration Management
+- Version control MCP configurations
+- Document changes and updates
+- Test configurations before deployment
+- Maintain backup configurations
+
+---
+
+**This rule ensures that Cursor AI can seamlessly integrate with and use all available MCP servers for enhanced functionality and automation.**

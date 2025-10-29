@@ -1,0 +1,1187 @@
+# Technology Best Practices Rules
+
+## Overview
+These rules provide comprehensive best practices for all major development technologies, ensuring consistent quality, security, and performance across all projects.
+
+## Mobile Development Best Practices
+
+### React Native
+- **Use functional components** with hooks instead of class components
+- **Implement proper state management** with Redux Toolkit or Context API
+- **Use TypeScript** for type safety and better development experience
+- **Optimize images** with proper sizing, compression, and lazy loading
+- **Use FlatList** for large data sets instead of ScrollView
+- **Implement proper navigation** with React Navigation v6+
+- **Handle platform differences** with Platform.select() and platform-specific code
+- **Use proper error boundaries** and crash reporting
+- **Implement proper testing** with Jest and React Native Testing Library
+- **Use proper performance monitoring** with Flipper or React Native Performance
+
+#### React Native Code Examples
+```typescript
+// Functional component with hooks
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, FlatList, StyleSheet } from 'react-native';
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const UserList: React.FC = () => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchUsers = useCallback(async () => {
+    try {
+      const response = await fetch('/api/users');
+      const data = await response.json();
+      setUsers(data);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
+  const renderUser = ({ item }: { item: User }) => (
+    <View style={styles.userItem}>
+      <Text style={styles.userName}>{item.name}</Text>
+      <Text style={styles.userEmail}>{item.email}</Text>
+    </View>
+  );
+
+  if (loading) {
+    return <Text>Loading...</Text>;
+  }
+
+  return (
+    <FlatList
+      data={users}
+      renderItem={renderUser}
+      keyExtractor={(item) => item.id}
+      style={styles.container}
+    />
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  userItem: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  userName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  userEmail: {
+    fontSize: 14,
+    color: '#666',
+  },
+});
+
+export default UserList;
+```
+
+### Flutter
+- **Follow Material Design** or Cupertino guidelines consistently
+- **Use StatelessWidget** when possible for better performance
+- **Implement proper state management** with Provider, Bloc, or Riverpod
+- **Optimize widget tree** to avoid unnecessary rebuilds
+- **Use const constructors** where possible for performance
+- **Handle platform channels** properly for native functionality
+- **Follow Dart conventions** and use effective dart
+- **Implement proper error handling** and logging
+- **Use proper testing** with Flutter Test and Integration Test
+- **Implement proper performance monitoring** with Flutter Inspector
+
+#### Flutter Code Examples
+```dart
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+class UserList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<UserProvider>(
+      builder: (context, userProvider, child) {
+        if (userProvider.loading) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        return ListView.builder(
+          itemCount: userProvider.users.length,
+          itemBuilder: (context, index) {
+            final user = userProvider.users[index];
+            return ListTile(
+              title: Text(user.name),
+              subtitle: Text(user.email),
+              leading: CircleAvatar(
+                child: Text(user.name[0].toUpperCase()),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class UserProvider extends ChangeNotifier {
+  List<User> _users = [];
+  bool _loading = false;
+
+  List<User> get users => _users;
+  bool get loading => _loading;
+
+  Future<void> fetchUsers() async {
+    _loading = true;
+    notifyListeners();
+
+    try {
+      final response = await http.get(Uri.parse('/api/users'));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        _users = (data as List).map((json) => User.fromJson(json)).toList();
+      }
+    } catch (error) {
+      print('Error fetching users: $error');
+    } finally {
+      _loading = false;
+      notifyListeners();
+    }
+  }
+}
+```
+
+### Expo
+- **Use Expo CLI** for development and building
+- **Implement proper app configuration** with app.json
+- **Handle permissions** properly with expo-permissions
+- **Use Expo SDK** features when available
+- **Test on multiple devices** and screen sizes
+- **Implement proper error boundaries** and crash reporting
+- **Use proper navigation** with Expo Router or React Navigation
+- **Implement proper state management** with Context API or Redux
+- **Use proper testing** with Jest and Expo Testing Library
+- **Implement proper performance monitoring** with Expo Analytics
+
+## Web Development Best Practices
+
+### React
+- **Use functional components** with hooks for modern React development
+- **Implement proper error boundaries** for error handling
+- **Use React.memo()** for performance optimization
+- **Implement proper key props** for list items
+- **Use controlled components** for form inputs
+- **Implement proper loading states** and error handling
+- **Use TypeScript** for type safety
+- **Implement proper testing** with Jest and React Testing Library
+- **Use proper performance monitoring** with React DevTools
+- **Implement proper accessibility** with ARIA attributes
+
+#### React Code Examples
+```typescript
+import React, { useState, useEffect, useCallback } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const UserList: React.FC = () => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchUsers = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch('/api/users');
+      if (!response.ok) {
+        throw new Error('Failed to fetch users');
+      }
+      const data = await response.json();
+      setUsers(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  return (
+    <div>
+      {users.map((user) => (
+        <div key={user.id}>
+          <h3>{user.name}</h3>
+          <p>{user.email}</p>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const ErrorFallback: React.FC<{ error: Error }> = ({ error }) => (
+  <div role="alert">
+    <h2>Something went wrong:</h2>
+    <pre>{error.message}</pre>
+  </div>
+);
+
+const App: React.FC = () => (
+  <ErrorBoundary FallbackComponent={ErrorFallback}>
+    <UserList />
+  </ErrorBoundary>
+);
+
+export default App;
+```
+
+### Vue.js
+- **Use Composition API** for new projects
+- **Implement proper reactivity** with ref() and reactive()
+- **Use computed properties** for derived state
+- **Implement proper lifecycle hooks**
+- **Use Vuex or Pinia** for state management
+- **Follow Vue style guide** conventions
+- **Use TypeScript** for type safety
+- **Implement proper testing** with Vue Test Utils
+- **Use proper performance monitoring** with Vue DevTools
+- **Implement proper accessibility** with ARIA attributes
+
+#### Vue.js Code Examples
+```vue
+<template>
+  <div>
+    <div v-if="loading">Loading...</div>
+    <div v-else-if="error" class="error">{{ error }}</div>
+    <div v-else>
+      <div v-for="user in users" :key="user.id" class="user-item">
+        <h3>{{ user.name }}</h3>
+        <p>{{ user.email }}</p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const users = ref<User[]>([]);
+const loading = ref(true);
+const error = ref<string | null>(null);
+
+const fetchUsers = async () => {
+  try {
+    loading.value = true;
+    error.value = null;
+    const response = await fetch('/api/users');
+    if (!response.ok) {
+      throw new Error('Failed to fetch users');
+    }
+    const data = await response.json();
+    users.value = data;
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'An error occurred';
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(() => {
+  fetchUsers();
+});
+</script>
+
+<style scoped>
+.user-item {
+  padding: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.error {
+  color: red;
+  font-weight: bold;
+}
+</style>
+```
+
+### Angular
+- **Use Angular CLI** for project generation
+- **Implement proper dependency injection**
+- **Use reactive forms** for form handling
+- **Implement proper routing** with guards
+- **Use Angular Material** for consistent UI
+- **Follow Angular style guide**
+- **Use TypeScript** for type safety
+- **Implement proper testing** with Jasmine and Karma
+- **Use proper performance monitoring** with Angular DevTools
+- **Implement proper accessibility** with ARIA attributes
+
+#### Angular Code Examples
+```typescript
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+@Component({
+  selector: 'app-user-list',
+  template: `
+    <div *ngIf="loading">Loading...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+    <div *ngIf="!loading && !error">
+      <div *ngFor="let user of users" class="user-item">
+        <h3>{{ user.name }}</h3>
+        <p>{{ user.email }}</p>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .user-item {
+      padding: 1rem;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+  `]
+})
+export class UserListComponent implements OnInit {
+  users: User[] = [];
+  loading = true;
+  error: string | null = null;
+
+  constructor(private http: HttpClient) {}
+
+  ngOnInit(): void {
+    this.fetchUsers();
+  }
+
+  private fetchUsers(): void {
+    this.http.get<User[]>('/api/users').subscribe({
+      next: (data) => {
+        this.users = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = err.message;
+        this.loading = false;
+      }
+    });
+  }
+}
+```
+
+## Database Development Best Practices
+
+### PostgreSQL
+- **Use proper indexing** for query optimization
+- **Implement connection pooling** for performance
+- **Use prepared statements** to prevent SQL injection
+- **Implement proper backup strategies**
+- **Use transactions** for data consistency
+- **Implement proper constraints** and foreign keys
+- **Monitor query performance** with EXPLAIN ANALYZE
+- **Use proper data types** and constraints
+- **Implement proper security** with roles and permissions
+- **Use proper logging** and monitoring
+
+#### PostgreSQL Code Examples
+```sql
+-- Create table with proper constraints
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    role VARCHAR(50) DEFAULT 'user',
+    is_active BOOLEAN DEFAULT true,
+    email_verified BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT valid_email CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
+    CONSTRAINT valid_role CHECK (role IN ('admin', 'user', 'moderator'))
+);
+
+-- Create indexes for performance
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_role ON users(role);
+CREATE INDEX idx_users_active ON users(is_active);
+CREATE INDEX idx_users_created_at ON users(created_at);
+
+-- Create updated_at trigger
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Prepared statement example
+PREPARE get_user_by_email (VARCHAR) AS
+SELECT id, email, first_name, last_name, role, is_active, created_at
+FROM users
+WHERE email = $1 AND is_active = true;
+
+-- Execute prepared statement
+EXECUTE get_user_by_email('user@example.com');
+```
+
+### MySQL
+- **Choose appropriate storage engines** (InnoDB for ACID compliance)
+- **Implement proper indexing** strategies
+- **Use connection pooling** and query caching
+- **Implement proper backup** and recovery procedures
+- **Use prepared statements** for security
+- **Monitor slow query log**
+- **Implement proper replication** for high availability
+- **Use proper data types** and constraints
+- **Implement proper security** with users and privileges
+- **Use proper logging** and monitoring
+
+#### MySQL Code Examples
+```sql
+-- Create table with proper constraints
+CREATE TABLE users (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    role ENUM('admin', 'user', 'moderator') DEFAULT 'user',
+    is_active BOOLEAN DEFAULT true,
+    email_verified BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    CONSTRAINT valid_email CHECK (email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$')
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Create indexes for performance
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_role ON users(role);
+CREATE INDEX idx_users_active ON users(is_active);
+CREATE INDEX idx_users_created_at ON users(created_at);
+
+-- Prepared statement example
+PREPARE get_user_by_email FROM '
+SELECT id, email, first_name, last_name, role, is_active, created_at
+FROM users
+WHERE email = ? AND is_active = true
+';
+
+-- Execute prepared statement
+SET @email = 'user@example.com';
+EXECUTE get_user_by_email USING @email;
+```
+
+### MongoDB
+- **Design proper document structure** to avoid deep nesting
+- **Implement proper indexing** for query performance
+- **Use aggregation pipelines** for complex queries
+- **Implement proper validation** with schema validation
+- **Use connection pooling** and proper connection management
+- **Implement proper backup** strategies
+- **Monitor performance** with MongoDB profiler
+- **Use proper data types** and validation
+- **Implement proper security** with authentication and authorization
+- **Use proper logging** and monitoring
+
+#### MongoDB Code Examples
+```javascript
+// User schema with validation
+const userSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    match: [/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/, 'Invalid email format']
+  },
+  passwordHash: {
+    type: String,
+    required: true
+  },
+  firstName: {
+    type: String,
+    required: true,
+    trim: true,
+    maxlength: 100
+  },
+  lastName: {
+    type: String,
+    required: true,
+    trim: true,
+    maxlength: 100
+  },
+  role: {
+    type: String,
+    enum: ['admin', 'user', 'moderator'],
+    default: 'user'
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+  emailVerified: {
+    type: Boolean,
+    default: false
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  }
+});
+
+// Create indexes for performance
+userSchema.index({ email: 1 });
+userSchema.index({ role: 1 });
+userSchema.index({ isActive: 1 });
+userSchema.index({ createdAt: -1 });
+
+// Update updatedAt on save
+userSchema.pre('save', function(next) {
+  this.updatedAt = new Date();
+  next();
+});
+
+// Aggregation pipeline example
+const getActiveUsersByRole = async (role) => {
+  return await User.aggregate([
+    {
+      $match: {
+        role: role,
+        isActive: true
+      }
+    },
+    {
+      $project: {
+        _id: 1,
+        email: 1,
+        firstName: 1,
+        lastName: 1,
+        role: 1,
+        createdAt: 1
+      }
+    },
+    {
+      $sort: {
+        createdAt: -1
+      }
+    }
+  ]);
+};
+
+const User = mongoose.model('User', userSchema);
+```
+
+## Machine Learning Best Practices
+
+### Python ML Development
+- **Use virtual environments** for dependency management
+- **Implement proper data validation** and preprocessing
+- **Use version control** for models and datasets
+- **Implement proper testing** for ML pipelines
+- **Use proper logging** and monitoring
+- **Implement model versioning** with MLflow or DVC
+- **Use proper error handling** and exception management
+- **Implement proper data privacy** and security
+- **Use proper performance monitoring** and optimization
+- **Implement proper documentation** and reproducibility
+
+#### Python ML Code Examples
+```python
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix
+import joblib
+import logging
+from typing import Tuple, Dict, Any
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+class MLPipeline:
+    def __init__(self, model_path: str = None):
+        self.model = None
+        self.scaler = StandardScaler()
+        self.model_path = model_path
+        self.feature_names = None
+        
+    def load_data(self, data_path: str) -> pd.DataFrame:
+        """Load and validate data"""
+        try:
+            data = pd.read_csv(data_path)
+            logger.info(f"Loaded data with shape: {data.shape}")
+            return data
+        except Exception as e:
+            logger.error(f"Error loading data: {e}")
+            raise
+    
+    def preprocess_data(self, data: pd.DataFrame, target_column: str) -> Tuple[np.ndarray, np.ndarray]:
+        """Preprocess data for training"""
+        try:
+            # Separate features and target
+            X = data.drop(columns=[target_column])
+            y = data[target_column]
+            
+            # Store feature names
+            self.feature_names = X.columns.tolist()
+            
+            # Handle missing values
+            X = X.fillna(X.mean())
+            
+            # Scale features
+            X_scaled = self.scaler.fit_transform(X)
+            
+            logger.info(f"Preprocessed data: {X_scaled.shape}")
+            return X_scaled, y.values
+            
+        except Exception as e:
+            logger.error(f"Error preprocessing data: {e}")
+            raise
+    
+    def train_model(self, X: np.ndarray, y: np.ndarray) -> None:
+        """Train the model"""
+        try:
+            # Split data
+            X_train, X_test, y_train, y_test = train_test_split(
+                X, y, test_size=0.2, random_state=42, stratify=y
+            )
+            
+            # Train model
+            self.model = RandomForestClassifier(
+                n_estimators=100,
+                random_state=42,
+                n_jobs=-1
+            )
+            self.model.fit(X_train, y_train)
+            
+            # Evaluate model
+            y_pred = self.model.predict(X_test)
+            logger.info("Model training completed")
+            logger.info(f"Classification Report:\n{classification_report(y_test, y_pred)}")
+            
+        except Exception as e:
+            logger.error(f"Error training model: {e}")
+            raise
+    
+    def save_model(self, model_path: str = None) -> None:
+        """Save the trained model"""
+        try:
+            path = model_path or self.model_path
+            if path:
+                joblib.dump({
+                    'model': self.model,
+                    'scaler': self.scaler,
+                    'feature_names': self.feature_names
+                }, path)
+                logger.info(f"Model saved to: {path}")
+            else:
+                logger.warning("No model path specified")
+                
+        except Exception as e:
+            logger.error(f"Error saving model: {e}")
+            raise
+    
+    def load_model(self, model_path: str = None) -> None:
+        """Load a trained model"""
+        try:
+            path = model_path or self.model_path
+            if path:
+                model_data = joblib.load(path)
+                self.model = model_data['model']
+                self.scaler = model_data['scaler']
+                self.feature_names = model_data['feature_names']
+                logger.info(f"Model loaded from: {path}")
+            else:
+                logger.warning("No model path specified")
+                
+        except Exception as e:
+            logger.error(f"Error loading model: {e}")
+            raise
+    
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        """Make predictions"""
+        try:
+            if self.model is None:
+                raise ValueError("Model not trained or loaded")
+            
+            # Scale features
+            X_scaled = self.scaler.transform(X)
+            
+            # Make predictions
+            predictions = self.model.predict(X_scaled)
+            logger.info(f"Made predictions for {len(predictions)} samples")
+            return predictions
+            
+        except Exception as e:
+            logger.error(f"Error making predictions: {e}")
+            raise
+
+# Usage example
+if __name__ == "__main__":
+    pipeline = MLPipeline("model.joblib")
+    
+    # Load and preprocess data
+    data = pipeline.load_data("data.csv")
+    X, y = pipeline.preprocess_data(data, "target")
+    
+    # Train model
+    pipeline.train_model(X, y)
+    
+    # Save model
+    pipeline.save_model()
+```
+
+### TensorFlow
+- **Use TensorFlow 2.x** with eager execution
+- **Implement proper data pipelines** with tf.data
+- **Use TensorBoard** for visualization and monitoring
+- **Implement proper model saving** and loading
+- **Use distributed training** for large models
+- **Implement proper preprocessing** with tf.keras.preprocessing
+- **Use proper validation** and testing strategies
+- **Implement proper error handling** and logging
+- **Use proper performance monitoring** and optimization
+- **Implement proper security** and privacy protection
+
+#### TensorFlow Code Examples
+```python
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
+import numpy as np
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+class TensorFlowModel:
+    def __init__(self, input_shape: tuple, num_classes: int):
+        self.input_shape = input_shape
+        self.num_classes = num_classes
+        self.model = None
+        self.history = None
+        
+    def build_model(self) -> keras.Model:
+        """Build the neural network model"""
+        try:
+            model = keras.Sequential([
+                layers.Input(shape=self.input_shape),
+                layers.Dense(128, activation='relu'),
+                layers.Dropout(0.2),
+                layers.Dense(64, activation='relu'),
+                layers.Dropout(0.2),
+                layers.Dense(self.num_classes, activation='softmax')
+            ])
+            
+            model.compile(
+                optimizer='adam',
+                loss='sparse_categorical_crossentropy',
+                metrics=['accuracy']
+            )
+            
+            self.model = model
+            logger.info("Model built successfully")
+            return model
+            
+        except Exception as e:
+            logger.error(f"Error building model: {e}")
+            raise
+    
+    def train_model(self, X_train: np.ndarray, y_train: np.ndarray, 
+                   X_val: np.ndarray, y_val: np.ndarray,
+                   epochs: int = 10, batch_size: int = 32) -> None:
+        """Train the model"""
+        try:
+            if self.model is None:
+                self.build_model()
+            
+            # Create callbacks
+            callbacks = [
+                keras.callbacks.EarlyStopping(
+                    monitor='val_loss',
+                    patience=3,
+                    restore_best_weights=True
+                ),
+                keras.callbacks.ReduceLROnPlateau(
+                    monitor='val_loss',
+                    factor=0.5,
+                    patience=2
+                )
+            ]
+            
+            # Train model
+            self.history = self.model.fit(
+                X_train, y_train,
+                validation_data=(X_val, y_val),
+                epochs=epochs,
+                batch_size=batch_size,
+                callbacks=callbacks,
+                verbose=1
+            )
+            
+            logger.info("Model training completed")
+            
+        except Exception as e:
+            logger.error(f"Error training model: {e}")
+            raise
+    
+    def evaluate_model(self, X_test: np.ndarray, y_test: np.ndarray) -> Dict[str, float]:
+        """Evaluate the model"""
+        try:
+            if self.model is None:
+                raise ValueError("Model not trained")
+            
+            loss, accuracy = self.model.evaluate(X_test, y_test, verbose=0)
+            logger.info(f"Test loss: {loss:.4f}, Test accuracy: {accuracy:.4f}")
+            
+            return {'loss': loss, 'accuracy': accuracy}
+            
+        except Exception as e:
+            logger.error(f"Error evaluating model: {e}")
+            raise
+    
+    def save_model(self, model_path: str) -> None:
+        """Save the trained model"""
+        try:
+            if self.model is None:
+                raise ValueError("Model not trained")
+            
+            self.model.save(model_path)
+            logger.info(f"Model saved to: {model_path}")
+            
+        except Exception as e:
+            logger.error(f"Error saving model: {e}")
+            raise
+    
+    def load_model(self, model_path: str) -> None:
+        """Load a trained model"""
+        try:
+            self.model = keras.models.load_model(model_path)
+            logger.info(f"Model loaded from: {model_path}")
+            
+        except Exception as e:
+            logger.error(f"Error loading model: {e}")
+            raise
+    
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        """Make predictions"""
+        try:
+            if self.model is None:
+                raise ValueError("Model not trained or loaded")
+            
+            predictions = self.model.predict(X)
+            logger.info(f"Made predictions for {len(predictions)} samples")
+            return predictions
+            
+        except Exception as e:
+            logger.error(f"Error making predictions: {e}")
+            raise
+```
+
+### PyTorch
+- **Use PyTorch Lightning** for structured development
+- **Implement proper data loaders** with DataLoader
+- **Use proper model checkpointing** and saving
+- **Implement proper training loops** with proper error handling
+- **Use torch.jit** for model optimization
+- **Implement proper logging** with TensorBoard or Weights & Biases
+- **Use proper device management** (CPU/GPU)
+- **Implement proper error handling** and logging
+- **Use proper performance monitoring** and optimization
+- **Implement proper security** and privacy protection
+
+#### PyTorch Code Examples
+```python
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import DataLoader, Dataset
+import numpy as np
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+class CustomDataset(Dataset):
+    def __init__(self, X, y):
+        self.X = torch.FloatTensor(X)
+        self.y = torch.LongTensor(y)
+    
+    def __len__(self):
+        return len(self.X)
+    
+    def __getitem__(self, idx):
+        return self.X[idx], self.y[idx]
+
+class NeuralNetwork(nn.Module):
+    def __init__(self, input_size: int, hidden_size: int, num_classes: int):
+        super(NeuralNetwork, self).__init__()
+        self.fc1 = nn.Linear(input_size, hidden_size)
+        self.relu = nn.ReLU()
+        self.dropout = nn.Dropout(0.2)
+        self.fc2 = nn.Linear(hidden_size, hidden_size // 2)
+        self.fc3 = nn.Linear(hidden_size // 2, num_classes)
+    
+    def forward(self, x):
+        x = self.fc1(x)
+        x = self.relu(x)
+        x = self.dropout(x)
+        x = self.fc2(x)
+        x = self.relu(x)
+        x = self.dropout(x)
+        x = self.fc3(x)
+        return x
+
+class PyTorchModel:
+    def __init__(self, input_size: int, hidden_size: int, num_classes: int, device: str = None):
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.num_classes = num_classes
+        self.device = device or ('cuda' if torch.cuda.is_available() else 'cpu')
+        self.model = None
+        self.optimizer = None
+        self.criterion = None
+        
+    def build_model(self) -> nn.Module:
+        """Build the neural network model"""
+        try:
+            self.model = NeuralNetwork(
+                self.input_size, 
+                self.hidden_size, 
+                self.num_classes
+            ).to(self.device)
+            
+            self.optimizer = optim.Adam(self.model.parameters(), lr=0.001)
+            self.criterion = nn.CrossEntropyLoss()
+            
+            logger.info(f"Model built on device: {self.device}")
+            return self.model
+            
+        except Exception as e:
+            logger.error(f"Error building model: {e}")
+            raise
+    
+    def train_model(self, X_train: np.ndarray, y_train: np.ndarray,
+                   X_val: np.ndarray, y_val: np.ndarray,
+                   epochs: int = 10, batch_size: int = 32) -> None:
+        """Train the model"""
+        try:
+            if self.model is None:
+                self.build_model()
+            
+            # Create data loaders
+            train_dataset = CustomDataset(X_train, y_train)
+            val_dataset = CustomDataset(X_val, y_val)
+            train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+            val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+            
+            # Training loop
+            for epoch in range(epochs):
+                # Training phase
+                self.model.train()
+                train_loss = 0.0
+                train_correct = 0
+                train_total = 0
+                
+                for batch_X, batch_y in train_loader:
+                    batch_X, batch_y = batch_X.to(self.device), batch_y.to(self.device)
+                    
+                    self.optimizer.zero_grad()
+                    outputs = self.model(batch_X)
+                    loss = self.criterion(outputs, batch_y)
+                    loss.backward()
+                    self.optimizer.step()
+                    
+                    train_loss += loss.item()
+                    _, predicted = torch.max(outputs.data, 1)
+                    train_total += batch_y.size(0)
+                    train_correct += (predicted == batch_y).sum().item()
+                
+                # Validation phase
+                self.model.eval()
+                val_loss = 0.0
+                val_correct = 0
+                val_total = 0
+                
+                with torch.no_grad():
+                    for batch_X, batch_y in val_loader:
+                        batch_X, batch_y = batch_X.to(self.device), batch_y.to(self.device)
+                        outputs = self.model(batch_X)
+                        loss = self.criterion(outputs, batch_y)
+                        
+                        val_loss += loss.item()
+                        _, predicted = torch.max(outputs.data, 1)
+                        val_total += batch_y.size(0)
+                        val_correct += (predicted == batch_y).sum().item()
+                
+                # Log metrics
+                train_acc = 100 * train_correct / train_total
+                val_acc = 100 * val_correct / val_total
+                logger.info(f'Epoch [{epoch+1}/{epochs}], '
+                           f'Train Loss: {train_loss/len(train_loader):.4f}, '
+                           f'Train Acc: {train_acc:.2f}%, '
+                           f'Val Loss: {val_loss/len(val_loader):.4f}, '
+                           f'Val Acc: {val_acc:.2f}%')
+            
+            logger.info("Model training completed")
+            
+        except Exception as e:
+            logger.error(f"Error training model: {e}")
+            raise
+    
+    def save_model(self, model_path: str) -> None:
+        """Save the trained model"""
+        try:
+            if self.model is None:
+                raise ValueError("Model not trained")
+            
+            torch.save({
+                'model_state_dict': self.model.state_dict(),
+                'optimizer_state_dict': self.optimizer.state_dict(),
+                'input_size': self.input_size,
+                'hidden_size': self.hidden_size,
+                'num_classes': self.num_classes
+            }, model_path)
+            logger.info(f"Model saved to: {model_path}")
+            
+        except Exception as e:
+            logger.error(f"Error saving model: {e}")
+            raise
+    
+    def load_model(self, model_path: str) -> None:
+        """Load a trained model"""
+        try:
+            checkpoint = torch.load(model_path, map_location=self.device)
+            self.model = NeuralNetwork(
+                checkpoint['input_size'],
+                checkpoint['hidden_size'],
+                checkpoint['num_classes']
+            ).to(self.device)
+            self.model.load_state_dict(checkpoint['model_state_dict'])
+            self.optimizer = optim.Adam(self.model.parameters())
+            self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+            logger.info(f"Model loaded from: {model_path}")
+            
+        except Exception as e:
+            logger.error(f"Error loading model: {e}")
+            raise
+    
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        """Make predictions"""
+        try:
+            if self.model is None:
+                raise ValueError("Model not trained or loaded")
+            
+            self.model.eval()
+            X_tensor = torch.FloatTensor(X).to(self.device)
+            
+            with torch.no_grad():
+                outputs = self.model(X_tensor)
+                _, predictions = torch.max(outputs, 1)
+                predictions = predictions.cpu().numpy()
+            
+            logger.info(f"Made predictions for {len(predictions)} samples")
+            return predictions
+            
+        except Exception as e:
+            logger.error(f"Error making predictions: {e}")
+            raise
+```
+
+## Security Best Practices
+
+### Authentication and Authorization
+- **Use strong password policies** with complexity requirements
+- **Implement multi-factor authentication** (MFA)
+- **Use secure session management** with proper expiration
+- **Implement proper JWT handling** with secure storage
+- **Use OAuth 2.0** for third-party authentication
+- **Implement proper role-based access control** (RBAC)
+- **Use secure token storage** and transmission
+
+### Input Validation and Sanitization
+- **Validate all inputs** on both client and server
+- **Use proper data types** and constraints
+- **Implement proper sanitization** to prevent XSS
+- **Use parameterized queries** to prevent SQL injection
+- **Implement proper file upload** validation
+- **Use proper encoding** for data transmission
+- **Implement proper error handling** without information leakage
+
+### Data Protection
+- **Encrypt sensitive data** at rest and in transit
+- **Use proper key management** and rotation
+- **Implement proper backup** encryption
+- **Use secure communication** protocols (HTTPS, TLS)
+- **Implement proper data retention** policies
+- **Use secure data disposal** practices
+- **Implement proper data classification**
+
+### Network Security
+- **Use HTTPS only** for all communications
+- **Implement proper CORS** policies
+- **Use security headers** (HSTS, CSP, X-Frame-Options)
+- **Implement proper rate limiting** and DDoS protection
+- **Use network segmentation** and firewalls
+- **Implement proper monitoring** and logging
+- **Use secure DNS** and certificate management
+
+These technology best practices ensure consistent quality, security, and performance across all development work while providing specific guidance for each technology stack.

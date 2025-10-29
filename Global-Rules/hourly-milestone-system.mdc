@@ -1,0 +1,360 @@
+# 45-Minute Milestone Management System
+**Auto-activated for tasks estimated to take > 45 minutes**
+
+**⚠️ IMPORTANT**: When user says "complete everything" or similar autonomous commands, use the **Autonomous Completion Protocol** (autonomous-completion-protocol.mdc) instead. This file provides the underlying milestone structure used by that protocol.
+
+## 🎯 Automatic Activation Criteria
+
+This system AUTOMATICALLY activates when:
+- Task is estimated to take more than 45 minutes
+- User says "collaborate with other models"
+- User explicitly requests milestone tracking
+- Task involves multiple complex steps (>5 major steps)
+- User activates Autonomous Completion Protocol
+
+## 📋 Required Files for Milestone Management
+
+### 1. Manager Task File
+**Filename Pattern:** `[TASK-NAME]-MANAGER.md`
+
+**Required Sections:**
+```markdown
+# [Task Name] - Manager File
+
+## Log File Location
+**Path:** `.logs/[task-name]-progress-[date].log`
+**Purpose:** Continuous progress tracking for crash protection
+
+## Crash Protection Rule
+⚠️ **CRITICAL:** Log progress after EVERY significant action
+- Log before starting each subtask
+- Log after completing each subtask
+- Log any errors or issues encountered
+- Log decisions made and reasoning
+- NEVER skip logging - it's your crash recovery system
+
+## Task Breakdown
+[List of main tasks, numbered]
+
+## Hourly Milestones
+[Conservative hourly estimates with specific deliverables]
+
+## Progress Tracking
+[Track completion of each milestone]
+
+## Current Status
+[Always keep this updated]
+```
+
+### 2. Progress Log File
+**Filename Pattern:** `.logs/[task-name]-progress-[YYYY-MM-DD].log`
+
+**Log Entry Format:**
+```
+[HH:MM:SS] MILESTONE X START: [Description]
+[HH:MM:SS] ACTION: [What you're doing]
+[HH:MM:SS] RESULT: [Outcome]
+[HH:MM:SS] DECISION: [Any decision made and why]
+[HH:MM:SS] ERROR: [Any error encountered]
+[HH:MM:SS] FIX: [How you fixed it]
+[HH:MM:SS] MILESTONE X COMPLETE: [What was delivered]
+[HH:MM:SS] CLEANUP: [Memory/cache cleared]
+```
+
+### 3. Milestone Status File
+**Filename Pattern:** `[TASK-NAME]-MILESTONE-STATUS.md`
+
+**Purpose:** Quick reference for current state
+
+## 🔄 45-Minute Milestone Workflow
+
+### Step 1: Initial Task Assessment (First 5 minutes)
+```
+1. Analyze task complexity
+2. Break down into logical subtasks
+3. Estimate CONSERVATIVELY (always round up)
+4. Create Manager File
+5. Create Log File
+6. Create Milestone Status File
+```
+
+### Step 2: Create Milestone 1 (45 minutes)
+**FIRST ACTION:** Query system time before starting!
+
+```powershell
+# Windows
+Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+
+# Linux/Mac
+date +"%Y-%m-%d %H:%M:%S"
+```
+
+```markdown
+## Milestone 1: [Conservative Goal]
+
+### System Time Tracking
+**Start Time:** [RUN COMMAND: Get-Date at milestone start - use ACTUAL output]
+**Target End:** [Start + 45 minutes]
+**Status:** IN PROGRESS
+
+### Objective
+[Single, achievable objective]
+
+### Deliverables
+- [ ] Specific deliverable 1
+- [ ] Specific deliverable 2
+- [ ] Specific deliverable 3
+
+### Success Criteria
+[How you know it's done]
+
+### Estimated Subtasks (with time)
+1. [Subtask 1] - 10 min
+2. [Subtask 2] - 15 min
+3. [Subtask 3] - 10 min
+4. [Testing] - 5 min
+5. [Buffer for issues] - 5 min
+TOTAL: 45 minutes
+
+### Log Checkpoints
+- Start of milestone (with timestamp)
+- After each deliverable (with timestamp)
+- End of milestone (with timestamp)
+```
+
+**CRITICAL:** Never estimate timestamps - always use actual system time from terminal commands!
+
+### Step 3: Execute Milestone (No User Input Required)
+```
+1. LOG: "Starting Milestone X"
+2. Work through each deliverable
+3. LOG: After each major action
+4. Handle errors (log them)
+5. Complete all deliverables
+6. Test thoroughly
+7. LOG: "Milestone X Complete"
+```
+
+### Step 4: Report Completion
+**CRITICAL:** Always query system time using terminal command before reporting!
+
+**Windows PowerShell:**
+```powershell
+Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+```
+
+**Linux/Mac:**
+```bash
+date +"%Y-%m-%d %H:%M:%S"
+```
+
+**Report Format:**
+```markdown
+## Milestone X: COMPLETE ✅
+
+### System Time
+**Start Time:** [ACTUAL OUTPUT FROM: Get-Date command at start]
+**Completed:** [ACTUAL OUTPUT FROM: Get-Date command at end]
+**Duration:** [Calculate from actual times]
+
+### Delivered
+✅ [Deliverable 1] - [Specific outcome]
+✅ [Deliverable 2] - [Specific outcome]
+✅ [Deliverable 3] - [Specific outcome]
+
+### Issues Encountered
+- [Issue 1] - [How resolved]
+
+### Time Taken
+[Actual time vs estimated]
+
+### Next Milestone
+[Brief preview of Milestone X+1]
+```
+
+**NEVER estimate timestamps - ALWAYS run the command to get actual system time!**
+
+### Step 5: Memory Management
+```
+BEFORE creating next milestone:
+1. Review what needs to be retained
+2. Document key decisions in Manager File
+3. Clear working memory of:
+   - Detailed implementation notes
+   - Temporary variables/data
+   - Resolved error details
+4. Retain:
+   - Overall task context
+   - Manager File reference
+   - Log File reference
+   - Current progress
+   - Critical decisions
+```
+
+### Step 6: Create Next Milestone
+```
+1. Review Manager File
+2. Check Log File for context
+3. Determine next logical milestone
+4. Create Milestone X+1 (45 minutes)
+5. AUTOMATICALLY begin execution (no approval needed)
+```
+
+### Step 7: Repeat Until Complete
+```
+Continue Steps 3-6 until:
+- All tasks in Manager File are complete
+- All milestones delivered
+- Final report generated
+```
+
+## 📊 Conservative Estimation Guidelines
+
+**Always err on the side of caution:**
+- Simple task (you think 5 min) → Estimate 10 min
+- Medium task (you think 10 min) → Estimate 20 min
+- Complex task (you think 20 min) → Estimate 30 min
+- Very complex task → Break into multiple 45-min milestones
+
+**Buffer Rules:**
+- Add 20% buffer to each milestone (built into 45-min limit)
+- Account for unexpected issues (5 min buffer minimum)
+- Account for testing time (5-10 min per milestone)
+- Account for documentation time
+
+**Milestone Duration:**
+- **MAXIMUM**: 45 minutes per milestone
+- **MINIMUM**: 15 minutes per milestone
+- Break larger tasks into multiple 45-min milestones
+
+**If unsure:** Estimate HIGHER, not lower
+
+## 🔐 Crash Protection System
+
+### Logging Requirements
+**Log EVERY action that modifies:**
+- Files
+- Database
+- Configuration
+- State
+
+**Log Format:**
+```
+[Timestamp] [TYPE] [LOCATION] [ACTION] [RESULT]
+
+Example:
+[13:45:22] FILE apps/api/src/routes/bff.ts MODIFIED removed JSON.stringify SUCCESS
+[13:45:23] TEST BFF Network post creation EXECUTED post created, ID: 45 SUCCESS
+[13:45:24] DB bff_posts VERIFIED record exists with correct content SUCCESS
+```
+
+### Recovery Procedure
+**If crash occurs:**
+1. Read Manager File to understand overall task
+2. Read Log File to see what was completed
+3. Check Milestone Status File for current state
+4. Resume from last logged action
+5. Verify no partial changes need cleanup
+6. Continue with next action
+
+## 🎯 Automatic Continuation Rules
+
+### No User Input Required For:
+- Starting next milestone
+- Continuing work within a milestone
+- Creating follow-up milestones
+- Completing the entire task sequence
+
+### User Input ONLY Required For:
+- Approving initial task breakdown (optional, can auto-proceed)
+- Critical decisions that change scope
+- Final review request (if explicitly asked for)
+
+### Auto-Proceed Logic:
+```
+IF current_milestone.status == "complete":
+    IF next_milestone exists in plan:
+        create_next_milestone_file()
+        log("Starting next milestone automatically")
+        execute_milestone()
+    ELSE:
+        IF more_tasks_in_manager_file():
+            create_next_milestone_from_remaining_tasks()
+            log("Created new milestone from remaining tasks")
+            execute_milestone()
+        ELSE:
+            generate_final_report()
+            log("All tasks complete")
+            cleanup_and_close()
+```
+
+## 🧹 Memory/Cache Cleanup Rules
+
+### Between Milestones
+**Clear:**
+- Detailed error traces (keep summaries)
+- Intermediate computation results
+- Temporary file references
+- Completed subtask details
+- Working notes and scratch data
+
+**Retain:**
+- Manager File reference
+- Log File reference  
+- Current milestone context
+- Critical decisions made
+- Known issues still relevant
+- Overall task progress
+
+### At End of Final Milestone
+**Clear:**
+- All working memory
+- All temporary data
+- All intermediate results
+
+**Retain:**
+- Final report
+- Log file (for record)
+- Manager file (for record)
+- Any deliverables created
+
+### How to Document Cleanup
+```
+[HH:MM:SS] CLEANUP START: Preparing for next milestone
+[HH:MM:SS] CLEANUP: Cleared detailed error traces
+[HH:MM:SS] CLEANUP: Cleared intermediate results
+[HH:MM:SS] CLEANUP: Retained manager context
+[HH:MM:SS] CLEANUP: Retained critical decisions
+[HH:MM:SS] CLEANUP COMPLETE: Ready for Hour X+1
+```
+
+## ⚠️ Critical Rules
+
+1. **NEVER skip logging** - It's your crash recovery
+2. **NEVER assume user will prompt next step** - Auto-continue
+3. **NEVER over-estimate your speed** - Be conservative
+4. **NEVER create milestones > 45 minutes** - Break down further
+5. **NEVER estimate timestamps** - Always query system time via terminal command
+6. **ALWAYS clear memory between milestones** - Prevent context overflow
+7. **ALWAYS verify deliverables** - Don't just claim completion
+8. **ALWAYS update Manager File** - Keep it current
+9. **ALWAYS create next milestone automatically** - No user wait
+10. **ALWAYS include testing** - Test in every milestone
+11. **ALWAYS use 45-minute increments** - Not 60 minutes
+12. **ALWAYS query system time** - Run Get-Date or date command for actual timestamps
+
+---
+
+**See Also:**
+- **Autonomous Completion Protocol** (`autonomous-completion-protocol.mdc`) - When user says "complete everything"
+- **Comprehensive Testing** (`comprehensive-testing.mdc`) - For testing requirements
+
+**This system ensures:**
+- ✅ No task is too large
+- ✅ Continuous progress tracking
+- ✅ Crash recovery capability
+- ✅ Automatic continuation
+- ✅ Memory management
+- ✅ Complete documentation
+- ✅ User can leave and return anytime
+- ✅ Frequent checkpoints every 45 minutes

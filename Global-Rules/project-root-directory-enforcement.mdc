@@ -1,0 +1,147 @@
+# Project Root Directory Enforcement - Global Rule
+# This rule ensures ALL sessions start in the project root directory
+# Applied universally across all projects via Global-* folders
+
+# MANDATORY REQUIREMENTS (CRITICAL - NEVER IGNORE)
+
+## 🚨 PROJECT ROOT DIRECTORY ENFORCEMENT - MANDATORY
+- **Rule**: ALL sessions MUST start in the project root directory
+- **Detection**: Automatic detection via key project files
+- **Indicators**: package.json, startup.ps1, Global-Rules/, Global-Scripts/, project-services.md
+- **Auto-Navigation**: If not in root, scripts automatically navigate to project root
+- **Failure**: Sessions cannot proceed without being in project root
+- **Enforcement**: This is NON-NEGOTIABLE - root directory is MANDATORY
+
+## 🚨 PROJECT ROOT DETECTION SYSTEM - MANDATORY
+- **Rule**: System MUST automatically detect project root directory
+- **Search Algorithm**: Search up directory tree for project indicators
+- **Maximum Depth**: 10 directories up from current location
+- **Fallback**: If not found, session terminates with clear error message
+- **Success**: Navigate to detected project root automatically
+- **Enforcement**: ZERO exceptions - detection is MANDATORY
+
+## 🚨 SESSION STARTUP VALIDATION - MANDATORY
+- **Rule**: Every session startup MUST validate project root location
+- **Check**: Verify presence of key project files
+- **Navigation**: Automatically navigate to project root if needed
+- **Error Handling**: Clear error messages if project root not found
+- **Success Criteria**: Session proceeds only from project root
+- **Enforcement**: ZERO exceptions - validation is MANDATORY
+
+## 🚨 COMMAND EXECUTION PROTECTION - MANDATORY
+- **Rule**: ALL commands MUST be executed from project root directory
+- **Prevention**: Commands fail if not in project root
+- **Protection**: Prevents accidental execution in wrong directories
+- **Safety**: Ensures consistent behavior across all operations
+- **Enforcement**: ZERO exceptions - root execution is MANDATORY
+
+# AUTOMATIC ENFORCEMENT INTEGRATION
+
+## Startup Process Integration
+The project root enforcement is automatically enforced during startup via:
+- `startup.ps1` - Main startup script with root detection
+- `Global-Scripts/enforce-cleanup-project-rules.ps1` - Cleanup enforcement with root validation
+- Cross-project application via Global-* folders
+
+## Detection Algorithm
+```powershell
+# Project root indicators
+$projectRootIndicators = @(
+    "package.json",
+    "pnpm-workspace.yaml", 
+    "startup.ps1",
+    "project-services.md",
+    "Global-Rules",
+    "Global-Scripts"
+)
+
+# Detection logic
+foreach ($indicator in $projectRootIndicators) {
+    if (Test-Path (Join-Path $currentDir $indicator)) {
+        $isInProjectRoot = $true
+        $detectedProjectRoot = $currentDir
+        break
+    }
+}
+```
+
+## Reference Locations for New Sessions
+New sessions automatically receive project root information via:
+- `docs/SESSION-REFERENCE-LOCATIONS.md` - Comprehensive location guide
+- Automatic generation during cleanup enforcement
+- Updated on every cleanup run with current project root
+
+## Violation Detection and Correction
+- **Real-Time Monitoring**: System continuously monitors project root compliance
+- **Automatic Navigation**: Violations trigger immediate navigation to project root
+- **Error Reporting**: Clear error messages if project root not found
+- **Session Termination**: Sessions terminate if project root cannot be found
+
+# SUCCESS CRITERIA
+- ✅ Session starts in project root directory
+- ✅ Project root automatically detected
+- ✅ Automatic navigation to project root
+- ✅ Commands executed from project root
+- ✅ Clear error messages for root detection failures
+- ✅ Session termination if root not found
+- ✅ ZERO rule violations
+- ✅ Complete compliance verification
+
+# INTEGRATION REQUIREMENTS
+
+## Global Rules System
+- Connects to Global-Knowledge system
+- Uses existing memory repositories
+- Follows established patterns
+- Maintains cross-project compatibility
+
+## Cross-Platform Compatibility
+- Windows PowerShell implementation
+- Linux/Mac bash compatibility
+- Generic detection patterns
+- Universal file handling
+
+## Error Handling
+- Clear error messages for detection failures
+- Graceful session termination
+- Project root validation
+- Command execution protection
+
+# COMMON PROJECT ROOT INDICATORS
+
+## Primary Indicators (Any one confirms project root)
+- `package.json` - Node.js project
+- `pnpm-workspace.yaml` - PNPM workspace
+- `startup.ps1` - Project startup script
+- `project-services.md` - Service management
+- `Global-Rules/` - Global rules directory
+- `Global-Scripts/` - Global scripts directory
+
+## Secondary Indicators (Supporting evidence)
+- `project-config.md` - Project configuration
+- `project-services.md` - Service definitions
+- `Project-Testing/` - Testing directory
+- `Project-Workflow/` - Workflow directory
+- `.cursorrules` - Cursor rules file
+
+# EMERGENCY PROCEDURES
+
+## If Project Root Not Found
+1. **Check Current Directory**: Verify you're in a project directory
+2. **Look for Indicators**: Check for package.json, startup.ps1, Global-* folders
+3. **Navigate Manually**: Use `cd` to navigate to project root
+4. **Re-run Startup**: Execute `startup.ps1` from project root
+5. **Contact Support**: If still failing, check project structure
+
+## If Commands Fail
+1. **Verify Location**: Check current directory with `pwd` or `Get-Location`
+2. **Check Indicators**: Look for project root indicators
+3. **Navigate to Root**: Use `cd` to navigate to project root
+4. **Re-run Command**: Execute command from project root
+5. **Use Watchdog**: Use `universal-watchdog.ps1` for command protection
+
+---
+**Status**: Active and Integrated  
+**Enforcement**: Automatic via startup process  
+**Coverage**: All projects using Global-* folders  
+**Last Updated**: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")

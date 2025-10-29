@@ -1,0 +1,163 @@
+# Complex Task Management Rules
+# Include this in your main .cursorrules file
+
+## 🎯 TRIGGER CONDITIONS
+
+Apply Complex Task Management Process when:
+- Task estimated to take **more than 1 hour**
+- User explicitly says **"collaborate with other models"**
+- Task involves **multiple subsystems** (database, API, frontend)
+- You feel task is **too complex** to tackle directly
+- Task requires **significant architectural changes**
+
+## 📋 MANDATORY PROCESS
+
+### 1. SEQUENTIAL THINKING ANALYSIS
+```typescript
+// ALWAYS start with sequential thinking
+mcp_sequential-thinking_sequentialthinking({
+  thought: "Analyzing task requirements and breaking into subtasks...",
+  thoughtNumber: 1,
+  totalThoughts: 10,
+  nextThoughtNeeded: true
+})
+```
+
+### 2. CREATE TRACKING FILES
+
+Create in `docs/` folder:
+- `[FEATURE]-TASKS.md` - Task breakdown
+- `[FEATURE]-PROGRESS.md` - Progress tracker with milestones
+- `.logs/[FEATURE]-progress.log` - Continuous logging
+
+### 3. PEER CODE REVIEW
+
+For **ALL** code changes:
+```typescript
+// 1. Write code (you)
+// 2. Get peer review (OpenRouter)
+mcp_openrouterai_chat_completion({
+  messages: [{
+    role: "system",
+    content: "You are a senior engineer doing code review."
+  }, {
+    role: "user",
+    content: "Review this code: [CODE]\n\nFocus on: architecture, security, performance, edge cases, quality"
+  }],
+  model: "anthropic/claude-3.5-sonnet"
+})
+// 3. Review feedback and implement improvements (you)
+// 4. Document decisions
+```
+
+### 4. HOURLY MILESTONES
+
+For tasks > 1 hour:
+- Create conservative hourly milestones
+- Write clear deliverables per milestone
+- After completing milestone N, **automatically generate and start milestone N+1**
+- **Continue until all tasks complete** (unless told to stop)
+
+### 5. TESTING REQUIREMENTS
+
+**EVERY task must include**:
+
+**A. Automated Tests**
+- Unit tests
+- Integration tests
+- E2E tests (if applicable)
+
+**B. End-User Testing (MANDATORY for frontends)**
+Test iteratively after each increment:
+- ✅ Look & Feel
+- ✅ Content correctness
+- ✅ Backend data validation
+- ✅ Functionality
+- ✅ Button clicks
+- ✅ Form submissions
+- ✅ Email sends (check MailHog)
+- ✅ Logical flows
+- ✅ Error handling
+- ✅ Edge cases
+
+### 6. CONSTANT LOGGING
+
+Update `.logs/[FEATURE]-progress.log` every 5-10 minutes:
+```
+[DateTime] Action performed
+[DateTime] Decision made
+[DateTime] Issue encountered
+[DateTime] Milestone completed
+```
+
+## 🚨 CRITICAL RULES
+
+1. ❌ **NEVER** skip sequential thinking analysis
+2. ❌ **NEVER** skip peer code review
+3. ❌ **NEVER** skip testing (automated + end-user)
+4. ❌ **NEVER** stop logging (crash protection)
+5. ✅ **ALWAYS** generate next milestone after completing one
+6. ✅ **ALWAYS** continue to next milestone (unless told to stop)
+7. ✅ **ALWAYS** test iteratively (don't accumulate untested code)
+
+## 📊 PROGRESS REPORTING
+
+**After Each Milestone**:
+```
+🎯 MILESTONE [N] COMPLETE
+   Duration: [Actual] vs [Estimated]
+   Tasks: [X] of [Y]
+   Next: Starting Milestone [N+1]...
+```
+
+**When Complete**:
+```
+🎉 PROJECT COMPLETE
+   Total: [Hours], [Tasks], [Milestones]
+   Status: [Production Ready / Needs X]
+```
+
+## 📁 FILE STRUCTURE
+
+```
+docs/
+  [FEATURE]-TASKS.md         # Task breakdown
+  [FEATURE]-PROGRESS.md      # Progress tracker
+.logs/
+  [FEATURE]-progress.log     # Continuous logging
+```
+
+## 🔄 WORKFLOW
+
+1. Sequential thinking → Task breakdown
+2. Create tracking files
+3. Define Milestone 1
+4. Implement → Peer review → Finalize
+5. Test (automated + end-user)
+6. Log progress
+7. Complete milestone
+8. **Auto-generate and start Milestone 2**
+9. Repeat until all tasks complete
+
+## 💡 REMEMBER
+
+- Be **conservative** in estimates
+- **Log constantly** (crash protection)
+- **Test iteratively** (don't wait)
+- **Continue automatically** (unless told to stop)
+- **Document decisions** (why things were done)
+
+---
+
+**Full Documentation**: See `docs/Complex-Tasks.md`
+
+**Example**: The Functional Areas Overhaul project successfully used this approach:
+- 12 milestones in 120 minutes
+- 6,300 lines of production-ready code
+- Zero technical debt
+- Comprehensive testing
+- Peer reviewed
+- 100% completion rate
+
+
+

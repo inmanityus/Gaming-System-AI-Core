@@ -1,0 +1,268 @@
+# Trainer Assist Project Rules
+
+## Project Overview
+**Trainer Assist Mobile App** - A comprehensive fitness training application with React Native frontend, Node.js backend, and PostgreSQL database.
+
+## Project Structure
+```
+Mobile-App/
+├── apps/
+│   ├── trainer-mobile/          # React Native (Expo) mobile app
+│   └── trainer-backend/         # Node.js Express backend
+├── stylesheet/                  # Global CSS stylesheet
+├── scripts/                     # Deployment and setup scripts
+└── .cursor/rules/               # Global rules and configurations
+```
+
+## Quick Start Commands
+
+### 1. Database Connection
+**Command**: "Connect to the local database" or "Use the Database Connection config"
+
+**Auto-execution**:
+```powershell
+$env:PGPASSWORD = "Inn0vat1on!"
+psql -h 127.0.0.1 -p 5432 -U postgres -d postgres
+```
+
+**Database Details**:
+- Host: 127.0.0.1
+- Port: 5432
+- Username: postgres
+- Password: Inn0vat1on!
+- Database: befreefit
+- PostgreSQL Version: 17
+- Installation: C:\Program Files\PostgreSQL\17\bin\psql.exe
+
+### 2. Start Backend Server
+```powershell
+cd apps/trainer-backend
+npm run dev
+```
+**Server runs on**: http://localhost:3001
+**API Base URL**: http://localhost:3001/api
+**Health Check**: http://localhost:3001/health
+
+### 3. Start Mobile App
+```powershell
+cd apps/trainer-mobile
+npm start
+# or
+npx expo start
+```
+
+### 4. Database Operations
+```powershell
+cd apps/trainer-backend
+
+# Run migrations
+npm run db:migrate
+
+# Seed database
+npm run db:seed
+
+# Test backend connection
+Invoke-WebRequest -Uri "http://localhost:3001/health" -UseBasicParsing
+```
+
+## Authentication & Test Credentials
+
+### Available Test Accounts
+1. **john.doe@trainer.com** / password123
+2. **jane.smith@trainer.com** / password123  
+3. **admin@trainer.com** / admin123
+
+### Authentication Flow
+1. Mobile app loads with login screen
+2. Use test credentials to authenticate
+3. JWT tokens stored securely in Expo SecureStore
+4. Automatic token refresh handled by API client
+5. Biometric authentication available after initial login
+
+## Backend API Endpoints
+
+### Authentication
+- `POST /api/auth/login` - User login
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/refresh` - Token refresh
+- `POST /api/auth/logout` - User logout
+- `GET /api/auth/profile` - Get user profile
+
+### Core Resources
+- `GET /api/exercises` - List all exercises
+- `GET /api/clients` - List all clients
+- `GET /api/workouts` - List all workouts
+- `GET /api/sessions` - List all sessions
+- `GET /api/sessions/upcoming` - Get upcoming sessions
+- `GET /api/videos` - List all videos
+- `GET /api/analyses` - List all analyses
+
+### CRUD Operations
+All resources support standard CRUD operations:
+- `GET /api/{resource}` - List all
+- `GET /api/{resource}/{id}` - Get by ID
+- `POST /api/{resource}` - Create new
+- `PUT /api/{resource}/{id}` - Update existing
+- `DELETE /api/{resource}/{id}` - Delete
+
+## Database Schema
+
+### Core Tables
+- **trainers** - Trainer user accounts
+- **exercises** - Exercise library
+- **clients** - Client profiles
+- **workouts** - Workout templates
+- **workout_items** - Individual exercises in workouts
+- **sessions** - Training sessions
+- **videos** - Session recordings
+- **analyses** - AI form analysis results
+
+### Sample Data
+Database is seeded with:
+- 3 trainers
+- 10 exercises
+- 5 clients
+- 5 workouts (18 workout items)
+- 6 sessions (5 scheduled, 1 completed)
+- 2 videos
+- 2 analyses
+
+## Mobile App Features
+
+### Main Components
+- **App.tsx** - Main app component with authentication flow
+- **apiClient.ts** - Axios instance with JWT interceptors
+- **authService.ts** - Authentication and token management
+- **dataService.ts** - Consolidated API service layer
+
+### Key Features
+- JWT authentication with secure storage
+- Biometric authentication support
+- Offline data synchronization
+- Real-time session management
+- Video recording and analysis
+- AI-powered form feedback
+
+## Development Workflow
+
+### 1. Start Development Environment
+```powershell
+# Terminal 1: Start backend
+cd apps/trainer-backend
+npm run dev
+
+# Terminal 2: Start mobile app
+cd apps/trainer-mobile
+npm start
+```
+
+### 2. Test Full Stack
+1. Open mobile app in Expo Go or simulator
+2. Login with test credentials
+3. Tap "Test Backend Connection" button
+4. Verify data retrieval from all endpoints
+5. Check authentication flow and token management
+
+### 3. Debug Common Issues
+
+#### Backend Not Starting
+- Check if port 3001 is available
+- Verify database connection
+- Check for missing dependencies: `npm install`
+
+#### Mobile App Connection Issues
+- Verify backend is running on localhost:3001
+- Check network connectivity
+- Review API client configuration
+
+#### Database Connection Issues
+- Ensure PostgreSQL service is running
+- Verify credentials: postgres / Inn0vat1on!
+- Check database exists: befreefit
+
+## Environment Configuration
+
+### Backend (.env)
+```env
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_NAME=befreefit
+DB_USER=postgres
+DB_PASSWORD=Inn0vat1on!
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+JWT_REFRESH_SECRET=your-super-secret-refresh-key-change-this-in-production
+PORT=3001
+NODE_ENV=development
+```
+
+### Mobile App Configuration
+- API Base URL: http://localhost:3001/api
+- Secure token storage via Expo SecureStore
+- Biometric authentication via Expo LocalAuthentication
+
+## Testing Strategy
+
+### Unit Tests
+- Service layer testing
+- Authentication flow testing
+- API client testing
+
+### Integration Tests
+- Backend API endpoint testing
+- Database operation testing
+- Authentication integration
+
+### End-to-End Tests
+- Complete user workflows
+- Mobile app to backend communication
+- Data synchronization testing
+
+## Deployment Information
+
+### Backend Deployment
+- Node.js Express server
+- PostgreSQL database
+- JWT authentication
+- CORS enabled for mobile app
+- Rate limiting and security headers
+
+### Mobile App Deployment
+- React Native with Expo
+- Cross-platform (iOS/Android)
+- Secure token storage
+- Offline-first architecture
+
+## Troubleshooting Guide
+
+### Common Commands for Debugging
+```powershell
+# Check if backend is running
+netstat -an | findstr :3001
+
+# Check PostgreSQL service
+Get-Service postgresql*
+
+# Test database connection
+psql -h 127.0.0.1 -p 5432 -U postgres -d befreefit
+
+# Check mobile app logs
+npx expo start --clear
+```
+
+### Quick Fixes
+1. **Backend won't start**: Check database connection and port availability
+2. **Mobile app can't connect**: Verify backend URL and network settings
+3. **Authentication fails**: Check JWT secrets and token storage
+4. **Database errors**: Verify PostgreSQL service and credentials
+
+## Success Criteria
+
+### Full Stack Working When:
+- ✅ Backend server starts on port 3001
+- ✅ Database connection established
+- ✅ Mobile app connects to backend
+- ✅ Authentication flow works
+- ✅ Data retrieval successful
+- ✅ All API endpoints responding
+
+This project rules file provides everything needed to quickly start, run, and debug the Trainer Assist application in any future session.

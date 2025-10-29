@@ -1,0 +1,121 @@
+# Cleanup Project Rules - Global Rules Integration
+# This file defines the mandatory cleanup rules that are automatically enforced
+# across all projects using the Global-* folder system
+
+# MANDATORY REQUIREMENTS (CRITICAL - NEVER IGNORE)
+
+## 🚨 RULE ENFORCEMENT SYSTEM - MANDATORY
+- **Rule**: ALL rules in this command MUST be followed with ZERO exceptions
+- **Violation Detection**: System MUST detect and log every rule violation
+- **Automatic Correction**: System MUST automatically correct violations when detected
+- **Model Switching**: Violations trigger immediate model switching to enforce compliance
+- **Session Termination**: Persistent violations result in session termination
+- **Enforcement**: This is NON-NEGOTIABLE - rules are MANDATORY
+
+## 🚨 RULE DEDUPLICATION SYSTEM - MANDATORY
+- **Rule**: When multiple files contain duplicate rules, use the MOST RECENT version
+- **Timestamp Priority**: Files with newer timestamps take precedence
+- **Comprehensive Priority**: If timestamps are same/within 1 day, use MOST COMPREHENSIVE version
+- **No Duplicate Execution**: NEVER run the same rule twice in a single session
+- **Version Tracking**: System MUST track rule versions and prevent duplicates
+- **Enforcement**: Duplicate rule execution is FORBIDDEN
+
+## 🚨 PROJECT ROOT DIRECTORY ENFORCEMENT - MANDATORY
+- **Rule**: ALL sessions MUST start in the project root directory
+- **Detection**: Automatic detection via key project files
+- **Indicators**: package.json, startup.ps1, Global-Rules/, Global-Scripts/, project-services.md
+- **Auto-Navigation**: If not in root, scripts automatically navigate to project root
+- **Failure**: Sessions cannot proceed without being in project root
+- **Enforcement**: This is NON-NEGOTIABLE - root directory is MANDATORY
+
+## 🚨 DOCUMENTATION ORGANIZATION - MANDATORY
+- **Rule**: ALL documentation MUST be placed in the `docs/` folder
+- **Organization**: AI determines optimal folder structure within `docs/`
+- **Gitignore**: `docs/` folder MUST be in root `.gitignore` file
+- **Cross-Platform**: Generic documentation rewritten for cross-platform compatibility
+- **Global Storage**: Cross-project documentation stored in:
+  - `Global-Docs/` (Component Designs)
+  - `Global-Knowledge/reasoning/` (Universal patterns)
+  - `Global-Knowledge/history/` (Universal solutions)
+  - `Global-Knowledge/facts/` (Structured data)
+- **Violation**: Any documentation outside `docs/` triggers immediate correction
+- **Enforcement**: ZERO exceptions - documentation organization is MANDATORY
+
+## 🚨 FILE CLEANUP - MANDATORY
+- **Rule**: Files not required for current project/apps cleaned up
+- **Gitignore**: All cleanup targets added to appropriate `.gitignore` levels
+- **Preservation**: Core services protected (Cursor, Git, MailHog, MCP servers)
+- **Organization**: Files moved to appropriate locations or archived
+- **Violation**: Unnecessary files trigger immediate cleanup
+- **Enforcement**: ZERO exceptions - file cleanup is MANDATORY
+
+## 🚨 SERVICE PROTECTION - MANDATORY
+- **Rule**: Core services MUST NEVER be broken
+- **NEVER Break**: Cursor functionality, Git operations, MailHog service
+- **NEVER Break**: MCP servers, core development tools
+- **Preserve**: Essential configuration files, startup scripts
+- **Maintain**: Project structure integrity
+- **Violation**: Any service breakage triggers immediate rollback
+- **Enforcement**: ZERO exceptions - service protection is MANDATORY
+
+# AUTOMATIC ENFORCEMENT INTEGRATION
+
+## Startup Process Integration
+The cleanup rules are automatically enforced during startup via:
+- `Global-Scripts/enforce-cleanup-project-rules.ps1` - Main enforcement script
+- Integration in `startup.ps1` - Automatic execution on session start
+- Cross-project application via Global-* folders
+
+## Reference Locations for New Sessions
+New sessions automatically receive reference locations via:
+- `docs/SESSION-REFERENCE-LOCATIONS.md` - Comprehensive location guide
+- Automatic generation during cleanup enforcement
+- Updated on every cleanup run
+
+## Violation Detection and Correction
+- **Real-Time Monitoring**: System continuously monitors rule compliance
+- **Automatic Correction**: Violations trigger immediate corrective action
+- **Logging**: All violations and corrections logged
+- **Reporting**: Detailed reports of all actions taken
+
+# SUCCESS CRITERIA
+- ✅ Session starts in project root directory
+- ✅ Project root automatically detected and navigated to
+- ✅ All documentation in `docs/` folder
+- ✅ `docs/` in root `.gitignore`
+- ✅ Cross-platform docs in Global repositories
+- ✅ Unnecessary files cleaned up
+- ✅ Core services preserved and functional
+- ✅ Project structure optimized
+- ✅ Git operations working
+- ✅ Cursor functionality maintained
+- ✅ ZERO rule violations
+- ✅ ZERO duplicate rule executions
+- ✅ Complete compliance verification
+
+# INTEGRATION REQUIREMENTS
+
+## Global Rules System
+- Connects to Global-Knowledge system
+- Uses existing memory repositories
+- Follows established patterns
+- Maintains cross-project compatibility
+
+## Cross-Platform Compatibility
+- Windows PowerShell implementation
+- Linux/Mac bash compatibility
+- Generic documentation patterns
+- Universal file handling
+
+## Error Handling
+- Rollback capability if issues detected
+- Service health checks during cleanup
+- Git status verification
+- Cursor functionality validation
+- MCP server protection maintained
+
+---
+**Status**: Active and Integrated  
+**Enforcement**: Automatic via startup process  
+**Coverage**: All projects using Global-* folders  
+**Last Updated**: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")

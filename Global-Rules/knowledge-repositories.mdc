@@ -1,0 +1,369 @@
+---
+description: Rules for using Reasoning and History repositories across all AI sessions
+alwaysApply: true
+priority: high
+---
+
+# Knowledge Repositories Protocol
+
+## Overview
+
+Every AI session must use **two knowledge systems** to learn from past work and maintain logical understanding:
+
+1. **Reasoning Repositories** (Prefrontal Cortex) - HOW things work
+2. **History Repositories** (Domain Expertise) - WHAT has been done
+
+Both exist at **two levels**:
+- **Project-Level:** `.project-memory/` - Specific to current project
+- **Global-Level:** `Global-Knowledge/` - Universal across projects
+
+---
+
+## 🧠 Reasoning Repository (Prefrontal Cortex)
+
+### Purpose
+Store **logical flows, rules, and approaches** for thinking about problems.
+
+### Project-Level (`.project-memory/reasoning/`)
+**What:** Project-specific logic
+- How authentication works in THIS project
+- Business rules unique to THIS project
+- Form workflows specific to THIS project
+- Permission matrices for THIS project
+- Design decisions for THIS project
+
+**When to Update:**
+- ✅ Learning HOW a feature works in this project
+- ✅ Discovering WHY something was designed a certain way
+- ✅ Understanding business rules or restrictions
+- ✅ Documenting logical flows or state transitions
+- ✅ Capturing edge cases and their handling
+
+### Global-Level (`Global-Knowledge/reasoning/`)
+**What:** Universal patterns and approaches
+- How passwordless authentication works in general
+- JWT token best practices
+- Form handling patterns in Next.js
+- Database indexing strategies
+- Testing approaches
+
+**When to Update:**
+- ✅ Discovering a pattern that applies to 2+ projects
+- ✅ Learning universal best practices
+- ✅ Finding optimal approaches to common problems
+- ✅ Documenting technology-specific patterns
+- ✅ When project knowledge becomes generalizable
+
+---
+
+## 📚 History Repository (Domain Expertise)
+
+### Purpose
+Store **issues, fixes, and implementation history** to prevent repeating mistakes.
+
+### Project-Level (`.project-memory/history/`)
+**What:** Project-specific work history
+- Features implemented in THIS project
+- Bugs fixed in THIS project
+- Challenges encountered in THIS project
+- Testing outcomes for THIS project
+- Deployment history for THIS project
+
+**When to Update:**
+- ✅ After completing a feature
+- ✅ After fixing a bug
+- ✅ After major refactoring
+- ✅ After testing reveals issues
+- ✅ After deployment (success or failure)
+
+### Global-Level (`Global-Knowledge/history/`)
+**What:** Universal solutions and lessons
+- Next.js quirks and solutions
+- Postgres performance issues
+- TypeScript patterns that work
+- Docker optimization techniques
+- Playwright testing challenges
+
+**When to Update:**
+- ✅ After solving a technology-specific issue
+- ✅ After discovering a framework workaround
+- ✅ After optimizing something broadly applicable
+- ✅ After fixing a security vulnerability
+- ✅ When project solution applies universally
+
+---
+
+## 🚀 Startup Process (MANDATORY)
+
+### Every AI Session MUST:
+
+1. **Load Project Reasoning** (`.project-memory/reasoning/index.json`)
+   - Understand available logical flows for this project
+   - Keep accessible throughout session
+
+2. **Load Project History** (`.project-memory/history/index.json`)
+   - Know what has been done in this project
+   - Avoid repeating past mistakes
+
+3. **Load Global Reasoning** (`Global-Knowledge/reasoning/index.json`)
+   - Understand universal patterns
+   - Apply best practices
+
+4. **Load Global History** (`Global-Knowledge/history/index.json`)
+   - Know common technology issues
+   - Apply universal solutions
+
+---
+
+## 🛠️ Usage During Work
+
+### Before Implementing
+```typescript
+// 1. Check Project Reasoning for project-specific flows
+const projectLogic = await queryReasoning('.project-memory/reasoning/', component)
+
+// 2. Check Global Reasoning for universal patterns
+const universalPattern = await queryReasoning('Global-Knowledge/reasoning/', technology)
+
+// 3. Check Project History for past work on same component
+const pastWork = await queryHistory('.project-memory/history/', component)
+
+// 4. Check Global History for technology issues
+const knownIssues = await queryHistory('Global-Knowledge/history/', technology)
+
+// 5. Implement with full context
+implement(projectLogic, universalPattern, pastWork, knownIssues)
+```
+
+### After Completing Work
+```typescript
+// 1. Update Project History
+await updateHistory('.project-memory/history/', {
+  component: "user-authentication",
+  action: "fixed",
+  description: "Fixed JWT token expiration issue",
+  files: ["apps/api/src/middleware/auth.ts"],
+  outcome: "success"
+})
+
+// 2. Update Project Reasoning if logic changed
+if (logicDiscovered) {
+  await updateReasoning('.project-memory/reasoning/', {
+    component: "authentication-flow",
+    reasoning: "JWT tokens now refresh automatically..."
+  })
+}
+
+// 3. Promote to Global if applicable
+if (appliesUniversally) {
+  await promoteToGlobal({
+    from: '.project-memory/',
+    to: 'Global-Knowledge/',
+    generalize: true
+  })
+}
+
+// 4. Update indexes
+await updateIndexes()
+```
+
+---
+
+## 📋 File Format
+
+### Reasoning Entry Template
+```markdown
+---
+type: reasoning
+category: flow | rule | restriction | decision | pattern
+project: project-specific | global
+component: authentication | forms | email | etc.
+created: 2025-10-17
+updated: 2025-10-17
+status: active
+confidence: high
+related: [list of related components]
+tags: [relevant, tags]
+---
+
+# Title: How Authentication Works
+
+## Summary
+Brief description of the logical flow...
+
+## Detailed Flow
+1. Step one happens
+2. Step two happens
+3. Conditional logic...
+
+## Business Rules
+- Rule 1: Users can only...
+- Rule 2: Admins have...
+
+## Restrictions
+- No duplicate emails
+- Tokens expire after 24h
+
+## Why This Way
+Explanation of design decisions...
+
+## Edge Cases
+- Case 1: What happens when...
+- Case 2: How to handle...
+
+## Related Components
+- Component A
+- Component B
+```
+
+### History Entry Template
+```markdown
+---
+type: history
+category: created | fixed | modified | refactored | tested
+project: project-specific | global
+component: admin-dashboard
+created: 2025-10-17
+status: completed
+outcome: success
+related_issues: [list]
+tags: [relevant, tags]
+---
+
+# Title: Fixed Admin Dashboard Loading Issue
+
+## Summary
+Dashboard was timing out on initial load...
+
+## Problem
+Detailed description of the issue...
+
+## Investigation
+What was tried, what didn't work...
+
+## Solution
+What finally worked...
+
+## Files Changed
+- apps/web/src/app/admin/dashboard/page.tsx
+- apps/api/src/routes/admin-dashboard.ts
+
+## Testing
+How it was tested and verified...
+
+## Lessons Learned
+- Lesson 1: Always check...
+- Lesson 2: Never assume...
+
+## Related Work
+Links to related history entries...
+```
+
+---
+
+## 🔄 Maintenance
+
+### Daily (Per Session)
+- ✅ Query repositories before implementing
+- ✅ Update after completing work
+- ✅ Update indexes when adding entries
+
+### Weekly
+- ✅ Review recent entries for completeness
+- ✅ Identify project knowledge ready for global promotion
+
+### Monthly
+- ✅ Consolidate related entries
+- ✅ Update outdated information
+- ✅ Promote applicable project knowledge to global
+
+### Quarterly
+- ✅ Archive deprecated knowledge
+- ✅ Validate current knowledge accuracy
+- ✅ Major revision based on technology evolution
+
+---
+
+## 🔍 Query Examples
+
+### Find Project-Specific Logic
+```bash
+# Search project reasoning for authentication
+cat .project-memory/reasoning/index.json | jq '.entries[] | select(.component == "authentication")'
+
+# Search project history for past fixes
+cat .project-memory/history/index.json | jq '.entries[] | select(.category == "fixed")'
+```
+
+### Find Universal Patterns
+```bash
+# Search global reasoning for Next.js patterns
+cat Global-Knowledge/reasoning/index.json | jq '.entries[] | select(.technology[] | contains("nextjs"))'
+
+# Search global history for Postgres issues
+cat Global-Knowledge/history/index.json | jq '.entries[] | select(.technology[] | contains("postgresql"))'
+```
+
+---
+
+## 🎯 Success Criteria
+
+AI Session is using repositories correctly when:
+- ✅ Checks repositories BEFORE implementing
+- ✅ Updates repositories AFTER completing work
+- ✅ References past work when solving similar problems
+- ✅ Avoids repeating documented mistakes
+- ✅ Applies documented patterns correctly
+- ✅ Promotes project knowledge when it becomes universal
+- ✅ Keeps indexes updated
+
+---
+
+## ⚠️ Critical Rules
+
+### NEVER:
+- ❌ Skip querying repositories before implementing
+- ❌ Forget to update after completing work
+- ❌ Ignore past mistakes in history
+- ❌ Duplicate existing knowledge
+- ❌ Mix project-specific and global knowledge in same file
+
+### ALWAYS:
+- ✅ Query both project and global repositories
+- ✅ Update immediately after learning
+- ✅ Keep project and global separated
+- ✅ Promote applicable knowledge to global
+- ✅ Maintain indexes when adding entries
+- ✅ Use structured frontmatter format
+- ✅ Document reasoning AND history
+
+---
+
+## 🔗 Integration Points
+
+This protocol integrates with:
+- **Startup Script:** `startup.ps1` loads repositories at session start
+- **Context Management:** `Context-Cache-Management.md` preserves knowledge
+- **Pairwise Testing:** Uses history to avoid past mistakes
+- **Peer Coding:** Consults reasoning for patterns
+- **End-User Testing:** References history for known issues
+
+---
+
+## 📚 Related Documentation
+
+- `.project-memory/README.md` - Project repository details
+- `Global-Knowledge/README.md` - Global repository details
+- `docs/Context-Cache-Management.md` - Context preservation
+- `Global-Scripts/manage-knowledge.ps1` - Management utilities
+
+---
+
+**Status:** Active  
+**Priority:** Critical  
+**Applies To:** All AI sessions across all projects  
+**Enforcement:** Automatic via startup.ps1
+
+---
+
+**These repositories are your memory - use them to become exponentially smarter with every session!**

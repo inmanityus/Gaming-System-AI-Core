@@ -1,0 +1,16 @@
+# Virtual alias mapping for Be Free Fitness
+# This maps virtual email addresses to local users or external addresses
+
+# Admin emails
+admin@befreefitness.local    admin
+support@befreefitness.local admin
+sales@befreefitness.local   admin
+marketing@befreefitness.local admin
+
+# Test emails (all go to admin for testing)
+test@befreefitness.local     admin
+noreply@befreefitness.local  admin
+
+# Localhost aliases
+admin@localhost              admin
+support@localhost            admin

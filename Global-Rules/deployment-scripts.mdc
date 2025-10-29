@@ -1,0 +1,209 @@
+# Deployment Scripts Execution Rules
+
+## Role
+You are a DevOps automation specialist with access to comprehensive deployment scripts for AWS Linux servers.
+
+## Available Deployment Scripts
+
+### 1. Complete Deployment Workflow
+**Script**: `scripts/deploy-complete.sh`
+**Purpose**: End-to-end deployment orchestration
+**Usage**: Automatically detects project type and runs all deployment steps
+
+**When to use**: For complete deployment from scratch
+**Command**: `./scripts/deploy-complete.sh`
+
+**Features**:
+- Automatic project detection (Node.js, Python, PHP, Static)
+- Database migration (SQLite → MySQL/PostgreSQL)
+- Webserver setup (Nginx with SSL)
+- Application deployment with process management
+- Health checks and validation
+- Security hardening
+
+### 2. Webserver Setup
+**Script**: `scripts/webserver-setup.sh`
+**Purpose**: Install and configure webserver with security
+**Usage**: `./scripts/webserver-setup.sh <project_name> <domain> <webserver> <port>`
+
+**Parameters**:
+- `project_name`: Name of the project (e.g., "befree-fitness")
+- `domain`: Domain name for SSL (optional)
+- `webserver`: "nginx" or "apache" (default: nginx)
+- `port`: Application port (default: 3000)
+
+**When to use**: When you need to set up or reconfigure webserver
+**Examples**:
+```bash
+./scripts/webserver-setup.sh befree-fitness example.com nginx 3000
+./scripts/webserver-setup.sh myapp "" apache 8080
+```
+
+**Features**:
+- Automatic webserver detection
+- Security hardening (headers, rate limiting)
+- SSL/TLS with Let's Encrypt
+- Virtual host configuration
+- Firewall setup
+
+### 3. Database Migration
+**Script**: `scripts/database-migration.sh`
+**Purpose**: Migrate local database to remote server
+**Usage**: `./scripts/database-migration.sh <project_name> <target_db_type> <sqlite_file>`
+
+**Parameters**:
+- `project_name`: Name of the project
+- `target_db_type`: "mysql" or "postgresql"
+- `sqlite_file`: Path to SQLite file (optional, auto-detected)
+
+**When to use**: When migrating local database to production
+**Examples**:
+```bash
+./scripts/database-migration.sh befree-fitness mysql
+./scripts/database-migration.sh myapp postgresql ./data/app.db
+```
+
+**Features**:
+- SQLite to MySQL/PostgreSQL conversion
+- Schema and data migration
+- Authentication preservation
+- Security hardening
+- Data validation
+- Automated backups
+
+### 4. Application Deployment
+**Script**: `scripts/app-deployment.sh`
+**Purpose**: Deploy application with process management
+**Usage**: `./scripts/app-deployment.sh <project_name> <app_type_code>`
+
+**Parameters**:
+- `project_name`: Name of the project
+- `app_type_code`: 0=Node.js, 1=Python, 2=PHP, 3=Static
+
+**When to use**: When deploying application code
+**Examples**:
+```bash
+./scripts/app-deployment.sh befree-fitness 0  # Node.js
+./scripts/app-deployment.sh myapp 1           # Python
+./scripts/app-deployment.sh website 3         # Static
+```
+
+**Features**:
+- Runtime environment setup
+- Dependency installation
+- Process management (PM2, Gunicorn, PHP-FPM)
+- Environment configuration
+- Health checks
+- Log rotation
+
+## Execution Guidelines
+
+### Prerequisites
+- Must be run on the target AWS Linux server
+- Requires sudo access
+- Server credentials must be available in `./deployments/security/`
+- Project files must be present in current directory
+
+### Script Execution Order
+1. **Complete Deployment** (recommended for first-time setup)
+2. **Individual Scripts** (for specific updates or troubleshooting)
+
+### Error Handling
+- All scripts include comprehensive error checking
+- Failed steps will stop execution with clear error messages
+- Logs are available in `/var/log/<project_name>/`
+- Health checks validate each deployment step
+
+### Security Considerations
+- Scripts implement security best practices
+- SSL/TLS encryption is configured automatically
+- Database credentials are secured
+- File permissions are set correctly
+- Firewall rules are applied
+
+## Common Use Cases
+
+### Initial Deployment
+```bash
+# Complete deployment (recommended)
+./scripts/deploy-complete.sh
+```
+
+### Webserver Reconfiguration
+```bash
+# Update webserver configuration
+./scripts/webserver-setup.sh befree-fitness example.com nginx 3000
+```
+
+### Database Migration Only
+```bash
+# Migrate database without full deployment
+./scripts/database-migration.sh befree-fitness mysql ./data/app.sqlite
+```
+
+### Application Update
+```bash
+# Deploy updated application code
+./scripts/app-deployment.sh befree-fitness 0
+```
+
+### Troubleshooting
+```bash
+# Check application status
+pm2 status                    # For Node.js
+systemctl status myapp        # For Python/PHP
+nginx -t                      # Test Nginx config
+```
+
+## Output and Logging
+
+### Log Locations
+- Application logs: `/var/log/<project_name>/`
+- Webserver logs: `/var/log/nginx/` or `/var/log/apache2/`
+- Database logs: `/var/log/mysql/` or `/var/log/postgresql/`
+
+### Health Check Commands
+```bash
+# Test application
+curl http://localhost:3000
+
+# Test external access
+curl http://<server_ip>
+
+# Check services
+systemctl status nginx
+systemctl status mysql
+pm2 status
+```
+
+## Integration with Cursor Workflow
+
+When asked to deploy an application:
+1. **Analyze project structure** to determine type
+2. **Check server credentials** in `./deployments/security/`
+3. **Execute appropriate script** based on requirements
+4. **Validate deployment** with health checks
+5. **Provide access information** and next steps
+
+## Script Maintenance
+
+### Updating Scripts
+- Scripts are self-contained and can be updated independently
+- All scripts include version information and change logs
+- Backup configurations before major updates
+
+### Customization
+- Scripts accept parameters for customization
+- Configuration files are created in `/var/www/<project_name>/`
+- Environment variables are managed in `.env` files
+
+## Success Criteria
+
+Deployment is considered successful when:
+- ✅ Application responds on configured port
+- ✅ External access works via public IP
+- ✅ SSL certificate is valid (if configured)
+- ✅ Database is accessible and functional
+- ✅ All services are running and healthy
+- ✅ Security hardening is applied
+- ✅ Logging and monitoring are configured

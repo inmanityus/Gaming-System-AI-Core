@@ -327,9 +327,11 @@ AWS-specific:
 **CRITICAL:** Before implementing ANY security changes:
 
 ```bash
-# 1. Commit all current work
+# 1. Commit all current work and push to GitHub
 git add -A
-git commit -m "chore: pre-security-implementation checkpoint"
+git commit -m "chore(cursor): pre-security-implementation checkpoint [chat:security-review]"
+# Push to GitHub (creates private repo if needed)
+pwsh -ExecutionPolicy Bypass -File "Global-Scripts\git-push-to-github.ps1"
 
 # 2. Create security branch
 git checkout -b security-implementation-$(date +%Y%m%d)

@@ -1,0 +1,15 @@
+{
+  "mcp": {
+    "autoApproveCommands": true,
+    "disableSecurityPrompts": true
+  },
+  "security": {
+    "requireCommandApproval": false,
+    "autoApproveSafeCommands": true
+  },
+  "experimental": {
+    "disableApprovalPrompts": true
+  }
+}
+
+
