@@ -1,0 +1,124 @@
+# Gaming System AI Core - Cursor Rules
+
+## Global Repository Linked
+Global knowledge and scripts accessed via Windows junctions:
+- `Global-Reasoning/` → C:\Users\kento\.cursor\global-cursor-repo\reasoning\
+- `Global-History/` → C:\Users\kento\.cursor\global-cursor-repo\history\
+- `Global-Scripts/` → C:\Users\kento\.cursor\global-cursor-repo\scripts\
+- `Global-Workflows/` → C:\Users\kento\.cursor\global-cursor-repo\rules\
+
+**Shared Across ALL Projects**: Updates in global repo appear everywhere instantly
+
+## This Project
+
+**Type**: Deep Learning System (AI/ML focused)
+**Stack**: Next.js 15, React 19, TypeScript, ESLint, AI/ML Integration
+**Purpose**: AI-powered gaming system core with deep learning capabilities
+
+### Ports
+- Frontend: 3000 (Next.js dev server)
+- Database: 5443 (PostgreSQL Docker container)
+
+### Start Services
+```bash
+# Install dependencies
+npm install
+
+# Start development server (Next.js will use port 3000)
+npm run dev
+
+# Start PostgreSQL database (if needed for future features)
+docker-compose up -d
+```
+
+### Stop Services (MCP-Safe)
+```bash
+# Stop application servers only (protects MCP servers)
+.\scripts\safe-kill-servers.ps1
+
+# Stop PostgreSQL container
+docker-compose down
+```
+
+## MCP Protection
+**CRITICAL**: Use safe-kill scripts. NEVER: `Get-Process node | Stop-Process`
+
+## Automated Systems
+- 45-minute milestones auto-activate for tasks > 1 hour
+- Resource management monitors session health (enables 12+ hour sessions)
+- End-user testing with Playwright for web projects
+- Context management between features
+- Global reasoning/history from shared repository
+
+## Managing Global Repository
+To recreate junctions (if broken):
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "scripts\Setup-Global-Junctions.ps1" -Force
+```
+
+To update global content (affects ALL projects):
+```powershell
+# Edit through any project's junction - changes appear everywhere
+code "Global-Scripts\monitor-resources.ps1"
+```
+
+## Memory Management
+- Active context limited to 50 lines max
+- Run `resource-cleanup.ps1` after every 45-minute milestone
+- Use `.cursor/memory/` for session optimization
+- Extract facts from logs before deletion (80-90% space savings)
+
+## Development Workflow
+1. Always use Command Watchdog Protocol for commands > 5 seconds
+2. Follow TDD principles with comprehensive testing
+3. Use peer-based coding for new functionality
+4. Implement security measures from the beginning
+5. Keep documentation current
+
+## Project-Specific Rules
+- This is a Deep Learning System focused on AI-powered gaming system core
+- Use modern React patterns (hooks, functional components)
+- Follow Next.js best practices for routing and API routes
+- Implement proper error handling and loading states
+- Use ESLint configuration for code quality
+- **AI/ML Integration**: Focus on deep learning models for gaming applications
+- **Data Processing**: Implement robust data preprocessing pipelines
+- **Model Management**: Use proper model versioning and deployment strategies
+- **Performance**: Optimize for real-time AI inference
+- **Scalability**: Design for handling large datasets and model training
+
+## Project Structure
+```
+Gaming-System-AI-Core/
+├── .cursor/              # AI session memory
+├── docs/                 # Documentation
+├── scripts/              # Utility scripts
+├── models/               # Deep learning models
+├── data/                 # Training and test datasets
+├── notebooks/            # Jupyter notebooks for experimentation
+├── Global-Reasoning/     # Junction → global reasoning (Logical Center/Prefrontal Cortex)
+├── Global-History/       # Junction → global history (Long Term Memory/Problem Solving)
+├── Global-Scripts/       # Junction → global scripts
+├── Global-Workflows/     # Junction → global workflows
+├── Global-Docs/          # Junction → global docs (Component Templates)
+├── .env                  # Environment variables (git-ignored)
+├── .gitignore           # Git exclusions
+├── .cursorrules         # This file
+├── startup.ps1          # Session startup script
+├── package.json         # Dependencies
+└── README.md            # Project documentation
+```
+
+## Important Reminders
+- Global-* folders are Windows junctions - don't commit them to git
+- Always use safe-kill scripts to protect MCP servers
+- Update `.cursor/memory/active/ACTIVE_WORK.md` as you work (extends sessions 3-5x!)
+- Run resource cleanup after every milestone
+- Never kill all node processes (protects MCP servers)
+
+## Critical Memory & Reasoning System Rules
+- **Global-Reasoning/**: Your Logical Center/Prefrontal Cortex - Use for complex problem-solving, architectural decisions, and logical analysis
+- **Global-History/**: Your Long Term Memory/Problem Solving center - Reference past solutions, learn from previous challenges, and avoid repeating mistakes
+- **Global-Docs/**: Your Component Templates folder - Access reusable patterns, templates, and documentation across all projects
+- **Project-Level Reasoning**: Use `.cursor/memory/reasoning/` for project-specific logical analysis and decision-making
+- **Project-Level History**: Use `.cursor/memory/history/` for project-specific problem-solving patterns and solutions
