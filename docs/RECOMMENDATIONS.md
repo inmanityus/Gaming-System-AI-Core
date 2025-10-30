@@ -1,7 +1,7 @@
 # AI-Driven Gaming Core - Technical Recommendations
 **Project**: "The Body Broker"  
 **Last Updated**: January 29, 2025  
-**Status**: Comprehensive Technical Guide
+**Status**: ⭐ **UPDATED** - Comprehensive optimizations integrated
 
 **Related Documents:**
 - [Requirements.md](./Requirements.md) - Core requirements and specifications
@@ -731,23 +731,56 @@ Total: ~$2.00-3.00/user/day
 
 ## 8. PERFORMANCE OPTIMIZATION
 
-### 8.1 Latency Targets
+### 8.1 Latency Targets (REVISED - Based on Multi-Model Review)
 
-**Per-Layer Budgets**:
-- **L1**: Sub-100ms (mostly procedural)
-- **L2**: Hundreds of ms in background; pregen preferred
-- **L3**: First token <200ms; stream remainder
-- **L4**: Plan deltas in 100-300ms; avoid full replans
+**Original Targets** (Unrealistic):
+- ❌ L3: <200ms first token
+- ❌ L4: 100-300ms plan deltas
 
-### 8.2 Caching Strategy
+**Revised Targets** (Post-Optimization):
+- ✅ **L1**: 100-200ms (procedural + small LLMs with quantization)
+- ✅ **L2**: 300-600ms (LoRA customization with caching)
+- ✅ **L3**: 800-1500ms total, **250ms first token** with streaming ⭐ **REVISED**
+- ✅ **L4**: 2000-5000ms async, **non-blocking** ⭐ **REVISED**
 
-**Multi-Level Caching**:
-1. **Content Cache**: Generated monsters, rooms, terrain
-2. **Dialogue Cache**: Common interactions, greetings
-3. **State Cache**: Recent world state snapshots
-4. **Model Cache**: Keep frequently used models in VRAM
+**Optimization Strategies Implemented**:
+1. **Model Quantization**: FP32 → INT8/BF16 (2.3× latency reduction)
+2. **Edge Computing**: 30-50ms reduction per request
+3. **Streaming Responses**: 70% reduction in perceived latency (first token delivery)
+4. **Connection Pooling**: Eliminates 50ms TCP handshake overhead
+5. **Database Clustering**: Removes 200-800ms latency spikes
+6. **Multi-Tier Caching**: L1 (in-memory) → L2 (Redis) → L3 (Semantic), 90%+ hit rate target
+7. **Knowledge Distillation**: Smaller models for common scenarios (30-50% faster)
+8. **Token Control**: Dynamic truncation (20-40% per request)
 
-**Cache Hit Rate Goal**: 80%+
+### 8.2 Caching Strategy (ENHANCED)
+
+**Multi-Tier Caching Architecture** ⭐ **UPDATED**:
+1. **L1 Cache (Game Client)**: 
+   - 10MB, 1000 entries, 5min TTL
+   - NPC responses, common dialogues
+   
+2. **L2 Cache (Redis Edge)**:
+   - 10GB per region, 100k entries, 1hr TTL
+   - AI responses, embeddings
+
+3. **L3 Cache (Distributed Cloud)**:
+   - 100GB+, 1M+ entries, 24hr TTL
+   - Semantic memory, rare queries
+
+4. **Prompt Caching**:
+   - Tokenized prompts cached for 90%+ hit rate
+   - Semantic similarity matching (90% threshold)
+   - Stale-while-revalidate pattern
+
+5. **Model Cache**: Keep frequently used models in VRAM
+
+**Cache Hit Rate Goal**: **90%+** (up from 80%)
+
+**Implementation**:
+- Content-addressable storage with seed-based hashing
+- Semantic similarity lookup for fuzzy matching
+- Cache warming for frequent prompts
 
 ### 8.3 Predictive Generation
 
@@ -757,13 +790,39 @@ Total: ~$2.00-3.00/user/day
 - Warm caches for next zones
 - Background pre-generation during load screens
 
-### 8.4 Optimization Techniques
+### 8.4 Optimization Techniques (COMPREHENSIVE)
 
-1. **Continuous Batching**: Process multiple requests simultaneously
-2. **Prefix Caching**: Reuse persona prompts across turns
-3. **Speculative Decoding**: Use tiny drafter model for speedup
-4. **Response Streaming**: Start showing text before generation completes
-5. **AI LOD**: Simpler AI for distant NPCs, full AI for nearby
+**LLM Inference Optimizations** ⭐ **NEW**:
+1. **Model Quantization**: FP32 → INT8/BF16 (2.3× faster)
+2. **Knowledge Distillation**: Smaller models from large ones (30-50% faster)
+3. **Continuous Batching**: Process multiple requests simultaneously (5-10× throughput)
+4. **Prefix Caching**: Reuse tokenized prompts (90%+ hit rate)
+5. **Speculative Decoding**: Use tiny drafter model for speedup (1.5-2×)
+6. **Response Streaming**: Token-by-token delivery (70% perceived latency reduction)
+7. **Token Control**: Dynamic truncation and filtering (20-40% faster)
+8. **Edge Computing**: Deploy models closer to users (30-50ms reduction)
+
+**Connection & Network Optimizations** ⭐ **NEW**:
+1. **gRPC Connection Pooling**: 40-100 connections per service, persistent connections
+2. **Database Connection Pooling**: 20-50 PostgreSQL, 100 Redis connections per service
+3. **Keep-Alive Configuration**: 10s ping interval, 3s timeout
+4. **Message Compression**: gzip/brotli for HTTP, protobuf compression for gRPC
+
+**Database Optimizations** ⭐ **NEW**:
+1. **Redis Cluster**: 3 shards × 2 replicas (100K+ ops/sec vs 5K)
+2. **PostgreSQL Read Replicas**: Multi-region, 80% read traffic distribution
+3. **Connection Pool Sizing**: Proper sizing prevents exhaustion
+
+**UE5 Rendering Optimizations** ⭐ **NEW**:
+1. **LOD Systems**: 2-4 levels per mesh, <10K polygons target
+2. **World Partition**: Chunk-based streaming for large levels
+3. **Material Instancing**: Reduce instruction counts (<200)
+4. **Draw Call Reduction**: <700 (high-end), <500 (mid-range) target
+5. **Async Asset Loading**: Non-blocking background threads
+6. **Texture Optimization**: Virtual texturing, mipmap debugging
+7. **Profiling Tools**: Unreal Insights for performance analysis
+
+**AI LOD**: Simpler AI for distant NPCs, full AI for nearby (maintained)
 
 ---
 

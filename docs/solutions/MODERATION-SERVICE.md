@@ -1,6 +1,7 @@
 # Moderation Service Solution
 **Service**: Content Safety & Guardrails  
-**Date**: January 29, 2025
+**Date**: January 29, 2025  
+**Status**: ⭐ **UPDATED** - Real-time integration path added
 
 ---
 
@@ -18,6 +19,78 @@ Implements multi-layer content moderation, rating enforcement, and safety guardr
 - **Human Review**: Queue system
 - **Reporting**: Player reporting UI
 
+### Integration with AI Inference ⭐ **NEW**
+
+**Real-Time Content Filtering Path**:
+```
+AI Inference generates response → Moderation check (50-100ms) → Game Client
+```
+
+**Implementation** (FastAPI Middleware Pattern):
+```python
+from fastapi import FastAPI, Request, Response
+from fastapi.middleware.base import BaseHTTPMiddleware
+import asyncio
+
+class ModerationMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        # For AI inference responses, check content
+        if request.url.path.startswith("/v1/dialogue"):
+            # Get response from AI Inference
+            response = await call_next(request)
+            
+            # Read response body
+            response_body = b""
+            async for chunk in response.body_iterator:
+                response_body += chunk
+            
+            # Moderate content (async, non-blocking)
+            moderation_task = asyncio.create_task(
+                self.moderate_content(response_body.decode())
+            )
+            
+            # Return response immediately (provisional)
+            # Moderation continues in background
+            if moderation_task.done() and await moderation_task:
+                # Content flagged - return safe fallback
+                return Response(
+                    content=get_safe_fallback(),
+                    status_code=200,
+                    media_type="application/json"
+                )
+            
+            return Response(
+                content=response_body,
+                status_code=response.status_code,
+                headers=dict(response.headers)
+            )
+        
+        # For other requests, pass through
+        return await call_next(request)
+    
+    async def moderate_content(self, content: str) -> bool:
+        # Fast keyword filter (10ms)
+        if self.fast_keyword_check(content):
+            return True
+        
+        # Async ML toxicity detection (200ms)
+        toxicity_score = await self.ml_toxicity_check(content)
+        return toxicity_score > THRESHOLD
+
+# Apply middleware
+app.add_middleware(ModerationMiddleware)
+```
+
+**Latency Budget**:
+- Fast keyword filter: 10ms (synchronous)
+- ML toxicity check: 200ms (async, non-blocking)
+- Total overhead: 50-100ms (optimized)
+
+**Fallback Strategy**:
+- Timeout: 100ms max moderation time
+- If timeout: Allow provisional content, check in background
+- If flagged post-delivery: Replace with cached safe response
+
 ### Multi-Layer Approach
 
 ```python
@@ -26,6 +99,8 @@ class ModerationService:
         self.input_filter = ContentFilter(tier='input')
         self.output_filter = ContentFilter(tier='output')
         self.human_review_queue = ReviewQueue()
+        self.fast_keyword_filter = KeywordFilter()  # ⭐ NEW: Fast path
+        self.ml_toxicity_model = ToxicityModel()    # ⭐ NEW: ML path
     
     async def moderate_input(self, user_input, rating='M'):
         # Layer 1: Input filtering

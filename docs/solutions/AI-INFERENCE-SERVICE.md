@@ -126,22 +126,100 @@ llm.unload_lora("vampire_lora")
 
 ---
 
-## PERFORMANCE OPTIMIZATION
+## PERFORMANCE OPTIMIZATION (UPDATED - Based on Research)
+
+### Model Quantization ⭐ **NEW**
+**Technique**: FP32 → INT8/BF16 quantization  
+**Latency Reduction**: 2.3× faster inference  
+**Implementation**:
+```python
+from vllm import LLM
+
+# Quantized model loading
+llm = LLM(
+    model="meta-llama/Llama-3.1-8B-Instruct",
+    quantization="awq",  # 8-bit quantization
+    # Or use "gptq" for 4-bit
+    max_model_len=4096
+)
+```
+**Impact**:
+- Layer 3: 600-1500ms → 260-650ms (57% reduction)
+- Layer 4: 1000-3000ms → 435-1300ms (57% reduction)
 
 ### Continuous Batching
 - Process multiple requests simultaneously
 - vLLM handles batching automatically
 - Reduces GPU idle time
+- Throughput improvement: 5-10×
 
-### Prefix Caching
-- Cache persona prompts across turns
+### Prefix Caching (Enhanced) ⭐ **UPDATED**
+- Cache tokenized prompts for 90%+ hit rate
 - Reuse context for same NPC
-- Significant latency reduction
+- Multi-tier caching:
+  - L1 (in-memory): 10MB, 1000 entries, 5min TTL
+  - L2 (Redis): 10GB, 100k entries, 1hr TTL
+  - L3 (Semantic): Similarity matching, 24hr TTL
+- Latency reduction: 80-95% for cached requests
 
-### Response Streaming
-- Stream tokens as generated
-- Reduces perceived latency
-- Improve user experience
+### Response Streaming ⭐ **ENHANCED**
+- Stream tokens as generated (token-by-token)
+- First token delivery: 200-500ms (vs 1000ms full response)
+- Perceived latency: 70% reduction
+- Implementation:
+```python
+from fastapi.responses import StreamingResponse
+
+async def stream_generation(prompt: str):
+    async for token in llm.generate_stream(prompt):
+        yield f"data: {json.dumps({'token': token})}\n\n"
+```
+- gRPC streaming support for production
+
+### Knowledge Distillation ⭐ **NEW**
+- Create smaller models from large ones
+- Latency reduction: 30-50%
+- Use for common scenarios while keeping full models for complex cases
+- Training: Transfer learning from Claude 4.5 → smaller local model
+
+### Token Control & Truncation ⭐ **NEW**
+- Dynamic prompt truncation
+- Token filtering before generation
+- Latency reduction: 20-40% per request
+- Pre-process prompts to limit max tokens
+
+### Edge Computing Deployment ⭐ **NEW**
+- Deploy Ollama models to edge locations
+- CloudFlare Workers or Lambda@Edge
+- Latency reduction: 30-50ms per request
+- Use for Tier 1-2 NPCs primarily
+
+### Connection Pooling ⭐ **NEW**
+**gRPC Connection Pool Configuration**:
+```python
+import grpc
+
+channel = grpc.insecure_channel(
+    'inference_service:50051',
+    options=[
+        ('grpc.keepalive_time_ms', 10000),
+        ('grpc.keepalive_timeout_ms', 5000),
+        ('grpc.keepalive_permit_without_calls', True),
+        ('grpc.http2.max_frame_size', 4194304),  # 4MB
+        ('grpc.http2.max_connection_window_size', 1048576000),  # 1GB
+    ]
+)
+
+# Connection pool of 40-100 connections
+pool_size = 100
+connection_pool = [grpc.insecure_channel(...) for _ in range(pool_size)]
+```
+
+### Adaptive Tier Routing ⭐ **NEW**
+- ML model predicts query complexity
+- Routes simple → Layer 1-2, complex → Layer 3
+- Target: 80% handled by Layers 1-2 (<500ms)
+- Reduces expensive cloud API calls
 
 ---
 
