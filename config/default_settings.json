@@ -1,0 +1,43 @@
+{
+  "game": {
+    "max_players": 10000,
+    "world_tick_rate": 60,
+    "enable_pvp": true,
+    "enable_voice_chat": false
+  },
+  "difficulty": {
+    "default_difficulty": "normal",
+    "permadeath_enabled": false,
+    "damage_multiplier": 1.0
+  },
+  "ui": {
+    "theme": "dark",
+    "language": "en",
+    "show_tooltips": true,
+    "animation_speed": "normal"
+  },
+  "audio": {
+    "master_volume": 1.0,
+    "music_volume": 0.8,
+    "sfx_volume": 0.9,
+    "voice_volume": 0.7
+  },
+  "video": {
+    "resolution": "1920x1080",
+    "fullscreen": false,
+    "vSync": true,
+    "anti_aliasing": "medium",
+    "shadow_quality": "high"
+  },
+  "controls": {
+    "mouse_sensitivity": 1.0,
+    "invert_y": false,
+    "keyRebindings": {}
+  },
+  "features": {
+    "beta_features_enabled": false,
+    "experimental_ai": false,
+    "enable_analytics": true
+  }
+}
+
