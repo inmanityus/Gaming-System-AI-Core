@@ -1,0 +1,2 @@
+{"ts":1761836744,"cwd":"E:\Vibe Code\Gaming System\AI Core","hash":"c6c67d0e3ca19e4bbc3526f7172bec2f2dc6abdbbed01128facb1e15f608233b","label":"normal-cleanup","cmd":"powershell -NoProfile -ExecutionPolicy Bypass -File "Global-Scripts/resource-cleanup.ps1""}
+{"ts":1761836763,"cwd":"E:\Vibe Code\Gaming System\AI Core","hash":"50357f969f90ca27443d4bbd91ade95a6219ce33d320ba6513ac174e04235411","label":"emergency-cleanup","cmd":"powershell -NoProfile -ExecutionPolicy Bypass -File "Global-Scripts/emergency-flush.ps1""}
