@@ -51,7 +51,7 @@ class TierCapabilities:
 
 
 class TierManager:
- tri   """
+    """
     Manages player tiers and tier-based restrictions.
     """
     
