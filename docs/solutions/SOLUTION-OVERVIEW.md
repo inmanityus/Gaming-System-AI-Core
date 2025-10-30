@@ -35,6 +35,29 @@
    - gRPC connection pool: 40-100 connections per instance
    - Keep-alive: 10s ping interval, 3s timeout
 
+3. **Story Teller → Orchestration** ⭐ **NEW**
+   - World generation requests → Layer 1 & 2
+   - NPC dialogue requests → Layer 3
+   - Battle coordination → Layer 4
+   - Protocol: gRPC with connection pooling
+
+4. **Story Teller → State Management** ⭐ **NEW**
+   - World state updates → PostgreSQL (canonical)
+   - Hot state updates → Redis (cache)
+   - Semantic updates → Vector DB (memory)
+   - Query player context for narrative generation
+
+5. **Story Teller → Game Engine** ⭐ **NEW**
+   - World events → Kafka topics (major/minor)
+   - Real-time updates → Redis Pub/Sub
+   - Narrative updates → Quest UI updates
+   - Protocol: Kafka + Redis Pub/Sub
+
+6. **Story Teller → Learning Service** ⭐ **NEW**
+   - Narrative quality feedback → Model improvement
+   - Event quality feedback → Event generation improvement
+   - Player engagement metrics → Overall system improvement
+
 3. **AI Inference → Moderation → Game Client** ⭐ **NEW**
    - Real-time content filtering before delivery
    - Protocol: HTTP middleware pattern
