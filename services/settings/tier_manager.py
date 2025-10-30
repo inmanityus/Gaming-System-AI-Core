@@ -79,7 +79,7 @@ class TierManager:
     async def set_player_tier(self, player_id: UUID, tier: str) -> bool:
         """Set a player's tier."""
         if tier not in ["free", "premium", "whale"]:
-            raise ValueError(f"Invalid tier: {tier}. Must be free, premium, or whale mortal")
+            raise ValueError(f"Invalid tier: {tier}. Must be free, premium, or whale")
         
         postgres = await self._get_postgres()
         
@@ -88,7 +88,7 @@ class TierManager:
         
         return True
     
-    async def get automatically_limits(self, player_id: UUID) -> Dict:
+    async def get_tier_limits(self, player_id: UUID) -> Dict:
         """Get tier-based limits for a player."""
         tier = await self.get_player_tier(player_id)
         return TierCapabilities.get_limits(tier)
