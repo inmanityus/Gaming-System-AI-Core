@@ -21,6 +21,7 @@ async def test_model_registry_lookup_performance():
     # Mock database with timing
     with patch.object(registry, '_get_postgres') as mock_postgres:
         mock_pool = AsyncMock()
+        from datetime import datetime
         mock_pool.fetch = AsyncMock(return_value={
             "model_id": str(uuid4()),
             "model_name": "test-model",
@@ -30,8 +31,11 @@ async def test_model_registry_lookup_performance():
             "version": "1.0",
             "status": "current",
             "model_path": None,
-            "configuration": {},
-            "metadata": {}
+            "configuration": "{}",
+            "performance_metrics": "{}",
+            "resource_requirements": "{}",
+            "created_at": datetime.now(),
+            "updated_at": datetime.now()
         })
         mock_postgres.return_value = mock_pool
         
