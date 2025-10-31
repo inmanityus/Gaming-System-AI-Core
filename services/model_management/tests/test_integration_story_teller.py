@@ -63,8 +63,13 @@ async def test_guardrails_monitoring_integration(narrative_generator):
                 # Verify monitoring was called
                 assert mock_monitor.called
                 call_args = mock_monitor.call_args
-                assert call_args[0][0] == "story_generation"  # model_id
-                outputs = call_args[0][1]
+                # Check if called with args or kwargs
+                if call_args.args:
+                    assert call_args.args[0] == "story_generation"  # model_id
+                    outputs = call_args.args[1]
+                else:
+                    assert call_args.kwargs["model_id"] == "story_generation"
+                    outputs = call_args.kwargs["outputs"]
                 assert "Test narrative" in outputs
                 assert "Choice 1" in outputs
 
@@ -126,13 +131,9 @@ async def test_historical_logging_story_generation(narrative_generator):
             "violations": []
         }
         
-        # Mock model registry
-        with patch('services.story_teller.narrative_generator.ModelRegistry') as MockRegistry:
-            mock_registry_instance = AsyncMock()
-            mock_registry_instance.get_current_model.return_value = {
-                "model_id": str(uuid4())
-            }
-            MockRegistry.return_value = mock_registry_instance
+        # Mock model ID retrieval
+        with patch.object(narrative_generator, '_get_model_id_for_logging') as mock_get_id:
+            mock_get_id.return_value = str(uuid4())
             
             # Mock historical log processor
             with patch.object(narrative_generator.historical_log_processor, 'log_inference') as mock_log:
@@ -167,7 +168,7 @@ async def test_historical_logging_story_generation(narrative_generator):
                         assert mock_log.called
                         call_args = mock_log.call_args
                         assert call_args[1]["use_case"] == "story_generation"
-                        assert "narrative_content" in call_args[1]["generated_output"]
+                        assert "Test narrative" in call_args[1]["generated_output"]
 
 
 @pytest.mark.asyncio

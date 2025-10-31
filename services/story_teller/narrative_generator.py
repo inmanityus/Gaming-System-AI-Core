@@ -77,6 +77,16 @@ class NarrativeGenerator:
             self.postgres = await get_postgres_pool()
         return self.postgres
     
+    async def _get_model_id_for_logging(self) -> Optional[str]:
+        """Get current model ID for story generation use case."""
+        try:
+            from services.model_management.model_registry import ModelRegistry
+            registry = ModelRegistry()
+            current_model = await registry.get_current_model("story_generation")
+            return current_model.get("model_id") if current_model else None
+        except Exception:
+            return None
+    
     async def _get_player_context(self, player_id: UUID) -> NarrativeContext:
         """Get comprehensive player context for narrative generation."""
         postgres = await self._get_postgres()
@@ -230,10 +240,7 @@ class NarrativeGenerator:
             # Log to historical logs for model management
             try:
                 # Get current model ID for story generation use case
-                from services.model_management.model_registry import ModelRegistry
-                registry = ModelRegistry()
-                current_model = await registry.get_current_model("story_generation")
-                model_id = current_model.get("model_id") if current_model else None
+                model_id = await self._get_model_id_for_logging()
                 
                 if model_id:
                     await self.historical_log_processor.log_inference(
