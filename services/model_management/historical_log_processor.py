@@ -98,6 +98,60 @@ class HistoricalLogProcessor:
         
         return logs
     
+    async def log_inference(
+        self,
+        model_id: UUID,
+        use_case: str,
+        prompt: str,
+        context: Dict[str, Any],
+        generated_output: str,
+        performance_metrics: Optional[Dict[str, Any]] = None,
+        user_feedback: Optional[Dict[str, Any]] = None,
+        corrected_output: Optional[str] = None
+    ) -> UUID:
+        """
+        Log an inference request to historical logs.
+        
+        Args:
+            model_id: ID of the model used
+            use_case: Use case identifier
+            prompt: Input prompt
+            context: Context data
+            generated_output: Generated output text
+            performance_metrics: Performance metrics (latency, tokens, etc.)
+            user_feedback: User feedback (if available)
+            corrected_output: Corrected output (if feedback provided)
+        
+        Returns:
+            Log ID (UUID)
+        """
+        from datetime import datetime, timezone
+        from uuid import uuid4
+        
+        postgres = await self._get_postgres()
+        log_id = uuid4()
+        
+        await postgres.execute(
+            """
+            INSERT INTO model_historical_logs (
+                log_id, model_id, use_case, prompt, context, generated_output,
+                user_feedback, corrected_output, performance_metrics, timestamp
+            ) VALUES ($1, $2, $3, $4, $5::jsonb, $6, $7::jsonb, $8, $9::jsonb, $10)
+            """,
+            log_id,
+            model_id,
+            use_case,
+            prompt,
+            json.dumps(context),
+            generated_output,
+            json.dumps(user_feedback) if user_feedback else None,
+            corrected_output,
+            json.dumps(performance_metrics or {}),
+            datetime.now(timezone.utc).replace(tzinfo=None)
+        )
+        
+        return log_id
+    
     async def process_logs_to_training_data(
         self,
         logs: List[Dict[str, Any]]

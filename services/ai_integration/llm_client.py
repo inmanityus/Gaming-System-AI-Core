@@ -1,16 +1,24 @@
 """
 LLM Client - Manages connections to hierarchical LLM system.
 Handles load balancing, retry logic, and circuit breaker patterns.
+Integrated with Model Management System for model selection and tracking.
 """
 
 import asyncio
 import json
+import sys
+import os
 import time
 from typing import Any, Dict, List, Optional, Tuple
 from uuid import UUID
 
 import aiohttp
 from aiohttp import ClientSession, ClientTimeout
+
+# Add parent directory to path for model_management imports
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+from services.model_management.model_registry import ModelRegistry
+from services.model_management.historical_log_processor import HistoricalLogProcessor
 
 
 class CircuitBreakerError(Exception):
@@ -27,43 +35,59 @@ class LLMClient:
     """
     Manages connections to hierarchical LLM system.
     Implements load balancing, retry logic, and circuit breaker patterns.
+    Integrated with Model Management System for model selection and tracking.
     """
     
-    def __init__(self):
+    def __init__(self, model_registry: Optional[ModelRegistry] = None):
         self.session: Optional[ClientSession] = None
         self.timeout = ClientTimeout(total=30.0)
         
-        # LLM Service endpoints
+        # Model Management System integration
+        self.model_registry = model_registry or ModelRegistry()
+        self.historical_log_processor = HistoricalLogProcessor()
+        
+        # LLM Service endpoints (will be updated from Model Registry)
         self.llm_services = {
             "foundation": {
                 "url": "http://localhost:8001/generate",
                 "weight": 1.0,
                 "circuit_breaker": CircuitBreakerState(),
                 "retry_count": 0,
+                "model_id": None,  # Will be set from registry
+                "use_case": "foundation_layer",
             },
             "customization": {
                 "url": "http://localhost:8002/generate", 
                 "weight": 1.0,
                 "circuit_breaker": CircuitBreakerState(),
                 "retry_count": 0,
+                "model_id": None,
+                "use_case": "customization_layer",
             },
             "interaction": {
                 "url": "http://localhost:8003/generate",
                 "weight": 1.0,
                 "circuit_breaker": CircuitBreakerState(),
                 "retry_count": 0,
+                "model_id": None,
+                "use_case": "interaction_layer",
             },
             "coordination": {
                 "url": "http://localhost:8004/generate",
                 "weight": 1.0,
                 "circuit_breaker": CircuitBreakerState(),
                 "retry_count": 0,
+                "model_id": None,
+                "use_case": "coordination_layer",
             },
         }
         
         # Load balancing
         self.current_weights = {name: 1.0 for name in self.llm_services}
         self.request_counts = {name: 0 for name in self.llm_services}
+        
+        # Model registry initialized flag (will update on first use)
+        self._models_initialized = False
         
     async def _get_session(self) -> ClientSession:
         """Get or create aiohttp session."""
@@ -75,6 +99,22 @@ class LLMClient:
         """Close the aiohttp session."""
         if self.session and not self.session.closed:
             await self.session.close()
+    
+    async def _update_models_from_registry(self):
+        """Update service configurations from Model Registry."""
+        try:
+            for layer_name, service in self.llm_services.items():
+                use_case = service["use_case"]
+                current_model = await self.model_registry.get_current_model(use_case)
+                
+                if current_model:
+                    service["model_id"] = current_model.get("model_id")
+                    # Update URL if model has specific endpoint
+                    if current_model.get("configuration", {}).get("endpoint"):
+                        service["url"] = current_model["configuration"]["endpoint"]
+                    
+        except Exception as e:
+            print(f"Error updating models from registry: {e}")
     
     def _select_service(self, layer: str) -> str:
         """Select LLM service using weighted round-robin."""
@@ -151,6 +191,7 @@ class LLMClient:
     ) -> Dict[str, Any]:
         """
         Generate text using specified LLM layer.
+        Integrated with Model Management System for model selection and logging.
         
         Args:
             layer: LLM layer (foundation, customization, interaction, coordination)
@@ -162,8 +203,24 @@ class LLMClient:
         Returns:
             Generated text response
         """
+        start_time = time.time()
+        model_id = None
+        use_case = None
+        
         try:
             service_name = self._select_service(layer)
+            service = self.llm_services[service_name]
+            model_id = service.get("model_id")
+            use_case = service.get("use_case")
+            
+            # Ensure model is up to date from registry (on first use or periodically)
+            if not self._models_initialized:
+                await self._update_models_from_registry()
+                self._models_initialized = True
+                # Update model_id and use_case after registry update
+                model_id = service.get("model_id")
+                use_case = service.get("use_case")
+            
             result = await self._make_request(
                 service_name, prompt, context, max_tokens, temperature
             )
@@ -171,28 +228,93 @@ class LLMClient:
             # Update load balancing weights
             self.request_counts[service_name] += 1
             
+            generated_text = result.get("text", "")
+            tokens_used = result.get("tokens_used", 0)
+            latency = time.time() - start_time
+            
+            # Log to historical logs for model management
+            if model_id:
+                try:
+                    await self.historical_log_processor.log_inference(
+                        model_id=UUID(model_id) if isinstance(model_id, str) else model_id,
+                        use_case=use_case,
+                        prompt=prompt,
+                        context=context,
+                        generated_output=generated_text,
+                        performance_metrics={
+                            "latency_ms": latency * 1000,
+                            "tokens_used": tokens_used,
+                            "temperature": temperature,
+                            "max_tokens": max_tokens,
+                        }
+                    )
+                except Exception as log_error:
+                    print(f"Error logging inference to historical logs: {log_error}")
+            
             return {
                 "success": True,
-                "text": result.get("text", ""),
-                "tokens_used": result.get("tokens_used", 0),
+                "text": generated_text,
+                "tokens_used": tokens_used,
                 "service": service_name,
                 "layer": layer,
+                "model_id": model_id,
+                "latency_ms": latency * 1000,
             }
             
         except CircuitBreakerError as e:
+            fallback_text = self._get_fallback_response(layer, prompt)
+            
+            # Log failure
+            if model_id:
+                try:
+                    await self.historical_log_processor.log_inference(
+                        model_id=UUID(model_id) if isinstance(model_id, str) else model_id,
+                        use_case=use_case or layer,
+                        prompt=prompt,
+                        context=context,
+                        generated_output=fallback_text,
+                        performance_metrics={
+                            "error": str(e),
+                            "fallback_used": True,
+                        }
+                    )
+                except Exception:
+                    pass
+            
             return {
                 "success": False,
                 "error": str(e),
                 "fallback": True,
-                "text": self._get_fallback_response(layer, prompt),
+                "text": fallback_text,
+                "model_id": model_id,
             }
             
         except LLMServiceUnavailableError as e:
+            fallback_text = self._get_fallback_response(layer, prompt)
+            
+            # Log failure
+            if model_id:
+                try:
+                    await self.historical_log_processor.log_inference(
+                        model_id=UUID(model_id) if isinstance(model_id, str) else model_id,
+                        use_case=use_case or layer,
+                        prompt=prompt,
+                        context=context,
+                        generated_output=fallback_text,
+                        performance_metrics={
+                            "error": str(e),
+                            "fallback_used": True,
+                        }
+                    )
+                except Exception:
+                    pass
+            
             return {
                 "success": False,
                 "error": str(e),
                 "fallback": True,
-                "text": self._get_fallback_response(layer, prompt),
+                "text": fallback_text,
+                "model_id": model_id,
             }
     
     def _get_fallback_response(self, layer: str, prompt: str) -> str:

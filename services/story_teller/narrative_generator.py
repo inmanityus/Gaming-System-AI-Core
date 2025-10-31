@@ -1,12 +1,20 @@
 """
 Narrative Generator - AI-powered story content generation.
+Integrated with Model Management System for guardrails monitoring.
 """
 
 import json
+import sys
+import os
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
 from services.state_manager.connection_pool import get_postgres_pool, PostgreSQLPool
+
+# Add parent directory to path for model_management imports
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+from services.model_management.guardrails_monitor import GuardrailsMonitor
+from services.model_management.historical_log_processor import HistoricalLogProcessor
 
 
 class NarrativeContext:
@@ -47,9 +55,10 @@ class NarrativeGenerator:
     """
     Generates narrative content using AI services.
     Integrates with the hierarchical LLM system.
+    Integrated with Model Management System for guardrails monitoring.
     """
     
-    def __init__(self):
+    def __init__(self, guardrails_monitor: Optional[GuardrailsMonitor] = None):
         self.postgres: Optional[PostgreSQLPool] = None
         self._llm_endpoints = {
             "foundation": "http://localhost:8001/generate",
@@ -57,6 +66,10 @@ class NarrativeGenerator:
             "interaction": "http://localhost:8003/generate",
             "coordination": "http://localhost:8004/generate",
         }
+        
+        # Model Management System integration
+        self.guardrails_monitor = guardrails_monitor or GuardrailsMonitor()
+        self.historical_log_processor = HistoricalLogProcessor()
     
     async def _get_postgres(self) -> PostgreSQLPool:
         """Get PostgreSQL pool instance."""
@@ -193,6 +206,50 @@ class NarrativeGenerator:
             
             # Parse and validate generated content
             parsed_content = self._parse_narrative_response(narrative_content)
+            
+            # Monitor generated content with guardrails
+            narrative_text = parsed_content.get("narrative_content", "")
+            choices_text = [choice.get("text", "") for choice in parsed_content.get("choices", [])]
+            all_outputs = [narrative_text] + choices_text
+            
+            # Check guardrails compliance
+            monitoring_results = await self.guardrails_monitor.monitor_outputs(
+                model_id="story_generation",  # Use case identifier
+                outputs=all_outputs
+            )
+            
+            # If guardrails violation detected, generate fallback content
+            if not monitoring_results.get("compliant", True):
+                violations = monitoring_results.get("violations", [])
+                # Log violation for model management system
+                print(f"Guardrails violation detected: {violations}")
+                # For critical violations, return fallback content
+                if any(v.get("severity") in ["critical", "high"] for v in violations):
+                    return self._generate_fallback_content(node_type, title, description)
+            
+            # Log to historical logs for model management
+            try:
+                # Get current model ID for story generation use case
+                from services.model_management.model_registry import ModelRegistry
+                registry = ModelRegistry()
+                current_model = await registry.get_current_model("story_generation")
+                model_id = current_model.get("model_id") if current_model else None
+                
+                if model_id:
+                    await self.historical_log_processor.log_inference(
+                        model_id=UUID(model_id) if isinstance(model_id, str) else model_id,
+                        use_case="story_generation",
+                        prompt=prompt,
+                        context=context.to_dict(),
+                        generated_output=narrative_text,
+                        performance_metrics={
+                            "node_type": node_type,
+                            "choices_count": len(parsed_content.get("choices", [])),
+                            "guardrails_compliant": monitoring_results.get("compliant", True),
+                        }
+                    )
+            except Exception as log_error:
+                print(f"Error logging narrative generation: {log_error}")
             
             return parsed_content
             

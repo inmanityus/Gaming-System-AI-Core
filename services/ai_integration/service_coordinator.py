@@ -1,26 +1,37 @@
 """
 Service Coordinator - Inter-service communication and coordination.
 Manages requests between AI Integration and other services.
+Integrated with Model Management System for deployment coordination.
 """
 
 import asyncio
 import json
+import sys
+import os
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
 import aiohttp
 from aiohttp import ClientSession, ClientTimeout
 
+# Add parent directory to path for model_management imports
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+from services.model_management.deployment_manager import DeploymentManager
+
 
 class ServiceCoordinator:
     """
     Coordinates communication between AI Integration and other services.
     Manages request routing, response aggregation, and error handling.
+    Integrated with Model Management System for deployment coordination.
     """
     
-    def __init__(self):
+    def __init__(self, deployment_manager: Optional[DeploymentManager] = None):
         self.session: Optional[ClientSession] = None
         self.timeout = ClientTimeout(total=10.0)
+        
+        # Model Management System integration
+        self.deployment_manager = deployment_manager or DeploymentManager()
         
         # Service endpoints
         self.services = {
@@ -327,6 +338,66 @@ class ServiceCoordinator:
                 for name in self.services
             }
         }
+    
+    async def coordinate_model_deployment(
+        self,
+        new_model_id: str,
+        current_model_id: str,
+        use_case: str,
+        strategy: str = "blue_green"
+    ) -> Dict[str, Any]:
+        """
+        Coordinate model deployment during orchestration.
+        
+        This method integrates with DeploymentManager to handle model updates
+        during service orchestration, ensuring smooth transitions.
+        
+        Args:
+            new_model_id: ID of new model to deploy
+            current_model_id: ID of current model to replace
+            use_case: Use case identifier
+            strategy: Deployment strategy (blue_green, canary, all_at_once)
+        
+        Returns:
+            Deployment result with status and details
+        """
+        try:
+            # Use DeploymentManager to handle deployment
+            success = await self.deployment_manager.deploy_model(
+                new_model_id=new_model_id,
+                current_model_id=current_model_id,
+                strategy=strategy
+            )
+            
+            if success:
+                # Notify services about model update
+                await self.broadcast_update(
+                    update_type="model_deployment",
+                    data={
+                        "use_case": use_case,
+                        "new_model_id": new_model_id,
+                        "current_model_id": current_model_id,
+                        "strategy": strategy,
+                        "status": "completed"
+                    }
+                )
+            
+            return {
+                "success": success,
+                "new_model_id": new_model_id,
+                "current_model_id": current_model_id,
+                "use_case": use_case,
+                "strategy": strategy
+            }
+            
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e),
+                "new_model_id": new_model_id,
+                "current_model_id": current_model_id,
+                "use_case": use_case
+            }
 
 
 class ServiceError(Exception):
