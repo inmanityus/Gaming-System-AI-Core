@@ -9,7 +9,7 @@ from uuid import UUID, uuid4
 from datetime import datetime
 from pathlib import Path
 
-from services.state_manager.connection_pool import PostgresConnectionPool
+from services.state_manager.connection_pool import PostgreSQLPool
 
 
 class RollbackManager:
@@ -23,7 +23,7 @@ class RollbackManager:
     - Rollback verification
     """
     
-    def __init__(self, db_pool: Optional[PostgresConnectionPool] = None):
+    def __init__(self, db_pool: Optional[PostgreSQLPool] = None):
         self.db_pool = db_pool
         self.snapshots_dir = Path("models/snapshots")
         self.snapshots_dir.mkdir(parents=True, exist_ok=True)

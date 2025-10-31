@@ -1,0 +1,132 @@
+# No HTML Report Browser Rule
+
+## 🚨 CRITICAL RULE: NEVER Host HTML Reports in Browser 🚨
+
+**Purpose:** Prevent AI from automatically opening HTML report files in the default browser during testing or report generation.
+
+**Enforcement:** MANDATORY for ALL AI sessions across ALL projects.
+
+---
+
+## Rule
+
+**NEVER run commands that automatically open HTML files in the browser, including:**
+- `npx playwright show-report` (ALWAYS adds `--host=0.0.0.0 --port=9323`)
+- `start report.html`
+- `open report.html`
+- Any command with `--open` flag for HTML reports
+- Browser-based viewing of test reports
+- **CRITICAL**: When Playwright finishes tests, it may auto-open report - this MUST be prevented by using `NO_COLOR=1` environment variable or running in non-interactive mode
+
+---
+
+## Rationale
+
+1. **Resource Consumption**: Opening browsers unnecessarily consumes system resources
+2. **User Control**: Users should choose when to view reports
+3. **Session Stability**: Browser launches can interfere with testing sessions
+4. **Automation**: Automated testing should not require browser interaction
+5. **Focus**: AI should generate reports, not view them
+
+---
+
+## Compliance Requirements
+
+### When Generating Reports
+- ✅ Generate HTML report files
+- ✅ Save reports to disk with clear file paths
+- ✅ Inform user of report location
+- ✅ Provide file path in output
+- ❌ NEVER automatically open in browser
+
+### Proper Configuration
+
+**Playwright Config:**
+```typescript
+export default defineConfig({
+  reporter: [
+    ['html', { 
+      outputFolder: 'results/playwright-report', 
+      open: 'never'  // CRITICAL: Never auto-open
+    }],
+  ],
+});
+```
+
+### Proper Commands
+```powershell
+# ✅ CORRECT - Generate report without opening
+npx playwright show-report Project-Testing/results/playwright-report --host=0.0.0.0 --port=9323
+
+# ❌ WRONG - Generates and opens in browser
+npx playwright show-report Project-Testing/results/playwright-report
+```
+
+### Report Generation Pattern
+```powershell
+# 1. Generate report
+npx playwright show-report --host=0.0.0.0 --port=9323
+
+# 2. Inform user
+Write-Host "Report generated at: Project-Testing/results/playwright-report/index.html"
+Write-Host "To view, manually open: Project-Testing/results/playwright-report/index.html"
+
+# 3. Never auto-open
+```
+
+---
+
+## Integration Points
+
+### Startup.ps1
+This rule is loaded and enforced during session startup.
+
+### Testing Protocols
+Applies to all testing frameworks:
+- Playwright
+- Jest
+- Cypress
+- Any custom test runners
+
+---
+
+## Enforcement
+
+**Violation Severity:** HIGH  
+**Action on Violation:**
+1. Immediately close any browser window opened
+2. Log violation
+3. Continue with report generation without browser
+
+---
+
+## Example Workflow
+
+```powershell
+# Generate test results
+npx playwright test
+
+# Generate HTML report (without opening)
+npx playwright show-report --host=0.0.0.0 --port=9323 &
+
+# Inform user
+Write-Host "✅ Test Report Location: Project-Testing/results/playwright-report/index.html"
+Write-Host "📊 Open manually in browser when ready to review"
+
+# NEVER run: start Project-Testing/results/playwright-report/index.html
+```
+
+---
+
+## Related Rules
+
+- `visual-testing.mdc` - Full page screenshot enforcement
+- `comprehensive-testing.mdc` - Complete testing protocols
+- `ensure-visibility.mdc` - Work visibility requirements
+
+---
+
+**Status:** Active  
+**Priority:** High  
+**Applies To:** All projects, all testing frameworks  
+**Enforcement:** Automatic via startup.ps1

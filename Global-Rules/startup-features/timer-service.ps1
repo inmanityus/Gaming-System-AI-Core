@@ -7,6 +7,28 @@ function Initialize-TimerService {
     Write-Host "PROTECTIVE RATIONALE: Timers are the sessions' ONLY defense" -ForegroundColor Gray
     Write-Host "against IDE and local/remote systems that attempt to trap execution" -ForegroundColor Gray
 
+    # STEP 1: Cleanup orphaned timers BEFORE starting new service (MANDATORY)
+    Write-Host "[TIMER] Cleaning up orphaned timer services..." -ForegroundColor Yellow
+    $cleanupScript = "scripts\cleanup-orphaned-timers-auto.ps1"
+    if (Test-Path $cleanupScript) {
+        try {
+            $cleanupResult = & pwsh -ExecutionPolicy Bypass -File $cleanupScript -AutoClean 2>&1
+            Write-Host "[TIMER] Cleanup completed" -ForegroundColor Green
+            if ($cleanupResult -match "CLEANUPS PERFORMED") {
+                Write-Host "[TIMER] Orphaned timers were cleaned up" -ForegroundColor Yellow
+            } else {
+                Write-Host "[TIMER] No orphaned timers found" -ForegroundColor Green
+            }
+        } catch {
+            Write-Host "[WARNING] Timer cleanup failed: $($_.Exception.Message)" -ForegroundColor Yellow
+            Write-Host "         Continuing with timer service initialization..." -ForegroundColor Yellow
+        }
+    } else {
+        Write-Host "[WARNING] Timer cleanup script not found: $cleanupScript" -ForegroundColor Yellow
+        Write-Host "         Timer service will start without cleanup (may cause issues)" -ForegroundColor Yellow
+    }
+
+    # STEP 2: Start timer service
     # Timer service runs asynchronously to prevent command trapping
     # Default: 10-minute timer that prompts check-ins
     $timerScript = "Global-Scripts\global-command-timer.ps1"

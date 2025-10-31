@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from uuid import UUID
 from datetime import datetime
 
-from services.state_manager.connection_pool import PostgresConnectionPool
+from services.state_manager.connection_pool import PostgreSQLPool
 
 
 class TestResults:
@@ -36,7 +36,7 @@ class TestingFramework:
     models before deployment.
     """
     
-    def __init__(self, db_pool: Optional[PostgresConnectionPool] = None):
+    def __init__(self, db_pool: Optional[PostgreSQLPool] = None):
         self.db_pool = db_pool
         self.similarity_threshold = 0.95  # 95% minimum similarity required
         self.performance_improvement_threshold = 0.0  # Allow similar or better performance

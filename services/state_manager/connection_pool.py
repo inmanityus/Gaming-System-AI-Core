@@ -194,6 +194,14 @@ class PostgreSQLPool:
 
     
 
+    def get_connection(self):
+        """Get connection from pool as async context manager."""
+        if self._pool is None or self._pool.is_closing():
+            raise RuntimeError("Pool not initialized. Call initialize() first.")
+        
+        # Return asyncpg's connection as context manager
+        return self._pool.acquire()
+    
     async def close(self):
 
         """Close the connection pool."""
