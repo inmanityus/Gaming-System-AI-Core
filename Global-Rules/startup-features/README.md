@@ -1,56 +1,145 @@
-# Startup Features Directory
+# Startup Features - Modular Architecture
+**Purpose**: Extensible startup system for all Cursor projects  
+**Location**: `Global-Workflows/startup-features/` (shared across projects)
 
-This directory contains modular startup features that are automatically loaded by `startup.ps1`. 
+---
 
-## How It Works
+## 📋 **CURRENT FEATURES**
 
-Each feature is a PowerShell script that exports a function following the naming pattern:
-- Function: `Initialize-<FeatureName>`
-- File: `<feature-name>.ps1`
+Features load in alphabetical order. To enforce specific order, prefix filenames (e.g., `01-feature.ps1`).
 
-The startup script automatically:
-1. Discovers all `.ps1` files in this directory
-2. Dot-sources each file (loads the function)
-3. Calls the `Initialize-<FeatureName>` function for each loaded feature
+### **1. documentation-placement.ps1**
+- Verifies documentation is properly organized
+- Function: `Initialize-DocumentationPlacement`
 
-## Adding New Features
+### **2. memory-structure.ps1**
+- Creates and manages AI session memory structure
+- Function: `Initialize-MemoryStructure`
 
-To add a new startup feature:
+### **3. minimum-model-levels.ps1**
+- Loads and enforces minimum AI model requirements
+- Function: `Initialize-MinimumModelLevels`
 
-1. Create a new `.ps1` file in this directory (e.g., `my-new-feature.ps1`)
-2. Define a function: `function Initialize-MyNewFeature { ... }`
-3. The feature will automatically load on next startup
+### **4. resource-management.ps1**
+- Initializes resource management tools and health monitoring
+- Function: `Initialize-ResourceManagement`
 
-**Example:**
+### **5. session-rules-enforcement.ps1** ⭐ **NEW**
+- Enforces /all-rules compliance (timer, milestones, visibility)
+- Function: `Initialize-SessionRulesEnforcement`
+- Created: 2025-01-29
+
+### **6. timer-service.ps1**
+- Starts timer service to prevent session traps
+- Function: `Initialize-TimerService`
+
+### **7. timer-verification.ps1** ⭐ **NEW**
+- Verifies timer service is running and accessible
+- Function: `Initialize-TimerVerification`
+- Created: 2025-01-29
+
+---
+
+## 🔄 **LOAD ORDER**
+
+Current alphabetical order:
+1. documentation-placement
+2. memory-structure
+3. minimum-model-levels
+4. resource-management
+5. session-rules-enforcement ⭐
+6. timer-service
+7. timer-verification ⭐
+
+**Critical Sequence**: 
+- Timer Service starts first
+- Timer Verification checks it next
+- Session Rules enforce compliance
+
+---
+
+## 🎯 **NEW FEATURES** (2025-01-29)
+
+### **timer-verification.ps1**
+**Purpose**: Verify timer service is actually running
+
+**Checks**:
+- Background job `CursorTimerService` is running
+- Marker file `.cursor/timer-service.running` exists and is recent
+- Sets `$env:CURSOR_TIMER_VERIFIED = "true"` if verified
+
+**Requires**: timer-service.ps1 to run first
+
+### **session-rules-enforcement.ps1**
+**Purpose**: Enforce /all-rules compliance
+
+**Functions**:
+- Creates rules compliance tracker
+- Sets environment variables for enforcement
+- Reminds AI to format responses with timer/milestone/visibility
+- Tracks compliance across session
+
+**Dependencies**: 
+- Should run after timer-verification
+- Sets enforcement flags for /all-rules compliance
+
+---
+
+## 📝 **ADDING NEW FEATURES**
+
+### **Quick Start**
+
+1. Create `.ps1` file in `Global-Workflows/startup-features/`
+2. Use kebab-case: `my-new-feature.ps1`
+3. Define function: `function Initialize-MyNewFeature { ... }`
+4. File auto-loads on next startup!
+
+### **Example**
+
 ```powershell
 # my-new-feature.ps1
 function Initialize-MyNewFeature {
-    Write-Host "[FEATURE] My New Feature initializing..." -ForegroundColor Cyan
-    # Your initialization code here
-    Write-Host "[OK] My New Feature ready" -ForegroundColor Green
+    Write-Host "[MYFEATURE] Initializing..." -ForegroundColor Cyan
+    
+    # Your code here
+    if (Test-Path "some-file.txt") {
+        Write-Host "[OK] MyNewFeature ready" -ForegroundColor Green
+    }
 }
 ```
 
-## Current Features
+**Naming Convention**:
+- File: `my-new-feature.ps1` (kebab-case)
+- Function: `Initialize-MyNewFeature` (PascalCase)
 
-- **timer-service.ps1**: Initializes timer service to prevent session traps
-- **minimum-model-levels.ps1**: Loads and enforces minimum AI model requirements
-- **memory-structure.ps1**: Creates and manages AI session memory structure
-- **resource-management.ps1**: Initializes resource management tools and health monitoring
-- **documentation-placement.ps1**: Verifies documentation is properly organized
+---
 
-## Feature Execution Order
+## 🎯 **BEST PRACTICES**
 
-Features are executed in alphabetical order by filename. If you need a specific execution order, prefix filenames with numbers:
-- `01-timer-service.ps1`
-- `02-minimum-model-levels.ps1`
-- etc.
+- ✅ **Error Handling**: Use try/catch blocks
+- ✅ **Status Messages**: Provide clear feedback
+- ✅ **Idempotency**: Safe to run multiple times
+- ✅ **Dependencies**: Check requirements first
+- ✅ **Documentation**: Comment complex logic
 
-## Notes
+---
 
-- All features receive the same environment (PowerShell session scope)
-- Features can access `$ProjectRoot` variable set by startup.ps1
-- Features should handle errors gracefully (use try/catch)
-- Features should provide clear status messages
-- Features should be idempotent (safe to run multiple times)
+## 🔗 **USAGE**
 
+Features load automatically when `startup.ps1` runs.
+
+**In startup.ps1**:
+```powershell
+# Loads all .ps1 files from Global-Workflows/startup-features/
+# Calls Initialize-* functions automatically
+```
+
+**Manual Loading**:
+```powershell
+. "Global-Workflows/startup-features/my-feature.ps1"
+Initialize-MyFeature
+```
+
+---
+
+**Status**: ✅ All features documented and ready for use
