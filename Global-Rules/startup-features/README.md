@@ -24,19 +24,15 @@ Features load in alphabetical order. To enforce specific order, prefix filenames
 - Initializes resource management tools and health monitoring
 - Function: `Initialize-ResourceManagement`
 
-### **5. session-rules-enforcement.ps1** ⭐ **NEW**
-- Enforces /all-rules compliance (timer, milestones, visibility)
-- Function: `Initialize-SessionRulesEnforcement`
+### **5. session-monitor.ps1** ⭐ **NEW - UPDATED**
+- Continuous background monitoring of /all-rules compliance
+- Function: `Initialize-SessionMonitor`
+- Designed via three-model collaboration (Claude 3.5, GPT-4o, GPT-4 Turbo)
 - Created: 2025-01-29
 
 ### **6. timer-service.ps1**
 - Starts timer service to prevent session traps
 - Function: `Initialize-TimerService`
-
-### **7. timer-verification.ps1** ⭐ **NEW**
-- Verifies timer service is running and accessible
-- Function: `Initialize-TimerVerification`
-- Created: 2025-01-29
 
 ---
 
@@ -47,41 +43,44 @@ Current alphabetical order:
 2. memory-structure
 3. minimum-model-levels
 4. resource-management
-5. session-rules-enforcement ⭐
+5. **session-monitor** ⭐ (continuous monitoring)
 6. timer-service
-7. timer-verification ⭐
 
 **Critical Sequence**: 
 - Timer Service starts first
-- Timer Verification checks it next
-- Session Rules enforce compliance
+- Session Monitor verifies it and continues monitoring
 
 ---
 
-## 🎯 **NEW FEATURES** (2025-01-29)
+## 🎯 **NEW FEATURE: session-monitor.ps1** ⭐ **RECENTLY UPDATED**
 
-### **timer-verification.ps1**
-**Purpose**: Verify timer service is actually running
+### **Purpose**: Continuous Oversight Throughout Entire Session
 
-**Checks**:
-- Background job `CursorTimerService` is running
-- Marker file `.cursor/timer-service.running` exists and is recent
-- Sets `$env:CURSOR_TIMER_VERIFIED = "true"` if verified
+**What It Does**:
+- Runs continuously as background job
+- Checks /all-rules compliance every 60 seconds
+- Monitors: timer, peer coding, pairwise testing, milestones, visibility, memory, testing, continuity
+- Writes status file: `.cursor/monitor/status.json`
+- Logs violations: `.cursor/logs/session-monitor.jsonl`
 
-**Requires**: timer-service.ps1 to run first
+**Design**:
+- Based on timer-service background job pattern
+- Lightweight (60s intervals, minimal resource usage)
+- Auto-remediation (restarts dead timer if detected)
+- Non-intrusive (never interrupts workflow)
 
-### **session-rules-enforcement.ps1**
-**Purpose**: Enforce /all-rules compliance
+**Why Three-Model Collaboration**:
+- **Claude 3.5**: Background job architecture (lightweight)
+- **GPT-4o**: Robust monitoring with auto-remediation
+- **GPT-4 Turbo**: Hybrid approach balancing efficiency
 
-**Functions**:
-- Creates rules compliance tracker
-- Sets environment variables for enforcement
-- Reminds AI to format responses with timer/milestone/visibility
-- Tracks compliance across session
-
-**Dependencies**: 
-- Should run after timer-verification
-- Sets enforcement flags for /all-rules compliance
+**Benefits**:
+- ✅ Continuous monitoring (not just startup check)
+- ✅ Early violation detection
+- ✅ Auto-remediation of simple issues
+- ✅ Session stability and quality
+- ✅ Lightweight, no burden
+- ✅ Reduces overhead on sessions
 
 ---
 
@@ -121,6 +120,8 @@ function Initialize-MyNewFeature {
 - ✅ **Idempotency**: Safe to run multiple times
 - ✅ **Dependencies**: Check requirements first
 - ✅ **Documentation**: Comment complex logic
+- ✅ **Lightweight**: Minimize resource usage
+- ✅ **Background Jobs**: For continuous monitoring
 
 ---
 
