@@ -14,6 +14,33 @@ Global-Testing-Framework/
 .cursor/session-start.txt
 .cursor/health-metrics.jsonl
 .cursor/last-cleanup.json
+.cursor/ai-logs/
+.cursor/monitor/
+.cursor/startup-complete.marker
+.cursor/timer-service.running
+.cursor/.globals_linked
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Milestone and session tracking files
+MILESTONE-*.md
+SESSION-*.md
+PROGRESS-*.md
+
+# Global junctions - should not be committed
+Global-Rules/
+Global-Reasoning/
+Global-History/
+Global-Scripts/
+Global-Workflows/
+Global-Docs/
+Global-Utils/
+Global-Testing-Framework/
 
 # Dependencies
 node_modules/

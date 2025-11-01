@@ -1,5 +1,0 @@
----
-Description: Ensure global resources visibility
-Always: true
----
-On startup, always run `scripts/ensure-cursor-visibility.ps1` quietly (PowerShell watchdog wrapper) to make sure `.cursor`, `Global-Rules`, `Global-Scripts`, `Global-Workflows`, `Global-Utils`, and `scripts` are present and linked to the global repository. Log status to `.cursor/ai-logs/visibility-marker.json`.
