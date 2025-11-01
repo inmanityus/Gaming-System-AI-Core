@@ -133,7 +133,7 @@ class WorldStateManager:
             param_idx += 1
         
         if "current_weather" in updates:
-            update_fields.append(f"current_weather = ${param_idx}")
+            update_fields.append(f"weather = ${param_idx}")
             params.append(updates["current_weather"])
             param_idx += 1
         
@@ -163,7 +163,7 @@ class WorldStateManager:
             param_idx += 1
         
         if "meta_data" in updates:
-            update_fields.append(f"meta_data = ${param_idx}::jsonb")
+            update_fields.append(f"simulation_data = ${param_idx}::jsonb")
             params.append(json.dumps(updates["meta_data"]))
             param_idx += 1
         
@@ -174,44 +174,19 @@ class WorldStateManager:
         update_fields.append("updated_at = CURRENT_TIMESTAMP")
         update_fields.append("version = version + 1")
         
-        # Update existing record or create new one
-        if current_state.get("id"):
-            query = f"""
-                UPDATE world_states
-                SET {', '.join(update_fields)}
-                WHERE id = (
-                    SELECT id FROM world_states
-                    ORDER BY created_at DESC
-                    LIMIT 1
-                )
-                RETURNING id, world_time, current_weather, global_events, faction_power,
-                          economic_state, npc_population, territory_control, meta_data,
-                          created_at, updated_at
-            """
-        else:
-            query = f"""
-                INSERT INTO world_states
-                (world_time, current_weather, global_events, faction_power,
-                 economic_state, npc_population, territory_control, meta_data)
-                VALUES (
-                    ${param_idx}, ${param_idx + 1}, ${param_idx + 2}::jsonb, ${param_idx + 3}::jsonb,
-                    ${param_idx + 4}::jsonb, ${param_idx + 5}::jsonb, ${param_idx + 6}::jsonb, ${param_idx + 7}::jsonb
-                )
-                RETURNING id, world_time, current_weather, global_events, faction_power,
-                          economic_state, npc_population, territory_control, meta_data,
-                          created_at, updated_at
-            """
-            # Add default values for INSERT
-            params.extend([
-                updates.get("world_time", "2025-10-29T23:17:17Z"),
-                updates.get("current_weather", "overcast"),
-                json.dumps(updates.get("global_events", {})),
-                json.dumps(updates.get("faction_power", {})),
-                json.dumps(updates.get("economic_state", {})),
-                json.dumps(updates.get("npc_population", {})),
-                json.dumps(updates.get("territory_control", {})),
-                json.dumps(updates.get("meta_data", {})),
-            ])
+        # For now, always update existing record (assume world_states always exists)
+        query = f"""
+            UPDATE world_states
+            SET {', '.join(update_fields)}
+            WHERE id = (
+                SELECT id FROM world_states
+                ORDER BY created_at DESC
+                LIMIT 1
+            )
+            RETURNING id, world_time, weather, global_events, faction_power,
+                      economic_state, npc_population, territory_control, simulation_data,
+                      created_at, updated_at
+        """
         
         result = await postgres.fetch(query, *params)
         
@@ -222,13 +197,13 @@ class WorldStateManager:
         updated_state = {
             "id": str(result["id"]),
             "world_time": result["world_time"],
-            "current_weather": result["current_weather"],
+            "current_weather": result["weather"],
             "global_events": json.loads(result["global_events"]) if isinstance(result["global_events"], str) else result["global_events"],
             "faction_power": json.loads(result["faction_power"]) if isinstance(result["faction_power"], str) else result["faction_power"],
             "economic_state": json.loads(result["economic_state"]) if isinstance(result["economic_state"], str) else result["economic_state"],
             "npc_population": json.loads(result["npc_population"]) if isinstance(result["npc_population"], str) else result["npc_population"],
             "territory_control": json.loads(result["territory_control"]) if isinstance(result["territory_control"], str) else result["territory_control"],
-            "meta_data": json.loads(result["meta_data"]) if isinstance(result["meta_data"], str) else result["meta_data"],
+            "meta_data": json.loads(result["simulation_data"]) if isinstance(result["simulation_data"], str) else result["simulation_data"],
             "version": current_version + 1,
             "last_updated": result["updated_at"].isoformat() if result["updated_at"] else None,
         }
@@ -282,8 +257,8 @@ class WorldStateManager:
         postgres = await self._get_postgres()
         
         query = """
-            SELECT world_time, current_weather, global_events, faction_power,
-                   economic_state, npc_population, territory_control, meta_data,
+            SELECT world_time, weather, global_events, faction_power,
+                   economic_state, npc_population, territory_control, simulation_data,
                    created_at, updated_at
             FROM world_states
             ORDER BY created_at DESC
@@ -296,13 +271,13 @@ class WorldStateManager:
         for result in results:
             history.append({
                 "world_time": result["world_time"],
-                "current_weather": result["current_weather"],
+                "current_weather": result["weather"],
                 "global_events": json.loads(result["global_events"]) if isinstance(result["global_events"], str) else result["global_events"],
                 "faction_power": json.loads(result["faction_power"]) if isinstance(result["faction_power"], str) else result["faction_power"],
                 "economic_state": json.loads(result["economic_state"]) if isinstance(result["economic_state"], str) else result["economic_state"],
                 "npc_population": json.loads(result["npc_population"]) if isinstance(result["npc_population"], str) else result["npc_population"],
                 "territory_control": json.loads(result["territory_control"]) if isinstance(result["territory_control"], str) else result["territory_control"],
-                "meta_data": json.loads(result["meta_data"]) if isinstance(result["meta_data"], str) else result["meta_data"],
+                "meta_data": json.loads(result["simulation_data"]) if isinstance(result["simulation_data"], str) else result["simulation_data"],
                 "created_at": result["created_at"].isoformat() if result["created_at"] else None,
                 "updated_at": result["updated_at"].isoformat() if result["updated_at"] else None,
             })

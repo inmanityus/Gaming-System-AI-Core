@@ -18,35 +18,35 @@ from services.world_state.faction_manager import FactionManager
 from services.world_state.economic_manager import EconomicManager
 
 
-@pytest_asyncio.fixture(scope="module")
+@pytest_asyncio.fixture(scope="function")
 async def world_state_manager():
     """World state manager fixture."""
     manager = WorldStateManager()
     yield manager
 
 
-@pytest_asyncio.fixture(scope="module")
+@pytest_asyncio.fixture(scope="function")
 async def event_system():
     """Event system fixture."""
     system = EventSystem()
     yield system
 
 
-@pytest_asyncio.fixture(scope="module")
+@pytest_asyncio.fixture(scope="function")
 async def faction_manager():
     """Faction manager fixture."""
     manager = FactionManager()
     yield manager
 
 
-@pytest_asyncio.fixture(scope="module")
+@pytest_asyncio.fixture(scope="function")
 async def economic_manager():
     """Economic manager fixture."""
     manager = EconomicManager()
     yield manager
 
 
-@pytest_asyncio.fixture(scope="module")
+@pytest_asyncio.fixture(scope="function")
 async def test_faction_id():
     """Test faction ID fixture."""
     # Create a test faction in the database
@@ -58,17 +58,18 @@ async def test_faction_id():
     # Insert test faction
     await postgres.execute(
         """
-        INSERT INTO factions (id, name, description, alignment, power_level, territory, relationships, hierarchy, meta_data)
-        VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb, $8::jsonb, $9::jsonb)
+        INSERT INTO factions (id, name, faction_type, description, power_level, territory, relationships, hierarchy, goals, meta_data)
+        VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7::jsonb, $8::jsonb, $9::jsonb, $10::jsonb)
         """,
         faction_id,
         "Test Faction",
-        "A test faction for testing",
         "neutral",
+        "A test faction for testing",
         50,
-        '{"territory1": 0.8, "territory2": 0.6}',
-        '{"faction2": 0.3, "faction3": -0.2}',
-        '{"leader": "Test Leader", "officers": ["Officer1", "Officer2"]}',
+        '[]',
+        '{}',
+        '{}',
+        '[]',
         '{"test": true}'
     )
     

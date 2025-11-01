@@ -144,8 +144,8 @@ class ContextManager:
         
         # Get latest world state
         world_query = """
-            SELECT world_time, current_weather, global_events, faction_power,
-                   economic_state, npc_population, territory_control, meta_data
+            SELECT world_time, day_phase, weather, global_events, faction_power,
+                   economic_state, npc_population, territory_control, simulation_data
             FROM world_states
             ORDER BY created_at DESC
             LIMIT 1
@@ -174,7 +174,8 @@ class ContextManager:
         # Build world context
         context = {
             "world_time": world_result["world_time"],
-            "current_weather": world_result["current_weather"],
+            "day_phase": world_result["day_phase"],
+            "current_weather": world_result["weather"],
             "global_events": json.loads(world_result["global_events"]) if isinstance(world_result["global_events"], str) else world_result["global_events"],
             "faction_power": json.loads(world_result["faction_power"]) if isinstance(world_result["faction_power"], str) else world_result["faction_power"],
             "economic_state": json.loads(world_result["economic_state"]) if isinstance(world_result["economic_state"], str) else world_result["economic_state"],
@@ -206,6 +207,7 @@ class ContextManager:
         """Get default world context when no data available."""
         return {
             "world_time": "2025-10-29T23:17:17Z",
+            "day_phase": "day",
             "current_weather": "overcast",
             "global_events": {},
             "faction_power": {},

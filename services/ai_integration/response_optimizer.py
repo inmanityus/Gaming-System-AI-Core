@@ -56,12 +56,19 @@ class ResponseCache:
         
         cached = await redis.hgetall(key)
         if cached:
-            # Parse JSON values
+            # Parse JSON values and handle special types
             result = {}
             for k, v in cached.items():
                 try:
-                    result[k] = json.loads(v)
+                    # Try JSON parsing first
+                    parsed = json.loads(v)
+                    # Handle string booleans that were stored
+                    if isinstance(parsed, str) and parsed.lower() in ('true', 'false'):
+                        result[k] = parsed.lower() == 'true'
+                    else:
+                        result[k] = parsed
                 except (json.JSONDecodeError, TypeError):
+                    # Fallback to string value
                     result[k] = v
             
             return result
@@ -162,8 +169,13 @@ class ResponseOptimizer:
             response_time = time.time() - start_time
             self._update_response_time(response_time)
             
+            # Convert string booleans if cached
+            result = dict(cached)
+            if "optimized" in result and isinstance(result["optimized"], str):
+                result["optimized"] = result["optimized"].lower() == 'true'
+            
             return {
-                **cached,
+                **result,
                 "cached": True,
                 "response_time": response_time,
             }

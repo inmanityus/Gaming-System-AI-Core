@@ -3,6 +3,7 @@ Story Branching - Manages dynamic story paths and branching logic.
 """
 
 import json
+import random
 from typing import Any, Dict, List, Optional, Set
 from uuid import UUID
 
@@ -315,11 +316,11 @@ class StoryBranching:
             return available_branches[0].to_node_id
         
         import random
-        random_value = random.uniform(0, total_weight)
+        random_value = random.uniform(0, float(total_weight))
         current_weight = 0
         
         for branch in available_branches:
-            current_weight += branch.weight
+            current_weight += float(branch.weight)
             if random_value <= current_weight:
                 return branch.to_node_id
         

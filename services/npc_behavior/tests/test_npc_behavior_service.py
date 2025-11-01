@@ -17,14 +17,14 @@ from services.npc_behavior.goal_manager import GoalManager
 from services.npc_behavior.interaction_router import InteractionRouter
 
 
-@pytest_asyncio.fixture(scope="module")
+@pytest_asyncio.fixture(scope="function")
 async def behavior_engine():
     """Behavior engine fixture."""
     engine = BehaviorEngine()
     yield engine
 
 
-@pytest_asyncio.fixture(scope="module")
+@pytest_asyncio.fixture(scope="function")
 async def test_npc_id():
     """Test NPC ID fixture."""
     from services.state_manager.connection_pool import get_postgres_pool
