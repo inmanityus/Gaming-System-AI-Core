@@ -15,6 +15,7 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 from services.state_manager.connection_pool import get_redis_pool, RedisPool
+from services.ai_integration.llm_client import LLMClient
 
 
 class ResponseCache:
@@ -119,8 +120,10 @@ class ResponseOptimizer:
     Handles caching, streaming, and performance optimization.
     """
     
-    def __init__(self):
+    def __init__(self, llm_client: Optional[LLMClient] = None):
         self.cache = ResponseCache()
+        # Real LLM Client integration for preloading - uses actual HTTP calls
+        self.llm_client = llm_client or LLMClient()
         self.performance_metrics = {
             "total_requests": 0,
             "cache_hits": 0,
@@ -257,24 +260,56 @@ class ResponseOptimizer:
         self, 
         common_prompts: List[Tuple[str, str, Dict[str, Any]]]
     ):
-        """Preload common responses for better performance."""
+        """
+        Preload common responses for better performance.
+        Makes actual LLM calls to generate and cache responses.
+        """
         tasks = []
         
         for layer, prompt, context in common_prompts:
-            # Generate response (this would call the actual LLM)
-            # For now, just cache placeholder responses
-            placeholder_response = {
-                "text": f"Preloaded response for {layer}",
-                "layer": layer,
-                "preloaded": True,
-            }
+            async def preload_single(layer: str, prompt: str, context: Dict[str, Any]):
+                """Preload a single response by calling real LLM service."""
+                try:
+                    # Call real LLM service via LLMClient (makes actual HTTP requests)
+                    result = await self.llm_client.generate_text(
+                        layer=layer,
+                        prompt=prompt,
+                        context=context,
+                        max_tokens=1000,
+                        temperature=0.7,
+                    )
+                    
+                    # Check if request was successful
+                    if result.get("success", False):
+                        # Extract generated text and create response structure
+                        generated_text = result.get("text", "")
+                        
+                        # Create response structure for caching
+                        response = {
+                            "text": generated_text,
+                            "layer": layer,
+                            "preloaded": True,
+                            "timestamp": time.time(),
+                            "model_id": result.get("model_id"),
+                            "tokens_used": result.get("tokens_used", 0),
+                        }
+                        
+                        # Cache the real response
+                        context_hash = self._calculate_context_hash(context)
+                        await self.cache.cache_response(layer, prompt, context_hash, response)
+                    else:
+                        # If LLM service unavailable, log but don't cache placeholder
+                        error_msg = result.get("error", "Unknown error")
+                        print(f"Warning: Could not preload response for {layer}: {error_msg}")
+                        
+                except Exception as e:
+                    # Log error but continue with other preloads
+                    print(f"Error preloading response for {layer}: {e}")
             
-            context_hash = self._calculate_context_hash(context)
-            tasks.append(
-                self.cache.cache_response(layer, prompt, context_hash, placeholder_response)
-            )
+            tasks.append(preload_single(layer, prompt, context))
         
-        await asyncio.gather(*tasks)
+        # Execute all preload tasks in parallel
+        await asyncio.gather(*tasks, return_exceptions=True)
     
     def reset_metrics(self):
         """Reset performance metrics."""

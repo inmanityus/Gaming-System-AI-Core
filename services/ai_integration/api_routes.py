@@ -83,24 +83,43 @@ async def generate_text(
             player_id, request.context_type
         )
         
-        # Generate text using LLM
+        # Generate text using LLM - REAL IMPLEMENTATION
+        # First, always call the real LLM service
+        llm_response = await llm_client.generate_text(
+            request.layer,
+            request.prompt,
+            context,
+            max_tokens=request.max_tokens or 1000,
+            temperature=request.temperature or 0.7
+        )
+        
+        # Check if LLM call was successful
+        if not llm_response.get("success", False):
+            raise HTTPException(
+                status_code=503,
+                detail=f"LLM service unavailable: {llm_response.get('error', 'Unknown error')}"
+            )
+        
+        # Extract real response data
+        llm_result = {
+            "text": llm_response.get("text", ""),
+            "tokens_used": llm_response.get("tokens_used", 0),
+            "model_id": llm_response.get("model_id"),
+            "layer": llm_response.get("layer"),
+            "latency_ms": llm_response.get("latency_ms", 0),
+        }
+        
         if request.use_cache:
-            # Use optimized response with caching
+            # Use optimized response with caching - pass REAL LLM result
             response = await response_optimizer.optimize_response(
                 request.layer,
                 request.prompt,
                 context,
-                {"text": "", "tokens_used": 0}  # Placeholder - would call actual LLM
+                llm_result  # REAL LLM response, not placeholder
             )
         else:
-            # Direct LLM call without caching
-            response = await llm_client.generate_text(
-                request.layer,
-                request.prompt,
-                context,
-                request.max_tokens,
-                request.temperature,
-            )
+            # Direct LLM call without caching - use REAL result
+            response = llm_result
         
         return GenerationResponse(
             success=response.get("success", True),

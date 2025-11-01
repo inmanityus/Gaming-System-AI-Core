@@ -32,12 +32,24 @@
 2. **AI Inference**: AI-004 (Multi-Tier), AI-005 (Batching)
 3. **Orchestration**: OR-002 (4-Layer Pipeline)
 4. **Payment**: PM-002 (Checkout), PM-003 (Coupons)
+5. **More Requirements - Foundation**: 
+   - INT-001 (Central Event Bus)
+   - DN-001, DN-002, DN-003 (Day/Night Enhancement)
+   - VA-001 (Audio Manager Core)
 
-### Phase 4: Production (Weeks 17-24)
+### Phase 4: More Requirements Core Systems (Weeks 17-24)
+1. **Audio System**: VA-002, VA-003, VA-004 (Complete Audio/Voice System)
+2. **Weather System**: WS-001, WS-002, WS-003, WS-004 (Dynamic Weather)
+3. **Facial Expressions**: FE-001, FE-002, FE-003, FE-004, FE-005 (Facial & Body Language)
+4. **Terrain Ecosystems**: TE-001, TE-002, TE-003, TE-004 (Enhanced Ecosystems)
+5. **Integration**: INT-001 (Event Bus Integration)
+
+### Phase 5: Polish & Production (Weeks 25-32)
 1. **Learning Service**: LN-001 (Pipeline Setup)
 2. **Moderation**: MD-001 (Content Filtering)
-3. Integration testing
-4. Performance optimization
+3. **Immersive Features**: IM-001, IM-002, IM-003 (Polish & Accessibility)
+4. **Integration Testing**: TEST-001 (Comprehensive Integration Testing)
+5. Performance optimization
 
 ---
 
@@ -109,18 +121,23 @@ Every task completion:
 
 **Current State**:
 - ✅ Phase 1-4: Complete (Analysis, Solutions, Tasks)
+- ✅ More Requirements: Gap analysis, solution architecture, task breakdown complete
 - 🔄 Ready for implementation
 
 **Next Steps**:
-1. Begin Phase 1 tasks (GE-001, AI-001, SM-001, PM-001)
-2. Use `/autonomous` for autonomous execution
-3. Use `/complete-everything` when ready
-4. Use `/test-comprehensive` after each milestone
+1. Use `/test-comprehensive` to verify existing implementation (identify fake/mock code)
+2. Begin Phase 1 tasks (GE-001, AI-001, SM-001, PM-001)
+3. Begin More Requirements Foundation (INT-001, DN-001)
+4. Use `/autonomous` for autonomous execution
+5. Use `/complete-everything` when ready
+6. Use `/test-comprehensive` after each milestone
+7. Update progress percentage regularly
 
 **Key Files**:
-- Solutions: `docs/solutions/`
-- Tasks: `docs/tasks/`
-- Requirements: `docs/Requirements.md`
+- Solutions: `docs/solutions/` (including `MORE-REQUIREMENTS-SOLUTION.md`)
+- Tasks: `docs/tasks/` (including `MORE-REQUIREMENTS-TASKS.md`)
+- Requirements: `docs/Requirements.md`, `docs/More Requirements.md`
+- Gap Analysis: `docs/GAP-ANALYSIS-MORE-REQUIREMENTS.md`
 - Recommendations: `docs/RECOMMENDATIONS.md`
 
 ---

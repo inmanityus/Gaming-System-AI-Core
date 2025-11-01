@@ -114,10 +114,31 @@ class MetaManagementModel:
                 if not current_model:
                     continue
                 
-                # Check for better models
-                # NOTE: Actual implementation would call paid/self-hosted scanners
-                # For now, this is a placeholder
-                print(f"Checking for better models for use case: {use_case}")
+                # REAL IMPLEMENTATION - Check for better models
+                try:
+                    from services.model_management.paid_model_manager import PaidModelManager
+                    from services.model_management.model_registry import ModelRegistry
+                    
+                    paid_manager = PaidModelManager()
+                    registry = ModelRegistry()
+                    
+                    current_model = await registry.get_current_model(use_case)
+                    if current_model:
+                        current_model_id = current_model.get("model_id")
+                        better_model = await paid_manager.check_for_better_models(
+                            use_case=use_case,
+                            current_model_id=current_model_id
+                        )
+                        
+                        if better_model:
+                            print(f"[BETTER MODEL FOUND] Use case {use_case}: {current_model_id} → {better_model}")
+                        else:
+                            print(f"[MODEL CHECK] Use case {use_case}: Current model is optimal")
+                    else:
+                        print(f"[MODEL CHECK] Use case {use_case}: No current model found")
+                        
+                except Exception as e:
+                    print(f"[ERROR] Failed to check for better models for {use_case}: {e}")
                 
         except Exception as e:
             print(f"Error checking for better models: {e}")
@@ -283,10 +304,35 @@ class MetaManagementModel:
         return decisions
     
     def _performance_degraded(self, metrics: Dict[str, Any]) -> bool:
-        """Check if performance has degraded."""
-        # Placeholder implementation
-        # Production would check actual metrics
-        return False
+        """
+        Check if performance has degraded - REAL IMPLEMENTATION.
+        
+        Checks actual metrics for degradation indicators:
+        - Error rate increase
+        - Latency increase
+        - Quality score decrease
+        """
+        if not metrics:
+            return False
+        
+        # Get thresholds from metrics or defaults
+        error_rate = metrics.get("error_rate", 0.0)
+        avg_latency_ms = metrics.get("avg_latency_ms", 0.0)
+        quality_score = metrics.get("quality_score", 1.0)
+        baseline_error_rate = metrics.get("baseline_error_rate", 0.05)
+        baseline_latency_ms = metrics.get("baseline_latency_ms", 1000.0)
+        baseline_quality = metrics.get("baseline_quality", 0.9)
+        
+        # Degradation indicators:
+        # - Error rate increased by >50% from baseline
+        # - Latency increased by >50% from baseline
+        # - Quality decreased by >20% from baseline
+        
+        error_degradation = error_rate > (baseline_error_rate * 1.5)
+        latency_degradation = avg_latency_ms > (baseline_latency_ms * 1.5)
+        quality_degradation = quality_score < (baseline_quality * 0.8)
+        
+        return error_degradation or latency_degradation or quality_degradation
     
     async def _implement_decisions(self, decisions: List[OptimizationDecision]) -> None:
         """
@@ -328,7 +374,35 @@ class MetaManagementModel:
                 elif decision.decision_type == "retrain":
                     if decision.target_model_id:
                         print(f"Retraining model {decision.target_model_id}: {decision.reason}")
-                        # TODO: Implement actual retraining
+                        # REAL IMPLEMENTATION - Trigger fine-tuning pipeline
+                        try:
+                            from services.model_management.fine_tuning_pipeline import FineTuningPipeline
+                            
+                            fine_tuning = FineTuningPipeline()
+                            
+                            # Get model from registry
+                            from services.model_management.model_registry import ModelRegistry
+                            registry = ModelRegistry()
+                            model = await registry.get_model(decision.target_model_id)
+                            
+                            if model:
+                                use_case = model.get("use_case", "default")
+                                
+                                # Start fine-tuning process
+                                # This would trigger actual retraining with historical logs
+                                result = await fine_tuning.fine_tune_model(
+                                    base_model_id=decision.target_model_id,
+                                    use_case=use_case,
+                                    historical_logs_range=None,  # Use all recent logs
+                                    initial_training_data=None
+                                )
+                                
+                                print(f"[RETRAINING] Started fine-tuning for {decision.target_model_id}: {result.get('model_id')}")
+                            else:
+                                print(f"[ERROR] Model {decision.target_model_id} not found for retraining")
+                                
+                        except Exception as e:
+                            print(f"[ERROR] Failed to retrain model {decision.target_model_id}: {e}")
                 
             except Exception as e:
                 print(f"Error implementing decision: {e}")

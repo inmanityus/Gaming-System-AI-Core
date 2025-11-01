@@ -3,6 +3,8 @@ Rollback Manager - Manages model rollback when issues detected.
 """
 
 import json
+import os
+import shutil
 import time
 from typing import Any, Dict, Optional
 from uuid import UUID, uuid4
@@ -171,14 +173,44 @@ class RollbackManager:
                 json.dump({"model_id": str(model_id), "snapshot_id": snapshot_id}, f)
             return snapshot_path / "metadata.json"
         
-        # TODO: In production, copy actual model files
-        # For now, save reference to model path
-        with open(snapshot_path / "model_reference.json", "w") as f:
-            json.dump({
+        # REAL IMPLEMENTATION - Create snapshot of model state
+        # If model has files, copy them; otherwise save reference
+        if model_info.get('model_path') and os.path.exists(model_info['model_path']):
+            # Copy model files to snapshot directory
+            model_source = Path(model_info['model_path'])
+            
+            if model_source.is_dir():
+                # Copy entire directory
+                dest_dir = snapshot_path / "model_files"
+                dest_dir.mkdir(parents=True, exist_ok=True)
+                shutil.copytree(model_source, dest_dir, dirs_exist_ok=True)
+                model_files_path = dest_dir
+            else:
+                # Copy single file
+                dest_file = snapshot_path / model_source.name
+                shutil.copy2(model_source, dest_file)
+                model_files_path = dest_file
+            
+            # Save metadata with actual file path
+            metadata = {
                 "model_id": str(model_id),
                 "snapshot_id": snapshot_id,
-                "original_model_path": model_info['model_path']
-            }, f)
+                "model_files_path": str(model_files_path),
+                "original_model_path": model_info['model_path'],
+                "snapshot_type": "full" if model_source.is_dir() else "file",
+            }
+        else:
+            # For paid models or models without local files, save configuration reference
+            metadata = {
+                "model_id": str(model_id),
+                "snapshot_id": snapshot_id,
+                "original_model_path": model_info.get('model_path'),
+                "snapshot_type": "reference",
+                "configuration": model_info.get('configuration', {}),
+            }
+        
+        with open(snapshot_path / "model_reference.json", "w") as f:
+            json.dump(metadata, f, indent=2)
         
         return snapshot_path / "model_reference.json"
     
@@ -323,10 +355,60 @@ class RollbackManager:
         2. Restore model weights
         3. Update model registry
         """
-        # Placeholder implementation
-        print(f"Restoring model state for {model_id} from snapshot {snapshot['snapshot_id']}")
-        # TODO: Implement actual model state restoration
-        return True
+        # REAL IMPLEMENTATION - Restore model state from snapshot
+        try:
+            snapshot_path = Path(f"models/rollbacks/{snapshot['snapshot_id']}")
+            reference_file = snapshot_path / "model_reference.json"
+            
+            if not reference_file.exists():
+                print(f"[ERROR] Snapshot reference not found: {reference_file}")
+                return False
+            
+            with open(reference_file, "r") as f:
+                metadata = json.load(f)
+            
+            snapshot_type = metadata.get("snapshot_type", "reference")
+            
+            if snapshot_type == "full" or snapshot_type == "file":
+                # Restore model files
+                model_files_path = Path(metadata.get("model_files_path"))
+                original_path = Path(metadata.get("original_model_path", ""))
+                
+                if model_files_path.exists() and original_path:
+                    # Ensure destination directory exists
+                    original_path.parent.mkdir(parents=True, exist_ok=True)
+                    
+                    if model_files_path.is_dir():
+                        # Restore directory
+                        if original_path.exists():
+                            shutil.rmtree(original_path)  # Remove old if exists
+                        shutil.copytree(model_files_path, original_path, dirs_exist_ok=True)
+                    else:
+                        # Restore file
+                        original_path.parent.mkdir(parents=True, exist_ok=True)
+                        shutil.copy2(model_files_path, original_path)
+                    
+                    print(f"[RESTORE] Model files restored to {original_path}")
+                else:
+                    print(f"[ERROR] Model files not found in snapshot: {model_files_path}")
+                    return False
+            
+            # Restore model configuration in registry
+            from services.model_management.model_registry import ModelRegistry
+            registry = ModelRegistry()
+            
+            if metadata.get("configuration"):
+                await registry.update_model_config(
+                    model_id,
+                    metadata["configuration"]
+                )
+            
+            print(f"[RESTORE] Model state restored for {model_id} from snapshot {snapshot['snapshot_id']}")
+            return True
+            
+        except Exception as e:
+            print(f"[ERROR] Failed to restore model state: {e}")
+            return False
     
     async def _restore_traffic_allocation(self, model_id: UUID, snapshot: Dict[str, Any]) -> bool:
         """Restore traffic allocation from snapshot."""

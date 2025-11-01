@@ -66,8 +66,8 @@ class WorldStateManager:
         # Fallback to PostgreSQL
         postgres = await self._get_postgres()
         query = """
-            SELECT world_time, global_events, faction_power,
-                   economic_state, npc_population, territory_control,
+            SELECT world_time, weather, global_events, faction_power,
+                   economic_state, npc_population, territory_control, simulation_data,
                    created_at, updated_at
             FROM world_states
             ORDER BY created_at DESC
@@ -82,13 +82,13 @@ class WorldStateManager:
         # Build world state
         world_state = {
             "world_time": result["world_time"],
-            "current_weather": "overcast",  # Default weather
+            "current_weather": result["weather"] or "overcast",
             "global_events": json.loads(result["global_events"]) if isinstance(result["global_events"], str) else result["global_events"],
             "faction_power": json.loads(result["faction_power"]) if isinstance(result["faction_power"], str) else result["faction_power"],
             "economic_state": json.loads(result["economic_state"]) if isinstance(result["economic_state"], str) else result["economic_state"],
             "npc_population": json.loads(result["npc_population"]) if isinstance(result["npc_population"], str) else result["npc_population"],
             "territory_control": json.loads(result["territory_control"]) if isinstance(result["territory_control"], str) else result["territory_control"],
-            "meta_data": {"test": True},  # Default metadata
+            "meta_data": json.loads(result["simulation_data"]) if isinstance(result["simulation_data"], str) else (result["simulation_data"] or {}),
             "version": self._version,
             "last_updated": result["updated_at"].isoformat() if result["updated_at"] else None,
         }

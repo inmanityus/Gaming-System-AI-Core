@@ -15,6 +15,7 @@ from services.state_manager.connection_pool import get_postgres_pool, PostgreSQL
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from services.model_management.guardrails_monitor import GuardrailsMonitor
 from services.model_management.historical_log_processor import HistoricalLogProcessor
+from services.ai_integration.llm_client import LLMClient
 
 
 class NarrativeContext:
@@ -58,14 +59,11 @@ class NarrativeGenerator:
     Integrated with Model Management System for guardrails monitoring.
     """
     
-    def __init__(self, guardrails_monitor: Optional[GuardrailsMonitor] = None):
+    def __init__(self, guardrails_monitor: Optional[GuardrailsMonitor] = None, llm_client: Optional[LLMClient] = None):
         self.postgres: Optional[PostgreSQLPool] = None
-        self._llm_endpoints = {
-            "foundation": "http://localhost:8001/generate",
-            "customization": "http://localhost:8002/generate", 
-            "interaction": "http://localhost:8003/generate",
-            "coordination": "http://localhost:8004/generate",
-        }
+        
+        # Real LLM Client integration - uses actual HTTP calls to inference services
+        self.llm_client = llm_client or LLMClient()
         
         # Model Management System integration
         self.guardrails_monitor = guardrails_monitor or GuardrailsMonitor()
@@ -210,9 +208,12 @@ class NarrativeGenerator:
                 context_hints=context_hints or {},
             )
             
-            # Generate content using appropriate LLM layer
-            llm_endpoint = self._select_llm_layer(node_type)
-            narrative_content = await self._call_llm_service(llm_endpoint, prompt)
+            # Generate content using appropriate LLM layer with real LLM Client
+            narrative_content = await self._call_llm_service(
+                node_type=node_type,
+                prompt=prompt,
+                context=context.to_dict()
+            )
             
             # Parse and validate generated content
             parsed_content = self._parse_narrative_response(narrative_content)
@@ -235,7 +236,7 @@ class NarrativeGenerator:
                 print(f"Guardrails violation detected: {violations}")
                 # For critical violations, return fallback content
                 if any(v.get("severity") in ["critical", "high"] for v in violations):
-                    return self._generate_fallback_content(node_type, title, description)
+                    return self._generate_fallback_content_dict(node_type, title, description)
             
             # Log to historical logs for model management
             try:
@@ -334,8 +335,8 @@ Generate the content now:
 """
         return prompt
     
-    def _select_llm_layer(self, node_type: str) -> str:
-        """Select appropriate LLM layer based on node type."""
+    def _get_llm_layer(self, node_type: str) -> str:
+        """Map node type to LLM layer name for hierarchical LLM system."""
         layer_mapping = {
             "dialogue": "interaction",
             "action": "customization", 
@@ -345,53 +346,115 @@ Generate the content now:
             "exploration": "interaction",
             "story": "coordination",
         }
-        return self._llm_endpoints.get(layer_mapping.get(node_type, "interaction"))
+        return layer_mapping.get(node_type, "interaction")
     
-    async def _call_llm_service(self, endpoint: str, prompt: str) -> str:
-        """Call LLM service to generate content."""
-        # TODO: Implement actual LLM service calls
-        # For now, return mock content
-        return self._generate_mock_content(prompt)
+    async def _call_llm_service(self, node_type: str, prompt: str, context: Dict[str, Any]) -> str:
+        """
+        Call LLM service to generate content using real LLM Client.
+        
+        This replaces the previous mock implementation with actual HTTP calls
+        to inference services via LLMClient.
+        
+        Args:
+            node_type: Type of story node (maps to LLM layer)
+            prompt: The prompt for narrative generation
+            context: Context dictionary with player state, world state, etc.
+        
+        Returns:
+            JSON string with narrative content and choices
+        """
+        try:
+            # Get appropriate LLM layer for this node type
+            layer = self._get_llm_layer(node_type)
+            
+            # Call real LLM service via LLMClient (makes actual HTTP requests)
+            result = await self.llm_client.generate_text(
+                layer=layer,
+                prompt=prompt,
+                context=context,
+                max_tokens=2000,  # Sufficient for narrative content + choices
+                temperature=0.8,  # Creative but controlled
+            )
+            
+            # Check if request was successful
+            if not result.get("success", False):
+                # If LLM service unavailable, log error but continue with fallback
+                error_msg = result.get("error", "Unknown error")
+                print(f"Warning: LLM service returned error: {error_msg}")
+                # Use fallback response but format it as expected JSON
+                return self._generate_fallback_content(node_type, prompt)
+            
+            # Extract generated text from LLM response
+            generated_text = result.get("text", "")
+            
+            # Try to parse as JSON if it's already JSON
+            try:
+                parsed = json.loads(generated_text)
+                # If it's already in the expected format, return as-is
+                if "narrative_content" in parsed and "choices" in parsed:
+                    return generated_text
+            except json.JSONDecodeError:
+                # If not JSON, wrap it in the expected format
+                pass
+            
+            # If LLM returned plain text, structure it as expected format
+            # Note: In production, the LLM should be prompted to return structured JSON
+            # This is a temporary adapter to handle text-only responses
+            structured_response = {
+                "narrative_content": generated_text,
+                "choices": [
+                    {
+                        "id": "continue",
+                        "text": "Continue",
+                        "consequences": {},
+                        "prerequisites": {}
+                    }
+                ],
+                "atmosphere": "default",
+                "mood": "neutral",
+                "difficulty": "medium"
+            }
+            
+            return json.dumps(structured_response)
+            
+        except Exception as e:
+            # Log error and return fallback
+            print(f"Error calling LLM service: {e}")
+            return self._generate_fallback_content(node_type, prompt)
     
-    def _generate_mock_content(self, prompt: str) -> str:
-        """Generate mock content for testing."""
+    def _generate_fallback_content(self, node_type: str, prompt: str) -> str:
+        """
+        Generate fallback content when LLM service is unavailable.
+        This is a safety mechanism for when inference services are down,
+        NOT mock data for production use. The system should always try
+        to call real LLM services first.
+        """
+        fallback_narratives = {
+            "dialogue": "You find yourself in conversation with a mysterious figure. The exchange is tense, and every word matters.",
+            "action": "Action is required. The situation demands your immediate attention and careful decision-making.",
+            "choice": "A critical choice presents itself. Your decision will shape what comes next.",
+            "cutscene": "The scene unfolds before you, revealing important details about the world around you.",
+            "combat": "Conflict is imminent. Prepare yourself for what's to come.",
+            "exploration": "You explore your surroundings, discovering new information and opportunities.",
+            "story": "The story continues to unfold, with new developments changing the landscape of possibilities.",
+        }
+        
+        narrative_text = fallback_narratives.get(node_type, "The narrative continues, with new developments shaping your journey.")
+        
         return json.dumps({
-            "narrative_content": "The neon lights flicker as you step into the dimly lit alley. The air is thick with the scent of rain and something more sinister. A figure emerges from the shadows, their cybernetic implants glinting in the artificial light.",
+            "narrative_content": narrative_text,
             "choices": [
                 {
-                    "id": "approach_cautiously",
-                    "text": "Approach cautiously and try to communicate",
-                    "consequences": {
-                        "reputation": 5,
-                        "money": 0,
-                        "relationships": {"mysterious_figure": 10}
-                    },
+                    "id": "continue_story",
+                    "text": "Continue the story",
+                    "consequences": {},
                     "prerequisites": {}
-                },
-                {
-                    "id": "back_away",
-                    "text": "Back away slowly and look for another route",
-                    "consequences": {
-                        "reputation": -2,
-                        "money": 0,
-                        "relationships": {"mysterious_figure": -5}
-                    },
-                    "prerequisites": {}
-                },
-                {
-                    "id": "activate_combat_mode",
-                    "text": "Activate combat mode and prepare for a fight",
-                    "consequences": {
-                        "reputation": -10,
-                        "money": 50,
-                        "relationships": {"mysterious_figure": -20}
-                    },
-                    "prerequisites": {"level": 3}
                 }
             ],
-            "atmosphere": "dark_cyberpunk",
-            "mood": "tense",
-            "difficulty": "medium"
+            "atmosphere": "default",
+            "mood": "neutral",
+            "difficulty": "medium",
+            "fallback_used": True  # Flag to indicate this is a fallback, not real generation
         })
     
     def _parse_narrative_response(self, response: str) -> Dict[str, Any]:
@@ -422,13 +485,16 @@ Generate the content now:
         except Exception as e:
             raise ValueError(f"Error parsing narrative response: {e}")
     
-    def _generate_fallback_content(
+    def _generate_fallback_content_dict(
         self, 
         node_type: str, 
         title: str, 
         description: str
     ) -> Dict[str, Any]:
-        """Generate fallback content when AI generation fails."""
+        """
+        Generate fallback content when AI generation fails.
+        Returns a Dict (used when called from generate_narrative).
+        """
         return {
             "narrative_content": f"You find yourself in a {node_type} situation. {description}",
             "choices": [
@@ -447,5 +513,6 @@ Generate the content now:
             ],
             "atmosphere": "neutral",
             "mood": "calm",
-            "difficulty": "easy"
+            "difficulty": "easy",
+            "fallback_used": True  # Flag to indicate fallback was used
         }

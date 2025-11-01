@@ -9,7 +9,7 @@ function Initialize-TimerService {
 
     # STEP 1: Cleanup orphaned timers BEFORE starting new service (MANDATORY)
     Write-Host "[TIMER] Cleaning up orphaned timer services..." -ForegroundColor Yellow
-    $cleanupScript = "scripts\cleanup-orphaned-timers-auto.ps1"
+    $cleanupScript = "Global-Scripts\cleanup-orphaned-timers-auto.ps1"
     if (Test-Path $cleanupScript) {
         try {
             $cleanupResult = & pwsh -ExecutionPolicy Bypass -File $cleanupScript -AutoClean 2>&1

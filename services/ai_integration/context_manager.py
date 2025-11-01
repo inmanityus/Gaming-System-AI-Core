@@ -162,7 +162,7 @@ class ContextManager:
             FROM npcs n
             JOIN factions f ON n.faction_id = f.id
             WHERE f.name IN (
-                SELECT DISTINCT jsonb_object_keys(territory_control)
+                SELECT jsonb_object_keys(territory_control)
                 FROM world_states
                 ORDER BY created_at DESC
                 LIMIT 1

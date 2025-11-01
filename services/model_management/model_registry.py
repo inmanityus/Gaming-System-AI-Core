@@ -204,6 +204,45 @@ class ModelRegistry:
             model_id
         )
     
+    async def update_model_config(
+        self,
+        model_id: Any,  # Accept UUID or string
+        config_updates: Dict[str, Any]
+    ):
+        """
+        Update model configuration with new values.
+        Merges new config values into existing configuration.
+        """
+        postgres = await self._get_postgres()
+        
+        # Convert model_id to UUID if string
+        if isinstance(model_id, str):
+            try:
+                model_id = UUID(model_id)
+            except ValueError:
+                raise ValueError(f"Invalid model_id format: {model_id}")
+        
+        # Get existing configuration
+        model = await self.get_model(model_id)
+        if not model:
+            raise ValueError(f"Model {model_id} not found")
+        
+        # Merge with existing configuration
+        existing_config = model.get("configuration", {})
+        updated_config = {**existing_config, **config_updates}
+        
+        # Update in database
+        await postgres.execute(
+            """
+            UPDATE models 
+            SET configuration = $1, updated_at = $2
+            WHERE model_id = $3
+            """,
+            json.dumps(updated_config),
+            datetime.now(timezone.utc).replace(tzinfo=None),
+            model_id
+        )
+    
     def _row_to_dict(self, row) -> Dict[str, Any]:
         """Convert database row to dictionary."""
         return {

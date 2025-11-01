@@ -70,7 +70,7 @@ class FactionManager:
         
         # Cache the result
         self._power_cache[faction_id] = power
-        await redis.set(cache_key, str(power), ex=self._cache_ttl)
+        await redis.set(cache_key, str(power), ttl=self._cache_ttl)
         
         return power
     
@@ -80,7 +80,7 @@ class FactionManager:
         
         # Get faction data
         faction_query = """
-            SELECT name, description, alignment, power_level, territory, relationships, hierarchy, meta_data
+            SELECT name, description, faction_type, power_level, territory, relationships, hierarchy, goals, meta_data
             FROM factions
             WHERE id = $1
         """
@@ -116,9 +116,14 @@ class FactionManager:
         npc_power = (npc_count * avg_level) * 0.02  # 0.02 per NPC level
         
         # Calculate total power (normalized to 0.0-1.0)
-        total_power = min(1.0, (base_power + territory_power + relationship_power + npc_power) / 10.0)
+        # Note: base_power is 0-100, territory_power/relationship_power/npc_power are also on 0-1 scale
+        # We need to normalize base_power from 0-100 to 0-1, then add the 0-1 scaled values
+        # But since we're dividing everything by 10, we're treating base_power as if it's 0-10, not 0-100
+        # The formula should be: (base_power / 100) + (territory_power + relationship_power + npc_power)
+        # Let's use the simpler approach: keep base_power as-is and just divide by 100
+        total_power = min(1.0, base_power / 100.0 + territory_power + relationship_power + npc_power)
         
-        return total_power
+        return min(1.0, total_power)
     
     async def update_faction_power(self, faction_id: str, power_delta: float) -> float:
         """
@@ -141,7 +146,7 @@ class FactionManager:
             raise ValueError(f"Faction {faction_id} not found")
         
         current_power = current_result["power_level"] or 0.0
-        new_power = max(0.0, min(100.0, current_power + (power_delta * 10.0)))  # Scale to 0-100 range
+        new_power = max(0.0, min(100.0, current_power + (power_delta * 100.0)))  # Scale to 0-100 range
         
         # Update faction power level
         update_query = """
@@ -157,7 +162,7 @@ class FactionManager:
         redis = await self._get_redis()
         await redis.delete(f"faction_power:{faction_id}")
         
-        return new_power / 10.0  # Return normalized value
+        return new_power / 100.0  # Return normalized value
     
     async def get_territory_control(self, faction_id: str) -> List[str]:
         """
@@ -198,7 +203,7 @@ class FactionManager:
         
         # Cache the result
         self._territory_cache[faction_id] = territories
-        await redis.set(cache_key, json.dumps(territories), ex=self._cache_ttl)
+        await redis.set(cache_key, json.dumps(territories), ttl=self._cache_ttl)
         
         return territories
     

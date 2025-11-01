@@ -34,6 +34,12 @@ Features load in alphabetical order. To enforce specific order, prefix filenames
 - Starts timer service to prevent session traps
 - Function: `Initialize-TimerService`
 
+### **7. work-visibility-enforcement.ps1** ⭐ **NEW**
+- Enforces real-time command display requirement
+- Function: `Initialize-WorkVisibilityEnforcement`
+- **Critical**: Ensures ALL commands and results shown in session window (not just file summaries)
+- Reference: `Global-History/work-visibility-real-time.md`
+
 ---
 
 ## 🔄 **LOAD ORDER**

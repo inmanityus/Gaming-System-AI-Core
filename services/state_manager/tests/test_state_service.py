@@ -224,42 +224,33 @@ async def test_cache_hit_rate(state_ops, test_player_id):
 
     
 
-    # Reset cache stats for this test
-
+    # Clear cache and reset stats for this test
+    await state_ops.cache.delete("game_state", state_id)
     state_ops.cache.reset_stats()
 
     
 
     # First read (cache miss)
-
     await state_ops.get_game_state(state_id)
-
     hit_rate_1 = state_ops.cache.get_hit_rate()
 
     
 
     # Second read (cache hit)
-
     await state_ops.get_game_state(state_id)
-
     hit_rate_2 = state_ops.cache.get_hit_rate()
 
     
 
     # Third read (cache hit)
-
     await state_ops.get_game_state(state_id)
-
     hit_rate_3 = state_ops.cache.get_hit_rate()
 
     
 
     # Hit rate should improve after first read
-
     assert hit_rate_2 > hit_rate_1
-
     assert hit_rate_3 >= hit_rate_2
-
     assert hit_rate_3 >= 50.0
 
     

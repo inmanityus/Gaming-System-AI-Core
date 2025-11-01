@@ -263,6 +263,34 @@ CREATE INDEX idx_player_augmentations_player_id ON player_augmentations(player_i
 CREATE INDEX idx_player_augmentations_augmentation_id ON player_augmentations(augmentation_id);
 
 -- ============================================================================
+-- WORLD EVENTS TABLE
+-- ============================================================================
+CREATE TABLE world_events (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    event_type VARCHAR(50) NOT NULL,
+    trigger VARCHAR(100) NOT NULL,
+    intensity NUMERIC(3, 2) NOT NULL CHECK (intensity >= 0 AND intensity <= 1),
+    description TEXT NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    duration INTEGER NOT NULL,
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP NOT NULL,
+    impact JSONB NOT NULL DEFAULT '{}',
+    metadata JSONB NOT NULL DEFAULT '{}',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indexes for world_events
+CREATE INDEX idx_world_events_event_type ON world_events(event_type);
+CREATE INDEX idx_world_events_status ON world_events(status);
+CREATE INDEX idx_world_events_start_time ON world_events(start_time);
+CREATE INDEX idx_world_events_end_time ON world_events(end_time);
+CREATE INDEX idx_world_events_created_at ON world_events(created_at);
+CREATE INDEX idx_world_events_impact ON world_events USING GIN(impact);
+CREATE INDEX idx_world_events_metadata ON world_events USING GIN(metadata);
+
+-- ============================================================================
 -- TRIGGERS: Update updated_at timestamps automatically
 -- ============================================================================
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -297,6 +325,9 @@ CREATE TRIGGER update_npcs_updated_at BEFORE UPDATE ON npcs
 CREATE TRIGGER update_augmentations_updated_at BEFORE UPDATE ON augmentations
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+CREATE TRIGGER update_world_events_updated_at BEFORE UPDATE ON world_events
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 -- ============================================================================
 -- COMMENTS: Document tables
 -- ============================================================================
@@ -309,4 +340,5 @@ COMMENT ON TABLE factions IS 'Faction relationships and power dynamics';
 COMMENT ON TABLE npcs IS 'NPC entities with 50-dimensional personality vectors';
 COMMENT ON TABLE augmentations IS 'Body modification catalog (supernatural powers, upgrades)';
 COMMENT ON TABLE player_augmentations IS 'Many-to-many relationship between players and augmentations';
+COMMENT ON TABLE world_events IS 'Dynamic world events for simulation and narrative generation';
 

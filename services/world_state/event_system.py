@@ -98,6 +98,7 @@ class EventSystem:
         event_id = str(uuid4())
         
         # Generate event based on type and intensity
+        now = datetime.utcnow()
         event = {
             "id": event_id,
             "type": event_type,
@@ -106,11 +107,11 @@ class EventSystem:
             "description": description or self._generate_event_description(event_type, trigger, intensity),
             "status": "active",
             "duration": event_config["duration"],
-            "start_time": datetime.utcnow().isoformat(),
-            "end_time": (datetime.utcnow() + timedelta(seconds=event_config["duration"])).isoformat(),
+            "start_time": now,
+            "end_time": now + timedelta(seconds=event_config["duration"]),
             "impact": self._calculate_event_impact(event_type, intensity),
             "metadata": metadata or {},
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": now,
         }
         
         # Store event in database
