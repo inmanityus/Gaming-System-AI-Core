@@ -13,6 +13,7 @@ class USoundEffectSubmixPreset;
 class IHttpRequest;
 class IHttpResponse;
 class UTimeOfDayManager;
+class UAudioPoolManager;
 
 // Forward declaration for HTTP pointers
 typedef TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> FHttpRequestPtr;
