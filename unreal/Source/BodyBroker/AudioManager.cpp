@@ -100,6 +100,21 @@ void UAudioManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
+void UAudioManager::BeginDestroy()
+{
+	// Clear all timers before destruction
+	if (UWorld* World = GetWorld())
+	{
+		World->GetTimerManager().ClearAllTimersForObject(this);
+	}
+
+	// Clear ducking state
+	CurrentDuckingState.Reset();
+	PendingAmbientComponent = nullptr;
+
+	Super::BeginDestroy();
+}
+
 void UAudioManager::Initialize(const FString& InBackendURL)
 {
 	BackendURL = InBackendURL;
@@ -279,6 +294,14 @@ void UAudioManager::InitializeVA002Systems()
 	CurrentZoneProfile = TEXT("");
 	CurrentReverbPreset = TEXT("");
 
+	// Initialize crossfade parameters
+	CurrentCategoryVolume = 1.0f;
+	CurrentFadeSteps = 0;
+	CurrentStepDuration = 0.0f;
+	CrossfadeStepsCompleted = 0;
+	PendingAmbientComponent = nullptr;
+	CurrentDuckingState.Reset();
+
 	// Initialize ducking amounts
 	CurrentDuckAmounts.Add(EAudioCategory::Voice, 0.0f);  // Voice never ducked
 	CurrentDuckAmounts.Add(EAudioCategory::Ambient, 0.0f);
@@ -453,38 +476,55 @@ void UAudioManager::CrossfadeAmbientProfile(const FString& OldProfile, const FSt
 					World->GetTimerManager().ClearTimer(AmbientCrossfadeTimerHandle);
 				}
 
-				// Store pending component as member variable for lambda safety
-				PendingAmbientComponent = NewAmbientComponent;
+				// Validate component before storing
+				if (!IsValid(NewAmbientComponent))
+				{
+					UE_LOG(LogTemp, Warning, TEXT("AudioManager: Invalid component passed to CrossfadeAmbientProfile"));
+					return;
+				}
 
-				// Use a simple timer-based fade (in production, use smoother interpolation)
-				float FadeSteps = 30.0f;  // 30 steps over duration
-				float StepDuration = Duration / FadeSteps;
+				// Store ALL state as member variables for lambda safety (no local variable captures)
+				PendingAmbientComponent = NewAmbientComponent;
+				CurrentCategoryVolume = CategoryVol;
+				CurrentFadeSteps = 30;  // 30 steps over duration
+				CurrentStepDuration = Duration / CurrentFadeSteps;
 				CrossfadeStepsCompleted = 0;  // Reset member variable
 
 				FTimerDelegate FadeDelegate;
-				FadeDelegate.BindLambda([this, CategoryVol, FadeSteps, StepDuration]()
+				FadeDelegate.BindLambda([this]()  // ONLY capture 'this' - use member variables only
 				{
+					// Validate world and component each time
+					UWorld* LambdaWorld = GetWorld();
+					if (!LambdaWorld || !IsValid(PendingAmbientComponent))
+					{
+						if (LambdaWorld)
+						{
+							LambdaWorld->GetTimerManager().ClearTimer(AmbientCrossfadeTimerHandle);
+						}
+						return;
+					}
+
 					CrossfadeStepsCompleted++;  // Increment member variable (safe)
-					float Progress = (float)CrossfadeStepsCompleted / FadeSteps;
+					float Progress = (float)CrossfadeStepsCompleted / (float)CurrentFadeSteps;
 					
 					// Fade out old
-					if (TimeOfDayAmbientComponent)
+					if (TimeOfDayAmbientComponent && IsValid(TimeOfDayAmbientComponent))
 					{
-						float OldVolume = MasterVolume * CategoryVol * (1.0f - Progress);
+						float OldVolume = MasterVolume * CurrentCategoryVolume * (1.0f - Progress);
 						TimeOfDayAmbientComponent->SetVolumeMultiplier(OldVolume);
 					}
 
 					// Fade in new
-					if (PendingAmbientComponent)
+					if (PendingAmbientComponent && IsValid(PendingAmbientComponent))
 					{
-						float NewVolume = MasterVolume * CategoryVol * Progress;
+						float NewVolume = MasterVolume * CurrentCategoryVolume * Progress;
 						PendingAmbientComponent->SetVolumeMultiplier(NewVolume);
 					}
 
 					if (Progress >= 1.0f)
 					{
 						// Complete - stop old, keep new
-						if (TimeOfDayAmbientComponent)
+						if (TimeOfDayAmbientComponent && IsValid(TimeOfDayAmbientComponent))
 						{
 							TimeOfDayAmbientComponent->Stop();
 							TimeOfDayAmbientComponent->DestroyComponent();
@@ -492,15 +532,12 @@ void UAudioManager::CrossfadeAmbientProfile(const FString& OldProfile, const FSt
 						TimeOfDayAmbientComponent = PendingAmbientComponent;
 						PendingAmbientComponent = nullptr;  // Clear reference
 						
-						// Clear timer
-						if (UWorld* World = GetWorld())
-						{
-							World->GetTimerManager().ClearTimer(AmbientCrossfadeTimerHandle);
-						}
+						// Clear timer using validated world pointer
+						LambdaWorld->GetTimerManager().ClearTimer(AmbientCrossfadeTimerHandle);
 					}
 				});
 
-				World->GetTimerManager().SetTimer(AmbientCrossfadeTimerHandle, FadeDelegate, StepDuration, true);
+				World->GetTimerManager().SetTimer(AmbientCrossfadeTimerHandle, FadeDelegate, CurrentStepDuration, true);
 			}
 		}
 	}
@@ -763,26 +800,34 @@ void UAudioManager::ApplyDucking(EAudioCategory Category, float TargetDuckAmount
 		float StepDuration = 0.1f;  // Update every 100ms
 		int32 Steps = FMath::Max(1, (int32)(Duration / StepDuration));
 		
-		// Store step count in a struct for lambda safety
-		struct FDuckingState
-		{
-			int32 StepCount = 0;
-			float StartDuck;
-			float TargetDuck;
-			int32 TotalSteps;
-		};
-		
-		TSharedPtr<FDuckingState> DuckingState = MakeShareable(new FDuckingState());
-		DuckingState->StartDuck = StartDuckAmount;
-		DuckingState->TargetDuck = TargetDuckAmount;
-		DuckingState->TotalSteps = Steps;
+		// Store ducking state as member variable (not local - for lambda safety)
+		CurrentDuckingState = MakeShareable(new FDuckingState());
+		CurrentDuckingState->StartDuck = StartDuckAmount;
+		CurrentDuckingState->TargetDuck = TargetDuckAmount;
+		CurrentDuckingState->TotalSteps = Steps;
+		CurrentDuckingState->StepCount = 0;
 
 		FTimerDelegate DuckDelegate;
-		DuckDelegate.BindLambda([this, Category, DuckingState]()
+		DuckDelegate.BindLambda([this, Category]()  // Only capture 'this' and Category (enum is safe)
 		{
-			DuckingState->StepCount++;  // Increment shared state (safe)
-			float Progress = (float)DuckingState->StepCount / (float)DuckingState->TotalSteps;
-			float CurrentDuck = FMath::Lerp(DuckingState->StartDuck, DuckingState->TargetDuck, Progress);
+			// Validate ducking state exists
+			if (!CurrentDuckingState.IsValid())
+			{
+				// Clear timer and exit
+				if (UWorld* World = GetWorld())
+				{
+					FTimerHandle* TimerHandle = DuckingTimerHandles.Find(Category);
+					if (TimerHandle)
+					{
+						World->GetTimerManager().ClearTimer(*TimerHandle);
+					}
+				}
+				return;
+			}
+
+			CurrentDuckingState->StepCount++;  // Increment member shared state (safe)
+			float Progress = (float)CurrentDuckingState->StepCount / (float)CurrentDuckingState->TotalSteps;
+			float CurrentDuck = FMath::Lerp(CurrentDuckingState->StartDuck, CurrentDuckingState->TargetDuck, Progress);
 			CurrentDuckAmounts.Add(Category, CurrentDuck);
 
 			// Apply to all audio components in this category
@@ -812,7 +857,7 @@ void UAudioManager::ApplyDucking(EAudioCategory Category, float TargetDuckAmount
 
 			if (Progress >= 1.0f)
 			{
-				// Complete
+				// Complete - clear timer and state
 				FTimerHandle* TimerHandle = DuckingTimerHandles.Find(Category);
 				if (TimerHandle)
 				{
@@ -821,6 +866,7 @@ void UAudioManager::ApplyDucking(EAudioCategory Category, float TargetDuckAmount
 						World->GetTimerManager().ClearTimer(*TimerHandle);
 					}
 				}
+				CurrentDuckingState.Reset();  // Clear shared pointer
 			}
 		});
 

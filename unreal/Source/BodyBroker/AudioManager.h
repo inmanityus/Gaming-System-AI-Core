@@ -78,6 +78,7 @@ public:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void BeginDestroy() override;
 
 	// Initialize AudioManager with backend URL
 	UFUNCTION(BlueprintCallable, Category = "Audio Manager")
@@ -272,12 +273,33 @@ private:
 	UPROPERTY()
 	float TransitionProgress;
 
-	// Crossfade state tracking (for lambda safety)
+	// Crossfade state tracking (for lambda safety - all member variables)
 	UPROPERTY()
 	int32 CrossfadeStepsCompleted;
 
 	UPROPERTY()
 	UAudioComponent* PendingAmbientComponent;  // Component being crossfaded in
+
+	// Crossfade parameters (stored as members to avoid lambda capture issues)
+	UPROPERTY()
+	float CurrentCategoryVolume;
+
+	UPROPERTY()
+	int32 CurrentFadeSteps;
+
+	UPROPERTY()
+	float CurrentStepDuration;
+
+	// Ducking state (shared pointer stored as member)
+	struct FDuckingState
+	{
+		int32 StepCount = 0;
+		float StartDuck = 0.0f;
+		float TargetDuck = 0.0f;
+		int32 TotalSteps = 0;
+	};
+	UPROPERTY()
+	TSharedPtr<FDuckingState> CurrentDuckingState;
 
 	// Constants
 	static constexpr float DEFAULT_AMBIENT_CROSSFADE_DURATION = 30.0f;  // 30 seconds for time-of-day
