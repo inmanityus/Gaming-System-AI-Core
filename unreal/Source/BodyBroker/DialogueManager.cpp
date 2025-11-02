@@ -326,8 +326,11 @@ void UDialogueManager::StartDialoguePlayback(const FDialogueItem& Item)
 		
 		UE_LOG(LogTemp, Log, TEXT("DialogueManager: Started playback for dialogue %s"), *Item.DialogueID);
 		
-		// Broadcast event
+		// Broadcast dialogue started event
 		OnDialogueStarted.Broadcast(Item.DialogueID, Item.SpeakerName);
+
+		// Broadcast subtitle show event
+		BroadcastSubtitleShow(Item);
 
 		// TODO: Set up completion callback when AudioManager supports it
 		// For now, this will need manual polling or AudioManager extension
@@ -349,8 +352,11 @@ void UDialogueManager::StartDialoguePlayback(const FDialogueItem& Item)
 				
 				UE_LOG(LogTemp, Log, TEXT("DialogueManager: Started playback for dialogue %s (from TTS)"), *Item.DialogueID);
 				
-				// Broadcast event
+				// Broadcast dialogue started event
 				OnDialogueStarted.Broadcast(Item.DialogueID, Item.SpeakerName);
+
+				// Broadcast subtitle show event
+				BroadcastSubtitleShow(UpdatedItem);
 			}
 		});
 	}
@@ -399,6 +405,9 @@ void UDialogueManager::HandleDialogueFinished(const FString& DialogueID)
 
 	// Broadcast completion event
 	OnDialogueComplete.Broadcast(DialogueID);
+
+	// Broadcast subtitle hide event
+	BroadcastSubtitleHide(DialogueID);
 
 	UE_LOG(LogTemp, VeryVerbose, TEXT("DialogueManager: Dialogue %s completed"), *DialogueID);
 
@@ -673,5 +682,55 @@ void UDialogueManager::ExecutePauseAndResumeInterrupt(const FDialogueItem& NewDi
 
 	// TODO: When NewDialogue completes, check PausedDialogues and resume CurrentDialogue
 	// This will be handled in HandleDialogueFinished when resume logic is added
+}
+
+FSubtitleData UDialogueManager::CreateSubtitleData(const FDialogueItem& Item) const
+{
+	FSubtitleData Subtitle;
+	Subtitle.Text = Item.Text;
+	Subtitle.SpeakerName = Item.SpeakerName.IsEmpty() ? Item.NPCID : Item.SpeakerName;
+	Subtitle.DialogueID = Item.DialogueID;
+	Subtitle.WordTimings = Item.WordTimings;
+
+	// Calculate timing
+	float AudioDuration = Item.Duration > 0.0f ? Item.Duration : 3.0f;  // Default 3s if unknown
+	Subtitle.DisplayDuration = AudioDuration + 1.0f;  // Audio duration + 1.0s buffer
+	Subtitle.StartTime = 0.0f;  // Start from 0
+	Subtitle.EndTime = AudioDuration;
+
+	return Subtitle;
+}
+
+void UDialogueManager::BroadcastSubtitleShow(const FDialogueItem& Item)
+{
+	FSubtitleData Subtitle = CreateSubtitleData(Item);
+	OnSubtitleShow.Broadcast(Subtitle, Subtitle.DisplayDuration);
+
+	UE_LOG(LogTemp, VeryVerbose, TEXT("DialogueManager: Subtitle shown - %s: %s"),
+		*Subtitle.SpeakerName, *Subtitle.Text);
+}
+
+void UDialogueManager::BroadcastSubtitleHide(const FString& DialogueID)
+{
+	OnSubtitleHide.Broadcast(DialogueID);
+
+	UE_LOG(LogTemp, VeryVerbose, TEXT("DialogueManager: Subtitle hidden - %s"), *DialogueID);
+}
+
+void UDialogueManager::BroadcastSubtitleUpdate(const FDialogueItem& Item, float ElapsedTime)
+{
+	// Update subtitle text based on word-level timing if available
+	FString CurrentText = Item.Text;
+	
+	if (Item.WordTimings.Num() > 0)
+	{
+		// Find words that should be highlighted based on elapsed time
+		// For now, just broadcast the full text
+		// Future: Can highlight individual words based on timing
+	}
+
+	OnSubtitleUpdate.Broadcast(Item.DialogueID, CurrentText, ElapsedTime);
+
+	UE_LOG(LogTemp, VeryVerbose, TEXT("DialogueManager: Subtitle update - %s: %.2fs"), *Item.DialogueID, ElapsedTime);
 }
 

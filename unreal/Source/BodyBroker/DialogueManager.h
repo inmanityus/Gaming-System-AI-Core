@@ -22,9 +22,53 @@ enum class EInterruptType : uint8
 	PauseAndResume	UMETA(DisplayName = "Pause And Resume")
 };
 
+// Subtitle data structure
+USTRUCT(BlueprintType)
+struct FSubtitleData
+{
+	GENERATED_BODY()
+
+	// Subtitle text
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subtitle")
+	FString Text;
+
+	// Speaker
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subtitle")
+	FString SpeakerName;
+
+	// Dialogue ID
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subtitle")
+	FString DialogueID;
+
+	// Timing
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subtitle")
+	float DisplayDuration;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subtitle")
+	float StartTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subtitle")
+	float EndTime;
+
+	// Word-level timing (optional)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Subtitle")
+	TArray<FWordTiming> WordTimings;
+
+	FSubtitleData()
+		: DisplayDuration(0.0f)
+		, StartTime(0.0f)
+		, EndTime(0.0f)
+	{}
+};
+
 // Delegate for dialogue completion
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDialogueComplete, const FString&, DialogueID);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDialogueStarted, const FString&, DialogueID, const FString&, SpeakerName);
+
+// Subtitle event delegates
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSubtitleShow, const FSubtitleData&, Subtitle, float, Duration);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSubtitleHide, const FString&, DialogueID);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnSubtitleUpdate, const FString&, DialogueID, const FString&, NewText, float, ElapsedTime);
 
 /**
  * DialogueManager - Manages dialogue playback system
@@ -88,6 +132,16 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Dialogue Manager|Events")
 	FOnDialogueComplete OnDialogueComplete;
 
+	// Subtitle event delegates
+	UPROPERTY(BlueprintAssignable, Category = "Dialogue Manager|Events|Subtitle")
+	FOnSubtitleShow OnSubtitleShow;
+
+	UPROPERTY(BlueprintAssignable, Category = "Dialogue Manager|Events|Subtitle")
+	FOnSubtitleHide OnSubtitleHide;
+
+	UPROPERTY(BlueprintAssignable, Category = "Dialogue Manager|Events|Subtitle")
+	FOnSubtitleUpdate OnSubtitleUpdate;
+
 private:
 	// Audio manager reference (weak - owned externally)
 	TWeakObjectPtr<UAudioManager> AudioManager;
@@ -118,6 +172,18 @@ private:
 
 	// Start playing a dialogue item
 	void StartDialoguePlayback(const FDialogueItem& Item);
+
+	// Create subtitle data from dialogue item
+	FSubtitleData CreateSubtitleData(const FDialogueItem& Item) const;
+
+	// Broadcast subtitle show event
+	void BroadcastSubtitleShow(const FDialogueItem& Item);
+
+	// Broadcast subtitle hide event
+	void BroadcastSubtitleHide(const FString& DialogueID);
+
+	// Broadcast subtitle update event (word-level timing if available)
+	void BroadcastSubtitleUpdate(const FDialogueItem& Item, float ElapsedTime);
 
 	// Request TTS from backend (placeholder - will be implemented in Milestone 7)
 	void RequestTTSFromBackend(const FDialogueItem& Item, TFunction<void(const TArray<uint8>&, float)> OnComplete);
