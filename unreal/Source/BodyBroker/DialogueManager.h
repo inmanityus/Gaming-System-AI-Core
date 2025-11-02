@@ -10,6 +10,7 @@
 class UAudioManager;
 class UDialogueQueue;
 class UAudioComponent;
+class UVoicePool;
 class UWorld;
 
 // Interrupt types
@@ -199,6 +200,10 @@ private:
 	// Dialogue queue (owned by subsystem)
 	UPROPERTY()
 	TObjectPtr<UDialogueQueue> DialogueQueue;
+
+	// Voice pool for concurrent voice management
+	UPROPERTY()
+	TObjectPtr<UVoicePool> VoicePool;
 
 	// Active audio components for dialogues (NPCID -> AudioComponent) - weak refs
 	UPROPERTY()

@@ -2,11 +2,13 @@
 
 #include "DialogueManager.h"
 #include "AudioManager.h"
+#include "VoicePool.h"
 #include "Components/AudioComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "Engine/GameInstance.h"
 #include "GameFramework/GameModeBase.h"
+#include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "Delegates/Delegate.h"
 #include "WorldDelegates.h"
@@ -37,6 +39,28 @@ void UDialogueManager::Initialize(FSubsystemCollectionBase& Collection)
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("DialogueManager: Failed to create DialogueQueue"));
+	}
+
+	// Create VoicePool
+	VoicePool = NewObject<UVoicePool>(this);
+	if (ensure(VoicePool))
+	{
+		VoicePool->Initialize(8);  // Max 8 concurrent voices per architecture
+		
+		// Try to set player pawn reference
+		if (UWorld* World = GetWorld())
+		{
+			if (APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(World, 0))
+			{
+				VoicePool->SetPlayerPawn(PlayerPawn);
+			}
+		}
+
+		UE_LOG(LogTemp, Log, TEXT("DialogueManager: VoicePool initialized"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("DialogueManager: Failed to create VoicePool"));
 	}
 
 	// Initialize reentrancy flag
@@ -72,6 +96,20 @@ void UDialogueManager::Deinitialize()
 	{
 		DialogueQueue->ClearAll();
 		DialogueQueue = nullptr;
+	}
+
+	// Release all voice pool components
+	if (VoicePool)
+	{
+		// Release any remaining components
+		for (auto& Pair : ActiveDialogueComponents)
+		{
+			if (UAudioComponent* AC = Pair.Value.Get())
+			{
+				VoicePool->ReleaseVoiceComponent(AC);
+			}
+		}
+		VoicePool = nullptr;
 	}
 
 	// Clear audio manager reference
