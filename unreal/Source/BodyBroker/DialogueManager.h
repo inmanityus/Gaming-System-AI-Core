@@ -12,6 +12,16 @@ class UDialogueQueue;
 class UAudioComponent;
 class UWorld;
 
+// Interrupt types
+UENUM(BlueprintType)
+enum class EInterruptType : uint8
+{
+	None			UMETA(DisplayName = "None"),
+	Immediate		UMETA(DisplayName = "Immediate"),
+	Crossfade		UMETA(DisplayName = "Crossfade"),
+	PauseAndResume	UMETA(DisplayName = "Pause And Resume")
+};
+
 // Delegate for dialogue completion
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDialogueComplete, const FString&, DialogueID);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDialogueStarted, const FString&, DialogueID, const FString&, SpeakerName);
@@ -63,6 +73,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Dialogue Manager")
 	void ProcessNextDialogue();
 
+	// Handle dialogue interrupt based on priority
+	UFUNCTION(BlueprintCallable, Category = "Dialogue Manager")
+	void HandleDialogueInterrupt(const FDialogueItem& NewDialogue, EInterruptType InterruptType = EInterruptType::Immediate);
+
 	// Stop dialogue by NPC ID
 	UFUNCTION(BlueprintCallable, Category = "Dialogue Manager")
 	void StopDialogueByNPC(const FString& NPCID);
@@ -107,5 +121,28 @@ private:
 
 	// Request TTS from backend (placeholder - will be implemented in Milestone 7)
 	void RequestTTSFromBackend(const FDialogueItem& Item, TFunction<void(const TArray<uint8>&, float)> OnComplete);
+
+	// Determine interrupt type based on priority matrix
+	EInterruptType DetermineInterruptType(int32 NewPriority, int32 CurrentPriority) const;
+
+	// Execute immediate interrupt (stop current, start new)
+	void ExecuteImmediateInterrupt(const FDialogueItem& NewDialogue, const FDialogueItem& CurrentDialogue);
+
+	// Execute crossfade interrupt (fade out old, fade in new)
+	void ExecuteCrossfadeInterrupt(const FDialogueItem& NewDialogue, const FDialogueItem& CurrentDialogue);
+
+	// Execute pause and resume interrupt (pause old, play new, resume old after)
+	void ExecutePauseAndResumeInterrupt(const FDialogueItem& NewDialogue, const FDialogueItem& CurrentDialogue);
+
+	// Paused dialogues waiting to resume
+	UPROPERTY()
+	TMap<FString, FDialogueItem> PausedDialogues;
+
+	// Crossfade state tracking
+	UPROPERTY()
+	TMap<FString, float> CrossfadeProgress;
+
+	// Crossfade duration constant
+	static constexpr float CROSSFADE_DURATION = 0.5f;
 };
 

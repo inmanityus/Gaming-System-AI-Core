@@ -253,15 +253,40 @@ void UDialogueManager::ProcessNextDialogue()
 		return;
 	}
 
-	// Check if this NPC already has active dialogue (priority preemption handled by queue)
+	// Check if this NPC already has active dialogue - use interrupt system
 	if (TWeakObjectPtr<UAudioComponent>* Found = ActiveDialogueComponents.Find(NextItem.NPCID))
 	{
-		if (UAudioComponent* AC = Found->Get())
+		if (UAudioComponent* AC = Found->Get() && AC->IsValid())
 		{
-			// Stop existing dialogue for this NPC
-			AC->OnAudioFinished.RemoveAll(this);
-			AC->Stop();
+			// Find current dialogue item
+			FDialogueItem* CurrentItem = nullptr;
+			for (auto& Pair : ActiveDialogueItems)
+			{
+				if (Pair.Value.NPCID == NextItem.NPCID)
+				{
+					CurrentItem = &Pair.Value;
+					break;
+				}
+			}
+
+			if (CurrentItem)
+			{
+				// Use interrupt system to handle priority-based interruption
+				EInterruptType InterruptType = DetermineInterruptType(NextItem.Priority, CurrentItem->Priority);
+				if (InterruptType != EInterruptType::None)
+				{
+					HandleDialogueInterrupt(NextItem, InterruptType);
+					return;  // Interrupt handled, don't continue with normal playback
+				}
+				else
+				{
+					// Cannot interrupt - requeue and skip
+					DialogueQueue->EnqueueDialogue(NextItem);
+					return;
+				}
+			}
 		}
+		// Clean up invalid component
 		ActiveDialogueComponents.Remove(NextItem.NPCID);
 	}
 
@@ -454,5 +479,199 @@ void UDialogueManager::OnWorldCleanup(UWorld* World, bool bSessionEnded, bool bC
 
 	// Optionally clear queue if it contains world-dependent items
 	// For now, keep queue intact for seamless travel scenarios
+
+	// Clear paused dialogues and crossfade state
+	PausedDialogues.Empty();
+	CrossfadeProgress.Empty();
+}
+
+EInterruptType UDialogueManager::DetermineInterruptType(int32 NewPriority, int32 CurrentPriority) const
+{
+	// Clamp priorities to valid range
+	NewPriority = FMath::Clamp(NewPriority, 0, 3);
+	CurrentPriority = FMath::Clamp(CurrentPriority, 0, 3);
+
+	// Interrupt Priority Matrix (from architecture doc):
+	// New\Current     Priority 0    Priority 1    Priority 2    Priority 3
+	// Priority 0      Immediate     Immediate     Immediate     Immediate
+	// Priority 1      No            Immediate     Crossfade     Crossfade
+	// Priority 2      No            No            Crossfade     Crossfade
+	// Priority 3      No            No            No            None
+
+	if (NewPriority == 0)
+	{
+		// Priority 0 (Critical) always interrupts immediately
+		return EInterruptType::Immediate;
+	}
+	else if (NewPriority == 1)
+	{
+		// Priority 1 (High)
+		if (CurrentPriority == 0)
+		{
+			return EInterruptType::None;  // Cannot interrupt Critical
+		}
+		else if (CurrentPriority == 1)
+		{
+			return EInterruptType::Immediate;  // Same priority - immediate
+		}
+		else
+		{
+			return EInterruptType::Crossfade;  // Interrupt Medium/Low with crossfade
+		}
+	}
+	else if (NewPriority == 2)
+	{
+		// Priority 2 (Medium)
+		if (CurrentPriority <= 1)
+		{
+			return EInterruptType::None;  // Cannot interrupt Critical/High
+		}
+		else if (CurrentPriority == 2)
+		{
+			return EInterruptType::Crossfade;  // Same priority - crossfade
+		}
+		else
+		{
+			return EInterruptType::Crossfade;  // Interrupt Low with crossfade
+		}
+	}
+	else  // NewPriority == 3 (Low)
+	{
+		// Priority 3 (Low) cannot interrupt anything
+		return EInterruptType::None;
+	}
+}
+
+void UDialogueManager::HandleDialogueInterrupt(const FDialogueItem& NewDialogue, EInterruptType InterruptType)
+{
+	if (NewDialogue.DialogueID.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("DialogueManager: HandleDialogueInterrupt called with empty DialogueID"));
+		return;
+	}
+
+	// Find currently playing dialogue for this NPC
+	const FDialogueItem* CurrentItem = nullptr;
+	for (const auto& Pair : ActiveDialogueItems)
+	{
+		if (Pair.Value.NPCID == NewDialogue.NPCID)
+		{
+			CurrentItem = &Pair.Value;
+			break;
+		}
+	}
+
+	// If no current dialogue, just play normally
+	if (!CurrentItem)
+	{
+		PlayDialogueItem(NewDialogue);
+		return;
+	}
+
+	// Auto-determine interrupt type if None specified
+	if (InterruptType == EInterruptType::None)
+	{
+		InterruptType = DetermineInterruptType(NewDialogue.Priority, CurrentItem->Priority);
+		
+		if (InterruptType == EInterruptType::None)
+		{
+			// Cannot interrupt - enqueue normally
+			PlayDialogueItem(NewDialogue);
+			return;
+		}
+	}
+
+	// Execute appropriate interrupt type
+	switch (InterruptType)
+	{
+	case EInterruptType::Immediate:
+		ExecuteImmediateInterrupt(NewDialogue, *CurrentItem);
+		break;
+	case EInterruptType::Crossfade:
+		ExecuteCrossfadeInterrupt(NewDialogue, *CurrentItem);
+		break;
+	case EInterruptType::PauseAndResume:
+		ExecutePauseAndResumeInterrupt(NewDialogue, *CurrentItem);
+		break;
+	default:
+		// None or invalid - just enqueue
+		PlayDialogueItem(NewDialogue);
+		break;
+	}
+}
+
+void UDialogueManager::ExecuteImmediateInterrupt(const FDialogueItem& NewDialogue, const FDialogueItem& CurrentDialogue)
+{
+	// Stop current dialogue immediately
+	StopDialogue(CurrentDialogue.DialogueID);
+
+	// Enqueue and play new dialogue
+	DialogueQueue->EnqueueDialogue(NewDialogue);
+	DialogueQueue->MarkDialogueActive(NewDialogue.DialogueID, NewDialogue);
+	StartDialoguePlayback(NewDialogue);
+
+	UE_LOG(LogTemp, Log, TEXT("DialogueManager: Immediate interrupt - stopped %s, playing %s"),
+		*CurrentDialogue.DialogueID, *NewDialogue.DialogueID);
+}
+
+void UDialogueManager::ExecuteCrossfadeInterrupt(const FDialogueItem& NewDialogue, const FDialogueItem& CurrentDialogue)
+{
+	// TODO: Implement crossfade logic when AudioManager supports volume fade
+	// For now, use immediate interrupt as fallback
+	// Future: Fade out current over 0.5s, fade in new over 0.5s simultaneously
+
+	UE_LOG(LogTemp, Log, TEXT("DialogueManager: Crossfade interrupt requested - %s -> %s (using immediate for now)"),
+		*CurrentDialogue.DialogueID, *NewDialogue.DialogueID);
+
+	// Mark current for crossfade
+	CrossfadeProgress.Add(CurrentDialogue.DialogueID, 0.0f);
+
+	// For now, use immediate interrupt until AudioManager fade support
+	ExecuteImmediateInterrupt(NewDialogue, CurrentDialogue);
+
+	// TODO: When AudioManager has SetVolumeOverTime:
+	// - Start fade out for CurrentDialogue (0.5s to 0.0)
+	// - Start fade in for NewDialogue (0.5s from 0.0 to 1.0)
+	// - On fade complete, stop CurrentDialogue
+}
+
+void UDialogueManager::ExecutePauseAndResumeInterrupt(const FDialogueItem& NewDialogue, const FDialogueItem& CurrentDialogue)
+{
+	// Pause current dialogue (store state for resume)
+	// TODO: AudioManager needs pause/resume support
+	// For now, store paused state and stop playback
+	
+	PausedDialogues.Add(CurrentDialogue.DialogueID, CurrentDialogue);
+
+	// Stop current playback (will resume later)
+	if (TWeakObjectPtr<UAudioComponent>* Found = ActiveDialogueComponents.Find(CurrentDialogue.NPCID))
+	{
+		if (UAudioComponent* AC = Found->Get())
+		{
+			// TODO: Use AC->SetPaused(true) when available
+			AC->Stop();  // For now, stop (will need resume logic)
+		}
+		ActiveDialogueComponents.Remove(CurrentDialogue.NPCID);
+	}
+
+	// Mark inactive in queue (but keep in paused map)
+	if (DialogueQueue)
+	{
+		DialogueQueue->MarkDialogueInactive(CurrentDialogue.DialogueID);
+	}
+
+	// Remove from active items (moved to paused)
+	ActiveDialogueItems.Remove(CurrentDialogue.DialogueID);
+
+	// Enqueue and play new dialogue
+	DialogueQueue->EnqueueDialogue(NewDialogue);
+	DialogueQueue->MarkDialogueActive(NewDialogue.DialogueID, NewDialogue);
+	StartDialoguePlayback(NewDialogue);
+
+	UE_LOG(LogTemp, Log, TEXT("DialogueManager: PauseAndResume interrupt - paused %s, playing %s"),
+		*CurrentDialogue.DialogueID, *NewDialogue.DialogueID);
+
+	// TODO: When NewDialogue completes, check PausedDialogues and resume CurrentDialogue
+	// This will be handled in HandleDialogueFinished when resume logic is added
 }
 
