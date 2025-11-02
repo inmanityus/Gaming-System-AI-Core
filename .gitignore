@@ -27,10 +27,10 @@ __pycache__/
 *.so
 .Python
 
-# Milestone and session tracking files
+# Milestone and session tracking files (handoff docs are committed)
 MILESTONE-*.md
-SESSION-*.md
 PROGRESS-*.md
+!docs/SESSION-HANDOFF-*.md
 
 # Global junctions - should not be committed
 Global-Rules/
