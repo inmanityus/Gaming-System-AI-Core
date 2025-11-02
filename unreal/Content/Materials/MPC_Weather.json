@@ -1,0 +1,173 @@
+{
+	"AssetType": "MaterialParameterCollection",
+	"AssetName": "MPC_Weather",
+	"Parameters": {
+		"Scalar": [
+			{
+				"Name": "WeatherIntensity",
+				"DefaultValue": 0.0,
+				"Description": "Weather intensity (0.0-1.0)"
+			},
+			{
+				"Name": "Temperature",
+				"DefaultValue": 20.0,
+				"Description": "Temperature in Celsius"
+			},
+			{
+				"Name": "WindSpeed",
+				"DefaultValue": 0.0,
+				"Description": "Wind speed in km/h"
+			},
+			{
+				"Name": "Humidity",
+				"DefaultValue": 0.5,
+				"Description": "Humidity level (0.0-1.0)"
+			},
+			{
+				"Name": "RainAmount",
+				"DefaultValue": 0.0,
+				"Description": "Rain amount (0.0-1.0) for wetness"
+			},
+			{
+				"Name": "SnowAmount",
+				"DefaultValue": 0.0,
+				"Description": "Snow amount (0.0-1.0) for accumulation"
+			},
+			{
+				"Name": "FogDensity",
+				"DefaultValue": 0.0,
+				"Description": "Fog density (0.0-1.0)"
+			},
+			{
+				"Name": "CloudCover",
+				"DefaultValue": 0.0,
+				"Description": "Cloud cover amount (0.0-1.0)"
+			},
+			{
+				"Name": "LightningIntensity",
+				"DefaultValue": 0.0,
+				"Description": "Lightning intensity (0.0-1.0)"
+			}
+		],
+		"Vector": [
+			{
+				"Name": "WeatherTint",
+				"DefaultValue": [1.0, 1.0, 1.0, 1.0],
+				"Description": "Weather color tint (RGBA)"
+			},
+			{
+				"Name": "SkyWeatherTint",
+				"DefaultValue": [1.0, 1.0, 1.0, 1.0],
+				"Description": "Sky weather color tint (RGBA)"
+			},
+			{
+				"Name": "RainColor",
+				"DefaultValue": [0.7, 0.8, 0.9, 0.5],
+				"Description": "Rain particle color (RGBA)"
+			},
+			{
+				"Name": "SnowColor",
+				"DefaultValue": [1.0, 1.0, 1.0, 0.8],
+				"Description": "Snow particle color (RGBA)"
+			},
+			{
+				"Name": "FogColor",
+				"DefaultValue": [0.8, 0.8, 0.8, 0.3],
+				"Description": "Fog color (RGBA)"
+			}
+		]
+	},
+	"WeatherStateMapping": {
+		"Clear": {
+			"WeatherIntensity": 0.0,
+			"RainAmount": 0.0,
+			"SnowAmount": 0.0,
+			"FogDensity": 0.0,
+			"CloudCover": 0.0,
+			"SkyWeatherTint": [1.0, 1.0, 1.0, 1.0]
+		},
+		"PartlyCloudy": {
+			"WeatherIntensity": 0.2,
+			"CloudCover": 0.3,
+			"SkyWeatherTint": [0.95, 0.95, 1.0, 1.0]
+		},
+		"Cloudy": {
+			"WeatherIntensity": 0.4,
+			"CloudCover": 0.7,
+			"SkyWeatherTint": [0.85, 0.85, 0.9, 1.0]
+		},
+		"Rain": {
+			"WeatherIntensity": 0.6,
+			"RainAmount": 0.5,
+			"CloudCover": 0.9,
+			"SkyWeatherTint": [0.7, 0.75, 0.85, 1.0]
+		},
+		"HeavyRain": {
+			"WeatherIntensity": 0.8,
+			"RainAmount": 0.8,
+			"CloudCover": 1.0,
+			"SkyWeatherTint": [0.6, 0.65, 0.75, 1.0]
+		},
+		"Storm": {
+			"WeatherIntensity": 1.0,
+			"RainAmount": 1.0,
+			"CloudCover": 1.0,
+			"LightningIntensity": 0.7,
+			"SkyWeatherTint": [0.5, 0.5, 0.6, 1.0]
+		},
+		"Fog": {
+			"WeatherIntensity": 0.5,
+			"FogDensity": 0.6,
+			"CloudCover": 0.8,
+			"SkyWeatherTint": [0.8, 0.8, 0.8, 1.0]
+		},
+		"Mist": {
+			"WeatherIntensity": 0.3,
+			"FogDensity": 0.3,
+			"SkyWeatherTint": [0.9, 0.9, 0.95, 1.0]
+		},
+		"Snow": {
+			"WeatherIntensity": 0.6,
+			"SnowAmount": 0.5,
+			"Temperature": 0.0,
+			"CloudCover": 0.9,
+			"SkyWeatherTint": [0.8, 0.85, 0.95, 1.0]
+		},
+		"HeavySnow": {
+			"WeatherIntensity": 0.8,
+			"SnowAmount": 0.8,
+			"Temperature": -5.0,
+			"CloudCover": 1.0,
+			"SkyWeatherTint": [0.85, 0.9, 1.0, 1.0]
+		},
+		"Blizzard": {
+			"WeatherIntensity": 1.0,
+			"SnowAmount": 1.0,
+			"Temperature": -10.0,
+			"CloudCover": 1.0,
+			"SkyWeatherTint": [0.9, 0.95, 1.0, 1.0]
+		},
+		"Windy": {
+			"WeatherIntensity": 0.4,
+			"WindSpeed": 50.0,
+			"CloudCover": 0.5,
+			"SkyWeatherTint": [0.9, 0.9, 0.95, 1.0]
+		},
+		"ExtremeHeat": {
+			"WeatherIntensity": 0.6,
+			"Temperature": 45.0,
+			"Humidity": 0.9,
+			"SkyWeatherTint": [1.0, 0.9, 0.7, 1.0]
+		},
+		"ExtremeCold": {
+			"WeatherIntensity": 0.5,
+			"Temperature": -20.0,
+			"Humidity": 0.2,
+			"SkyWeatherTint": [0.7, 0.8, 0.9, 1.0]
+		}
+	},
+	"Notes": "Material Parameter Collection for weather effects. Maps all 15 weather states to MPC parameters. Created programmatically - import this structure into UE5 editor."
+}
+
+
+
