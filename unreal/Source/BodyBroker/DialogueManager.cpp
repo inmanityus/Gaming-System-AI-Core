@@ -329,8 +329,13 @@ void UDialogueManager::StartDialoguePlayback(const FDialogueItem& Item)
 		// Broadcast dialogue started event
 		OnDialogueStarted.Broadcast(Item.DialogueID, Item.SpeakerName);
 
-		// Broadcast subtitle show event
-		BroadcastSubtitleShow(Item);
+	// Broadcast subtitle show event
+	BroadcastSubtitleShow(Item);
+
+	// Generate and store lip-sync data
+	FLipSyncData LipSyncData = GenerateLipSyncData(Item);
+	// TODO: Store lip-sync data for facial system access
+	// TODO: Broadcast lip-sync data to facial system when integration ready
 
 		// TODO: Set up completion callback when AudioManager supports it
 		// For now, this will need manual polling or AudioManager extension
@@ -732,5 +737,132 @@ void UDialogueManager::BroadcastSubtitleUpdate(const FDialogueItem& Item, float 
 	OnSubtitleUpdate.Broadcast(Item.DialogueID, CurrentText, ElapsedTime);
 
 	UE_LOG(LogTemp, VeryVerbose, TEXT("DialogueManager: Subtitle update - %s: %.2fs"), *Item.DialogueID, ElapsedTime);
+}
+
+FString UDialogueManager::PhonemeToViseme(const FString& Phoneme) const
+{
+	// Phoneme-to-Viseme Mapping (from architecture doc - ARPAbet to viseme)
+	static const TMap<FString, FString> PhonemeToVisemeMap = {
+		{"SIL", "silence"},
+		{"AA", "a"}, {"AE", "a"}, {"AH", "a"}, {"AO", "a"}, {"AW", "a"}, {"AY", "a"},
+		{"B", "p"}, {"P", "p"},
+		{"CH", "j"}, {"D", "t"}, {"DH", "th"}, {"F", "f"}, {"G", "k"}, {"HH", "th"},
+		{"IH", "i"}, {"IY", "i"}, {"JH", "j"}, {"K", "k"}, {"L", "i"}, {"M", "p"},
+		{"N", "t"}, {"NG", "t"}, {"OW", "o"}, {"OY", "o"}, {"R", "r"}, {"S", "s"},
+		{"SH", "sh"}, {"T", "t"}, {"TH", "th"}, {"UH", "u"}, {"UW", "u"}, {"V", "f"},
+		{"W", "u"}, {"Y", "i"}, {"Z", "s"}, {"ZH", "sh"}
+	};
+
+	const FString* Viseme = PhonemeToVisemeMap.Find(Phoneme.ToUpper());
+	if (Viseme)
+	{
+		return *Viseme;
+	}
+
+	// Default to silence if unknown phoneme
+	return TEXT("silence");
+}
+
+TMap<FString, float> UDialogueManager::GetBlendshapeWeightsForViseme(const FString& Viseme) const
+{
+	// Viseme-to-Blendshape Mapping (from architecture doc)
+	static const TMap<FString, TMap<FString, float>> VisemeToBlendshapes = {
+		{"silence", {{TEXT("jaw_open"), 0.0f}, {TEXT("lip_pucker"), 0.0f}}},
+		{"a", {{TEXT("jaw_open"), 0.8f}, {TEXT("mouth_wide"), 0.6f}}},
+		{"p", {{TEXT("lip_pucker"), 0.9f}, {TEXT("jaw_open"), 0.2f}}},
+		{"f", {{TEXT("lip_stretch"), 0.7f}, {TEXT("jaw_open"), 0.3f}}},
+		{"th", {{TEXT("lip_stretch"), 0.8f}, {TEXT("jaw_open"), 0.4f}}},
+		{"i", {{TEXT("jaw_open"), 0.4f}, {TEXT("mouth_wide"), 0.5f}}},
+		{"u", {{TEXT("lip_pucker"), 0.6f}, {TEXT("jaw_open"), 0.5f}}},
+		{"o", {{TEXT("lip_pucker"), 0.4f}, {TEXT("jaw_open"), 0.6f}}},
+		{"r", {{TEXT("lip_stretch"), 0.3f}, {TEXT("jaw_open"), 0.3f}}},
+		{"s", {{TEXT("lip_stretch"), 0.5f}, {TEXT("jaw_open"), 0.2f}}},
+		{"sh", {{TEXT("lip_pucker"), 0.7f}, {TEXT("jaw_open"), 0.2f}}},
+		{"j", {{TEXT("lip_pucker"), 0.6f}, {TEXT("jaw_open"), 0.3f}}},
+		{"t", {{TEXT("lip_stretch"), 0.4f}, {TEXT("jaw_open"), 0.3f}}},
+		{"k", {{TEXT("jaw_open"), 0.5f}, {TEXT("lip_stretch"), 0.2f}}}
+	};
+
+	const TMap<FString, float>* Blendshapes = VisemeToBlendshapes.Find(Viseme);
+	if (Blendshapes)
+	{
+		return *Blendshapes;
+	}
+
+	// Default to silence blendshapes
+	return TMap<FString, float>{{TEXT("jaw_open"), 0.0f}, {TEXT("lip_pucker"), 0.0f}};
+}
+
+FLipSyncData UDialogueManager::GenerateLipSyncData(const FDialogueItem& Item) const
+{
+	FLipSyncData LipSyncData;
+	LipSyncData.AudioID = Item.DialogueID;
+	LipSyncData.DialogueID = Item.DialogueID;
+
+	// Generate phoneme frames from word timings if available
+	if (Item.WordTimings.Num() > 0)
+	{
+		// TODO: In future, use backend TTS API to get phoneme-level timing
+		// For now, create frames from word timings (approximate)
+		float CurrentTime = 0.0f;
+		for (const FWordTiming& WordTiming : Item.WordTimings)
+		{
+			// Create frames for this word (approximate - 1 frame per word for now)
+			// In future, this will be replaced with phoneme-level data from backend
+			FPhonemeFrame Frame;
+			Frame.Time = WordTiming.StartTime;
+			// TODO: Convert word to phonemes (requires phoneme analysis library)
+			// For now, use placeholder phoneme "AA"
+			Frame.Phoneme = TEXT("AA");  // Placeholder
+			Frame.Viseme = PhonemeToViseme(Frame.Phoneme);
+			LipSyncData.Frames.Add(Frame);
+
+			CurrentTime = WordTiming.StartTime + WordTiming.Duration;
+		}
+	}
+	else
+	{
+		// No word timings - create default frame for entire dialogue
+		FPhonemeFrame Frame;
+		Frame.Time = 0.0f;
+		Frame.Phoneme = TEXT("SIL");  // Silence
+		Frame.Viseme = TEXT("silence");
+		LipSyncData.Frames.Add(Frame);
+	}
+
+	// Calculate blendshape weights from current viseme (first frame)
+	if (LipSyncData.Frames.Num() > 0)
+	{
+		LipSyncData.BlendshapeWeights = GetBlendshapeWeightsForViseme(LipSyncData.Frames[0].Viseme);
+	}
+	else
+	{
+		// Default to silence
+		LipSyncData.BlendshapeWeights = GetBlendshapeWeightsForViseme(TEXT("silence"));
+	}
+
+	return LipSyncData;
+}
+
+FLipSyncData UDialogueManager::GetLipSyncData(const FString& DialogueID) const
+{
+	// Find dialogue item
+	const FDialogueItem* Item = ActiveDialogueItems.Find(DialogueID);
+	if (!Item)
+	{
+		// Try to find in all active dialogues
+		for (const auto& Pair : ActiveDialogueItems)
+		{
+			if (Pair.Value.DialogueID == DialogueID)
+			{
+				return GenerateLipSyncData(Pair.Value);
+			}
+		}
+
+		// Return empty lip-sync data if not found
+		return FLipSyncData();
+	}
+
+	return GenerateLipSyncData(*Item);
 }
 

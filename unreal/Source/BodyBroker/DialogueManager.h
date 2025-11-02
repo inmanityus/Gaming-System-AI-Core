@@ -61,6 +61,52 @@ struct FSubtitleData
 	{}
 };
 
+// Phoneme frame for lip-sync
+USTRUCT(BlueprintType)
+struct FPhonemeFrame
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lip Sync")
+	float Time;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lip Sync")
+	FString Phoneme;  // "AA", "IH", "TH", etc. (ARPAbet)
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lip Sync")
+	FString Viseme;   // "silence", "p", "f", "a", etc.
+
+	FPhonemeFrame()
+		: Time(0.0f)
+	{}
+};
+
+// Lip-sync data structure
+USTRUCT(BlueprintType)
+struct FLipSyncData
+{
+	GENERATED_BODY()
+
+	// Audio reference
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lip Sync")
+	FString AudioID;
+
+	// Dialogue ID
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lip Sync")
+	FString DialogueID;
+
+	// Phoneme timing data
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lip Sync")
+	TArray<FPhonemeFrame> Frames;
+
+	// Blendshape targets (viseme -> weight mapping)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lip Sync")
+	TMap<FString, float> BlendshapeWeights;  // "jaw_open", "lip_pucker", etc.
+
+	FLipSyncData()
+	{}
+};
+
 // Delegate for dialogue completion
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDialogueComplete, const FString&, DialogueID);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDialogueStarted, const FString&, DialogueID, const FString&, SpeakerName);
@@ -125,6 +171,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Dialogue Manager")
 	void StopDialogueByNPC(const FString& NPCID);
 
+	// Generate and get lip-sync data for dialogue
+	UFUNCTION(BlueprintCallable, Category = "Dialogue Manager|Lip Sync")
+	FLipSyncData GetLipSyncData(const FString& DialogueID) const;
+
 	// Event delegates
 	UPROPERTY(BlueprintAssignable, Category = "Dialogue Manager|Events")
 	FOnDialogueStarted OnDialogueStarted;
@@ -184,6 +234,15 @@ private:
 
 	// Broadcast subtitle update event (word-level timing if available)
 	void BroadcastSubtitleUpdate(const FDialogueItem& Item, float ElapsedTime);
+
+	// Lip-sync generation
+	FLipSyncData GenerateLipSyncData(const FDialogueItem& Item) const;
+
+	// Phoneme to viseme conversion
+	FString PhonemeToViseme(const FString& Phoneme) const;
+
+	// Get blendshape weights for viseme
+	TMap<FString, float> GetBlendshapeWeightsForViseme(const FString& Viseme) const;
 
 	// Request TTS from backend (placeholder - will be implemented in Milestone 7)
 	void RequestTTSFromBackend(const FDialogueItem& Item, TFunction<void(const TArray<uint8>&, float)> OnComplete);
