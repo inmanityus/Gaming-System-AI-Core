@@ -13,6 +13,10 @@
 #include "Delegates/Delegate.h"
 #include "WorldDelegates.h"
 #include "Misc/ScopeGuard.h"
+#include "Http.h"
+#include "Json.h"
+#include "JsonUtilities.h"
+#include "Misc/Base64.h"
 
 void UDialogueManager::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -407,15 +411,133 @@ void UDialogueManager::StartDialoguePlayback(const FDialogueItem& Item)
 
 void UDialogueManager::RequestTTSFromBackend(const FDialogueItem& Item, TFunction<void(const TArray<uint8>&, float)> OnComplete)
 {
-	// PLACEHOLDER: This will be implemented in Milestone 7 with full backend integration
-	// For now, just log and call OnComplete with empty data
-	
-	UE_LOG(LogTemp, Warning, TEXT("DialogueManager: RequestTTSFromBackend called (placeholder - will be implemented in M7)"));
-	UE_LOG(LogTemp, Warning, TEXT("  DialogueID: %s, Text: %s"), *Item.DialogueID, *Item.Text);
+	if (!AudioManager.IsValid())
+	{
+		UE_LOG(LogTemp, Error, TEXT("DialogueManager: RequestTTSFromBackend - AudioManager not available"));
+		OnComplete(TArray<uint8>(), 0.0f);
+		return;
+	}
 
-	// Call completion with empty data (will fail playback, but system won't hang)
-	// In real implementation, this will make HTTP request to TTS backend
-	OnComplete(TArray<uint8>(), 0.0f);
+	// Get backend URL from AudioManager (we'll need to extend AudioManager or store URL separately)
+	// For now, use placeholder backend URL
+	FString BackendURL = TEXT("http://localhost:4000");  // TODO: Get from AudioManager or config
+	
+	// Build API endpoint
+	FString RequestURL = FString::Printf(TEXT("%s/api/tts/generate"), *BackendURL);
+
+	// Create HTTP request
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
+	
+	// Store completion callback and item data for response handling
+	// Note: In production, use proper async callback pattern with member variables
+	struct FTTSRequestContext
+	{
+		FDialogueItem Item;
+		TFunction<void(const TArray<uint8>&, float)> OnComplete;
+	};
+	
+	TSharedPtr<FTTSRequestContext> Context = MakeShareable(new FTTSRequestContext);
+	Context->Item = Item;
+	Context->OnComplete = OnComplete;
+
+	// Bind response handler (using lambda with shared context)
+	HttpRequest->OnProcessRequestComplete().BindLambda([this, Context](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+	{
+		if (!bWasSuccessful || !Response.IsValid())
+		{
+			UE_LOG(LogTemp, Error, TEXT("DialogueManager: TTS request failed for dialogue %s"), *Context->Item.DialogueID);
+			Context->OnComplete(TArray<uint8>(), 0.0f);
+			return;
+		}
+
+		// Parse JSON response
+		FString ResponseString = Response->GetContentAsString();
+		TSharedPtr<FJsonObject> JsonObject;
+		TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(ResponseString);
+
+		if (!FJsonSerializer::Deserialize(Reader, JsonObject) || !JsonObject.IsValid())
+		{
+			UE_LOG(LogTemp, Error, TEXT("DialogueManager: Failed to parse TTS response JSON for dialogue %s"), *Context->Item.DialogueID);
+			Context->OnComplete(TArray<uint8>(), 0.0f);
+			return;
+		}
+
+		// Extract audio data (base64)
+		FString AudioBase64;
+		if (!JsonObject->TryGetStringField(TEXT("audio"), AudioBase64))
+		{
+			UE_LOG(LogTemp, Error, TEXT("DialogueManager: TTS response missing 'audio' field for dialogue %s"), *Context->Item.DialogueID);
+			Context->OnComplete(TArray<uint8>(), 0.0f);
+			return;
+		}
+
+		// Decode base64 audio
+		TArray<uint8> AudioData;
+		if (!FBase64::Decode(AudioBase64, AudioData))
+		{
+			UE_LOG(LogTemp, Error, TEXT("DialogueManager: Failed to decode base64 audio for dialogue %s"), *Context->Item.DialogueID);
+			Context->OnComplete(TArray<uint8>(), 0.0f);
+			return;
+		}
+
+		// Extract duration
+		float Duration = 0.0f;
+		JsonObject->TryGetNumberField(TEXT("duration"), Duration);
+		if (Duration <= 0.0f)
+		{
+			// Default duration if missing
+			Duration = 3.0f;
+		}
+
+		// Extract word timings (optional)
+		const TArray<TSharedPtr<FJsonValue>>* WordTimingsArray = nullptr;
+		if (JsonObject->TryGetArrayField(TEXT("word_timings"), WordTimingsArray))
+		{
+			// TODO: Parse word timings into Item.WordTimings
+			// For now, structure ready but parsing deferred
+		}
+
+		// Extract lip-sync data (optional)
+		const TSharedPtr<FJsonObject>* LipSyncObject = nullptr;
+		if (JsonObject->TryGetObjectField(TEXT("lipsync"), LipSyncObject))
+		{
+			// TODO: Parse lip-sync data
+			// For now, structure ready but parsing deferred
+		}
+
+		UE_LOG(LogTemp, Log, TEXT("DialogueManager: TTS request successful for dialogue %s (duration: %.2fs)"), 
+			*Context->Item.DialogueID, Duration);
+
+		// Call completion with audio data
+		Context->OnComplete(AudioData, Duration);
+	});
+
+	// Build JSON request body
+	TSharedPtr<FJsonObject> RequestJson = MakeShareable(new FJsonObject);
+	RequestJson->SetStringField(TEXT("text"), Item.Text);
+	RequestJson->SetStringField(TEXT("voice_id"), Item.NPCID);  // Use NPCID as voice_id for now
+	RequestJson->SetStringField(TEXT("format"), TEXT("wav"));  // Default format
+	RequestJson->SetNumberField(TEXT("sample_rate"), 44100);  // Default sample rate
+
+	// TODO: Add personality_traits and emotion when available
+	// RequestJson->SetArrayField(TEXT("personality_traits"), ...);
+	// RequestJson->SetStringField(TEXT("emotion"), ...);
+
+	// Serialize JSON
+	FString OutputString;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(RequestJson.ToSharedRef(), Writer);
+
+	// Set request properties
+	HttpRequest->SetURL(RequestURL);
+	HttpRequest->SetVerb(TEXT("POST"));
+	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	HttpRequest->SetContentAsString(OutputString);
+
+	UE_LOG(LogTemp, VeryVerbose, TEXT("DialogueManager: Sending TTS request for dialogue %s"), *Item.DialogueID);
+
+	// Process request
+	HttpRequest->ProcessRequest();
 }
 
 void UDialogueManager::HandleDialogueFinished(const FString& DialogueID)
