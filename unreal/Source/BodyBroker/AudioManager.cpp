@@ -48,6 +48,13 @@ void UAudioManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		TimeOfDayAmbientComponent = nullptr;
 	}
 
+	if (PendingAmbientComponent)
+	{
+		PendingAmbientComponent->Stop();
+		PendingAmbientComponent->DestroyComponent();
+		PendingAmbientComponent = nullptr;
+	}
+
 	if (ZoneAmbientComponent)
 	{
 		ZoneAmbientComponent->Stop();
@@ -440,16 +447,25 @@ void UAudioManager::CrossfadeAmbientProfile(const FString& OldProfile, const FSt
 			// Fade out old component
 			if (UWorld* World = GetWorld())
 			{
+				// Clear any existing crossfade timer
+				if (World->GetTimerManager().IsValidTimer(AmbientCrossfadeTimerHandle))
+				{
+					World->GetTimerManager().ClearTimer(AmbientCrossfadeTimerHandle);
+				}
+
+				// Store pending component as member variable for lambda safety
+				PendingAmbientComponent = NewAmbientComponent;
+
 				// Use a simple timer-based fade (in production, use smoother interpolation)
-				FTimerHandle FadeTimer;
 				float FadeSteps = 30.0f;  // 30 steps over duration
 				float StepDuration = Duration / FadeSteps;
-				int32 StepsCompleted = 0;
+				CrossfadeStepsCompleted = 0;  // Reset member variable
 
 				FTimerDelegate FadeDelegate;
-				FadeDelegate.BindLambda([this, &StepsCompleted, NewAmbientComponent, CategoryVol, FadeSteps, StepDuration]()
+				FadeDelegate.BindLambda([this, CategoryVol, FadeSteps, StepDuration]()
 				{
-					float Progress = (float)(StepsCompleted + 1) / FadeSteps;
+					CrossfadeStepsCompleted++;  // Increment member variable (safe)
+					float Progress = (float)CrossfadeStepsCompleted / FadeSteps;
 					
 					// Fade out old
 					if (TimeOfDayAmbientComponent)
@@ -459,13 +475,12 @@ void UAudioManager::CrossfadeAmbientProfile(const FString& OldProfile, const FSt
 					}
 
 					// Fade in new
-					if (NewAmbientComponent)
+					if (PendingAmbientComponent)
 					{
 						float NewVolume = MasterVolume * CategoryVol * Progress;
-						NewAmbientComponent->SetVolumeMultiplier(NewVolume);
+						PendingAmbientComponent->SetVolumeMultiplier(NewVolume);
 					}
 
-					StepsCompleted++;
 					if (Progress >= 1.0f)
 					{
 						// Complete - stop old, keep new
@@ -474,11 +489,18 @@ void UAudioManager::CrossfadeAmbientProfile(const FString& OldProfile, const FSt
 							TimeOfDayAmbientComponent->Stop();
 							TimeOfDayAmbientComponent->DestroyComponent();
 						}
-						TimeOfDayAmbientComponent = NewAmbientComponent;
+						TimeOfDayAmbientComponent = PendingAmbientComponent;
+						PendingAmbientComponent = nullptr;  // Clear reference
+						
+						// Clear timer
+						if (UWorld* World = GetWorld())
+						{
+							World->GetTimerManager().ClearTimer(AmbientCrossfadeTimerHandle);
+						}
 					}
 				});
 
-				World->GetTimerManager().SetTimer(FadeTimer, FadeDelegate, StepDuration, true);
+				World->GetTimerManager().SetTimer(AmbientCrossfadeTimerHandle, FadeDelegate, StepDuration, true);
 			}
 		}
 	}
@@ -740,13 +762,27 @@ void UAudioManager::ApplyDucking(EAudioCategory Category, float TargetDuckAmount
 
 		float StepDuration = 0.1f;  // Update every 100ms
 		int32 Steps = FMath::Max(1, (int32)(Duration / StepDuration));
-		int32 StepCount = 0;
+		
+		// Store step count in a struct for lambda safety
+		struct FDuckingState
+		{
+			int32 StepCount = 0;
+			float StartDuck;
+			float TargetDuck;
+			int32 TotalSteps;
+		};
+		
+		TSharedPtr<FDuckingState> DuckingState = MakeShareable(new FDuckingState());
+		DuckingState->StartDuck = StartDuckAmount;
+		DuckingState->TargetDuck = TargetDuckAmount;
+		DuckingState->TotalSteps = Steps;
 
 		FTimerDelegate DuckDelegate;
-		DuckDelegate.BindLambda([this, Category, StartDuckAmount, TargetDuckAmount, Steps, &StepCount]()
+		DuckDelegate.BindLambda([this, Category, DuckingState]()
 		{
-			float Progress = (float)(StepCount + 1) / (float)Steps;
-			float CurrentDuck = FMath::Lerp(StartDuckAmount, TargetDuckAmount, Progress);
+			DuckingState->StepCount++;  // Increment shared state (safe)
+			float Progress = (float)DuckingState->StepCount / (float)DuckingState->TotalSteps;
+			float CurrentDuck = FMath::Lerp(DuckingState->StartDuck, DuckingState->TargetDuck, Progress);
 			CurrentDuckAmounts.Add(Category, CurrentDuck);
 
 			// Apply to all audio components in this category
@@ -774,7 +810,6 @@ void UAudioManager::ApplyDucking(EAudioCategory Category, float TargetDuckAmount
 				// In production, track music components separately
 			}
 
-			StepCount++;
 			if (Progress >= 1.0f)
 			{
 				// Complete

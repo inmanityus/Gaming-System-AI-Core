@@ -272,6 +272,13 @@ private:
 	UPROPERTY()
 	float TransitionProgress;
 
+	// Crossfade state tracking (for lambda safety)
+	UPROPERTY()
+	int32 CrossfadeStepsCompleted;
+
+	UPROPERTY()
+	UAudioComponent* PendingAmbientComponent;  // Component being crossfaded in
+
 	// Constants
 	static constexpr float DEFAULT_AMBIENT_CROSSFADE_DURATION = 30.0f;  // 30 seconds for time-of-day
 	static constexpr float DEFAULT_WEATHER_TRANSITION_DURATION = 5.0f;  // 5 seconds for weather
