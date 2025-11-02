@@ -109,3 +109,5 @@ async def test_event_bus_stats():
     assert stats["events_delivered"] == 1
     assert stats["subscriptions"] == 1
 
+
+

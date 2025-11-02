@@ -122,3 +122,29 @@ Gaming-System-AI-Core/
 - **Global-Docs/**: Your Component Templates folder - Access reusable patterns, templates, and documentation across all projects
 - **Project-Level Reasoning**: Use `.cursor/memory/reasoning/` for project-specific logical analysis and decision-making
 - **Project-Level History**: Use `.cursor/memory/history/` for project-specific problem-solving patterns and solutions
+
+## AWS Deployment Workflow - MANDATORY
+**CRITICAL RULE**: All AI models must run in AWS, not locally. Local dev computer cannot handle model inference.
+
+**Workflow** (MUST be followed for ALL deployments):
+1. **Build Everything Locally** - Compile all code (Python, UE5, etc.)
+2. **Test Everything Locally** - Run ALL tests, ensure 100% pass rate
+3. **Verify Dev System** - Ensure dev system integrity before deploying
+4. **Deploy to AWS** - Deploy services, infrastructure, configuration
+5. **Test in AWS** - Run ALL tests against AWS services
+6. **Shutdown Local Models** - Stop all local AI model services (Ollama, etc.)
+7. **Fix Issues Immediately** - Use `/all-rules` and `/test-comprehensive` for all fixes
+
+**Scripts**:
+- `scripts/aws-deploy-full.ps1` - Full deployment workflow
+- `scripts/aws-deploy-services.ps1` - Deploy services to AWS
+- `scripts/aws-test-services.ps1` - Test services in AWS
+- `scripts/shutdown-local-models.ps1` - Stop local models
+
+**ENFORCEMENT**: 
+- NEVER skip local testing before AWS deployment
+- NEVER skip AWS testing after deployment
+- ALWAYS shutdown local models after AWS is ready
+- ALWAYS fix issues using `/all-rules` and `/test-comprehensive`
+
+**Reference**: See `Global-Workflows/aws-deployment-workflow.md` for full details

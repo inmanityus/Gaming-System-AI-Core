@@ -41,3 +41,5 @@ COMMENT ON COLUMN world_events.duration IS 'Event duration in seconds';
 COMMENT ON COLUMN world_events.impact IS 'JSONB impact data on various systems';
 COMMENT ON COLUMN world_events.metadata IS 'Additional event metadata';
 
+
+

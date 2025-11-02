@@ -6,8 +6,11 @@ Integrated with Model Management System for guardrails monitoring.
 import json
 import sys
 import os
+import logging
 from typing import Any, Dict, List, Optional
 from uuid import UUID
+
+logger = logging.getLogger(__name__)
 
 from services.state_manager.connection_pool import get_postgres_pool, PostgreSQLPool
 
@@ -16,6 +19,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from services.model_management.guardrails_monitor import GuardrailsMonitor
 from services.model_management.historical_log_processor import HistoricalLogProcessor
 from services.ai_integration.llm_client import LLMClient
+from services.story_teller.narrative_loader import NarrativeLoader
 
 
 class NarrativeContext:
@@ -68,6 +72,10 @@ class NarrativeGenerator:
         # Model Management System integration
         self.guardrails_monitor = guardrails_monitor or GuardrailsMonitor()
         self.historical_log_processor = HistoricalLogProcessor()
+        
+        # Narrative Loader - loads world history from docs/narrative/
+        self.narrative_loader = NarrativeLoader()
+        logger.info(f"Loaded {len(self.narrative_loader.get_all_narratives())} narrative files")
     
     async def _get_postgres(self) -> PostgreSQLPool:
         """Get PostgreSQL pool instance."""
@@ -149,9 +157,12 @@ class NarrativeGenerator:
             JOIN factions f ON n.faction_id = f.id
             WHERE f.name IN (
                 SELECT DISTINCT jsonb_object_keys(territory_control)
-                FROM world_states
-                ORDER BY created_at DESC
-                LIMIT 1
+                FROM (
+                    SELECT territory_control
+                    FROM world_states
+                    ORDER BY created_at DESC
+                    LIMIT 1
+                ) latest_state
             )
             LIMIT 20
         """
@@ -263,7 +274,7 @@ class NarrativeGenerator:
             
         except Exception as e:
             # Fallback to default content
-            return self._generate_fallback_content(node_type, title, description)
+            return self._generate_fallback_content_dict(node_type, title, description)
     
     def _build_narrative_prompt(
         self,
@@ -275,32 +286,38 @@ class NarrativeGenerator:
     ) -> str:
         """Build a comprehensive prompt for narrative generation."""
         
+        # Get narrative context from loaded files
+        narrative_context = self.narrative_loader.get_full_context()
+        
         prompt = f"""
 Generate a {node_type} story node for "The Body Broker" game.
 
-NODE DETAILS:
+=== WORLD HISTORY & NARRATIVE FOUNDATION ===
+{narrative_context}
+
+=== CURRENT NODE DETAILS ===
 - Title: {title}
 - Description: {description}
 - Type: {node_type}
 
-PLAYER CONTEXT:
+=== PLAYER CONTEXT ===
 - Player ID: {context.player_id}
 - Current World: {context.current_world}
 - Location: {context.location}
 - Player Stats: {json.dumps(context.player_stats, indent=2)}
 
-STORY HISTORY (Last 5 nodes):
+=== STORY HISTORY (Last 5 nodes) ===
 {json.dumps(context.story_history[:5], indent=2)}
 
-WORLD STATE:
+=== WORLD STATE ===
 - Global Events: {json.dumps(context.world_state.get('global_events', {}), indent=2)}
 - Faction Power: {json.dumps(context.world_state.get('faction_power', {}), indent=2)}
 - Economic State: {json.dumps(context.world_state.get('economic_state', {}), indent=2)}
 
-NPC RELATIONSHIPS:
+=== NPC RELATIONSHIPS ===
 {json.dumps(context.npc_relationships, indent=2)}
 
-CONTEXT HINTS:
+=== CONTEXT HINTS ===
 {json.dumps(context_hints, indent=2)}
 
 REQUIREMENTS:

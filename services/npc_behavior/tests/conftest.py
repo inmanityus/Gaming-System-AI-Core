@@ -58,3 +58,5 @@ async def reset_pool_before_test():
         if hasattr(cp, '_redis_pool'):
             cp._redis_pool = None
 
+
+

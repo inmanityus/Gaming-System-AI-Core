@@ -1,0 +1,74 @@
+{
+	"AssetType": "MaterialParameterCollection",
+	"AssetName": "MPC_TimeOfDay",
+	"Parameters": {
+		"Scalar": [
+			{
+				"Name": "SunAngle",
+				"DefaultValue": 90.0,
+				"Description": "Sun angle in degrees (0-360)"
+			},
+			{
+				"Name": "SunIntensity",
+				"DefaultValue": 10.0,
+				"Description": "Sun light intensity (0-20)"
+			},
+			{
+				"Name": "MoonAngle",
+				"DefaultValue": 270.0,
+				"Description": "Moon angle in degrees (0-360)"
+			},
+			{
+				"Name": "MoonIntensity",
+				"DefaultValue": 0.3,
+				"Description": "Moon light intensity (0-5)"
+			},
+			{
+				"Name": "FogDensity",
+				"DefaultValue": 0.02,
+				"Description": "Volumetric fog density (0-1)"
+			},
+			{
+				"Name": "TimeOfDay",
+				"DefaultValue": 0.5,
+				"Description": "Time of day normalized (0=midnight, 1=midnight next day)"
+			}
+		],
+		"Vector": [
+			{
+				"Name": "SkyHorizonColor",
+				"DefaultValue": [0.5, 0.7, 1.0, 1.0],
+				"Description": "Sky horizon color (RGBA)"
+			},
+			{
+				"Name": "SkyZenithColor",
+				"DefaultValue": [0.3, 0.5, 0.9, 1.0],
+				"Description": "Sky zenith color (RGBA)"
+			},
+			{
+				"Name": "SkyCloudColor",
+				"DefaultValue": [1.0, 1.0, 1.0, 1.0],
+				"Description": "Cloud color (RGBA)"
+			},
+			{
+				"Name": "SunColor",
+				"DefaultValue": [1.0, 0.95, 0.8, 1.0],
+				"Description": "Sun light color (RGBA)"
+			},
+			{
+				"Name": "MoonColor",
+				"DefaultValue": [0.8, 0.85, 1.0, 1.0],
+				"Description": "Moon light color (RGBA)"
+			},
+			{
+				"Name": "FogColor",
+				"DefaultValue": [0.7, 0.8, 0.9, 1.0],
+				"Description": "Fog color (RGBA)"
+			}
+		]
+	},
+	"Notes": "This Material Parameter Collection is used to update materials and lighting based on time of day. Created programmatically - import this structure into UE5 editor."
+}
+
+
+

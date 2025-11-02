@@ -164,3 +164,5 @@ async def health_check():
         "initialized": weather_manager is not None,
     }
 
+
+

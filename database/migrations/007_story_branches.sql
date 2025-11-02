@@ -24,3 +24,5 @@ CREATE INDEX IF NOT EXISTS idx_story_branches_to_node_id ON story_branches(to_no
 CREATE INDEX IF NOT EXISTS idx_story_branches_is_active ON story_branches(is_active);
 CREATE INDEX IF NOT EXISTS idx_story_branches_conditions ON story_branches USING GIN(conditions);
 
+
+
