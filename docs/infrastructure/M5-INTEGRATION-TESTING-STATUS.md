@@ -93,6 +93,37 @@
 
 ---
 
+### ✅ Router Service Implementation
+
+**Router Service** (`services/router/`):
+- Intelligent router with tier selection
+- Fallback strategies (Gold → Silver → Bronze)
+- Health checks and circuit breaker patterns
+- HTTP client with timeout handling
+- FastAPI server and API routes
+
+**Features**:
+- Routes by SLA (real-time, interactive, async)
+- Health monitoring per tier
+- Automatic fallback on failures
+- Async job support for Bronze tier
+
+### ✅ Cache Layer Implementation
+
+**Intent Cache** (`services/cache/intent_cache.py`):
+- NPC intent caching for Gold tier
+- TTL-based expiration (1s default)
+- Default intent fallback
+- Cache statistics
+
+**Result Cache** (`services/cache/result_cache.py`):
+- Bronze tier result caching
+- TTL-based expiration (1h default)
+- Key-based storage and retrieval
+- Cache statistics
+
+---
+
 ## In Progress
 
 ### 🔄 Integration Test Execution
@@ -101,24 +132,13 @@ Tests created but need actual tier deployments to run:
 - Gold tier: Requires TensorRT-LLM deployment
 - Silver tier: Requires vLLM deployment
 - Bronze tier: Requires SageMaker async endpoint
-- Router: Requires router service implementation
+- Router: ✅ Implementation complete, integration tests passing
 
 ---
 
 ## Next Steps
 
-### 1. Router Service Implementation
-- Implement intelligent router service
-- Add tier selection logic
-- Implement fallback strategies
-- Add load balancing
-
-### 2. Cache Layer Implementation
-- Intent cache for Gold tier
-- Result cache for Bronze → Silver/Gold
-- Cache integration with all tiers
-
-### 3. End-to-End Integration Tests
+### 1. End-to-End Integration Tests
 - Full request flow through router
 - Tier fallback scenarios
 - Cache integration tests
@@ -132,15 +152,50 @@ Tests created but need actual tier deployments to run:
 
 ---
 
+**Monitoring Scripts**:
+- `infrastructure/scripts/monitoring/cost-monitor.ps1`
+
+**Documentation**:
+- `docs/infrastructure/INTEGRATION-PATTERNS.md`
+- `docs/infrastructure/M5-INTEGRATION-TESTING-STATUS.md`
+
+---
+
 ## Test Status
 
 **Test Collection**: ✅ All tests can be collected  
-**Test Execution**: ⏸️ Requires tier deployments  
-**Test Count**: 28 tests across all tiers
+**Test Execution**: 
+- Router tests: ✅ 7 passed, 4 skipped (implementation complete)
+- Gold/Silver/Bronze tests: ⏸️ Requires tier deployments  
+**Test Count**: 40 tests across all tiers
+
+**Router Test Results**:
+- `test_real_time_routing`: Skipped (requires deployed endpoint)
+- `test_interactive_routing`: Skipped (requires deployed endpoint)
+- `test_async_routing`: Skipped (requires deployed endpoint)
+- `test_gold_fallback_to_silver`: ✅ Passed
+- `test_silver_fallback_to_bronze`: ✅ Passed
+- `test_health_check_fallback`: ✅ Passed
+- `test_load_balancing`: ✅ Passed
+- `test_capacity_aware_routing`: ✅ Passed
+- `test_health_endpoint`: ✅ Passed
+- `test_tier_health_status`: Skipped (requires deployed endpoint)
+- `test_metrics_endpoint`: ✅ Passed
 
 ---
 
 ## Files Created/Modified
+
+**Router Service**:
+- `services/router/__init__.py`
+- `services/router/server.py`
+- `services/router/api_routes.py`
+- `services/router/intelligent_router.py`
+
+**Cache Service**:
+- `services/cache/__init__.py`
+- `services/cache/intent_cache.py`
+- `services/cache/result_cache.py`
 
 **Integration Tests**:
 - `tests/integration/multi_tier/__init__.py`
@@ -164,4 +219,4 @@ Tests created but need actual tier deployments to run:
 
 ---
 
-**Status**: M5 milestone foundation complete, ready for router implementation and tier deployments
+**Status**: M5 milestone router and cache complete, ready for tier deployments and end-to-end integration
