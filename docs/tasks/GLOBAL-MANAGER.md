@@ -44,12 +44,27 @@
 4. **Terrain Ecosystems**: TE-001, TE-002, TE-003, TE-004 (Enhanced Ecosystems)
 5. **Integration**: INT-001 (Event Bus Integration)
 
-### Phase 5: Polish & Production (Weeks 25-32)
+### Phase 5: SRL→RLVR Training System (Weeks 25-32)
+**CRITICAL**: This phase REPLACES all existing training/fine-tuning tasks with the new SRL→RLVR approach.
+
+**See**: `docs/tasks/GLOBAL-MANAGER-SRL-RLVR.md` for complete details.
+
+**Summary**:
+1. **Foundation** (Weeks 25-26): AWS Infrastructure, Security, Observability, CI/CD
+2. **Core Training** (Weeks 27-28): Three-Model Collaboration, SRL/RLVR Pipelines, First 2 Model Types
+3. **Complete Models** (Weeks 29-30): All 7 Model Types, Dynamic Systems
+4. **Advanced Features** (Weeks 31-32): Paid Fine-Tuning, Performance Tracking, Integration
+
+**Tasks**: `docs/tasks/SRL-RLVR-TRAINING-TASKS.md`  
+**Solution**: `docs/solutions/SRL-RLVR-TRAINING-SYSTEM-ENHANCED.md`
+
+### Phase 6: Polish & Production (Weeks 33-40)
 1. **Learning Service**: LN-001 (Pipeline Setup)
 2. **Moderation**: MD-001 (Content Filtering)
 3. **Immersive Features**: IM-001, IM-002, IM-003 (Polish & Accessibility)
 4. **Integration Testing**: TEST-001 (Comprehensive Integration Testing)
 5. Performance optimization
+6. **SRL→RLVR Production Deployment & Optimization**
 
 ---
 
@@ -76,6 +91,26 @@
    - Protocol: Kinesis streams
    - Contract: Event JSON schema
    - Status: Defined
+
+5. **SRL→RLVR Training System ↔ Model Management System**
+   - Protocol: REST API + EventBridge
+   - Contract: Model registration, promotion, metadata
+   - Status: ✅ Defined (see GLOBAL-MANAGER-SRL-RLVR.md)
+
+6. **SRL→RLVR Training System ↔ AI Inference Service**
+   - Protocol: REST API + deployment events
+   - Contract: Model deployment, routing, metrics
+   - Status: ✅ Defined (see GLOBAL-MANAGER-SRL-RLVR.md)
+
+7. **SRL→RLVR Training System ↔ Orchestration Service**
+   - Protocol: Step Functions + EventBridge
+   - Contract: Training requests, status events
+   - Status: ✅ Defined (see GLOBAL-MANAGER-SRL-RLVR.md)
+
+8. **Dynamic Model Selection ↔ All Services**
+   - Protocol: REST API
+   - Contract: Model selection with cost-benefit
+   - Status: ✅ Defined (see GLOBAL-MANAGER-SRL-RLVR.md)
 
 ---
 
@@ -134,11 +169,17 @@ Every task completion:
 7. Update progress percentage regularly
 
 **Key Files**:
-- Solutions: `docs/solutions/` (including `MORE-REQUIREMENTS-SOLUTION.md`)
-- Tasks: `docs/tasks/` (including `MORE-REQUIREMENTS-TASKS.md`)
-- Requirements: `docs/Requirements.md`, `docs/More Requirements.md`
+- Solutions: `docs/solutions/` (including `MORE-REQUIREMENTS-SOLUTION.md`, `SRL-RLVR-TRAINING-SYSTEM-ENHANCED.md`)
+- Tasks: `docs/tasks/` (including `MORE-REQUIREMENTS-TASKS.md`, `SRL-RLVR-TRAINING-TASKS.md`)
+- Requirements: `docs/requirements/` (consolidated from `docs/Requirements.md`, `docs/More Requirements.md`)
+- Global Manager: `docs/tasks/GLOBAL-MANAGER.md` (this file) + `docs/tasks/GLOBAL-MANAGER-SRL-RLVR.md` (SRL→RLVR integration)
 - Gap Analysis: `docs/GAP-ANALYSIS-MORE-REQUIREMENTS.md`
 - Recommendations: `docs/RECOMMENDATIONS.md`
+
+**🚨 IMPORTANT - Existing Training Tasks Audit**:
+- `docs/tasks/MODEL-MANAGEMENT-TASKS.md`: Tasks 7.4, 7.5, 7.6 → **DEPRECATED - REPLACE WITH SRL→RLVR**
+- `docs/tasks/AI-INFERENCE-TASKS.md`: Any "fine-tune" tasks → **AUDIT AND UPDATE**
+- All training must now use SRL→RLVR approach per `GLOBAL-MANAGER-SRL-RLVR.md`
 
 ---
 

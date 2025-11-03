@@ -60,16 +60,21 @@
 - Implement LoRA loading/unloading
 - Hot-swap functionality
 - Adapter registry
+- **⚠️ UPDATE**: LoRA adapters must be trained via SRL→RLVR pipeline
 
 **Acceptance Criteria**:
 - [ ] Can load/unload adapters at runtime
 - [ ] Hot-swap works without downtime
 - [ ] Registry tracks active adapters
 - [ ] Memory management correct
+- [ ] **NEW**: Integration with SRL→RLVR training pipeline for adapter registration
+- [ ] **NEW**: Adapters trained via SRL→RLVR approach (not basic fine-tuning)
 
-**Dependencies**: AI-002  
+**Dependencies**: AI-002, SRL-RLVR Training System (Phase 5)  
 **Watchdog**: All model loading operations  
 **Testing**: Hot-swap stress test, memory leak test
+
+**📝 IMPORTANT**: This task is for serving LoRA adapters. The training of adapters must use the SRL→RLVR approach per `docs/tasks/SRL-RLVR-TRAINING-TASKS.md`. See Task SRL-001 and MODEL-*-001 tasks for training implementation.
 
 ---
 
@@ -82,16 +87,21 @@
 - Tier 1: Small models (Phi-3-mini)
 - Tier 2: Mid-size + LoRA (Llama-3.1-8B)
 - Tier 3: Mid-size + personalized LoRA
+- **⚠️ UPDATE**: Model selection must use Dynamic Model Selection System (not arbitrary)
 
 **Acceptance Criteria**:
 - [ ] All tiers serving correctly
 - [ ] Routing logic works
 - [ ] Latency targets met
 - [ ] Concurrent requests handled
+- [ ] **NEW**: Model selection based on task responsibilities (not arbitrary)
+- [ ] **NEW**: Integration with Dynamic Model Selection System for cost-benefit analysis
 
-**Dependencies**: AI-003  
+**Dependencies**: AI-003, SRL-RLVR Training System (Dynamic Model Selection)  
 **Watchdog**: All serving operations  
 **Testing**: Concurrent load test, latency verification
+
+**📝 IMPORTANT**: Model selection must be responsibility-based, not arbitrary. See `docs/tasks/SRL-RLVR-TRAINING-TASKS.md` → Task DYN-003 (Dynamic Model Selection System) for implementation details.
 
 ---
 

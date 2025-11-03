@@ -76,9 +76,23 @@ Implement Self-Hosted Model Download & Management. Automatically downloads model
 
 ### Task 7.4: Historical Log Processing & Training Data Preparation
 **Task ID:** TBB-030  
+**Status**: ❌ **DEPRECATED - REPLACED BY SRL→RLVR**  
 **Dependencies:** TBB-029  
 **Description:**  
-Implement Historical Log Processing system. Processes model historical logs into training data format. Combines with initial training data. Prepares datasets for fine-tuning.
+~~Implement Historical Log Processing system. Processes model historical logs into training data format. Combines with initial training data. Prepares datasets for fine-tuning.~~
+
+**🚨 REPLACED**: This task is DEPRECATED. All training must use the SRL→RLVR approach.
+
+**Replacement**: See `docs/tasks/SRL-RLVR-TRAINING-TASKS.md`:
+- Tasks COLLAB-001..003 (Three-Model Collaboration)
+- Task DYN-001 (Dynamic Example Generation)
+- Tasks SRL-001, RLVR-001 (Training Pipelines)
+
+**Why Replaced**: 
+- Old approach uses static historical logs
+- SRL→RLVR uses dynamic example generation (NEVER static)
+- Three-model collaboration generates expert trajectories
+- Continuously improving generation methods
 
 **Deliverables:**
 - `services/model_management/historical_log_processor.py` - Process logs into training format
@@ -97,9 +111,24 @@ Implement Historical Log Processing system. Processes model historical logs into
 
 ### Task 7.5: Fine-Tuning Pipeline with Historical Data
 **Task ID:** TBB-031  
+**Status**: ❌ **DEPRECATED - REPLACED BY SRL→RLVR**  
 **Dependencies:** TBB-030  
 **Description:**  
-Implement Fine-Tuning Pipeline that uses historical logs + initial training data. Supports LoRA and full fine-tuning. Creates use-case specific fine-tuned models.
+~~Implement Fine-Tuning Pipeline that uses historical logs + initial training data. Supports LoRA and full fine-tuning. Creates use-case specific fine-tuned models.~~
+
+**🚨 REPLACED**: This task is DEPRECATED. All training must use the SRL→RLVR approach.
+
+**Replacement**: See `docs/tasks/SRL-RLVR-TRAINING-TASKS.md`:
+- Task SRL-001 (SRL Training Pipeline)
+- Task RLVR-001 (RLVR Fine-Tuning Pipeline)
+- Tasks MODEL-*-001 (Model-specific training for all 7 types)
+
+**Why Replaced**:
+- Old approach uses basic fine-tuning with static data
+- SRL→RLVR uses SRL (step-wise supervised rewards) → RLVR (outcome-based rewards)
+- Dynamic example generation (never static)
+- Three-model collaboration for expert trajectories
+- Covers all 7 model types with specific strategies
 
 **Deliverables:**
 - `services/model_management/fine_tuning_pipeline.py` - Main fine-tuning pipeline

@@ -9,9 +9,11 @@
 
 ### Task 4.5: Personality Model System
 **Task ID:** TBB-023  
-**Dependencies:** TBB-009, TBB-007  
+**Dependencies:** TBB-009, TBB-007, SRL-RLVR Training System (Phase 5)  
 **Description:**  
 Implement Personality Model system with emotions, backgrounds, dialogue, and actions. ONE Archetype Model for all races, ONE Personality Model per archetype (LoRA adapters). Auto-copy/fine-tune system for new archetypes.
+
+**⚠️ UPDATE**: LoRA adapter training must use SRL→RLVR approach (not basic fine-tuning).
 
 **Deliverables:**
 - `services/personality/archetype_model.py` - Base archetype generation model
@@ -21,13 +23,13 @@ Implement Personality Model system with emotions, backgrounds, dialogue, and act
 - `services/personality/personality_evolution.py` - Growth and evolution tracking
 - `services/personality/dialogue_generator.py` - Emotion-driven dialogue
 - `services/personality/action_selector.py` - Personality-based action selection
-- `services/personality/fine_tuning_pipeline.py` - LoRA adapter training
-- `services/personality/archetype_manager.py` - Auto-copy/fine-tune for new archetypes
+- ~~`services/personality/fine_tuning_pipeline.py`~~ - **REPLACED BY SRL→RLVR Training System**
+- `services/personality/archetype_manager.py` - Auto-copy/fine-tune for new archetypes (uses SRL→RLVR)
 - `database/migrations/002_personality_system.sql` - Personality database schema
 
 **Personality Model Features:**
 - Archetype Model: Generates base archetypes from race characteristics
-- Personality Models: Fine-tuned LoRA adapters per archetype
+- Personality Models: **SRL→RLVR trained** LoRA adapters per archetype
 - Emotion System: Real-time emotion tracking (stress, love, fear, etc.)
 - Background Stories: Unique narratives per NPC
 - Personality Evolution: Growth based on experiences
@@ -41,13 +43,15 @@ Implement Personality Model system with emotions, backgrounds, dialogue, and act
 
 **Acceptance Criteria:**
 - Archetype Model generates base archetypes for all races
-- Personality Models (LoRA) fine-tuned per archetype
+- Personality Models (LoRA) **trained via SRL→RLVR** per archetype (see `docs/tasks/SRL-RLVR-TRAINING-TASKS.md` → MODEL-PERSONALITY-001)
 - Emotions update in real-time based on events
 - Background stories influence NPC behavior
 - Dialogue expresses emotions naturally
 - Actions selected based on personality state
-- Auto-copy/fine-tune creates new archetypes automatically
+- Auto-copy/fine-tune creates new archetypes automatically (uses SRL→RLVR)
 - **REAL TEST**: Create archetype, generate NPC with personality, trigger emotion update, verify dialogue reflects emotion, verify action selection
+
+**📝 IMPORTANT**: Personality model training must use SRL→RLVR approach per Phase 5 of `docs/tasks/GLOBAL-MANAGER.md`. See `docs/tasks/SRL-RLVR-TRAINING-TASKS.md` for training implementation.
 
 ---
 

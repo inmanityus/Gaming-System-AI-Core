@@ -149,9 +149,24 @@ Implement AI Inference service with REAL Ollama integration. Set up model servin
 
 ### Task 2.2: Model Fine-Tuning Pipeline
 **Task ID:** TBB-005  
+**Status**: ❌ **DEPRECATED - REPLACED BY SRL→RLVR**  
 **Dependencies:** TBB-004  
 **Description:**  
-Set up model fine-tuning pipeline using REAL training data. Fine-tune models for world generation, narrative generation, and event generation using AWS SageMaker or local training infrastructure.
+~~Set up model fine-tuning pipeline using REAL training data. Fine-tune models for world generation, narrative generation, and event generation using AWS SageMaker or local training infrastructure.~~
+
+**🚨 REPLACED**: This task is DEPRECATED. All training must use the SRL→RLVR approach.
+
+**Replacement**: See `docs/tasks/SRL-RLVR-TRAINING-TASKS.md`:
+- Task SRL-001 (SRL Training Pipeline)
+- Task RLVR-001 (RLVR Fine-Tuning Pipeline)
+- Tasks MODEL-*-001 (Model-specific training for all types including world generation, narrative, events)
+
+**Why Replaced**:
+- Old approach uses basic fine-tuning with static data
+- SRL→RLVR uses SRL (step-wise supervised rewards) → RLVR (outcome-based rewards)
+- Dynamic example generation (never static)
+- Three-model collaboration for expert trajectories
+- Covers all model types with specific strategies
 
 **Deliverables:**
 - `training/data_preparation.py` - REAL data preparation scripts
