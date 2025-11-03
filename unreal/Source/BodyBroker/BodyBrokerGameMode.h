@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "Engine/Engine.h"
+#include "UObject/WeakObjectPtr.h"
+#include "Engine/World.h"
 #include "BodyBrokerGameMode.generated.h"
 
 // World state enum for Day/Night system
@@ -84,6 +87,29 @@ protected:
 	// Handle world state transition
 	virtual void OnWorldStateTransition(EWorldState OldState, EWorldState NewState);
 
+	// Lighting adjustment functions
+	UFUNCTION(BlueprintCallable, Category = "World State|Lighting")
+	void AdjustLightingForWorldState(EWorldState WorldState);
+
+	UFUNCTION(BlueprintCallable, Category = "World State|Lighting")
+	void ApplyDayLighting();
+
+	UFUNCTION(BlueprintCallable, Category = "World State|Lighting")
+	void ApplyNightLighting();
+
+	// Lighting configuration
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World State|Lighting")
+	float DayLightIntensity;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World State|Lighting")
+	FLinearColor DayLightColor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World State|Lighting")
+	float NightLightIntensity;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World State|Lighting")
+	FLinearColor NightLightColor;
+
 private:
 	// Validate world state transition
 	bool CanTransitionToState(EWorldState NewState) const;
@@ -101,4 +127,15 @@ private:
 	
 	// Transition state tracking
 	bool bTransitionInProgress;
+
+	// Lighting helpers
+	void FindLightingActors();
+	ADirectionalLight* FindDirectionalLight() const;
+	ASkyLight* FindSkyLight() const;
+	AExponentialHeightFog* FindExponentialHeightFog() const;
+
+	// Cached lighting actors (weak references)
+	TWeakObjectPtr<ADirectionalLight> CachedDirectionalLight;
+	TWeakObjectPtr<ASkyLight> CachedSkyLight;
+	TWeakObjectPtr<AExponentialHeightFog> CachedExponentialHeightFog;
 

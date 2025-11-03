@@ -5,6 +5,13 @@
 #include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
+#include "Components/DirectionalLightComponent.h"
+#include "Components/SkyLightComponent.h"
+#include "Components/ExponentialHeightFogComponent.h"
+#include "Engine/DirectionalLight.h"
+#include "Engine/SkyLight.h"
+#include "Engine/ExponentialHeightFog.h"
+#include "EngineUtils.h"
 
 ABodyBrokerGameMode::ABodyBrokerGameMode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -14,6 +21,10 @@ ABodyBrokerGameMode::ABodyBrokerGameMode(const FObjectInitializer& ObjectInitial
 	, bEnableTransitions(true)
 	, PendingWorldState(EWorldState::Day)
 	, bTransitionInProgress(false)
+	, DayLightIntensity(3.0f)
+	, DayLightColor(1.0f, 0.95f, 0.9f, 1.0f)  // Warm daylight
+	, NightLightIntensity(0.5f)
+	, NightLightColor(0.2f, 0.25f, 0.4f, 1.0f)  // Cool moonlight
 {
 }
 
@@ -101,8 +112,8 @@ void ABodyBrokerGameMode::SwitchWorldStateWithFade(EWorldState NewState, float F
 
 void ABodyBrokerGameMode::OnWorldStateTransition(EWorldState OldState, EWorldState NewState)
 {
-	// Base implementation - can be overridden in derived classes
-	// Future: Add fade transitions, lighting changes, etc.
+	// Apply lighting adjustments for new world state
+	AdjustLightingForWorldState(NewState);
 }
 
 bool ABodyBrokerGameMode::CanTransitionToState(EWorldState NewState) const
@@ -195,5 +206,151 @@ void ABodyBrokerGameMode::CompleteFadeTransition()
 	PendingWorldState = EWorldState::Day; // Reset
 
 	// TODO: Trigger any post-transition effects
+}
+
+void ABodyBrokerGameMode::AdjustLightingForWorldState(EWorldState WorldState)
+{
+	if (WorldState == EWorldState::Day)
+	{
+		ApplyDayLighting();
+	}
+	else
+	{
+		ApplyNightLighting();
+	}
+}
+
+void ABodyBrokerGameMode::ApplyDayLighting()
+{
+	FindLightingActors();
+
+	// Adjust DirectionalLight
+	if (ADirectionalLight* DirectionalLight = FindDirectionalLight())
+	{
+		UDirectionalLightComponent* LightComp = DirectionalLight->GetDirectionalLightComponent();
+		if (LightComp)
+		{
+			LightComp->SetIntensity(DayLightIntensity);
+			LightComp->SetLightColor(DayLightColor);
+			UE_LOG(LogTemp, Log, TEXT("BodyBrokerGameMode: Applied day lighting (intensity: %.2f)"), DayLightIntensity);
+		}
+	}
+
+	// Adjust SkyLight
+	if (ASkyLight* SkyLight = FindSkyLight())
+	{
+		USkyLightComponent* SkyLightComp = SkyLight->GetLightComponent();
+		if (SkyLightComp)
+		{
+			SkyLightComp->SetIntensity(DayLightIntensity * 0.3f);  // SkyLight typically lower
+			UE_LOG(LogTemp, Log, TEXT("BodyBrokerGameMode: Applied day sky lighting"));
+		}
+	}
+}
+
+void ABodyBrokerGameMode::ApplyNightLighting()
+{
+	FindLightingActors();
+
+	// Adjust DirectionalLight
+	if (ADirectionalLight* DirectionalLight = FindDirectionalLight())
+	{
+		UDirectionalLightComponent* LightComp = DirectionalLight->GetDirectionalLightComponent();
+		if (LightComp)
+		{
+			LightComp->SetIntensity(NightLightIntensity);
+			LightComp->SetLightColor(NightLightColor);
+			UE_LOG(LogTemp, Log, TEXT("BodyBrokerGameMode: Applied night lighting (intensity: %.2f)"), NightLightIntensity);
+		}
+	}
+
+	// Adjust SkyLight
+	if (ASkyLight* SkyLight = FindSkyLight())
+	{
+		USkyLightComponent* SkyLightComp = SkyLight->GetLightComponent();
+		if (SkyLightComp)
+		{
+			SkyLightComp->SetIntensity(NightLightIntensity * 0.3f);
+			UE_LOG(LogTemp, Log, TEXT("BodyBrokerGameMode: Applied night sky lighting"));
+		}
+	}
+}
+
+void ABodyBrokerGameMode::FindLightingActors()
+{
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	// Find DirectionalLight
+	if (!CachedDirectionalLight.IsValid())
+	{
+		for (TActorIterator<ADirectionalLight> ActorItr(World); ActorItr; ++ActorItr)
+		{
+			ADirectionalLight* Light = *ActorItr;
+			if (IsValid(Light))
+			{
+				CachedDirectionalLight = Light;
+				break;
+			}
+		}
+	}
+
+	// Find SkyLight
+	if (!CachedSkyLight.IsValid())
+	{
+		for (TActorIterator<ASkyLight> ActorItr(World); ActorItr; ++ActorItr)
+		{
+			ASkyLight* SkyLightActor = *ActorItr;
+			if (IsValid(SkyLightActor))
+			{
+				CachedSkyLight = SkyLightActor;
+				break;
+			}
+		}
+	}
+
+	// Find ExponentialHeightFog
+	if (!CachedExponentialHeightFog.IsValid())
+	{
+		for (TActorIterator<AExponentialHeightFog> ActorItr(World); ActorItr; ++ActorItr)
+		{
+			AExponentialHeightFog* Fog = *ActorItr;
+			if (IsValid(Fog))
+			{
+				CachedExponentialHeightFog = Fog;
+				break;
+			}
+		}
+	}
+}
+
+ADirectionalLight* ABodyBrokerGameMode::FindDirectionalLight() const
+{
+	if (CachedDirectionalLight.IsValid())
+	{
+		return CachedDirectionalLight.Get();
+	}
+	return nullptr;
+}
+
+ASkyLight* ABodyBrokerGameMode::FindSkyLight() const
+{
+	if (CachedSkyLight.IsValid())
+	{
+		return CachedSkyLight.Get();
+	}
+	return nullptr;
+}
+
+AExponentialHeightFog* ABodyBrokerGameMode::FindExponentialHeightFog() const
+{
+	if (CachedExponentialHeightFog.IsValid())
+	{
+		return CachedExponentialHeightFog.Get();
+	}
+	return nullptr;
 }
 
