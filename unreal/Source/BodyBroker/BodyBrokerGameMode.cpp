@@ -184,41 +184,10 @@ void ABodyBrokerGameMode::OnFadeOutComplete()
 
 	// TODO: Trigger fade in visual effect
 }
+
+void ABodyBrokerGameMode::CompleteFadeTransition()
 {
-	UE_LOG(LogTemp, Log, TEXT("BodyBrokerGameMode: Fade out complete, switching world state"));
-
-	// Perform the actual state change while faded
-	EWorldState OldState = CurrentWorldState;
-	CurrentWorldState = TargetState;
-
-	// Notify systems of state change
-	OnWorldStateTransition(OldState, TargetState);
-
-	// Broadcast delegate
-	OnWorldStateChanged.Broadcast(OldState, TargetState);
-
-		// Start fade in
-		if (UWorld* World = GetWorld())
-		{
-			float FadeInTime = DefaultTransitionDuration * 0.5f;
-			FTimerDelegate FadeInDelegate;
-			FadeInDelegate.BindUObject(this, &ABodyBrokerGameMode::CompleteFadeTransition);
-			World->GetTimerManager().SetTimer(
-				FadeTransitionTimer,
-				FadeInDelegate,
-				FadeInTime,
-				false
-			);
-		}
-
-	// TODO: Trigger fade in visual effect
-}
-
-void ABodyBrokerGameMode::CompleteFadeTransition(EWorldState TargetState)
-{
-	CompleteFadeTransition(PendingWorldState);
-}
-{
+	EWorldState TargetState = PendingWorldState;
 	UE_LOG(LogTemp, Log, TEXT("BodyBrokerGameMode: Fade transition complete to %s world"),
 		TargetState == EWorldState::Day ? TEXT("Day") : TEXT("Night"));
 
