@@ -12,6 +12,7 @@ import logging
 from typing import Dict, Any, Optional
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 logger = logging.getLogger(__name__)
 
@@ -52,23 +53,46 @@ class KLController:
         """
         Compute KL divergence between current and reference policies.
         
+        KL(P_current || P_reference) = sum(P_current * log(P_current / P_reference))
+        
         Args:
-            current_policy_logits: Logits from current policy
-            reference_policy_logits: Logits from reference policy
+            current_policy_logits: Logits from current policy [batch, seq_len, vocab_size]
+            reference_policy_logits: Logits from reference policy [batch, seq_len, vocab_size]
         
         Returns:
-            KL divergence tensor
+            KL divergence tensor (scalar)
         """
-        # TODO: Implement actual KL divergence computation
-        # This will:
-        # 1. Convert logits to probabilities (softmax)
-        # 2. Compute KL(P_current || P_reference)
-        # 3. Return KL divergence value
-        
         logger.debug("Computing KL divergence")
         
-        # Placeholder
-        kl_div = torch.tensor(0.0)
+        # Convert logits to probabilities using softmax
+        current_probs = F.softmax(current_policy_logits, dim=-1)
+        reference_probs = F.softmax(reference_policy_logits, dim=-1)
+        
+        # Add small epsilon to avoid log(0)
+        eps = 1e-8
+        current_probs = current_probs + eps
+        reference_probs = reference_probs + eps
+        
+        # Normalize to ensure probabilities sum to 1
+        current_probs = current_probs / current_probs.sum(dim=-1, keepdim=True)
+        reference_probs = reference_probs / reference_probs.sum(dim=-1, keepdim=True)
+        
+        # Compute KL divergence: KL(P || Q) = sum(P * log(P / Q))
+        # Using log(P) - log(Q) for numerical stability
+        log_current = torch.log(current_probs)
+        log_reference = torch.log(reference_probs)
+        
+        # Element-wise KL: P * (log(P) - log(Q))
+        kl_per_element = current_probs * (log_current - log_reference)
+        
+        # Sum over vocabulary dimension
+        kl_per_position = kl_per_element.sum(dim=-1)  # [batch, seq_len]
+        
+        # Average over sequence length and batch
+        kl_div = kl_per_position.mean()
+        
+        # Ensure non-negative (should always be, but numerical errors can occur)
+        kl_div = torch.clamp(kl_div, min=0.0)
         
         return kl_div
     
