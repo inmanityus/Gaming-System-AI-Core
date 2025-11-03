@@ -11,6 +11,7 @@ All models collaborate dynamically to ensure training examples are NEVER static.
 """
 
 from .base_http_client import BaseHttpClient
+from .cloud_llm_client import CloudLLMClient
 from .lore_retriever import LoreRetriever, LoreContext
 from .teacher_planner import TeacherPlanner, ExpertTrajectory
 from .verifier import Verifier, VerificationResult
@@ -20,6 +21,7 @@ from .lore_database_client import LoreDatabaseClient
 
 __all__ = [
     "BaseHttpClient",
+    "CloudLLMClient",
     "LoreRetriever",
     "LoreContext",
     "TeacherPlanner",
