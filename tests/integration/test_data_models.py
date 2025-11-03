@@ -46,8 +46,15 @@ def engine():
     
     yield engine
     
-    # Cleanup: Drop all tables after tests
-    Base.metadata.drop_all(engine)
+    # Cleanup: Drop all tables after tests (with CASCADE to handle dependencies)
+    try:
+        with engine.connect() as conn:
+            # Drop dependent constraints first
+            conn.execute(text("DROP TABLE IF EXISTS story_branches CASCADE"))
+            conn.commit()
+        Base.metadata.drop_all(engine)
+    except Exception:
+        pass  # Ignore errors during cleanup
 
 
 @pytest.fixture(scope="function")
@@ -56,10 +63,37 @@ def session(engine):
     Session = sessionmaker(bind=engine)
     session = Session()
     
+    # Clean up any existing test data at start
+    try:
+        session.execute(text("DELETE FROM players"))
+        session.execute(text("DELETE FROM factions"))
+        session.execute(text("DELETE FROM npcs"))
+        session.execute(text("DELETE FROM augmentations"))
+        session.execute(text("DELETE FROM game_states"))
+        session.execute(text("DELETE FROM story_nodes"))
+        session.execute(text("DELETE FROM transactions"))
+        session.commit()
+    except Exception:
+        session.rollback()
+    
     yield session
     
-    # Rollback any changes
-    session.rollback()
+    # Clean up test data before closing
+    try:
+        session.rollback()
+        
+        # Clear test data to prevent unique constraint violations
+        session.execute(text("DELETE FROM players"))
+        session.execute(text("DELETE FROM factions"))
+        session.execute(text("DELETE FROM npcs"))
+        session.execute(text("DELETE FROM augmentations"))
+        session.execute(text("DELETE FROM game_states"))
+        session.execute(text("DELETE FROM story_nodes"))
+        session.execute(text("DELETE FROM transactions"))
+        session.commit()
+    except Exception:
+        session.rollback()
+    
     session.close()
 
 
