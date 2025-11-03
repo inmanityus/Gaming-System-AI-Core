@@ -112,6 +112,8 @@ async def test_faction_id(test_world_state_id):
     postgres = await get_postgres_pool()
     
     faction_id = uuid4()
+    # Use unique name to avoid constraint violations
+    unique_name = f"Test Faction {faction_id}"
     try:
         await postgres.execute(
             """
@@ -119,7 +121,7 @@ async def test_faction_id(test_world_state_id):
             VALUES ($1, $2, $3, $4, $5::jsonb, $6::jsonb, $7::jsonb, $8::jsonb, $9::jsonb)
             """,
             faction_id,
-            "Test Faction",
+            unique_name,
             "vampire_house",
             50,
             json.dumps(["territory_1"]),
@@ -324,7 +326,7 @@ async def test_faction_simulator_load_faction(test_faction_id):
     
     faction = await simulator._load_faction_data(str(test_faction_id))
     assert faction is not None
-    assert faction["name"] == "Test Faction"
+    assert faction["name"].startswith("Test Faction")
     assert faction["power_level"] == 50
 
 

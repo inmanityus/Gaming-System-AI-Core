@@ -55,6 +55,11 @@ class SRLTrainer:
         self.tokenizer = tokenizer
         self.optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
         
+        # Store configuration
+        self.learning_rate = learning_rate
+        self.kl_penalty_weight = kl_penalty_weight
+        self.max_kl = max_kl
+        
         # Initialize components
         self.reward_normalizer = RewardNormalizer(method=reward_norm_method)
         self.kl_controller = KLController(max_kl=max_kl, kl_weight=kl_penalty_weight)

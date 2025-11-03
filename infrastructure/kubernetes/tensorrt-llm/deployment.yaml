@@ -1,0 +1,143 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tensorrt-llm-server
+  namespace: gold-tier
+  labels:
+    app: tensorrt-llm
+    tier: gold
+spec:
+  replicas: 4  # Minimum for redundancy across AZs
+  selector:
+    matchLabels:
+      app: tensorrt-llm
+  template:
+    metadata:
+      labels:
+        app: tensorrt-llm
+        tier: gold
+    spec:
+      # Taint matching for Gold tier nodes
+      tolerations:
+      - key: tier
+        value: gold
+        effect: NoSchedule
+      nodeSelector:
+        tier: gold
+        gpu: l4
+      
+      containers:
+      - name: trtllm-server
+        image: nvcr.io/nvidia/tensorrtllm/release:gpt-oss-dev
+        imagePullPolicy: Always
+        
+        resources:
+          requests:
+            nvidia.com/gpu: 1
+            memory: "16Gi"
+            cpu: "4"
+          limits:
+            nvidia.com/gpu: 1
+            memory: "24Gi"
+            cpu: "8"
+        
+        env:
+        - name: MODEL_NAME
+          value: "Qwen/Qwen2.5-3B-Instruct-AWQ"
+        - name: TRTLLM_ENGINE_PATH
+          value: "/models/engines"
+        - name: MAX_MODEL_LEN
+          value: "4096"
+        - name: PORT
+          value: "8000"
+        
+        ports:
+        - name: http
+          containerPort: 8000
+          protocol: TCP
+        - name: grpc
+          containerPort: 50051
+          protocol: TCP
+        
+        volumeMounts:
+        - name: model-storage
+          mountPath: /models
+          readOnly: true
+        - name: engine-cache
+          mountPath: /engines
+        
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: http
+          initialDelaySeconds: 90
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+      
+      volumes:
+      - name: model-storage
+        persistentVolumeClaim:
+          claimName: model-storage-pvc
+      - name: engine-cache
+        emptyDir:
+          sizeLimit: 50Gi
+      
+      # GPU device plugin
+      runtimeClassName: nvidia
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tensorrt-llm-service
+  namespace: gold-tier
+  labels:
+    app: tensorrt-llm
+    tier: gold
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8000
+    targetPort: http
+    protocol: TCP
+  - name: grpc
+    port: 50051
+    targetPort: grpc
+    protocol: TCP
+  selector:
+    app: tensorrt-llm
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: model-storage-pvc
+  namespace: gold-tier
+spec:
+  accessModes:
+  - ReadOnlyMany
+  storageClassName: gp3
+  resources:
+    requests:
+      storage: 100Gi
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gold-tier
+  labels:
+    tier: gold
+    purpose: real-time-inference
+

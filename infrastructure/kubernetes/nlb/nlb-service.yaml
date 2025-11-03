@@ -1,0 +1,53 @@
+# Network Load Balancer for TensorRT-LLM gRPC Service
+# Purpose: Expose TensorRT-LLM service via NLB for low-latency gRPC from game servers
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: tensorrt-llm-nlb
+  namespace: gold-tier
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internal"  # Private only
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-subnets: "subnet-private-1,subnet-private-2,subnet-private-3"
+    service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: |
+      preserve_client_ip.enabled=true,
+      deregistration_delay.timeout_seconds=30,
+      stickiness.enabled=false,
+      proxy_protocol_v2.enabled=false
+spec:
+  type: LoadBalancer
+  ports:
+  - name: grpc
+    port: 50051
+    targetPort: grpc
+    protocol: TCP
+  - name: http
+    port: 8000
+    targetPort: http
+    protocol: TCP
+  selector:
+    app: tensorrt-llm
+  sessionAffinity: None
+  externalTrafficPolicy: Local  # Preserve source IP, route to same AZ node
+
+---
+# Service Monitor for Prometheus (optional)
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: tensorrt-llm-metrics
+  namespace: gold-tier
+  labels:
+    app: tensorrt-llm
+spec:
+  selector:
+    matchLabels:
+      app: tensorrt-llm
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 15s
+

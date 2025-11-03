@@ -1,0 +1,86 @@
+# Variables for EKS Silver Tier Cluster
+
+variable "aws_region" {
+  description = "AWS region for resources"
+  type        = string
+  default     = "us-east-1"
+}
+
+variable "environment" {
+  description = "Environment name (dev, staging, prod)"
+  type        = string
+  default     = "dev"
+}
+
+variable "cluster_name" {
+  description = "Name of the EKS cluster"
+  type        = string
+  default     = "gaming-ai-silver-tier"
+}
+
+variable "kubernetes_version" {
+  description = "Kubernetes version for EKS cluster"
+  type        = string
+  default     = "1.29"
+}
+
+variable "vpc_cidr" {
+  description = "CIDR block for VPC (if creating new VPC)"
+  type        = string
+  default     = null
+}
+
+variable "use_existing_vpc" {
+  description = "Whether to use existing VPC (true) or create new (false)"
+  type        = bool
+  default     = false
+}
+
+variable "existing_vpc_id" {
+  description = "Existing VPC ID (if use_existing_vpc is true)"
+  type        = string
+  default     = null
+}
+
+variable "public_subnets" {
+  description = "Public subnet CIDR blocks"
+  type        = list(string)
+  default     = ["10.1.1.0/24", "10.1.2.0/24", "10.1.3.0/24"]
+}
+
+variable "private_subnets" {
+  description = "Private subnet CIDR blocks"
+  type        = list(string)
+  default     = ["10.1.11.0/24", "10.1.12.0/24", "10.1.13.0/24"]
+}
+
+variable "game_servers_cidr" {
+  description = "CIDR block for game servers (for security group rules)"
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
+variable "silver_tier_instance_types" {
+  description = "Instance types for Silver tier node group"
+  type        = list(string)
+  default     = ["g6.12xlarge", "g5.12xlarge"]
+}
+
+variable "silver_min_nodes" {
+  description = "Minimum number of nodes in Silver tier node group"
+  type        = number
+  default     = 4
+}
+
+variable "silver_max_nodes" {
+  description = "Maximum number of nodes in Silver tier node group"
+  type        = number
+  default     = 32
+}
+
+variable "silver_desired_nodes" {
+  description = "Desired number of nodes in Silver tier node group"
+  type        = number
+  default     = 8
+}
+

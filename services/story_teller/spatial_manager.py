@@ -134,7 +134,24 @@ class SpatialManager:
         # Get all territories from factions
         all_territories = set()
         for faction in factions:
-            all_territories.update(faction["territory"])
+            territory = faction["territory"]
+            # Handle both list and dict formats
+            if isinstance(territory, dict):
+                territory = list(territory.keys()) if territory else []
+            elif isinstance(territory, str):
+                import json
+                territory = json.loads(territory) if territory else []
+            if isinstance(territory, list):
+                # Normalize territory IDs to be hashable
+                normalized = []
+                for t in territory:
+                    if isinstance(t, dict):
+                        normalized.append(t.get("id", str(t)))
+                    elif isinstance(t, (str, int)):
+                        normalized.append(t)
+                    else:
+                        normalized.append(str(t))
+                all_territories.update(normalized)
         
         # For each territory, calculate control strength for each faction
         for territory_id in all_territories:
@@ -164,7 +181,19 @@ class SpatialManager:
                 npc_strength = min(npc_count_val * 0.01, 0.3)  # Max 0.3 from NPCs
                 
                 # Territory ownership bonus (if faction already owns territory)
-                ownership_bonus = 0.2 if territory_id in faction["territory"] else 0.0
+                # Handle territory format (list, dict, or str)
+                faction_territory = faction["territory"]
+                if isinstance(faction_territory, dict):
+                    faction_territory = list(faction_territory.keys()) if faction_territory else []
+                elif isinstance(faction_territory, str):
+                    import json
+                    faction_territory = json.loads(faction_territory) if faction_territory else []
+                # Normalize for comparison
+                if isinstance(faction_territory, list):
+                    normalized_territory = [str(t) if not isinstance(t, (str, int)) else t for t in faction_territory]
+                    ownership_bonus = 0.2 if str(territory_id) in [str(t) for t in normalized_territory] else 0.0
+                else:
+                    ownership_bonus = 0.0
                 
                 # Total control strength
                 total_strength = base_strength + npc_strength + ownership_bonus
@@ -188,9 +217,18 @@ class SpatialManager:
             # Find current owner
             current_owner = None
             for faction in factions:
-                if territory_id in faction["territory"]:
-                    current_owner = faction["id"]
-                    break
+                faction_territory = faction["territory"]
+                # Handle territory format (list, dict, or str)
+                if isinstance(faction_territory, dict):
+                    faction_territory = list(faction_territory.keys()) if faction_territory else []
+                elif isinstance(faction_territory, str):
+                    import json
+                    faction_territory = json.loads(faction_territory) if faction_territory else []
+                if isinstance(faction_territory, list):
+                    normalized_territory = [str(t) if not isinstance(t, (str, int)) else t for t in faction_territory]
+                    if str(territory_id) in [str(t) for t in normalized_territory]:
+                        current_owner = faction["id"]
+                        break
             
             # Determine if ownership should change
             # Need at least 0.1 strength difference to change ownership
@@ -411,8 +449,21 @@ class SpatialManager:
         
         ownership = {}
         for faction in factions:
-            for territory_id in faction["territory"]:
-                ownership[territory_id] = faction["id"]
+            territory = faction["territory"]
+            # Handle both list and dict formats
+            if isinstance(territory, dict):
+                territory = list(territory.keys()) if territory else []
+            elif isinstance(territory, str):
+                import json
+                territory = json.loads(territory) if territory else []
+            if isinstance(territory, list):
+                for territory_id in territory:
+                    # Ensure territory_id is hashable (extract ID if it's a dict)
+                    if isinstance(territory_id, dict):
+                        territory_id = territory_id.get("id", str(territory_id))
+                    elif not isinstance(territory_id, (str, int)):
+                        territory_id = str(territory_id)
+                    ownership[territory_id] = faction["id"]
         
         return ownership
 

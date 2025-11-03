@@ -1,0 +1,117 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bronze-tier-inference-job
+  namespace: bronze-tier
+  labels:
+    tier: bronze
+    purpose: async-inference
+spec:
+  # Job template for batch processing
+  template:
+    metadata:
+      labels:
+        tier: bronze
+        purpose: async-inference
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: inference-worker
+        image: gaming-ai/bronze-tier-worker:latest
+        imagePullPolicy: Always
+        
+        resources:
+          requests:
+            memory: "32Gi"
+            cpu: "8"
+          limits:
+            memory: "64Gi"
+            cpu: "16"
+        
+        env:
+        - name: SAGEMAKER_ENDPOINT_NAME
+          value: "deepseek-v3.1-terminus-async-endpoint-dev"
+        - name: AWS_REGION
+          value: "us-east-1"
+        - name: S3_OUTPUT_BUCKET
+          value: "gaming-ai-async-output-dev"
+        - name: QUEUE_NAME
+          value: "bronze-tier-inference-queue"
+        
+        volumeMounts:
+        - name: config
+          mountPath: /etc/config
+          readOnly: true
+      
+      volumes:
+      - name: config
+        configMap:
+          name: bronze-tier-config
+
+---
+# ConfigMap for job configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bronze-tier-config
+  namespace: bronze-tier
+data:
+  max_retries: "3"
+  timeout_seconds: "3600"
+  batch_size: "10"
+  poll_interval_seconds: "5"
+
+---
+# CronJob for periodic batch processing
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: bronze-tier-periodic-processing
+  namespace: bronze-tier
+  labels:
+    tier: bronze
+    purpose: batch-processing
+spec:
+  schedule: "0 */6 * * *"  # Every 6 hours
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            tier: bronze
+            purpose: batch-processing
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: batch-processor
+            image: gaming-ai/bronze-tier-batch:latest
+            imagePullPolicy: Always
+            
+            resources:
+              requests:
+                memory: "16Gi"
+                cpu: "4"
+              limits:
+                memory: "32Gi"
+                cpu: "8"
+            
+            env:
+            - name: SAGEMAKER_ENDPOINT_NAME
+              value: "deepseek-v3.1-terminus-async-endpoint-dev"
+            - name: BATCH_SIZE
+              value: "100"
+            - name: PROCESSING_MODE
+              value: "bulk"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bronze-tier
+  labels:
+    tier: bronze
+    purpose: async-expert-tasks
+

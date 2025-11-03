@@ -44,21 +44,43 @@
 4. **Terrain Ecosystems**: TE-001, TE-002, TE-003, TE-004 (Enhanced Ecosystems)
 5. **Integration**: INT-001 (Event Bus Integration)
 
-### Phase 5: SRL→RLVR Training System (Weeks 25-32)
+### Phase 5: Multi-Tier Model Architecture (Weeks 25-30)
+**CRITICAL**: Implements three-tier hybrid model system replacing both small models AND for-pay models.
+
+**Strategy**:
+- **Gold Tier (3B-8B)**: Real-time NPCs requiring sub-16ms inference
+- **Silver Tier (7B-13B)**: Interactive NPCs with 80-250ms latency acceptable
+- **Bronze Tier (671B MoE)**: Async expert tasks (storyteller, cybersecurity, admin)
+
+**See**: `docs/tasks/MULTI-TIER-ARCHITECTURE-TASKS.md` for complete details.
+
+**Summary**:
+1. **Foundation** (Weeks 25-26): Gold/Silver/Bronze infrastructure setup, router/orchestrator
+2. **Training** (Weeks 27-28): Train all three tiers with SRL→RLVR pipeline
+3. **MCP Integration** (Week 29): Storyteller, Cybersecurity, Admin, Game State MCP servers
+4. **Integration** (Week 30): Game engine integration, state prediction, distillation pipeline
+
+**Tasks**: `docs/tasks/MULTI-TIER-ARCHITECTURE-TASKS.md`  
+**Solution**: `docs/solutions/MULTI-TIER-MODEL-ARCHITECTURE.md`  
+**Requirements**: `docs/requirements/MODEL-ARCHITECTURE-REQUIREMENTS.md`
+
+### Phase 6: SRL→RLVR Training System (Weeks 31-38)
 **CRITICAL**: This phase REPLACES all existing training/fine-tuning tasks with the new SRL→RLVR approach.
+
+**Note**: Multi-tier architecture uses SRL→RLVR for training all tiers.
 
 **See**: `docs/tasks/GLOBAL-MANAGER-SRL-RLVR.md` for complete details.
 
 **Summary**:
-1. **Foundation** (Weeks 25-26): AWS Infrastructure, Security, Observability, CI/CD
-2. **Core Training** (Weeks 27-28): Three-Model Collaboration, SRL/RLVR Pipelines, First 2 Model Types
-3. **Complete Models** (Weeks 29-30): All 7 Model Types, Dynamic Systems
-4. **Advanced Features** (Weeks 31-32): Paid Fine-Tuning, Performance Tracking, Integration
+1. **Foundation** (Weeks 31-32): AWS Infrastructure, Security, Observability, CI/CD
+2. **Core Training** (Weeks 33-34): Three-Model Collaboration, SRL/RLVR Pipelines, First 2 Model Types
+3. **Complete Models** (Weeks 35-36): All 7 Model Types, Dynamic Systems
+4. **Advanced Features** (Weeks 37-38): Paid Fine-Tuning, Performance Tracking, Integration
 
 **Tasks**: `docs/tasks/SRL-RLVR-TRAINING-TASKS.md`  
 **Solution**: `docs/solutions/SRL-RLVR-TRAINING-SYSTEM-ENHANCED.md`
 
-### Phase 6: Polish & Production (Weeks 33-40)
+### Phase 7: Polish & Production (Weeks 39-46)
 1. **Learning Service**: LN-001 (Pipeline Setup)
 2. **Moderation**: MD-001 (Content Filtering)
 3. **Immersive Features**: IM-001, IM-002, IM-003 (Polish & Accessibility)
