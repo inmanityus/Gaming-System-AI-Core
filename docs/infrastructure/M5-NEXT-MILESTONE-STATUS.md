@@ -26,7 +26,15 @@
 ### Integration Tests
 - ✅ Router integration tests created
 - ✅ Router tests passing (7/11)
+- ✅ Cache integration tests created (17/17 passing)
 - ✅ Gold/Silver/Bronze tests created (pending deployments)
+
+### Router Lifecycle Scripts
+- ✅ Router start script (`scripts/router-start.ps1`)
+- ✅ Router stop script (`scripts/router-stop.ps1`)
+- ✅ Added port 8000 to safe-kill protection
+- ✅ PID file management
+- ✅ Log management
 
 ### Documentation
 - ✅ Router architecture documented
@@ -44,31 +52,31 @@
 - ⏸️ Bronze tier: SageMaker async endpoint required
 
 ### End-to-End Integration
+- ✅ Cache integration tests complete (17/17 passing)
 - ⏸️ Full request flow through router
-- ⏸️ Cache integration with tiers
 - ⏸️ Performance validation
 
 ---
 
 ## Next Priority Tasks
 
-### 1. Create Router Server Start/Stop Scripts
+### 1. ✅ Create Router Server Start/Stop Scripts
 **Priority**: High  
-**Time**: 1 hour  
-**Tasks**:
-- Create `scripts/router-start.ps1`
-- Create `scripts/router-stop.ps1`
-- Test router service lifecycle
-- Add to safe-kill-servers.ps1
+**Status**: Complete  
+**Results**:
+- Created `scripts/router-start.ps1`
+- Created `scripts/router-stop.ps1`
+- Added port 8000 to safe-kill-servers.ps1
+- Router service lifecycle functional
 
-### 2. Create Cache Integration Tests
+### 2. ✅ Create Cache Integration Tests
 **Priority**: Medium  
-**Time**: 1 hour  
-**Tasks**:
-- Test intent cache with mock NPCs
-- Test result cache with mock Bronze outputs
-- Test cache TTL and eviction
-- Test cache statistics
+**Status**: Complete  
+**Results**:
+- Intent cache tests: 9/9 passing
+- Result cache tests: 8/8 passing
+- Total: 17/17 tests passing
+- All TTL and eviction tests passing
 
 ### 3. Create End-to-End Integration Tests
 **Priority**: High  
