@@ -10,15 +10,24 @@ Generates expert trajectories for SRL→RLVR training using three specialized mo
 All models collaborate dynamically to ensure training examples are NEVER static.
 """
 
-from .lore_retriever import LoreRetriever
-from .teacher_planner import TeacherPlanner
-from .verifier import Verifier
-from .collaboration_orchestrator import CollaborationOrchestrator
+from .base_http_client import BaseHttpClient
+from .lore_retriever import LoreRetriever, LoreContext
+from .teacher_planner import TeacherPlanner, ExpertTrajectory
+from .verifier import Verifier, VerificationResult
+from .collaboration_orchestrator import CollaborationOrchestrator, CollaborationResult
+from .rules_engine_client import RulesEngineClient
+from .lore_database_client import LoreDatabaseClient
 
 __all__ = [
+    "BaseHttpClient",
     "LoreRetriever",
+    "LoreContext",
     "TeacherPlanner",
+    "ExpertTrajectory",
     "Verifier",
+    "VerificationResult",
     "CollaborationOrchestrator",
+    "CollaborationResult",
+    "RulesEngineClient",
+    "LoreDatabaseClient",
 ]
-

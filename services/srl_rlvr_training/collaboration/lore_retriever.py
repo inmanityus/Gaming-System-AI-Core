@@ -12,8 +12,12 @@ Role: Gathers all relevant context for generating expert trajectories.
 """
 
 import logging
+import asyncio
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
+
+from .rules_engine_client import RulesEngineClient
+from .lore_database_client import LoreDatabaseClient
 
 logger = logging.getLogger(__name__)
 
@@ -50,11 +54,27 @@ class LoreRetriever:
             rules_engine_url: URL to dynamic rules engine service
             lore_db_url: URL to lore database service
         """
-        self.rules_engine_url = rules_engine_url
-        self.lore_db_url = lore_db_url
+        self.rules_engine_client = RulesEngineClient(rules_engine_url)
+        self.lore_db_client = LoreDatabaseClient(lore_db_url)
         logger.info("LoreRetriever initialized")
     
-    def retrieve_lore(self, monster_species: str, model_type: str) -> LoreContext:
+    async def close(self) -> None:
+        """
+        Close all client connections.
+        
+        Uses asyncio.gather to ensure both clients are closed even if one fails.
+        """
+        logger.info("Closing all client sessions")
+        results = await asyncio.gather(
+            self.rules_engine_client.close(),
+            self.lore_db_client.close(),
+            return_exceptions=True
+        )
+        for result in results:
+            if isinstance(result, Exception):
+                logger.error(f"Error during client cleanup: {result}")
+    
+    async def retrieve_lore(self, monster_species: str, model_type: str) -> LoreContext:
         """
         Retrieve all relevant lore for a given monster species and model type.
         
@@ -67,33 +87,40 @@ class LoreRetriever:
         """
         logger.info(f"Retrieving lore for {monster_species} ({model_type})")
         
-        # TODO: Implement actual retrieval from rules engine and lore database
-        # This will integrate with:
-        # - Dynamic Rules Engine (versioned rules)
-        # - Lore Database (game knowledge base)
-        # - Historical Examples (from previous training cycles)
+        # Fetch all data concurrently for optimal performance
+        rules_task = self.rules_engine_client.get_rules(monster_species, model_type)
+        historical_task = self.lore_db_client.get_historical_examples(monster_species, model_type)
+        lore_task = self.lore_db_client.get_lore(monster_species)
+        
+        # Wait for all requests to complete concurrently
+        rules, historical_examples, related_lore = await asyncio.gather(
+            rules_task,
+            historical_task,
+            lore_task,
+            return_exceptions=True
+        )
+        
+        # Handle exceptions
+        if isinstance(rules, Exception):
+            logger.error(f"Error fetching rules: {rules}")
+            rules = {}
+        if isinstance(historical_examples, Exception):
+            logger.error(f"Error fetching historical examples: {historical_examples}")
+            historical_examples = []
+        if isinstance(related_lore, Exception):
+            logger.error(f"Error fetching lore: {related_lore}")
+            related_lore = []
         
         context = LoreContext(
             monster_species=monster_species,
-            game_rules=self._fetch_rules(monster_species, model_type),
-            historical_examples=self._fetch_historical_examples(monster_species, model_type),
-            related_lore=self._fetch_related_lore(monster_species)
+            game_rules=rules if isinstance(rules, dict) else {},
+            historical_examples=historical_examples if isinstance(historical_examples, list) else [],
+            related_lore=related_lore if isinstance(related_lore, list) else []
         )
         
+        logger.info(f"Retrieved lore context: {len(context.game_rules)} rules, "
+                   f"{len(context.historical_examples)} examples, "
+                   f"{len(context.related_lore)} lore entries")
+        
         return context
-    
-    def _fetch_rules(self, monster_species: str, model_type: str) -> Dict[str, Any]:
-        """Fetch dynamic rules from rules engine."""
-        # TODO: Implement rules engine integration
-        return {}
-    
-    def _fetch_historical_examples(self, monster_species: str, model_type: str) -> List[Dict[str, Any]]:
-        """Fetch historical training examples."""
-        # TODO: Implement historical example retrieval
-        return []
-    
-    def _fetch_related_lore(self, monster_species: str) -> List[str]:
-        """Fetch related lore entries."""
-        # TODO: Implement lore database query
-        return []
 
