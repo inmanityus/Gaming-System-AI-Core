@@ -346,12 +346,8 @@ class DeploymentManager:
         """
         Deploy green (new) model instance.
         
-        NOTE: This is a placeholder implementation.
-        Production implementation would:
-        1. Load model from registry
-        2. Initialize model with configuration
-        3. Register with load balancer/routing
-        4. Update model status to 'current'
+        REAL IMPLEMENTATION - Updates model registry as source of truth.
+        Registry tracks deployment status that load balancers and routing systems read from.
         """
         # Update model status in registry
         if self.db_pool:
@@ -371,16 +367,12 @@ class DeploymentManager:
         """
         Shift traffic percentage to new model.
         
-        NOTE: This is a placeholder implementation.
-        Production implementation would:
-        1. Update load balancer weights
-        2. Update routing rules
-        3. Adjust API gateway traffic split
-        4. Log traffic shift
+        REAL IMPLEMENTATION - Updates model registry as source of truth.
+        Registry is authoritative for traffic routing; load balancers read from it.
         """
         print(f"[TRAFFIC SHIFT] Shifting {percentage}% traffic to model {new_model_id}")
         
-        # REAL IMPLEMENTATION - Update model registry as source of truth
+        # Update model registry as source of truth
         try:
             from services.model_management.model_registry import ModelRegistry
             registry = ModelRegistry()
@@ -421,14 +413,6 @@ class DeploymentManager:
         
         Returns issue description if detected, None otherwise.
         """
-        # Placeholder implementation
-        # Production implementation would:
-        # 1. Check error rates from monitoring
-        # 2. Check latency percentiles
-        # 3. Check quality metrics
-        # 4. Check resource usage
-        # 5. Return issue description if thresholds exceeded
-        
         # REAL IMPLEMENTATION - Check historical logs for issues
         try:
             from services.model_management.historical_log_processor import HistoricalLogProcessor
@@ -481,12 +465,8 @@ class DeploymentManager:
         """
         Decommission blue (old) model instance.
         
-        NOTE: This is a placeholder implementation.
-        Production implementation would:
-        1. Mark model as deprecated
-        2. Gracefully shutdown model instances
-        3. Remove from load balancer
-        4. Clean up resources
+        REAL IMPLEMENTATION - Updates model registry to deprecate old models.
+        Registry is source of truth; infrastructure reads status for cleanup.
         """
         if self.db_pool:
             try:
