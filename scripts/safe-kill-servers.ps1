@@ -5,7 +5,7 @@ param([switch]$TestOnly)
 Write-Host "[PROTECT] Stopping Gaming System AI Core servers (MCP protected)" -ForegroundColor Green
 
 # Define project ports
-$projectPorts = @(3000, 5443)
+$projectPorts = @(3000, 5443, 8000)
 
 foreach ($port in $projectPorts) {
     Write-Host "Checking port $port..."
