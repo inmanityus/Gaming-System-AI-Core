@@ -1,0 +1,163 @@
+# SRL→RLVR Training System Configuration
+# ======================================
+
+# Training Configuration
+training:
+  # SRL Training
+  srl:
+    learning_rate: 1.0e-5
+    kl_penalty_weight: 0.1
+    max_kl: 0.1
+    batch_size: 32
+    num_epochs: 3
+    
+  # RLVR Fine-Tuning
+  rlvr:
+    learning_rate: 1.0e-6
+    use_ppo: true
+    use_dpo: false
+    ppo_clip_epsilon: 0.2
+    ppo_value_coef: 0.5
+    ppo_entropy_coef: 0.01
+    dpo_beta: 0.1
+    num_epochs: 2
+
+# Three-Model Collaboration
+collaboration:
+  lore_retriever:
+    rules_engine_url: "${RULES_ENGINE_URL}"
+    lore_db_url: "${LORE_DB_URL}"
+  
+  teacher_planner:
+    cloud_llm_model: "gpt-5-pro"  # or claude-4.5, gemini-2.5-pro
+    max_trajectory_length: 20
+    temperature: 0.7
+  
+  verifier:
+    cloud_llm_model: "gpt-5-pro"
+    min_validation_score: 0.7
+    enable_correction: true
+
+# Dynamic Systems
+dynamic:
+  example_generation:
+    strategies: ["collaboration", "synthetic", "adversarial"]
+    default_strategy: "collaboration"
+    num_examples_per_batch: 10
+  
+  model_selection:
+    benchmark_db_url: "${BENCHMARK_DB_URL}"
+    cost_weight: 0.3
+    capability_weight: 0.7
+    min_responsibility_match: 0.6
+  
+  rules_integration:
+    rules_engine_url: "${RULES_ENGINE_URL}"
+    cache_ttl_seconds: 3600
+    auto_retrain_on_update: true
+
+# Model Types Configuration
+model_types:
+  personality:
+    base_model: "qwen-7b-instruct"
+    training_steps: 1000
+    batch_size: 16
+    learning_rate: 1.0e-5
+  
+  facial:
+    base_model: "qwen-7b-instruct"
+    training_steps: 800
+    batch_size: 16
+    learning_rate: 1.0e-5
+  
+  buildings:
+    base_model: "qwen-7b-instruct"
+    training_steps: 1200
+    batch_size: 16
+    learning_rate: 1.0e-5
+  
+  animals:
+    base_model: "qwen-7b-instruct"
+    training_steps: 1000
+    batch_size: 16
+    learning_rate: 1.0e-5
+  
+  plants:
+    base_model: "qwen-7b-instruct"
+    training_steps: 800
+    batch_size: 16
+    learning_rate: 1.0e-5
+  
+  trees:
+    base_model: "qwen-7b-instruct"
+    training_steps: 800
+    batch_size: 16
+    learning_rate: 1.0e-5
+  
+  sounds:
+    base_model: "qwen-7b-instruct"
+    training_steps: 1000
+    batch_size: 16
+    learning_rate: 1.0e-5
+
+# AWS Configuration
+aws:
+  region: "${AWS_REGION}"
+  s3:
+    training_data_bucket: "${S3_TRAINING_BUCKET}"
+    model_artifacts_bucket: "${S3_MODELS_BUCKET}"
+  
+  sagemaker:
+    training_instance_type: "ml.g5.xlarge"
+    inference_instance_type: "ml.g5.2xlarge"
+    role_arn: "${SAGEMAKER_ROLE_ARN}"
+  
+  step_functions:
+    state_machine_arn: "${STEP_FUNCTIONS_STATE_MACHINE_ARN}"
+  
+  dynamodb:
+    metadata_table: "${DYNAMODB_METADATA_TABLE}"
+    tracking_table: "${DYNAMODB_TRACKING_TABLE}"
+
+# Performance Tracking
+performance:
+  tracking_enabled: true
+  metrics_retention_days: 90
+  regression_threshold: 0.05
+  weakness_detection_enabled: true
+  check_interval_hours: 24
+
+# Paid Model Fine-Tuning
+paid_models:
+  gemini:
+    enabled: true
+    project_id: "${GEMINI_PROJECT_ID}"
+    region: "${GEMINI_REGION}"
+    use_vertex_ai: true
+  
+  openai:
+    enabled: true
+    api_key_env: "OPENAI_API_KEY"
+    organization_id: "${OPENAI_ORG_ID}"
+  
+  anthropic:
+    enabled: true
+    api_key_env: "ANTHROPIC_API_KEY"
+    fallback_to_prompt_engineering: true
+
+# Logging
+logging:
+  level: "INFO"
+  structured: true
+  json_format: true
+  pii_redaction: true
+
+# Security
+security:
+  encrypt_training_data: true
+  encrypt_model_artifacts: true
+  kms_key_id: "${KMS_KEY_ID}"
+  iam_least_privilege: true
+  secrets_manager_arns:
+    - "${SECRETS_MANAGER_ARN}"
+

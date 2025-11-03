@@ -20,3 +20,16 @@ watchdog>=3.0.0
 redis>=5.0.0
 asyncpg>=0.29.0
 
+# SRL→RLVR Training System Dependencies
+torch>=2.1.0
+transformers>=4.35.0
+accelerate>=0.25.0
+peft>=0.7.0  # LoRA adapters
+trl>=0.7.0  # Transformers Reinforcement Learning (PPO, DPO)
+datasets>=2.14.0
+sentencepiece>=0.1.99
+boto3>=1.29.0  # AWS SDK
+sagemaker>=2.190.0  # AWS SageMaker
+numpy>=1.24.0
+scipy>=1.11.0
+
