@@ -56,9 +56,21 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "World State")
 	void SwitchWorldState(EWorldState NewState);
 
+	// Switch with fade transition
+	UFUNCTION(BlueprintCallable, Category = "World State")
+	void SwitchWorldStateWithFade(EWorldState NewState, float FadeDuration = 1.0f);
+
 	// Event broadcast when world state changes
 	UPROPERTY(BlueprintAssignable, Category = "World State")
 	FOnWorldStateChanged OnWorldStateChanged;
+
+	// Transition duration (configurable)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World State|Transitions")
+	float DefaultTransitionDuration;
+
+	// Enable/disable transitions
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "World State|Transitions")
+	bool bEnableTransitions;
 
 protected:
 	// Current world state
@@ -75,5 +87,18 @@ protected:
 private:
 	// Validate world state transition
 	bool CanTransitionToState(EWorldState NewState) const;
-};
+
+	// Fade transition helpers
+	void StartFadeTransition(EWorldState TargetState, float Duration);
+	void CompleteFadeTransition();
+	void OnFadeOutComplete();
+
+	// Timer handle for fade transitions
+	FTimerHandle FadeTransitionTimer;
+
+	// Target state during transition
+	EWorldState PendingWorldState;
+	
+	// Transition state tracking
+	bool bTransitionInProgress;
 
