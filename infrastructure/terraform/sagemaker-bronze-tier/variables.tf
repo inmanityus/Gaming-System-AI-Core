@@ -90,3 +90,61 @@ variable "sns_success_topic_arn" {
   default     = null
 }
 
+# Training-specific variables
+variable "training_image" {
+  description = "Docker image URI for training container"
+  type        = string
+  default     = ""
+}
+
+variable "training_data_s3_uri" {
+  description = "S3 URI for training data (optional, uses bucket if empty)"
+  type        = string
+  default     = ""
+}
+
+variable "training_instance_type" {
+  description = "EC2 instance type for training (p5.48xlarge for multi-node)"
+  type        = string
+  default     = "ml.p5.48xlarge"
+  
+  validation {
+    condition     = contains(["ml.p5.48xlarge"], var.training_instance_type)
+    error_message = "Training instance type must be ml.p5.48xlarge for Bronze tier distributed training."
+  }
+}
+
+variable "training_instance_count" {
+  description = "Number of training instances for distributed training (multi-node)"
+  type        = number
+  default     = 2
+  
+  validation {
+    condition     = var.training_instance_count >= 2
+    error_message = "Bronze tier requires at least 2 instances for distributed training."
+  }
+}
+
+variable "distributed_strategy" {
+  description = "Distributed training strategy (FSDP, SMDDP, or DDP)"
+  type        = string
+  default     = "FSDP"
+  
+  validation {
+    condition     = contains(["FSDP", "SMDDP", "DDP"], var.distributed_strategy)
+    error_message = "Distributed strategy must be FSDP, SMDDP, or DDP."
+  }
+}
+
+variable "max_runtime_seconds" {
+  description = "Maximum runtime for training job in seconds"
+  type        = number
+  default     = 172800  # 48 hours (longer for Bronze tier)
+}
+
+variable "hyperparameters" {
+  description = "Hyperparameters for training job"
+  type        = map(string)
+  default     = {}
+}
+

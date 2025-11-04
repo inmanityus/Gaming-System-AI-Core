@@ -455,5 +455,340 @@ All technical decisions validated through consultation with:
 
 ---
 
+---
+
+## 14. SRL→RLVR TRAINING SYSTEM REQUIREMENTS
+
+**Status**: Production-Ready Architecture  
+**Last Updated**: 2025-11-03  
+**Reference**: `Global-Docs/SRL-RLVR-TRAINING-SYSTEM-COMPLETE.md`
+
+### 14.1 Overview
+
+The SRL→RLVR Training System is a comprehensive framework for training small language models using Google's Supervised Reinforcement Learning (SRL) followed by Reinforcement Learning with Verifiable Rewards (RLVR). This system enables fine-tuning models on domain-specific tasks using AI-generated expert demonstrations and outcome-based rewards.
+
+**Key Benefits:**
+- Two-Stage Training: SRL provides dense step-wise supervision, RLVR refines with outcome-based rewards
+- Dynamic Example Generation: Three-model collaboration continuously generates high-quality training examples
+- Model Selection: Intelligent routing selects optimal models for specific responsibilities
+- Stability: KL divergence penalties prevent catastrophic forgetting
+- Verification: Built-in validation ensures training quality
+
+### 14.2 Core Components Required
+
+#### 14.2.1 Three-Model Collaboration System
+
+**Required Components:**
+1. **Context Retriever (Model A)**:
+   - Gathers domain knowledge and rules
+   - Retrieves historical examples
+   - Fetches relevant context from knowledge base
+   - Integrates with rules engine
+
+2. **Teacher Planner (Model B)**:
+   - Generates expert step-by-step trajectories
+   - Uses cloud LLMs to create training examples
+   - Produces step-wise solutions with reasoning
+   - Creates dense reward structures
+
+3. **Verifier (Model C)**:
+   - Validates and corrects trajectories
+   - Ensures correctness, completeness, and rule compliance
+   - Provides verification scores (minimum 0.7 threshold)
+   - Regenerates examples that fail validation (max 3 attempts)
+
+**Implementation Requirements:**
+- Async HTTP client for cloud LLM API calls
+- Collaboration orchestrator to coordinate all three models
+- Trajectory format with step-wise rewards
+- Validation criteria per model type
+
+#### 14.2.2 SRL Training Pipeline
+
+**Required Features:**
+- Step-wise reward extraction from expert trajectories
+- Supervised learning on expert demonstrations
+- KL divergence penalty for stability (weight: 0.1, max_kl: 0.1)
+- Reward normalization (z-score method)
+- Batch processing (batch_size: 32)
+- Multi-epoch training (5 epochs recommended)
+
+**Technical Requirements:**
+- PyTorch 2.0+ and Transformers 4.30+
+- Support for LoRA adapters (PEFT 0.4.0+)
+- Gradient clipping (max_norm: 1.0)
+- Learning rate: 1e-5 for SRL stage
+- Loss tracking and metrics collection
+
+#### 14.2.3 RLVR Fine-Tuning Pipeline
+
+**Required Features:**
+- Outcome-based reward computation (0.0 to 1.0 scale)
+- PPO (Proximal Policy Optimization) training
+- Reference policy anchoring (SRL-trained model as baseline)
+- Clipped objective (epsilon: 0.2)
+- Value function estimation
+- Entropy bonus for exploration (coefficient: 0.01)
+- KL divergence penalty to maintain SRL knowledge
+
+**Technical Requirements:**
+- TRL library 0.7.0+ for RL training
+- PPO trainer with configurable hyperparameters
+- Learning rate: 1e-6 for RLVR stage
+- Gamma (discount factor): 0.99
+- Value coefficient: 0.5
+- Multi-epoch fine-tuning (3 epochs recommended)
+
+#### 14.2.4 Dynamic Model Selection System
+
+**Required Features:**
+- Responsibility mapping (model type → trainer routing)
+- Cost-benefit analysis:
+  - Performance benchmarks comparison
+  - Cost evaluation (training and inference)
+  - Inference speed assessment
+  - Hardware requirements analysis
+- Request routing to appropriate trainer
+- Model-specific schema support
+- Automatic model evaluation and selection updates (weekly/monthly)
+
+**Model Type Support:**
+- Sentiment Analysis
+- Code Generation
+- Content Moderation
+- NPC Dialogue Generation
+- World Generation
+- Story Generation
+- [Extensible for future model types]
+
+#### 14.2.5 Performance Tracking System
+
+**Required Features:**
+- Training metrics monitoring:
+  - Loss tracking (supervised and policy loss)
+  - KL divergence monitoring (< 0.1 threshold)
+  - Reward progression tracking
+  - Stability checks (no spikes or crashes)
+- Validation loop:
+  - Periodic evaluation on held-out validation set
+  - Metrics comparison to baseline
+  - Early stopping on no improvement
+- Weakness detection:
+  - Failure mode identification
+  - Performance degradation tracking
+  - Continuous evaluation over time
+- Model versioning and registry
+
+### 14.3 Multi-Tier Model Architecture Strategy
+
+#### 14.3.1 Gold Tier - Small Models (3B-8B)
+
+**Purpose**: Real-time NPC interactions requiring sub-16ms inference
+
+**Models**: Qwen2.5-3B, Llama-3.2-3B, Phi-3.5-mini
+
+**Requirements:**
+- Training cost: ~$75 per fine-tuning run
+- Inference cost: $0.6-$1.0 per 1M tokens (self-hosted)
+- Hardware: Consumer GPUs (RTX 5090, L4)
+- Latency: Sub-16ms inference (ONLY models capable of this)
+- Use cases: Real-time NPCs, environmental barks, procedural descriptions
+
+**Hosting:**
+- Training: AWS SageMaker g6.12xlarge (L4) or g5.12xlarge (A10G)
+- Inference: EC2 g6.xlarge (L4) or EKS with TensorRT-LLM
+
+#### 14.3.2 Silver Tier - Mid-Size Models (7B-13B)
+
+**Purpose**: Interactive NPCs with 80-250ms latency acceptable
+
+**Models**: Llama-3.1-8B, Qwen2.5-7B, Mistral-Nemo-12B
+
+**Requirements:**
+- Training cost: ~$240 per fine-tuning run
+- Inference cost: $1.4-$6.7 per 1M tokens (self-hosted)
+- Hardware: 1-2 datacenter GPUs (A100/H100)
+- Latency: 80-250ms (acceptable for interactive tasks)
+- Use cases: Key NPCs, complex dialogue, multi-turn conversations, player support
+- MCP tools and RAG support required
+
+**Hosting:**
+- Training: AWS SageMaker p4d.24xlarge (8× A100) or p5.48xlarge (8× H100)
+- Inference: EC2 g6.12xlarge (L4) or g5.12xlarge (A10G) with vLLM
+
+#### 14.3.3 Bronze Tier - Large MoE Models (671B)
+
+**Purpose**: Expert-level tasks where quality is paramount, latency doesn't matter
+
+**Models**: DeepSeek-V3.1-Terminus (671B MoE, 37B active)
+
+**Requirements:**
+- Training cost: $8,640-$32,400 per fine-tuning run
+- Inference cost: Variable, break-even at 860K-32M tokens (1-3 months)
+- Hardware: Multi-node cluster (24+ H100s)
+- Latency: 760ms per token (async acceptable)
+- Use cases: Storyteller, narrative generation, cybersecurity, admin operations, worldbuilding
+- Replaces for-pay models (GPT-5 Pro, Claude 4.5 Sonnet, Gemini 2.5 Pro)
+
+**Hosting:**
+- Training: AWS SageMaker p5.48xlarge multi-node (24+ H100s)
+- Inference: SageMaker Async Inference or EKS job queues (p5.48xlarge)
+
+### 14.4 Nightly Distillation Strategy
+
+**Purpose**: Continuously reduce dependency on expensive Bronze tier
+
+**Process:**
+1. Collect Bronze tier traces (high-quality outputs)
+2. Distill to Silver tier adapters (LoRA)
+3. Distill Silver to Gold tier adapters (LoRA)
+
+**Requirements:**
+- Automated distillation pipeline
+- Trace collection from Bronze tier outputs
+- LoRA adapter generation for Silver/Gold tiers
+- Quality validation after distillation
+- Scheduled nightly execution
+
+**Benefit**: Over time, Silver and Gold tiers improve without needing Bronze tier for same tasks, reducing costs while maintaining quality.
+
+### 14.5 Training Infrastructure Requirements
+
+#### 14.5.1 AWS SageMaker Deployment
+
+**MANDATORY**: All AI models must run in AWS, not locally. Local dev computer cannot handle model inference.
+
+**Training Infrastructure:**
+- **Gold Tier**: g6.12xlarge (L4) or g5.12xlarge (A10G)
+- **Silver Tier**: p4d.24xlarge (8× A100) or p5.48xlarge (8× H100)
+- **Bronze Tier**: p5.48xlarge multi-node (24+ H100s)
+
+**Deployment Workflow** (MANDATORY):
+1. Build everything locally (compile code, run tests)
+2. Test everything locally (ensure 100% pass rate)
+3. Verify dev system integrity
+4. Deploy to AWS (services, infrastructure, configuration)
+5. Test in AWS (run ALL tests against AWS services)
+6. Shutdown local models (stop all local AI model services)
+7. Fix issues immediately using `/all-rules` and `/test-comprehensive`
+
+**Scripts Required:**
+- `scripts/aws-deploy-full.ps1` - Full deployment workflow
+- `scripts/aws-deploy-services.ps1` - Deploy services to AWS
+- `scripts/aws-test-services.ps1` - Test services in AWS
+- `scripts/shutdown-local-models.ps1` - Stop local models
+
+#### 14.5.2 Directory Structure
+
+```
+srl_rlvr_training/
+├── collaboration/          # Three-model collaboration
+│   ├── context_retriever.py
+│   ├── teacher_planner.py
+│   ├── verifier.py
+│   └── orchestrator.py
+├── srl/                    # SRL training
+│   ├── srl_trainer.py
+│   ├── reward_normalizer.py
+│   └── kl_controller.py
+├── rlvr/                   # RLVR training
+│   ├── rlvr_trainer.py
+│   ├── ppo_trainer.py
+│   └── dpo_trainer.py
+├── dynamic/                # Dynamic systems
+│   ├── model_selector.py
+│   ├── example_generator.py
+│   └── rules_integration.py
+├── performance/            # Performance tracking
+│   ├── performance_tracker.py
+│   └── weakness_detector.py
+└── models/                # Model-specific trainers
+    ├── base_trainer.py
+    └── [model_type]_trainer.py
+```
+
+### 14.6 Configuration Requirements
+
+**Configuration File**: `configs/srl_rlvr_training.yaml`
+
+**Required Sections:**
+- SRL configuration (learning_rate, kl_penalty_weight, max_kl, reward_norm_method, batch_size, epochs)
+- RLVR configuration (learning_rate, use_ppo, clip_epsilon, value_coef, entropy_coef, gamma, epochs)
+- Collaboration configuration (cloud_llm_model, num_examples_per_request, max_regeneration_attempts, min_verification_score)
+- Model selection configuration (cost_weight, performance_weight, update_frequency_days)
+
+### 14.7 Integration Requirements
+
+#### 14.7.1 Learning Service Integration
+
+**Required Integration Points:**
+- Game event feedback collection → Model improvement
+- Player interaction logging → Training data generation
+- Narrative quality feedback → Storyteller model improvement
+- Event quality feedback → Event generation improvement
+- Player engagement metrics → Overall system improvement
+
+**Data Flow:**
+- Feedback via Kinesis streams (partitioned by user_id)
+- Model improvement pipeline
+- Batch processing for efficiency
+
+#### 14.7.2 Model-Specific Implementation
+
+**Required for Each Model Type:**
+1. Model-specific schema (Pydantic models)
+2. Specialized trainer class (inherits BaseTrainer)
+3. Custom preprocessing methods
+4. Model-specific validation logic
+5. Type-specific metrics computation
+
+**Example Model Types:**
+- Sentiment Analysis: `{"text": str, "sentiment": str, "confidence": float}`
+- Code Generation: `{"prompt": str, "code": str, "tests": List[str]}`
+- Content Moderation: `{"content": str, "flags": List[str], "severity": str}`
+- NPC Dialogue: `{"context": str, "dialogue": str, "personality": dict}`
+
+### 14.8 Performance Benchmarks
+
+**Expected Performance Improvements:**
+- SRL Stage: 20-40% improvement over baseline
+- RLVR Stage: Additional 10-20% improvement over SRL
+- Combined: 30-60% improvement over untrained baseline
+
+**Training Time (Approximate):**
+- SRL: 2-5 hours for 1000 examples (depends on model size)
+- RLVR: 1-3 hours for 500 examples
+- Total: 3-8 hours for complete training pipeline
+
+### 14.9 Security and Compliance
+
+**Required Security Measures:**
+- API keys stored securely (environment variables or secrets manager)
+- Data privacy (PII redaction if needed)
+- Model security (output validation to prevent injection attacks)
+- Access control (restrict training operations to authorized users)
+- Audit logging (log all training operations for compliance)
+
+### 14.10 Verification and Quality Assurance
+
+**During Training:**
+- Training metrics monitoring (loss decreases, KL divergence < 0.1, reward increases)
+- Validation loop (periodic evaluation on held-out set)
+- Stability checks (no sudden spikes or crashes)
+
+**After Training:**
+- Performance testing (comprehensive test suite)
+- Weakness detection (failure mode identification)
+- Expert example validation (generalization beyond training set)
+- Integration tests (end-to-end validation)
+
+**Verification Components:**
+- Verifier (Model C): Validates training examples before use
+- Performance Tracker: Continuous monitoring of model quality
+- Test Suites: Comprehensive validation for each model type
+- Integration Tests: End-to-end validation
+
+---
+
 **Document Status**: Complete and ready for implementation  
 **Next Steps**: Begin Phase 1 (Foundation) development

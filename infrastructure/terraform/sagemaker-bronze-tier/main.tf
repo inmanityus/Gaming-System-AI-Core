@@ -1,7 +1,9 @@
-# SageMaker Bronze Tier - Async Inference Configuration
-# Purpose: Deploy SageMaker async inference endpoints for large MoE models (671B)
-# Models: DeepSeek-V3.1-Terminus (671B MoE, 37B active) for expert-level async tasks
-# Use Cases: Storyteller, Cybersecurity, Admin operations
+# SageMaker Bronze Tier - Training Configuration
+# Purpose: Deploy SageMaker training jobs for Bronze tier models (671B MoE)
+# Models: DeepSeek-V3.1-Terminus (671B MoE, 37B active)
+# Instance: p5.48xlarge multi-node (SMDDP/FSDP)
+# Distributed Training: PyTorch FSDP or SageMaker DDP
+# Checkpointing: Every 30 minutes
 
 terraform {
   required_version = ">= 1.5.0"
@@ -61,6 +63,57 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "sagemaker_models"
   }
 }
 
+# S3 bucket for training data
+resource "aws_s3_bucket" "training_data" {
+  bucket = "${var.project_name}-bronze-training-data-${var.environment}"
+  
+  tags = {
+    Tier    = "Bronze"
+    Purpose = "Training-Data"
+  }
+}
+
+resource "aws_s3_bucket_versioning" "training_data" {
+  bucket = aws_s3_bucket.training_data.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+# S3 bucket for training checkpoints
+resource "aws_s3_bucket" "checkpoints" {
+  bucket = "${var.project_name}-bronze-checkpoints-${var.environment}"
+  
+  tags = {
+    Tier    = "Bronze"
+    Purpose = "Training-Checkpoints"
+  }
+}
+
+resource "aws_s3_bucket_versioning" "checkpoints" {
+  bucket = aws_s3_bucket.checkpoints.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+# S3 bucket for training output
+resource "aws_s3_bucket" "training_output" {
+  bucket = "${var.project_name}-bronze-training-output-${var.environment}"
+  
+  tags = {
+    Tier    = "Bronze"
+    Purpose = "Training-Output"
+  }
+}
+
+resource "aws_s3_bucket_versioning" "training_output" {
+  bucket = aws_s3_bucket.training_output.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
 # S3 bucket for async inference output
 resource "aws_s3_bucket" "async_output" {
   bucket = "${var.project_name}-async-output-${var.environment}"
@@ -78,7 +131,7 @@ resource "aws_s3_bucket_versioning" "async_output" {
   }
 }
 
-# IAM role for SageMaker
+# IAM role for SageMaker (used for both training and inference)
 resource "aws_iam_role" "sagemaker_role" {
   name = "${var.project_name}-sagemaker-bronze-${var.environment}"
   
@@ -100,7 +153,7 @@ resource "aws_iam_role" "sagemaker_role" {
   }
 }
 
-# IAM policy for SageMaker
+# IAM policy for SageMaker (updated to include training resources)
 resource "aws_iam_role_policy" "sagemaker_policy" {
   name = "${var.project_name}-sagemaker-bronze-policy-${var.environment}"
   role = aws_iam_role.sagemaker_role.id
@@ -119,6 +172,12 @@ resource "aws_iam_role_policy" "sagemaker_policy" {
         Resource = [
           aws_s3_bucket.sagemaker_models.arn,
           "${aws_s3_bucket.sagemaker_models.arn}/*",
+          aws_s3_bucket.training_data.arn,
+          "${aws_s3_bucket.training_data.arn}/*",
+          aws_s3_bucket.checkpoints.arn,
+          "${aws_s3_bucket.checkpoints.arn}/*",
+          aws_s3_bucket.training_output.arn,
+          "${aws_s3_bucket.training_output.arn}/*",
           aws_s3_bucket.async_output.arn,
           "${aws_s3_bucket.async_output.arn}/*"
         ]
@@ -145,6 +204,22 @@ resource "aws_iam_role_policy" "sagemaker_policy" {
       }
     ]
   })
+}
+
+# Attach SageMaker full access policy
+resource "aws_iam_role_policy_attachment" "sagemaker_full_access" {
+  role       = aws_iam_role.sagemaker_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSageMakerFullAccess"
+}
+
+# CloudWatch Log Group for training logs
+resource "aws_cloudwatch_log_group" "training_logs" {
+  name              = "/aws/sagemaker/TrainingJobs/${var.project_name}-bronze-${var.environment}"
+  retention_in_days = 30
+  
+  tags = {
+    Tier = "Bronze"
+  }
 }
 
 # SageMaker Model
@@ -216,7 +291,7 @@ resource "aws_sagemaker_endpoint" "bronze_tier_endpoint" {
   }
 }
 
-# CloudWatch Log Group
+# CloudWatch Log Group for inference endpoints
 resource "aws_cloudwatch_log_group" "sagemaker_bronze" {
   name              = "/aws/sagemaker/Endpoints/${replace(var.model_name, ".", "-")}-async-endpoint-${var.environment}"
   retention_in_days = 30
@@ -224,6 +299,102 @@ resource "aws_cloudwatch_log_group" "sagemaker_bronze" {
   tags = {
     Tier = "Bronze"
   }
+}
+
+# Local values for training configuration
+locals {
+  checkpoint_s3_uri = "s3://${aws_s3_bucket.checkpoints.bucket}/checkpoints/"
+  output_s3_uri     = "s3://${aws_s3_bucket.training_output.bucket}/output/"
+  
+  # Bronze tier: Multi-node distributed training
+  instance_config = {
+    instance_type  = var.training_instance_type
+    instance_count = var.training_instance_count  # Multi-node for distributed training
+    volume_size_gb = 1000  # Large volume for Bronze tier
+  }
+  
+  # Checkpoint frequency: 30 minutes = 1800 seconds
+  checkpoint_frequency = 1800
+  
+  # Distributed training strategy (FSDP for PyTorch)
+  distributed_strategy = var.distributed_strategy
+}
+
+# Training job configuration JSON for Python scripts (with distributed training)
+locals {
+  training_job_config = jsonencode({
+    TrainingJobName = "srl-rlvr-bronze-${formatdate("YYYYMMDD-HHmmss", timestamp())}"
+    RoleArn         = aws_iam_role.sagemaker_role.arn
+    AlgorithmSpecification = {
+      TrainingImage     = var.training_image
+      TrainingInputMode = "File"
+    }
+    ResourceConfig = {
+      InstanceType     = local.instance_config.instance_type
+      InstanceCount    = local.instance_config.instance_count
+      VolumeSizeInGB   = local.instance_config.volume_size_gb
+    }
+    # Distributed training configuration for multi-node
+    DistributionStrategy = local.distributed_strategy
+    EnableManagedSpotTraining = false  # Bronze tier typically uses on-demand for stability
+    MaxRuntimeInSeconds      = var.max_runtime_seconds
+    CheckpointConfig = {
+      S3Uri     = local.checkpoint_s3_uri
+      LocalPath = "/opt/ml/checkpoints"
+    }
+    StoppingCondition = {
+      MaxRuntimeInSeconds = var.max_runtime_seconds
+    }
+    InputDataConfig = [
+      {
+        ChannelName = "training"
+        DataSource = {
+          S3DataSource = {
+            S3DataType             = "S3Prefix"
+            S3Uri                  = var.training_data_s3_uri != "" ? var.training_data_s3_uri : "s3://${aws_s3_bucket.training_data.bucket}/training-data/"
+            S3DataDistributionType = "ShardedByS3Key"  # Sharded for distributed training
+          }
+        }
+        ContentType = "application/json"
+      }
+    ]
+    OutputDataConfig = {
+      S3OutputPath = local.output_s3_uri
+    }
+    HyperParameters = merge(
+      var.hyperparameters,
+      {
+        checkpoint_frequency = tostring(local.checkpoint_frequency)
+        distributed_strategy = local.distributed_strategy
+      }
+    )
+    Tags = [
+      {
+        Key   = "Tier"
+        Value = "Bronze"
+      },
+      {
+        Key   = "Purpose"
+        Value = "SRL-RLVR-Training"
+      },
+      {
+        Key   = "Environment"
+        Value = var.environment
+      }
+    ]
+  })
+}
+
+# Output the configuration as a file for Python scripts to use
+resource "local_file" "training_job_config" {
+  content  = local.training_job_config
+  filename = "${path.module}/training-job-config.json"
+  
+  depends_on = [
+    aws_s3_bucket.checkpoints,
+    aws_s3_bucket.training_output,
+    aws_iam_role.sagemaker_role
+  ]
 }
 
 # Outputs
@@ -245,5 +416,41 @@ output "s3_model_bucket" {
 output "s3_output_bucket" {
   description = "S3 bucket for async inference output"
   value       = aws_s3_bucket.async_output.bucket
+}
+
+# Training outputs
+output "training_role_arn" {
+  description = "ARN of the IAM role for SageMaker training"
+  value       = aws_iam_role.sagemaker_role.arn
+}
+
+output "checkpoint_s3_uri" {
+  description = "S3 URI for training checkpoints"
+  value       = local.checkpoint_s3_uri
+}
+
+output "training_output_s3_uri" {
+  description = "S3 URI for training output"
+  value       = local.output_s3_uri
+}
+
+output "training_data_bucket" {
+  description = "S3 bucket for training data"
+  value       = aws_s3_bucket.training_data.bucket
+}
+
+output "checkpoint_bucket" {
+  description = "S3 bucket for checkpoints"
+  value       = aws_s3_bucket.checkpoints.bucket
+}
+
+output "training_output_bucket" {
+  description = "S3 bucket for training output"
+  value       = aws_s3_bucket.training_output.bucket
+}
+
+output "training_job_config_file" {
+  description = "Path to training job configuration file"
+  value       = local_file.training_job_config.filename
 }
 
