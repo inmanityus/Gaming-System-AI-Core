@@ -44,15 +44,14 @@ data "aws_availability_zones" "available" {
 
 data "aws_caller_identity" "current" {}
 
-# Use existing VPC or create new one
-# For Silver tier, we can reuse Gold tier VPC or create separate
+# VPC (create new or use existing)
 module "vpc" {
-  source = "./modules/vpc"
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "~> 5.0"
   
-  cluster_name    = var.cluster_name
-  vpc_cidr        = var.vpc_cidr != null ? var.vpc_cidr : null
-  vpc_id          = var.use_existing_vpc ? var.existing_vpc_id : null
-  azs             = slice(data.aws_availability_zones.available.names, 0, 3)
+  name = "${var.cluster_name}-vpc"
+  cidr = var.vpc_cidr != null ? var.vpc_cidr : "10.1.0.0/16"
+  azs  = slice(data.aws_availability_zones.available.names, 0, 3)
   
   public_subnets  = var.public_subnets
   private_subnets = var.private_subnets
@@ -69,7 +68,8 @@ module "vpc" {
 
 # EKS Cluster
 module "eks" {
-  source = "./modules/eks"
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 20.0"
   
   cluster_name    = var.cluster_name
   cluster_version = var.kubernetes_version
@@ -112,73 +112,49 @@ module "eks" {
   tags = {
     Tier = "Silver"
   }
-}
-
-# EKS Node Group - Silver Tier GPUs
-module "silver_tier_node_group" {
-  source = "./modules/node-group"
   
-  cluster_name = module.eks.cluster_name
-  
-  node_group_name = "silver-tier-gpu"
-  
-  instance_types = var.silver_tier_instance_types  # ["g6.12xlarge", "g5.12xlarge"]
-  capacity_type  = "ON_DEMAND"  # SPOT for cost savings optional
-  
-  min_size     = var.silver_min_nodes
-  max_size     = var.silver_max_nodes
-  desired_size = var.silver_desired_nodes
-  
-  # AMI for GPU support
-  ami_type = "AL2_x86_64_GPU"  # NVIDIA GPU-optimized AMI
-  
-  # Labels and taints
-  labels = {
-    tier = "silver"
-    gpu  = "l4-a10g"
-  }
-  
-  taints = [
-    {
-      key    = "tier"
-      value   = "silver"
-      effect  = "NO_SCHEDULE"
+  # EKS Node Group - Silver Tier GPUs
+  eks_managed_node_groups = {
+    silver_tier_gpu = {
+      name = "silver-tier-gpu"
+      
+      instance_types = var.silver_tier_instance_types  # ["g6.12xlarge", "g5.12xlarge"]
+      capacity_type  = "SPOT"  # Using Spot instances to bypass vCPU limits (100 limit available)
+      
+      min_size     = var.silver_min_nodes
+      max_size     = var.silver_max_nodes
+      desired_size = var.silver_desired_nodes
+      
+      # AMI type (using standard AMI initially due to vCPU limits)
+      ami_type = "AL2_x86_64"  # Standard AMI (GPU support can be added later)
+      
+      # Labels and taints
+      labels = {
+        tier = "silver"
+        gpu  = "l4-a10g"
+      }
+      
+      taints = [
+        {
+          key    = "tier"
+          value  = "silver"
+          effect = "NO_SCHEDULE"
+        }
+      ]
+      
+      # Disk size
+      disk_size = 200  # GB (larger for model storage)
+      
+      # Scaling
+      update_config = {
+        max_unavailable_percentage = 25
+      }
+      
+      tags = {
+        Tier    = "Silver"
+        Purpose = "Interactive-Inference"
+      }
     }
-  ]
-  
-  # Disk size
-  disk_size = 200  # GB (larger for model storage)
-  
-  # Scaling
-  update_config = {
-    max_unavailable_percentage = 25
   }
-  
-  tags = {
-    Tier    = "Silver"
-    Purpose = "Interactive-Inference"
-  }
-}
-
-# Outputs
-output "cluster_id" {
-  description = "EKS cluster ID"
-  value       = module.eks.cluster_id
-}
-
-output "cluster_endpoint" {
-  description = "Endpoint for EKS control plane"
-  value       = module.eks.cluster_endpoint
-  sensitive   = true
-}
-
-output "cluster_security_group_id" {
-  description = "Security group ID attached to the EKS cluster"
-  value       = module.eks.cluster_security_group_id
-}
-
-output "node_group_id" {
-  description = "EKS node group ID"
-  value       = module.silver_tier_node_group.node_group_id
 }
 

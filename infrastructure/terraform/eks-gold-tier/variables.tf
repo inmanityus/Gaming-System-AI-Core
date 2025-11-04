@@ -49,26 +49,26 @@ variable "game_servers_cidr" {
 }
 
 variable "gold_tier_instance_types" {
-  description = "Instance types for Gold tier node group"
+  description = "Instance types for Gold tier node group (using minimal instances initially due to vCPU limits)"
   type        = list(string)
-  default     = ["g6.xlarge", "g5.xlarge"]
+  default     = ["t3.micro"]  # Minimal instance (1 vCPU) to fit within vCPU limits
 }
 
 variable "gold_min_nodes" {
   description = "Minimum number of nodes in Gold tier node group"
   type        = number
-  default     = 8
+  default     = 1  # Absolute minimum
 }
 
 variable "gold_max_nodes" {
   description = "Maximum number of nodes in Gold tier node group"
   type        = number
-  default     = 64
+  default     = 2  # Minimal for initial deployment
 }
 
 variable "gold_desired_nodes" {
   description = "Desired number of nodes in Gold tier node group"
   type        = number
-  default     = 16
+  default     = 1  # Absolute minimum: 1 node × 1 vCPU = 1 vCPU (within 16 vCPU limit)
 }
 

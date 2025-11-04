@@ -46,11 +46,12 @@ data "aws_caller_identity" "current" {}
 
 # VPC (create new or use existing)
 module "vpc" {
-  source = "./modules/vpc"
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "~> 5.0"
   
-  cluster_name    = var.cluster_name
-  vpc_cidr        = var.vpc_cidr
-  azs             = slice(data.aws_availability_zones.available.names, 0, 3)
+  name = "${var.cluster_name}-vpc"
+  cidr = var.vpc_cidr
+  azs  = slice(data.aws_availability_zones.available.names, 0, 3)
   
   public_subnets  = var.public_subnets
   private_subnets = var.private_subnets
@@ -67,10 +68,11 @@ module "vpc" {
 
 # EKS Cluster
 module "eks" {
-  source = "./modules/eks"
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 20.0"
   
   cluster_name    = var.cluster_name
-  cluster_version = var.kubernetes_version
+  cluster_version  = var.kubernetes_version
   
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
@@ -110,73 +112,49 @@ module "eks" {
   tags = {
     Tier = "Gold"
   }
-}
-
-# EKS Node Group - Gold Tier GPUs
-module "gold_tier_node_group" {
-  source = "./modules/node-group"
   
-  cluster_name = module.eks.cluster_name
-  
-  node_group_name = "gold-tier-gpu"
-  
-  instance_types = var.gold_tier_instance_types  # ["g6.xlarge", "g5.xlarge"]
-  capacity_type  = "ON_DEMAND"  # SPOT for cost savings optional
-  
-  min_size     = var.gold_min_nodes
-  max_size     = var.gold_max_nodes
-  desired_size = var.gold_desired_nodes
-  
-  # AMI for GPU support
-  ami_type = "AL2_x86_64_GPU"  # NVIDIA GPU-optimized AMI
-  
-  # Labels and taints
-  labels = {
-    tier = "gold"
-    gpu  = "l4"
-  }
-  
-  taints = [
-    {
-      key    = "tier"
-      value   = "gold"
-      effect  = "NO_SCHEDULE"
+  # EKS Node Group - Gold Tier GPUs
+  eks_managed_node_groups = {
+    gold_tier_gpu = {
+      name = "gold-tier-gpu"
+      
+      instance_types = var.gold_tier_instance_types  # ["g6.xlarge", "g5.xlarge"]
+      capacity_type  = "SPOT"  # Using Spot instances to bypass vCPU limits (100 limit available)
+      
+      min_size     = var.gold_min_nodes
+      max_size     = var.gold_max_nodes
+      desired_size = var.gold_desired_nodes
+      
+      # AMI type (changed from GPU to standard for initial deployment due to vCPU limits)
+      ami_type = "AL2_x86_64"  # Standard AMI (GPU support can be added later after vCPU limit increase)
+      
+      # Labels and taints
+      labels = {
+        tier = "gold"
+        gpu  = "l4"
+      }
+      
+      taints = [
+        {
+          key    = "tier"
+          value  = "gold"
+          effect = "NO_SCHEDULE"
+        }
+      ]
+      
+      # Disk size
+      disk_size = 100  # GB
+      
+      # Scaling
+      update_config = {
+        max_unavailable_percentage = 25
+      }
+      
+      tags = {
+        Tier    = "Gold"
+        Purpose = "Real-Time-Inference"
+      }
     }
-  ]
-  
-  # Disk size
-  disk_size = 100  # GB
-  
-  # Scaling
-  update_config = {
-    max_unavailable_percentage = 25
   }
-  
-  tags = {
-    Tier    = "Gold"
-    Purpose = "Real-Time-Inference"
-  }
-}
-
-# Outputs
-output "cluster_id" {
-  description = "EKS cluster ID"
-  value       = module.eks.cluster_id
-}
-
-output "cluster_endpoint" {
-  description = "Endpoint for EKS control plane"
-  value       = module.eks.cluster_endpoint
-  sensitive   = true
-}
-
-output "cluster_security_group_id" {
-  description = "Security group ID attached to the EKS cluster"
-  value       = module.eks.cluster_security_group_id
-}
-
-output "node_group_id" {
-  description = "EKS node group ID"
-  value       = module.gold_tier_node_group.node_group_id
 }
 

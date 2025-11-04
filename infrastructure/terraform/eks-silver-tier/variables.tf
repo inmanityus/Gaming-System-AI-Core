@@ -61,26 +61,26 @@ variable "game_servers_cidr" {
 }
 
 variable "silver_tier_instance_types" {
-  description = "Instance types for Silver tier node group"
+  description = "Instance types for Silver tier node group (using minimal instances initially due to vCPU limits)"
   type        = list(string)
-  default     = ["g6.12xlarge", "g5.12xlarge"]
+  default     = ["t3.micro"]  # Minimal instance (1 vCPU) to fit within vCPU limits initially
 }
 
 variable "silver_min_nodes" {
   description = "Minimum number of nodes in Silver tier node group"
   type        = number
-  default     = 4
+  default     = 1  # Absolute minimum for initial deployment
 }
 
 variable "silver_max_nodes" {
   description = "Maximum number of nodes in Silver tier node group"
   type        = number
-  default     = 32
+  default     = 2  # Minimal for initial deployment
 }
 
 variable "silver_desired_nodes" {
   description = "Desired number of nodes in Silver tier node group"
   type        = number
-  default     = 8
+  default     = 1  # Absolute minimum: 1 node × 1 vCPU = 1 vCPU (within 16 vCPU limit)
 }
 

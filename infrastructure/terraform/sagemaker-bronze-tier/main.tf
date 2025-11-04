@@ -149,7 +149,7 @@ resource "aws_iam_role_policy" "sagemaker_policy" {
 
 # SageMaker Model
 resource "aws_sagemaker_model" "bronze_tier_model" {
-  name               = "${var.model_name}-${var.environment}"
+  name               = "${replace(var.model_name, ".", "-")}-${var.environment}"
   execution_role_arn = aws_iam_role.sagemaker_role.arn
   
   primary_container {
@@ -173,7 +173,7 @@ resource "aws_sagemaker_model" "bronze_tier_model" {
 
 # SageMaker Async Inference Endpoint Configuration
 resource "aws_sagemaker_endpoint_configuration" "bronze_tier_async" {
-  name = "${var.model_name}-async-config-${var.environment}"
+  name = "${replace(var.model_name, ".", "-")}-async-config-${var.environment}"
   
   # Use async inference
   async_inference_config {
@@ -191,17 +191,12 @@ resource "aws_sagemaker_endpoint_configuration" "bronze_tier_async" {
     }
   }
   
-  production_variant {
-    variant_name           = "${var.model_name}-variant"
-    model_name            = aws_sagemaker_model.bronze_tier_model.name
-    instance_type         = var.instance_type
+  production_variants {
+    variant_name            = "${replace(var.model_name, ".", "-")}-variant"
+    model_name             = aws_sagemaker_model.bronze_tier_model.name
+    instance_type          = var.instance_type
     initial_instance_count = var.initial_instance_count
     initial_variant_weight = 1
-    
-    serverless_config {
-      max_concurrency = var.serverless_max_concurrency
-      memory_size_in_mb = var.serverless_memory_size_mb
-    }
   }
   
   tags = {
@@ -212,7 +207,7 @@ resource "aws_sagemaker_endpoint_configuration" "bronze_tier_async" {
 
 # SageMaker Async Inference Endpoint
 resource "aws_sagemaker_endpoint" "bronze_tier_endpoint" {
-  name                 = "${var.model_name}-async-endpoint-${var.environment}"
+  name                 = "${replace(var.model_name, ".", "-")}-async-endpoint-${var.environment}"
   endpoint_config_name = aws_sagemaker_endpoint_configuration.bronze_tier_async.name
   
   tags = {
@@ -223,7 +218,7 @@ resource "aws_sagemaker_endpoint" "bronze_tier_endpoint" {
 
 # CloudWatch Log Group
 resource "aws_cloudwatch_log_group" "sagemaker_bronze" {
-  name              = "/aws/sagemaker/Endpoints/${var.model_name}-async-endpoint-${var.environment}"
+  name              = "/aws/sagemaker/Endpoints/${replace(var.model_name, ".", "-")}-async-endpoint-${var.environment}"
   retention_in_days = 30
   
   tags = {

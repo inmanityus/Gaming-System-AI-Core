@@ -34,12 +34,12 @@ output "cluster_certificate_authority_data" {
 
 output "node_group_id" {
   description = "ID of the Gold tier node group"
-  value       = module.gold_tier_node_group.node_group_id
+  value       = module.eks.eks_managed_node_groups["gold_tier_gpu"].node_group_id
 }
 
 output "node_group_arn" {
   description = "ARN of the Gold tier node group"
-  value       = module.gold_tier_node_group.node_group_arn
+  value       = module.eks.eks_managed_node_groups["gold_tier_gpu"].node_group_arn
 }
 
 output "vpc_id" {
