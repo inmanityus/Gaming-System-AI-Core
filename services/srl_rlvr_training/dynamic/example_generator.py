@@ -90,19 +90,90 @@ class DynamicExampleGenerator:
         """
         Select best generation strategy for model type.
         
+        Strategy selection based on:
+        - Model type requirements
+        - Historical performance
+        - Current best practices
+        - Available resources
+        
         Args:
             model_type: Type of model being trained
         
         Returns:
             Best strategy name
         """
-        # TODO: Implement strategy selection based on:
-        # - Model type requirements
-        # - Historical performance
-        # - Current best practices
-        # - Available resources
+        # Model type specific strategy mapping
+        model_strategy_map = {
+            "personality": "collaboration",  # Needs multi-model reasoning
+            "facial": "collaboration",  # Complex expression mapping
+            "animals": "collaboration",  # Requires expert knowledge
+            "buildings": "collaboration",  # Architectural expertise
+            "plants": "synthetic",  # Can use synthetic generation
+            "trees": "synthetic",  # Can use synthetic generation
+            "sounds": "adversarial",  # Can use adversarial examples
+        }
         
-        return "collaboration"  # Default to three-model collaboration
+        # Check if we have historical performance data
+        if self.generation_history:
+            # Analyze recent performance by strategy
+            recent_history = self.generation_history[-100:]  # Last 100 generations
+            
+            strategy_performance = {}
+            for entry in recent_history:
+                strategy = entry.get("strategy", "collaboration")
+                if strategy not in strategy_performance:
+                    strategy_performance[strategy] = {
+                        "count": 0,
+                        "success_rate": 0.0
+                    }
+                strategy_performance[strategy]["count"] += 1
+                # Extract success rate from metadata if available
+                metadata = entry.get("metadata", {})
+                if "success_rate" in metadata:
+                    strategy_performance[strategy]["success_rate"] += metadata["success_rate"]
+            
+            # Normalize success rates
+            for strategy in strategy_performance:
+                if strategy_performance[strategy]["count"] > 0:
+                    strategy_performance[strategy]["success_rate"] /= strategy_performance[strategy]["count"]
+            
+            # Select best performing strategy for this model type
+            if strategy_performance:
+                # Filter strategies that have been used for this model type
+                model_specific_history = [
+                    e for e in recent_history 
+                    if e.get("model_type") == model_type
+                ]
+                
+                if model_specific_history:
+                    model_strategy_perf = {}
+                    for entry in model_specific_history:
+                        strategy = entry.get("strategy", "collaboration")
+                        if strategy not in model_strategy_perf:
+                            model_strategy_perf[strategy] = {"count": 0, "avg_score": 0.0}
+                        model_strategy_perf[strategy]["count"] += 1
+                        metadata = entry.get("metadata", {})
+                        if "quality_score" in metadata:
+                            model_strategy_perf[strategy]["avg_score"] += metadata["quality_score"]
+                    
+                    # Normalize
+                    for strategy in model_strategy_perf:
+                        if model_strategy_perf[strategy]["count"] > 0:
+                            model_strategy_perf[strategy]["avg_score"] /= model_strategy_perf[strategy]["count"]
+                    
+                    # Select highest performing strategy
+                    if model_strategy_perf:
+                        best_strategy = max(
+                            model_strategy_perf.items(),
+                            key=lambda x: x[1]["avg_score"]
+                        )[0]
+                        logger.debug(f"Selected strategy '{best_strategy}' based on historical performance")
+                        return best_strategy
+        
+        # Default: Use model-specific strategy or fallback to collaboration
+        selected_strategy = model_strategy_map.get(model_type, "collaboration")
+        logger.debug(f"Selected strategy '{selected_strategy}' for model type '{model_type}'")
+        return selected_strategy
     
     def _log_generation(
         self,
