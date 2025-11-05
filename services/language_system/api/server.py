@@ -28,6 +28,44 @@ app.add_middleware(
 language_registry = LanguageRegistry()
 sentence_generator = SentenceGenerator()
 
+# Register all languages on startup
+@app.on_event("startup")
+async def register_languages():
+    """Register all language definitions on startup."""
+    try:
+        from ..data.language_definitions import (
+            create_vampire_language,
+            create_werewolf_language,
+            create_zombie_language,
+            create_ghoul_language,
+            create_lich_language,
+            create_italian_language,
+            create_french_language,
+            create_spanish_language,
+            create_common_language,
+            create_music_language,
+        )
+        
+        languages = [
+            create_vampire_language(),
+            create_werewolf_language(),
+            create_zombie_language(),
+            create_ghoul_language(),
+            create_lich_language(),
+            create_italian_language(),
+            create_french_language(),
+            create_spanish_language(),
+            create_common_language(),
+            create_music_language(),
+        ]
+        
+        for language in languages:
+            language_registry.register(language)
+        
+        print(f"Registered {len(languages)} languages")
+    except Exception as e:
+        print(f"Error registering languages: {e}")
+
 
 class GenerateSentenceRequest(BaseModel):
     """Request for sentence generation."""
@@ -77,6 +115,27 @@ async def get_language(language_name: str):
         raise HTTPException(status_code=404, detail=f"Language '{language_name}' not found")
     
     return language.to_dict()
+
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint."""
+    return {"status": "healthy", "service": "language-system"}
+
+
+@app.get("/")
+async def root():
+    """Root endpoint."""
+    return {
+        "service": "Language System API",
+        "version": "1.0.0",
+        "endpoints": {
+            "generate_sentence": "/v1/generate-sentence",
+            "list_languages": "/v1/languages",
+            "get_language": "/v1/languages/{language_name}",
+            "health": "/health"
+        }
+    }
 
 
 if __name__ == "__main__":

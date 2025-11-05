@@ -1,0 +1,44 @@
+{
+  "family": "language-system",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::695353648052:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::695353648052:role/ecsTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "language-system",
+      "image": "695353648052.dkr.ecr.us-east-1.amazonaws.com/language-system:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8003,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "ENVIRONMENT",
+          "value": "production"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/language-system",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -f http://localhost:8003/health || exit 1"],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 40
+      }
+    }
+  ]
+}
+
