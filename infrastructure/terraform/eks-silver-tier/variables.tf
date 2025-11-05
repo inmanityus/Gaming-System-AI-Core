@@ -19,9 +19,9 @@ variable "cluster_name" {
 }
 
 variable "kubernetes_version" {
-  description = "Kubernetes version for EKS cluster"
+  description = "Kubernetes version for EKS cluster (upgraded from 1.29 to 1.32 per AWS notification - 1.29 support ends March 23, 2026)"
   type        = string
-  default     = "1.29"
+  default     = "1.32"  # Upgraded to avoid extended support and minimize future upgrades
 }
 
 variable "vpc_cidr" {

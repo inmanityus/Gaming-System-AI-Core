@@ -1,0 +1,46 @@
+{
+  "widgets": [
+    {
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          ["AWS/Billing", "EstimatedCharges", "Currency", "USD"]
+        ],
+        "period": 86400,
+        "stat": "Maximum",
+        "region": "us-east-1",
+        "title": "Daily Estimated Charges"
+      }
+    },
+    {
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          ["AWS/SageMaker", "TrainingJobCost", "TrainingJobName", "srl-rlvr-gold-*"],
+          [".", "TrainingJobCost", "TrainingJobName", "srl-rlvr-silver-*"],
+          [".", "TrainingJobCost", "TrainingJobName", "srl-rlvr-bronze-*"]
+        ],
+        "period": 3600,
+        "stat": "Sum",
+        "region": "us-east-1",
+        "title": "Training Costs by Tier"
+      }
+    },
+    {
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          ["AWS/SageMaker", "InferenceInstanceCost", "InstanceType", "ml.g5.xlarge"],
+          [".", "InferenceInstanceCost", "InstanceType", "ml.p3.2xlarge"],
+          [".", "InferenceInstanceCost", "InstanceType", "ml.p4d.24xlarge"]
+        ],
+        "period": 3600,
+        "stat": "Sum",
+        "region": "us-east-1",
+        "title": "Inference Costs by Instance Type"
+      }
+    }
+  ]
+}
+
+

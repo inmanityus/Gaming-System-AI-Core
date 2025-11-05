@@ -36,7 +36,7 @@ Write-Host "[STEP 2] Creating EKS cluster: $ClusterName" -ForegroundColor Cyan
 aws eks create-cluster `
     --name $ClusterName `
     --region $Region `
-    --version "1.29" `
+    --version "1.32" `
     --role-arn "arn:aws:iam::$(aws sts get-caller-identity --query Account --output text):role/eks-service-role" `
     --resources-vpc-config "subnetIds=subnet-xxx,subnet-yyy,securityGroupIds=sg-xxx" `
     --endpoint-config "privateAccess=true,publicAccess=false"

@@ -19,6 +19,8 @@ from aiohttp import ClientSession, ClientTimeout
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from services.model_management.model_registry import ModelRegistry
 from services.model_management.historical_log_processor import HistoricalLogProcessor
+from services.model_management.srl_model_adapter import SRLModelAdapter
+from services.model_management.cost_benefit_router import CostBenefitRouter
 
 
 class CircuitBreakerError(Exception):
@@ -45,6 +47,8 @@ class LLMClient:
         # Model Management System integration
         self.model_registry = model_registry or ModelRegistry()
         self.historical_log_processor = HistoricalLogProcessor()
+        self.srl_adapter = SRLModelAdapter(model_registry=self.model_registry)
+        self.cost_benefit_router = CostBenefitRouter(model_registry=self.model_registry)
         
         # LLM Service endpoints (will be updated from Model Registry)
         self.llm_services = {
@@ -208,22 +212,63 @@ class LLMClient:
         use_case = None
         
         try:
-            service_name = self._select_service(layer)
-            service = self.llm_services[service_name]
-            model_id = service.get("model_id")
-            use_case = service.get("use_case")
+            # Use cost-benefit router to select optimal model
+            priority = context.get("priority", "balanced")
+            routing_decision = await self.cost_benefit_router.select_optimal_model(
+                task_type=layer,
+                context=context,
+                priority=priority
+            )
+            
+            # Use selected model from router
+            selected_model_id = routing_decision.selected_model_id
+            selected_model_name = routing_decision.selected_model_name
+            
+            # Fallback to service selection if router fails
+            if selected_model_id == "fallback":
+                service_name = self._select_service(layer)
+                service = self.llm_services[service_name]
+                model_id = service.get("model_id")
+                use_case = service.get("use_case")
+                use_router = False
+            else:
+                # Use router-selected model
+                model_id = selected_model_id
+                # Map layer to use_case format for backward compatibility
+                use_case_map = {
+                    "foundation": "foundation_layer",
+                    "customization": "customization_layer",
+                    "interaction": "interaction_layer",
+                    "coordination": "coordination_layer"
+                }
+                use_case = use_case_map.get(layer, layer)
+                # Map to service name for backward compatibility
+                service_name = layer
+                use_router = True
             
             # Ensure model is up to date from registry (on first use or periodically)
             if not self._models_initialized:
                 await self._update_models_from_registry()
                 self._models_initialized = True
-                # Update model_id and use_case after registry update
-                model_id = service.get("model_id")
-                use_case = service.get("use_case")
             
-            result = await self._make_request(
-                service_name, prompt, context, max_tokens, temperature
-            )
+            # Check if SRL-trained model should be used
+            use_srl_model = await self._should_use_srl_model(layer, context)
+            
+            if use_srl_model:
+                # Use SRL model adapter for generation
+                result = await self._generate_with_srl_model(
+                    layer, prompt, context, max_tokens, temperature
+                )
+            elif use_router and selected_model_id != "fallback":
+                # Use router-selected model via standard service
+                result = await self._make_request(
+                    service_name, prompt, context, max_tokens, temperature
+                )
+            else:
+                # Use standard LLM service
+                result = await self._make_request(
+                    service_name, prompt, context, max_tokens, temperature
+                )
             
             # Update load balancing weights
             self.request_counts[service_name] += 1
@@ -316,6 +361,98 @@ class LLMClient:
                 "text": fallback_text,
                 "model_id": model_id,
             }
+    
+    async def _should_use_srl_model(self, layer: str, context: Dict[str, Any]) -> bool:
+        """
+        Determine if SRL-trained model should be used for this request.
+        
+        Args:
+            layer: LLM layer
+            context: Request context
+        
+        Returns:
+            True if SRL model should be used
+        """
+        # Check if context indicates SRL-trained model should be used
+        if context.get("use_srl_model", False):
+            return True
+        
+        # Check if layer has SRL-trained models available
+        srl_use_cases = {
+            "interaction": "srl_gold_tier",
+            "customization": "srl_silver_tier",
+            "coordination": "srl_bronze_tier"
+        }
+        
+        use_case = srl_use_cases.get(layer)
+        if use_case:
+            # Check if SRL model exists for this use case
+            model = await self.model_registry.get_current_model(use_case)
+            return model is not None
+        
+        return False
+    
+    async def _generate_with_srl_model(
+        self,
+        layer: str,
+        prompt: str,
+        context: Dict[str, Any],
+        max_tokens: int,
+        temperature: float
+    ) -> Dict[str, Any]:
+        """
+        Generate text using SRL-trained model.
+        
+        Args:
+            layer: LLM layer
+            prompt: Input prompt
+            context: Request context
+            max_tokens: Maximum tokens
+            temperature: Sampling temperature
+        
+        Returns:
+            Generation result
+        """
+        # Determine tier based on layer
+        tier_mapping = {
+            "interaction": "gold",
+            "customization": "silver",
+            "coordination": "bronze"
+        }
+        tier = tier_mapping.get(layer, "gold")
+        
+        # Get model name from context or use default
+        model_name = context.get("model_name") or f"srl-{tier}-model"
+        adapter_name = context.get("adapter_name")
+        
+        try:
+            if adapter_name:
+                # Generate with LoRA adapter
+                generated_text = await self.srl_adapter.generate_with_adapter(
+                    base_model_name=model_name,
+                    adapter_name=adapter_name,
+                    prompt=prompt,
+                    max_tokens=max_tokens,
+                    temperature=temperature
+                )
+            else:
+                # Generate with base model only
+                generated_text = await self.srl_adapter.generate_with_base_model(
+                    base_model_name=model_name,
+                    prompt=prompt,
+                    max_tokens=max_tokens,
+                    temperature=temperature
+                )
+            
+            return {
+                "text": generated_text,
+                "tokens_used": len(generated_text.split()),  # Approximate
+                "srl_model": True,
+                "tier": tier
+            }
+        except Exception as e:
+            # Fallback to standard service
+            raise LLMServiceUnavailableError(f"SRL model generation failed: {e}")
     
     def _get_fallback_response(self, layer: str, prompt: str) -> str:
         """Get fallback response when LLM services are unavailable."""

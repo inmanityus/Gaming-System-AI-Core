@@ -73,3 +73,4 @@ if ($overallSuccess) {
     Write-Host "✗ Validation failed for one or more tiers" -ForegroundColor Red
     exit 1
 }
+

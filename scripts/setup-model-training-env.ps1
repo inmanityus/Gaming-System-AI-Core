@@ -98,3 +98,4 @@ Write-Host "  1. Run automatic training: .\scripts\run-automatic-training.ps1" -
 Write-Host "  2. Monitor training: .\scripts\monitor-training.ps1" -ForegroundColor White
 Write-Host ""
 
+

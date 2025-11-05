@@ -1,0 +1,86 @@
+"""
+Language System API Server
+==========================
+
+FastAPI server for language system endpoints.
+"""
+
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import Dict, Any, Optional, List
+
+from ..core.language_definition import LanguageDefinition, LanguageRegistry
+from ..generation.sentence_generator import SentenceGenerator, SentenceRequest
+
+app = FastAPI(title="Language System API", version="1.0.0")
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Initialize components
+language_registry = LanguageRegistry()
+sentence_generator = SentenceGenerator()
+
+
+class GenerateSentenceRequest(BaseModel):
+    """Request for sentence generation."""
+    language_name: str
+    intent: str
+    context: Optional[Dict[str, Any]] = None
+    emotion: Optional[str] = None
+    complexity: int = 1
+
+
+@app.post("/v1/generate-sentence")
+async def generate_sentence(request: GenerateSentenceRequest):
+    """Generate a sentence in the specified language."""
+    language = language_registry.get(request.language_name)
+    if not language:
+        raise HTTPException(status_code=404, detail=f"Language '{request.language_name}' not found")
+    
+    sentence_request = SentenceRequest(
+        language=language,
+        intent=request.intent,
+        context=request.context or {},
+        emotion=request.emotion,
+        complexity=request.complexity,
+    )
+    
+    sentence = sentence_generator.generate(sentence_request)
+    
+    return {
+        "sentence": sentence,
+        "language": request.language_name,
+        "intent": request.intent,
+    }
+
+
+@app.get("/v1/languages")
+async def list_languages():
+    """List all available languages."""
+    languages = language_registry.list_all()
+    return {"languages": languages}
+
+
+@app.get("/v1/languages/{language_name}")
+async def get_language(language_name: str):
+    """Get language definition."""
+    language = language_registry.get(language_name)
+    if not language:
+        raise HTTPException(status_code=404, detail=f"Language '{language_name}' not found")
+    
+    return language.to_dict()
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8003)
+
+

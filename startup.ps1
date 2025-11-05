@@ -136,13 +136,7 @@ try {
     $gitStatus = git status --porcelain 2>&1
     if ($LASTEXITCODE -eq 0) {
         Write-Host "Git repository: Available" -ForegroundColor Green
-        
-        # Check for untracked files that should be excluded
-        $untrackedFiles = git status --porcelain | Where-Object { $_ -match '^\?\?' }
-        if ($untrackedFiles) {
-            Write-Host "Found untracked files that may need .gitignore entries:" -ForegroundColor Yellow
-            $untrackedFiles | ForEach-Object { Write-Host "  $($_.Substring(3))" -ForegroundColor Yellow }
-        }
+        # REMOVED: File listing removed per user request - sessions should not list files
     } else {
         Write-Host "Git repository: Not initialized - $gitStatus" -ForegroundColor Yellow
         Write-Host "Initializing Git repository..." -ForegroundColor Yellow

@@ -1,0 +1,48 @@
+{
+  "widgets": [
+    {
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          ["AWS/SageMaker", "TrainingJobStatus", "TrainingJobName", "srl-rlvr-gold-*"],
+          [".", "TrainingJobStatus", "TrainingJobName", "srl-rlvr-silver-*"],
+          [".", "TrainingJobStatus", "TrainingJobName", "srl-rlvr-bronze-*"]
+        ],
+        "period": 300,
+        "stat": "Average",
+        "region": "us-east-1",
+        "title": "Training Job Status by Tier"
+      }
+    },
+    {
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          ["AWS/SageMaker", "TrainingJobDuration", "TrainingJobName", "srl-rlvr-gold-*"],
+          [".", "TrainingJobDuration", "TrainingJobName", "srl-rlvr-silver-*"],
+          [".", "TrainingJobDuration", "TrainingJobName", "srl-rlvr-bronze-*"]
+        ],
+        "period": 300,
+        "stat": "Average",
+        "region": "us-east-1",
+        "title": "Training Duration by Tier"
+      }
+    },
+    {
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          ["AWS/SageMaker", "TrainingJobLoss", "TrainingJobName", "srl-rlvr-gold-*"],
+          [".", "TrainingJobLoss", "TrainingJobName", "srl-rlvr-silver-*"],
+          [".", "TrainingJobLoss", "TrainingJobName", "srl-rlvr-bronze-*"]
+        ],
+        "period": 300,
+        "stat": "Average",
+        "region": "us-east-1",
+        "title": "Training Loss by Tier"
+      }
+    }
+  ]
+}
+
+

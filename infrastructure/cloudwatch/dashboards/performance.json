@@ -1,0 +1,48 @@
+{
+  "widgets": [
+    {
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          ["Custom/SRL-RLVR", "ModelPerformance", "Tier", "Gold"],
+          [".", "ModelPerformance", "Tier", "Silver"],
+          [".", "ModelPerformance", "Tier", "Bronze"]
+        ],
+        "period": 300,
+        "stat": "Average",
+        "region": "us-east-1",
+        "title": "Model Performance by Tier"
+      }
+    },
+    {
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          ["Custom/SRL-RLVR", "InferenceLatency", "Tier", "Gold"],
+          [".", "InferenceLatency", "Tier", "Silver"],
+          [".", "InferenceLatency", "Tier", "Bronze"]
+        ],
+        "period": 60,
+        "stat": "Average",
+        "region": "us-east-1",
+        "title": "Inference Latency by Tier"
+      }
+    },
+    {
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          ["Custom/SRL-RLVR", "ModelDrift", "Tier", "Gold"],
+          [".", "ModelDrift", "Tier", "Silver"],
+          [".", "ModelDrift", "Tier", "Bronze"]
+        ],
+        "period": 3600,
+        "stat": "Maximum",
+        "region": "us-east-1",
+        "title": "Model Drift Detection"
+      }
+    }
+  ]
+}
+
+

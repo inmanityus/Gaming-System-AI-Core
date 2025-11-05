@@ -138,3 +138,4 @@ if ($errors.Count -eq 0) {
     $errors | ForEach-Object { Write-Host "  - $_" -ForegroundColor Red }
     exit 1
 }
+
