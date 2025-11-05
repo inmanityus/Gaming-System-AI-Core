@@ -377,10 +377,90 @@ class SRLModelAdapter:
         lora_path: str,
         adapter_name: str
     ):
-        """Manual LoRA loading (fallback)."""
-        # Implementation depends on model backend
-        # This is a placeholder for manual loading
-        pass
+        """
+        Manual LoRA loading (fallback when vLLM/TensorRT LoRA support unavailable).
+        
+        This loads LoRA weights and applies them to the model manually.
+        """
+        import os
+        from pathlib import Path
+        
+        try:
+            # Try to use PEFT library for LoRA loading
+            try:
+                from peft import PeftModel, PeftConfig
+                
+                # Load LoRA config
+                config = PeftConfig.from_pretrained(lora_path)
+                
+                # Load LoRA weights
+                if hasattr(model, 'load_adapter'):
+                    # If model supports adapters directly
+                    model.load_adapter(lora_path, adapter_name=adapter_name)
+                else:
+                    # Use PEFT to load adapter
+                    peft_model = PeftModel.from_pretrained(model, lora_path, adapter_name=adapter_name)
+                    # Merge adapter weights into base model
+                    peft_model = peft_model.merge_and_unload()
+                    # Update model reference (this depends on backend)
+                    if hasattr(model, 'set_peft_model'):
+                        model.set_peft_model(peft_model)
+                    else:
+                        logger.warning(f"Model {type(model)} doesn't support PEFT model setting")
+                
+                logger.info(f"Loaded LoRA adapter {adapter_name} using PEFT")
+                
+            except ImportError:
+                # PEFT not available, try manual loading
+                logger.warning("PEFT not available, attempting manual LoRA loading")
+                
+                # Check for LoRA weight files
+                lora_path_obj = Path(lora_path)
+                
+                # Look for adapter_model.bin or adapter_model.safetensors
+                adapter_files = [
+                    lora_path_obj / "adapter_model.bin",
+                    lora_path_obj / "adapter_model.safetensors",
+                    lora_path_obj / "pytorch_model.bin"
+                ]
+                
+                adapter_file = None
+                for file_path in adapter_files:
+                    if file_path.exists():
+                        adapter_file = file_path
+                        break
+                
+                if adapter_file:
+                    # Load weights manually
+                    import torch
+                    if adapter_file.suffix == ".safetensors":
+                        try:
+                            from safetensors import safe_open
+                            with safe_open(adapter_file, framework="pt") as f:
+                                lora_weights = {}
+                                for key in f.keys():
+                                    lora_weights[key] = f.get_tensor(key)
+                        except ImportError:
+                            logger.warning("safetensors not available, cannot load LoRA weights")
+                            raise RuntimeError("safetensors required for LoRA loading")
+                    else:
+                        lora_weights = torch.load(adapter_file, map_location="cpu")
+                    
+                    # Apply LoRA weights to model
+                    # This is backend-specific and may need adjustment
+                    if hasattr(model, 'load_state_dict'):
+                        # Try to load state dict with strict=False
+                        model.load_state_dict(lora_weights, strict=False)
+                    else:
+                        logger.warning(f"Model {type(model)} doesn't support load_state_dict")
+                    
+                    logger.info(f"Loaded LoRA adapter {adapter_name} manually")
+                else:
+                    raise FileNotFoundError(f"No LoRA adapter files found in {lora_path}")
+                    
+        except Exception as e:
+            logger.error(f"Error loading LoRA adapter manually: {e}")
+            raise RuntimeError(f"Failed to load LoRA adapter {adapter_name}: {e}")
     
     async def _unload_lora_manual(
         self,

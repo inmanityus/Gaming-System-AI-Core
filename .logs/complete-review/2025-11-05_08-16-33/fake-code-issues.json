@@ -1,0 +1,312 @@
+[
+  {
+    "Issues": [
+      {
+        "Issue": "Placeholder TTS phoneme synthesis",
+        "Priority": "HIGH",
+        "Line": 172
+      },
+      {
+        "Issue": "Empty audio data placeholder",
+        "Priority": "HIGH",
+        "Line": 182
+      },
+      {
+        "Issue": "Placeholder audio data",
+        "Priority": "HIGH",
+        "Line": 184
+      },
+      {
+        "Issue": "Placeholder cloud TTS",
+        "Priority": "HIGH",
+        "Line": 206
+      },
+      {
+        "Issue": "Placeholder audio data",
+        "Priority": "HIGH",
+        "Line": 209
+      },
+      {
+        "Issue": "Placeholder local TTS",
+        "Priority": "HIGH",
+        "Line": 231
+      },
+      {
+        "Issue": "Placeholder audio data",
+        "Priority": "HIGH",
+        "Line": 234
+      }
+    ],
+    "File": "services/language_system/integration/tts_integration.py"
+  },
+  {
+    "Issues": [
+      {
+        "Issue": "Placeholder artifact decipherment",
+        "Priority": "MEDIUM",
+        "Line": 129
+      }
+    ],
+    "File": "services/language_system/gameplay/language_of_power.py"
+  },
+  {
+    "Issues": [
+      {
+        "Issue": "Placeholder training integration",
+        "Priority": "HIGH",
+        "Line": 148
+      },
+      {
+        "Issue": "Placeholder training integration",
+        "Priority": "HIGH",
+        "Line": 171
+      },
+      {
+        "Issue": "Placeholder training structure",
+        "Priority": "HIGH",
+        "Line": 210
+      }
+    ],
+    "File": "services/language_system/generation/training_integration.py"
+  },
+  {
+    "Issues": [
+      {
+        "Issue": "Placeholder game engine integration",
+        "Priority": "HIGH",
+        "Line": 59
+      }
+    ],
+    "File": "services/language_system/integration/game_engine_integration.py"
+  },
+  {
+    "Issues": [
+      {
+        "Issue": "Placeholder word translation",
+        "Priority": "LOW",
+        "Line": 191
+      }
+    ],
+    "File": "services/language_system/translation/translator.py"
+  },
+  {
+    "Issues": [
+      {
+        "Issue": "Placeholder LoRA training structure",
+        "Priority": "CRITICAL",
+        "Line": 166
+      },
+      {
+        "Issue": "Placeholder LoRA training execution",
+        "Priority": "CRITICAL",
+        "Line": 195
+      },
+      {
+        "Issue": "Placeholder print statement",
+        "Priority": "CRITICAL",
+        "Line": 196
+      },
+      {
+        "Issue": "Placeholder full fine-tuning execution",
+        "Priority": "CRITICAL",
+        "Line": 239
+      },
+      {
+        "Issue": "Placeholder retraining execution",
+        "Priority": "CRITICAL",
+        "Line": 358
+      }
+    ],
+    "File": "services/model_management/fine_tuning_pipeline.py"
+  },
+  {
+    "Issues": [
+      {
+        "Issue": "Placeholder content filtering",
+        "Priority": "HIGH",
+        "Line": 134
+      },
+      {
+        "Issue": "Placeholder keyword checks",
+        "Priority": "HIGH",
+        "Line": 144
+      },
+      {
+        "Issue": "Placeholder bias detection",
+        "Priority": "MEDIUM",
+        "Line": 263
+      }
+    ],
+    "File": "services/model_management/guardrails_monitor.py"
+  },
+  {
+    "Issues": [
+      {
+        "Issue": "Placeholder model API calls",
+        "Priority": "CRITICAL",
+        "Line": 168
+      },
+      {
+        "Issue": "Placeholder response generation",
+        "Priority": "CRITICAL",
+        "Line": 219
+      },
+      {
+        "Issue": "Placeholder simple responses",
+        "Priority": "CRITICAL",
+        "Line": 225
+      },
+      {
+        "Issue": "Placeholder quality scoring",
+        "Priority": "HIGH",
+        "Line": 310
+      },
+      {
+        "Issue": "Placeholder score",
+        "Priority": "HIGH",
+        "Line": 318
+      },
+      {
+        "Issue": "Placeholder performance testing",
+        "Priority": "HIGH",
+        "Line": 338
+      },
+      {
+        "Issue": "Placeholder test result",
+        "Priority": "HIGH",
+        "Line": 346
+      },
+      {
+        "Issue": "Placeholder security testing",
+        "Priority": "HIGH",
+        "Line": 367
+      }
+    ],
+    "File": "services/model_management/testing_framework.py"
+  },
+  {
+    "Issues": [
+      {
+        "Issue": "Placeholder manual model loading",
+        "Priority": "MEDIUM",
+        "Line": 382
+      }
+    ],
+    "File": "services/model_management/srl_model_adapter.py"
+  },
+  {
+    "Issues": [
+      {
+        "Issue": "Placeholder component initialization",
+        "Priority": "CRITICAL",
+        "Line": 78
+      },
+      {
+        "Issue": "Placeholder model ID",
+        "Priority": "CRITICAL",
+        "Line": 147
+      },
+      {
+        "Issue": "Placeholder examples array",
+        "Priority": "HIGH",
+        "Line": 177
+      }
+    ],
+    "File": "services/srl_rlvr_training/api/server.py"
+  },
+  {
+    "Issues": [
+      {
+        "Issue": "Mock classes for testing (should be real)",
+        "Priority": "MEDIUM",
+        "Line": 25
+      },
+      {
+        "Issue": "Placeholder distillation training",
+        "Priority": "CRITICAL",
+        "Line": 221
+      },
+      {
+        "Issue": "Placeholder training loop",
+        "Priority": "CRITICAL",
+        "Line": 303
+      },
+      {
+        "Issue": "Placeholder model saving",
+        "Priority": "CRITICAL",
+        "Line": 308
+      }
+    ],
+    "File": "services/srl_rlvr_training/distillation/distillation_pipeline.py"
+  },
+  {
+    "Issues": [
+      {
+        "Issue": "Placeholder return value",
+        "Priority": "MEDIUM",
+        "Line": 131
+      }
+    ],
+    "File": "services/srl_rlvr_training/dynamic/model_selector.py"
+  },
+  {
+    "Issues": [
+      {
+        "Issue": "Placeholder rules structure",
+        "Priority": "HIGH",
+        "Line": 72
+      },
+      {
+        "Issue": "Placeholder implementation",
+        "Priority": "HIGH",
+        "Line": 102
+      }
+    ],
+    "File": "services/srl_rlvr_training/dynamic/rules_integration.py"
+  },
+  {
+    "Issues": [
+      {
+        "Issue": "Placeholder job ID",
+        "Priority": "CRITICAL",
+        "Line": 75
+      },
+      {
+        "Issue": "Placeholder model ID",
+        "Priority": "CRITICAL",
+        "Line": 83
+      }
+    ],
+    "File": "services/srl_rlvr_training/paid/anthropic_finetuner.py"
+  },
+  {
+    "Issues": [
+      {
+        "Issue": "Placeholder job ID",
+        "Priority": "CRITICAL",
+        "Line": 72
+      },
+      {
+        "Issue": "Placeholder model ID",
+        "Priority": "CRITICAL",
+        "Line": 80
+      }
+    ],
+    "File": "services/srl_rlvr_training/paid/gemini_finetuner.py"
+  },
+  {
+    "Issues": [
+      {
+        "Issue": "Placeholder job ID",
+        "Priority": "CRITICAL",
+        "Line": 65
+      },
+      {
+        "Issue": "Placeholder model ID",
+        "Priority": "CRITICAL",
+        "Line": 73
+      }
+    ],
+    "File": "services/srl_rlvr_training/paid/openai_finetuner.py"
+  }
+]

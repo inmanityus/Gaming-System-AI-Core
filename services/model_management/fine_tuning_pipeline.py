@@ -158,46 +158,198 @@ class FineTuningPipeline:
         use_case: str
     ) -> Dict[str, Any]:
         """
-        Fine-tune using LoRA (Low-Rank Adaptation).
+        Real LoRA fine-tuning implementation using AWS SageMaker.
         
-        More efficient than full fine-tuning.
+        Integrates with SRL→RLVR training system and executes actual training
+        on SageMaker instances.
         """
-        # This would call actual LoRA training code
-        # For now, create placeholder structure
+        import boto3
+        import tempfile
+        import tarfile
+        from datetime import datetime
         
         model_name = base_model["model_name"]
-        version = base_model["version"]
+        version = base_model.get("version", "1.0.0")
+        timestamp = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
         
+        # Initialize AWS clients
+        aws_region = os.getenv('AWS_REGION', 'us-east-1')
+        sagemaker_client = boto3.client('sagemaker', region_name=aws_region)
+        s3_client = boto3.client('s3', region_name=aws_region)
+        
+        # Configure training parameters
+        training_config = {
+            "lora_rank": int(os.getenv('LORA_RANK', '64')),
+            "lora_alpha": int(os.getenv('LORA_ALPHA', '32')),
+            "target_modules": json.loads(os.getenv(
+                'LORA_TARGET_MODULES',
+                '["q_proj", "v_proj", "k_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]'
+            )),
+            "learning_rate": float(os.getenv('LORA_LEARNING_RATE', '2e-4')),
+            "batch_size": int(os.getenv('LORA_BATCH_SIZE', '4')),
+            "num_epochs": int(os.getenv('LORA_NUM_EPOCHS', '3')),
+            "warmup_steps": int(os.getenv('LORA_WARMUP_STEPS', '100')),
+            "gradient_accumulation_steps": int(os.getenv('LORA_GRAD_ACCUM_STEPS', '4')),
+            "max_seq_length": int(os.getenv('LORA_MAX_SEQ_LENGTH', '2048')),
+            "weight_decay": float(os.getenv('LORA_WEIGHT_DECAY', '0.01')),
+            "lora_dropout": float(os.getenv('LORA_DROPOUT', '0.05')),
+            "use_srl_integration": True
+        }
+        
+        # Generate unique job name
+        job_name = f"lora-{model_name.replace('/', '-').replace('_', '-')}-{use_case}-{timestamp}"[:63]
+        
+        # Prepare model metadata
         fine_tuned_model = {
-            "model_id": None,  # Will be assigned after training
-            "base_model_id": base_model["model_id"],
+            "model_id": None,  # Will be assigned after successful training
+            "base_model_id": base_model.get("model_id"),
             "model_name": f"{model_name}-{use_case}",
             "model_type": "self_hosted",
-            "provider": base_model["provider"],
+            "provider": base_model.get("provider", "custom"),
             "use_case": use_case,
-            "version": f"{version}-{use_case}-lora",
+            "version": f"{version}-{use_case}-lora-{timestamp}",
             "fine_tuning_method": "lora",
             "training_samples": len(train_dataset),
             "validation_samples": len(val_dataset),
-            "model_path": None,  # Will be set after training
+            "model_path": None,
+            "adapter_path": None,
             "status": "training",
-            "training_config": {
-                "lora_rank": 64,
-                "lora_alpha": 32,
-                "target_modules": ["q_proj", "v_proj", "k_proj", "o_proj"],
-                "learning_rate": 2e-4,
-                "batch_size": 4,
-                "num_epochs": 3
-            }
+            "training_config": training_config,
+            "sagemaker_job_name": job_name,
+            "training_started_at": datetime.utcnow().isoformat(),
+            "base_model_name": model_name
         }
         
-        # TODO: Call actual LoRA training code
-        # For now, mark as placeholder
-        print(f"[PLACEHOLDER] LoRA fine-tuning for {fine_tuned_model['model_name']}")
-        print(f"  Training samples: {len(train_dataset)}")
-        print(f"  Validation samples: {len(val_dataset)}")
-        
-        return fine_tuned_model
+        try:
+            # Step 1: Prepare and upload training data to S3
+            print(f"[LoRA Fine-tuning] Preparing training data for {model_name}")
+            s3_bucket = os.getenv('SAGEMAKER_S3_BUCKET', 'aiq-sagemaker-training')
+            s3_prefix = f"lora-training/{use_case}/{timestamp}"
+            
+            data_s3_paths = await self._prepare_and_upload_training_data(
+                train_dataset=train_dataset,
+                val_dataset=val_dataset,
+                s3_client=s3_client,
+                s3_bucket=s3_bucket,
+                s3_prefix=s3_prefix,
+                base_model_name=model_name
+            )
+            
+            fine_tuned_model["training_data_s3"] = data_s3_paths
+            
+            # Step 2: Create SageMaker training job
+            print(f"[LoRA Fine-tuning] Creating SageMaker training job: {job_name}")
+            
+            # Configure instance type based on model size
+            instance_type = self._get_instance_type_for_model(model_name)
+            
+            # IAM role for SageMaker
+            sagemaker_role = os.getenv('SAGEMAKER_EXECUTION_ROLE_ARN')
+            if not sagemaker_role:
+                raise ValueError("SAGEMAKER_EXECUTION_ROLE_ARN environment variable not set")
+            
+            # Output path for trained model
+            output_path = f"s3://{s3_bucket}/{s3_prefix}/output"
+            
+            # Get training image URI
+            training_image = self._get_training_image_uri(base_model_name=model_name)
+            
+            # Create training job
+            training_job_config = {
+                'TrainingJobName': job_name,
+                'RoleArn': sagemaker_role,
+                'AlgorithmSpecification': {
+                    'TrainingImage': training_image,
+                    'TrainingInputMode': 'File',
+                    'EnableSageMakerMetricsTimeSeries': True,
+                    'MetricDefinitions': [
+                        {'Name': 'train:loss', 'Regex': 'train_loss: ([0-9.]+)'},
+                        {'Name': 'eval:loss', 'Regex': 'eval_loss: ([0-9.]+)'},
+                    ]
+                },
+                'InputDataConfig': [
+                    {
+                        'ChannelName': 'training',
+                        'DataSource': {
+                            'S3DataSource': {
+                                'S3DataType': 'S3Prefix',
+                                'S3Uri': data_s3_paths['train'],
+                                'S3DataDistributionType': 'FullyReplicated'
+                            }
+                        },
+                        'ContentType': 'application/json',
+                        'CompressionType': 'None'
+                    },
+                    {
+                        'ChannelName': 'validation',
+                        'DataSource': {
+                            'S3DataSource': {
+                                'S3DataType': 'S3Prefix',
+                                'S3Uri': data_s3_paths['validation'],
+                                'S3DataDistributionType': 'FullyReplicated'
+                            }
+                        },
+                        'ContentType': 'application/json',
+                        'CompressionType': 'None'
+                    }
+                ],
+                'OutputDataConfig': {
+                    'S3OutputPath': output_path
+                },
+                'ResourceConfig': {
+                    'InstanceType': instance_type,
+                    'InstanceCount': 1,
+                    'VolumeSizeInGB': self._get_volume_size_for_model(model_name)
+                },
+                'StoppingCondition': {
+                    'MaxRuntimeInSeconds': int(os.getenv('LORA_MAX_TRAINING_TIME', '86400'))
+                },
+                'HyperParameters': {
+                    'base_model_name': model_name,
+                    'lora_rank': str(training_config['lora_rank']),
+                    'lora_alpha': str(training_config['lora_alpha']),
+                    'target_modules': json.dumps(training_config['target_modules']),
+                    'learning_rate': str(training_config['learning_rate']),
+                    'batch_size': str(training_config['batch_size']),
+                    'num_epochs': str(training_config['num_epochs']),
+                    'warmup_steps': str(training_config['warmup_steps']),
+                    'gradient_accumulation_steps': str(training_config['gradient_accumulation_steps']),
+                    'max_seq_length': str(training_config['max_seq_length']),
+                    'weight_decay': str(training_config['weight_decay']),
+                    'lora_dropout': str(training_config['lora_dropout']),
+                    'use_srl_integration': 'true',
+                    'use_case': use_case,
+                    'output_dir': '/opt/ml/model',
+                }
+            }
+            
+            # Start training job
+            response = sagemaker_client.create_training_job(**training_job_config)
+            
+            print(f"[LoRA Fine-tuning] Training job created: {response['TrainingJobArn']}")
+            fine_tuned_model["training_job_arn"] = response['TrainingJobArn']
+            fine_tuned_model["model_path"] = f"{output_path}/{job_name}/output"
+            
+            # Store training job information
+            await self._store_training_job_metadata(fine_tuned_model)
+            
+            print(f"[LoRA Fine-tuning] Training initiated successfully")
+            print(f"  Job Name: {job_name}")
+            print(f"  Instance Type: {instance_type}")
+            print(f"  Training Samples: {len(train_dataset)}")
+            print(f"  Validation Samples: {len(val_dataset)}")
+            print(f"  Output Path: {output_path}")
+            
+            return fine_tuned_model
+            
+        except Exception as e:
+            print(f"[LoRA Fine-tuning] Error during training setup: {str(e)}")
+            fine_tuned_model["status"] = "failed"
+            fine_tuned_model["error"] = str(e)
+            fine_tuned_model["failed_at"] = datetime.utcnow().isoformat()
+            
+            await self._store_training_job_metadata(fine_tuned_model)
+            raise
     
     async def _fine_tune_full(
         self,
@@ -235,8 +387,103 @@ class FineTuningPipeline:
             }
         }
         
-        # TODO: Call actual full fine-tuning code
-        print(f"[PLACEHOLDER] Full fine-tuning for {fine_tuned_model['model_name']}")
+        # Real full fine-tuning implementation using AWS SageMaker
+        # Similar to LoRA but without LoRA adapters
+        import boto3
+        from datetime import datetime
+        
+        timestamp = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
+        aws_region = os.getenv('AWS_REGION', 'us-east-1')
+        sagemaker_client = boto3.client('sagemaker', region_name=aws_region)
+        s3_client = boto3.client('s3', region_name=aws_region)
+        
+        # Prepare and upload training data
+        s3_bucket = os.getenv('SAGEMAKER_S3_BUCKET', 'aiq-sagemaker-training')
+        s3_prefix = f"full-training/{use_case}/{timestamp}"
+        
+        data_s3_paths = await self._prepare_and_upload_training_data(
+            train_dataset=train_dataset,
+            val_dataset=val_dataset,
+            s3_client=s3_client,
+            s3_bucket=s3_bucket,
+            s3_prefix=s3_prefix,
+            base_model_name=model_name
+        )
+        
+        # Create SageMaker training job
+        job_name = f"full-{model_name.replace('/', '-').replace('_', '-')}-{use_case}-{timestamp}"[:63]
+        sagemaker_role = os.getenv('SAGEMAKER_EXECUTION_ROLE_ARN')
+        if not sagemaker_role:
+            raise ValueError("SAGEMAKER_EXECUTION_ROLE_ARN environment variable not set")
+        
+        output_path = f"s3://{s3_bucket}/{s3_prefix}/output"
+        training_image = self._get_training_image_uri(base_model_name=model_name)
+        instance_type = self._get_instance_type_for_model(model_name)
+        
+        training_job_config = {
+            'TrainingJobName': job_name,
+            'RoleArn': sagemaker_role,
+            'AlgorithmSpecification': {
+                'TrainingImage': training_image,
+                'TrainingInputMode': 'File',
+                'EnableSageMakerMetricsTimeSeries': True,
+            },
+            'InputDataConfig': [
+                {
+                    'ChannelName': 'training',
+                    'DataSource': {
+                        'S3DataSource': {
+                            'S3DataType': 'S3Prefix',
+                            'S3Uri': data_s3_paths['train'],
+                            'S3DataDistributionType': 'FullyReplicated'
+                        }
+                    },
+                    'ContentType': 'application/json',
+                },
+                {
+                    'ChannelName': 'validation',
+                    'DataSource': {
+                        'S3DataSource': {
+                            'S3DataType': 'S3Prefix',
+                            'S3Uri': data_s3_paths['validation'],
+                            'S3DataDistributionType': 'FullyReplicated'
+                        }
+                    },
+                    'ContentType': 'application/json',
+                }
+            ],
+            'OutputDataConfig': {
+                'S3OutputPath': output_path
+            },
+            'ResourceConfig': {
+                'InstanceType': instance_type,
+                'InstanceCount': 1,
+                'VolumeSizeInGB': self._get_volume_size_for_model(model_name)
+            },
+            'StoppingCondition': {
+                'MaxRuntimeInSeconds': int(os.getenv('FULL_TRAINING_MAX_TIME', '172800'))  # 48 hours
+            },
+            'HyperParameters': {
+                'base_model_name': model_name,
+                'learning_rate': str(fine_tuned_model['training_config']['learning_rate']),
+                'batch_size': str(fine_tuned_model['training_config']['batch_size']),
+                'num_epochs': str(fine_tuned_model['training_config']['num_epochs']),
+                'gradient_accumulation_steps': str(fine_tuned_model['training_config']['gradient_accumulation_steps']),
+                'use_case': use_case,
+                'output_dir': '/opt/ml/model',
+            }
+        }
+        
+        response = sagemaker_client.create_training_job(**training_job_config)
+        
+        fine_tuned_model["training_job_arn"] = response['TrainingJobArn']
+        fine_tuned_model["model_path"] = f"{output_path}/{job_name}/output"
+        fine_tuned_model["sagemaker_job_name"] = job_name
+        fine_tuned_model["training_started_at"] = datetime.utcnow().isoformat()
+        
+        await self._store_training_job_metadata(fine_tuned_model)
+        
+        print(f"[Full Fine-tuning] Training job created: {response['TrainingJobArn']}")
         
         return fine_tuned_model
     
@@ -354,13 +601,221 @@ class FineTuningPipeline:
         # Adjust training parameters based on validation results
         # Re-train and validate again
         
-        # TODO: Implement retraining logic
-        print(f"[PLACEHOLDER] Retraining with adjustments for {use_case}")
+        # Real retraining implementation with adjusted parameters
+        # Adjust parameters based on validation feedback
+        adjusted_config = {
+            "learning_rate": validation_results.get("metrics", {}).get("suggested_lr", 1e-5),
+            "batch_size": validation_results.get("metrics", {}).get("suggested_batch_size", 2),
+            "num_epochs": validation_results.get("metrics", {}).get("suggested_epochs", 3),
+        }
         
-        return await self.fine_tune_model(
-            base_model_id=UUID(base_model["model_id"]),
-            use_case=use_case,
-            initial_training_data=training_data
-        )
+        print(f"[Retraining] Retraining with adjustments for {use_case}")
+        print(f"  Adjusted learning rate: {adjusted_config['learning_rate']}")
+        print(f"  Adjusted batch size: {adjusted_config['batch_size']}")
+        print(f"  Adjusted epochs: {adjusted_config['num_epochs']}")
+        
+        # Retrain with adjusted parameters
+        # Store original config temporarily
+        original_config = base_model.get("training_config", {})
+        base_model["training_config"] = {**original_config, **adjusted_config}
+        
+        # Retrain using the same fine-tuning method
+        if base_model.get("supports_lora", True):
+            return await self._fine_tune_lora(
+                base_model=base_model,
+                train_dataset=training_data[:int(len(training_data) * 0.8)],
+                val_dataset=training_data[int(len(training_data) * 0.8):],
+                use_case=use_case
+            )
+        else:
+            return await self._fine_tune_full(
+                base_model=base_model,
+                train_dataset=training_data[:int(len(training_data) * 0.8)],
+                val_dataset=training_data[int(len(training_data) * 0.8):],
+                use_case=use_case
+            )
+    
+    async def _prepare_and_upload_training_data(
+        self,
+        train_dataset: List[Dict[str, Any]],
+        val_dataset: List[Dict[str, Any]],
+        s3_client: Any,
+        s3_bucket: str,
+        s3_prefix: str,
+        base_model_name: str
+    ) -> Dict[str, str]:
+        """Prepare training data in correct format and upload to S3."""
+        import tempfile
+        
+        # Convert datasets to training format
+        formatted_train = [self._format_training_item(item, base_model_name) for item in train_dataset]
+        formatted_val = [self._format_training_item(item, base_model_name) for item in val_dataset]
+        
+        # Create temporary files
+        with tempfile.TemporaryDirectory() as temp_dir:
+            train_file = os.path.join(temp_dir, 'train.jsonl')
+            val_file = os.path.join(temp_dir, 'validation.jsonl')
+            
+            # Write JSONL files
+            with open(train_file, 'w') as f:
+                for item in formatted_train:
+                    f.write(json.dumps(item) + '\n')
+            
+            with open(val_file, 'w') as f:
+                for item in formatted_val:
+                    f.write(json.dumps(item) + '\n')
+            
+            # Upload to S3
+            train_s3_key = f"{s3_prefix}/data/train.jsonl"
+            val_s3_key = f"{s3_prefix}/data/validation.jsonl"
+            
+            s3_client.upload_file(train_file, s3_bucket, train_s3_key)
+            s3_client.upload_file(val_file, s3_bucket, val_s3_key)
+            
+            print(f"[Training Data] Uploaded to S3")
+            print(f"  Train: s3://{s3_bucket}/{train_s3_key}")
+            print(f"  Validation: s3://{s3_bucket}/{val_s3_key}")
+        
+        return {
+            'train': f"s3://{s3_bucket}/{train_s3_key}",
+            'validation': f"s3://{s3_bucket}/{val_s3_key}"
+        }
+    
+    def _format_training_item(self, item: Dict[str, Any], base_model_name: str) -> Dict[str, Any]:
+        """Format a single training item for training."""
+        # Handle different dataset formats
+        if 'prompt' in item and 'completion' in item:
+            text = f"{item['prompt']}\n\n{item['completion']}"
+            label = item.get('label', item['completion'])
+        elif 'instruction' in item:
+            instruction = item['instruction']
+            input_text = item.get('input', '')
+            output_text = item.get('output', '')
+            if input_text:
+                text = f"### Instruction:\n{instruction}\n\n### Input:\n{input_text}\n\n### Response:\n{output_text}"
+            else:
+                text = f"### Instruction:\n{instruction}\n\n### Response:\n{output_text}"
+            label = output_text
+        elif 'messages' in item:
+            messages = item['messages']
+            text = self._format_chat_messages(messages, base_model_name)
+            label = messages[-1].get('content', '') if messages else ''
+        else:
+            text = item.get('text', '')
+            label = item.get('label', text)
+        
+        formatted = {
+            'text': text,
+            'label': label,
+            'metadata': {
+                'original_format': item.get('format', 'unknown'),
+                'source': item.get('source', 'custom'),
+                'id': item.get('id', None)
+            }
+        }
+        
+        # Add SRL-specific fields if available
+        if 'reasoning_trace' in item:
+            formatted['reasoning_trace'] = item['reasoning_trace']
+        if 'verification_result' in item:
+            formatted['verification_result'] = item['verification_result']
+        
+        return formatted
+    
+    def _format_chat_messages(self, messages: List[Dict[str, str]], base_model_name: str) -> str:
+        """Format chat messages according to model's chat template."""
+        if 'llama' in base_model_name.lower():
+            return self._format_llama_chat(messages)
+        elif 'mistral' in base_model_name.lower():
+            return self._format_mistral_chat(messages)
+        else:
+            formatted_parts = []
+            for msg in messages:
+                role = msg.get('role', 'user')
+                content = msg.get('content', '')
+                formatted_parts.append(f"{role.upper()}: {content}")
+            return '\n\n'.join(formatted_parts)
+    
+    def _format_llama_chat(self, messages: List[Dict[str, str]]) -> str:
+        """Format messages for Llama models."""
+        formatted = "<s>"
+        for msg in messages:
+            role = msg.get('role', 'user')
+            content = msg.get('content', '')
+            if role == 'system':
+                formatted += f"[INST] <<SYS>>\n{content}\n<</SYS>>\n\n"
+            elif role == 'user':
+                formatted += f"[INST] {content} [/INST] "
+            elif role == 'assistant':
+                formatted += f"{content} </s><s>"
+        return formatted.rstrip('<s>')
+    
+    def _format_mistral_chat(self, messages: List[Dict[str, str]]) -> str:
+        """Format messages for Mistral models."""
+        formatted_parts = []
+        for msg in messages:
+            role = msg.get('role', 'user')
+            content = msg.get('content', '')
+            if role == 'user':
+                formatted_parts.append(f"[INST] {content} [/INST]")
+            elif role == 'assistant':
+                formatted_parts.append(content)
+        return ' '.join(formatted_parts)
+    
+    def _get_instance_type_for_model(self, model_name: str) -> str:
+        """Determine appropriate SageMaker instance type based on model size."""
+        model_lower = model_name.lower()
+        
+        if '70b' in model_lower or '65b' in model_lower:
+            return os.getenv('LORA_INSTANCE_TYPE', 'ml.p4d.24xlarge')
+        elif '13b' in model_lower or '34b' in model_lower:
+            return os.getenv('LORA_INSTANCE_TYPE', 'ml.p3.8xlarge')
+        elif '7b' in model_lower:
+            return os.getenv('LORA_INSTANCE_TYPE', 'ml.p3.2xlarge')
+        else:
+            return os.getenv('LORA_INSTANCE_TYPE', 'ml.g5.2xlarge')
+    
+    def _get_volume_size_for_model(self, model_name: str) -> int:
+        """Determine EBS volume size based on model."""
+        model_lower = model_name.lower()
+        
+        if '70b' in model_lower or '65b' in model_lower:
+            return 500
+        elif '13b' in model_lower or '34b' in model_lower:
+            return 250
+        elif '7b' in model_lower:
+            return 150
+        else:
+            return 100
+    
+    def _get_training_image_uri(self, base_model_name: str) -> str:
+        """Get training container image URI."""
+        region = os.getenv('AWS_REGION', 'us-east-1')
+        
+        custom_image = os.getenv('LORA_TRAINING_IMAGE')
+        if custom_image:
+            return custom_image
+        
+        # Default to HuggingFace PyTorch DLC
+        account_id = '763104351884'
+        framework = 'huggingface-pytorch-training'
+        version = '2.0.0-transformers4.28.1-gpu-py310-cu118-ubuntu20.04'
+        
+        return f"{account_id}.dkr.ecr.{region}.amazonaws.com/{framework}:{version}"
+    
+    async def _store_training_job_metadata(self, model_info: Dict[str, Any]) -> None:
+        """Store training job metadata in database."""
+        # Store in model registry if available
+        try:
+            from services.model_management.model_registry import ModelRegistry
+            registry = ModelRegistry()
+            # Store as pending model until training completes
+            await registry.register_model(model_info)
+        except Exception as e:
+            print(f"[Training Metadata] Could not store in registry: {e}")
+            # Fallback: log to file or other storage
+            metadata_file = os.path.join(self.training_output_dir, f"{model_info.get('sagemaker_job_name', 'unknown')}.json")
+            with open(metadata_file, 'w') as f:
+                json.dump(model_info, f, indent=2)
 
 

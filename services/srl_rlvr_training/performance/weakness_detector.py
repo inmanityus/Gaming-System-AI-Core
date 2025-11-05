@@ -86,16 +86,115 @@ class WeaknessDetector:
         model_id: str,
         model_type: str
     ) -> List[Dict[str, Any]]:
-        """Check absolute performance thresholds."""
+        """
+        Check absolute performance thresholds.
+        
+        Checks:
+        - Latency > max_latency_ms
+        - Accuracy < min_accuracy
+        - Quality score < min_quality
+        """
         weaknesses = []
         
-        # TODO: Implement threshold checks
-        # This will check:
-        # - Latency > max_latency_ms
-        # - Accuracy < min_accuracy
-        # - Quality score < min_quality
+        # Get current performance metrics
+        current_metrics = self.performance_tracker.get_latest_metrics(model_id)
+        
+        if not current_metrics:
+            return weaknesses
+        
+        # Define thresholds based on model type
+        thresholds = self._get_thresholds_for_model_type(model_type)
+        
+        # Check latency
+        latency_ms = current_metrics.get("latency_ms", 0.0)
+        max_latency_ms = thresholds.get("max_latency_ms", 1000.0)
+        if latency_ms > max_latency_ms:
+            weaknesses.append({
+                "type": "threshold_exceeded",
+                "metric": "latency_ms",
+                "value": latency_ms,
+                "threshold": max_latency_ms,
+                "severity": "high" if latency_ms > max_latency_ms * 2 else "medium"
+            })
+        
+        # Check accuracy
+        accuracy = current_metrics.get("accuracy", 1.0)
+        min_accuracy = thresholds.get("min_accuracy", 0.7)
+        if accuracy < min_accuracy:
+            weaknesses.append({
+                "type": "threshold_below",
+                "metric": "accuracy",
+                "value": accuracy,
+                "threshold": min_accuracy,
+                "severity": "high" if accuracy < min_accuracy * 0.8 else "medium"
+            })
+        
+        # Check quality score
+        quality_score = current_metrics.get("quality_score", 1.0)
+        min_quality = thresholds.get("min_quality", 0.75)
+        if quality_score < min_quality:
+            weaknesses.append({
+                "type": "threshold_below",
+                "metric": "quality_score",
+                "value": quality_score,
+                "threshold": min_quality,
+                "severity": "high" if quality_score < min_quality * 0.8 else "medium"
+            })
+        
+        # Check cost per token if available
+        cost_per_token = current_metrics.get("cost_per_token", 0.0)
+        max_cost_per_token = thresholds.get("max_cost_per_token", 0.01)
+        if cost_per_token > max_cost_per_token:
+            weaknesses.append({
+                "type": "threshold_exceeded",
+                "metric": "cost_per_token",
+                "value": cost_per_token,
+                "threshold": max_cost_per_token,
+                "severity": "medium"
+            })
         
         return weaknesses
+    
+    def _get_thresholds_for_model_type(self, model_type: str) -> Dict[str, float]:
+        """Get performance thresholds for a model type."""
+        # Default thresholds
+        default_thresholds = {
+            "max_latency_ms": 1000.0,
+            "min_accuracy": 0.7,
+            "min_quality": 0.75,
+            "max_cost_per_token": 0.01
+        }
+        
+        # Model-type specific thresholds
+        type_thresholds = {
+            "personality": {
+                "max_latency_ms": 500.0,
+                "min_accuracy": 0.8,
+                "min_quality": 0.8
+            },
+            "facial": {
+                "max_latency_ms": 800.0,
+                "min_accuracy": 0.75,
+                "min_quality": 0.78
+            },
+            "animals": {
+                "max_latency_ms": 600.0,
+                "min_accuracy": 0.75,
+                "min_quality": 0.77
+            },
+            "building": {
+                "max_latency_ms": 700.0,
+                "min_accuracy": 0.72,
+                "min_quality": 0.75
+            }
+        }
+        
+        # Merge type-specific with defaults
+        thresholds = default_thresholds.copy()
+        if model_type in type_thresholds:
+            thresholds.update(type_thresholds[model_type])
+        
+        return thresholds
     
     def get_detected_weaknesses(
         self,

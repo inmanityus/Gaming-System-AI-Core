@@ -30,7 +30,26 @@ __pycache__/
 # Milestone and session tracking files (handoff docs are committed)
 MILESTONE-*.md
 PROGRESS-*.md
+SESSION-*.md
 !docs/SESSION-HANDOFF-*.md
+
+# Documentation organization - ignore temporary/output docs
+docs/updates/
+docs/success-output/
+docs/temp/
+docs/logs/
+
+# BUT track important documentation
+!docs/Requirements/
+!docs/Solutions/
+!docs/Tasks/
+!docs/Architecture/
+!docs/API/
+!docs/Development/
+!docs/Deployment/
+!docs/User-Guides/
+!docs/Troubleshooting/
+!docs/Changelog/
 
 # Global junctions - should not be committed
 Global-Rules/

@@ -4,10 +4,13 @@ Ensures immersive/addictive but NOT harmful.
 """
 
 import json
+import logging
 from typing import Any, Dict, List, Optional
 from uuid import UUID, uuid4
 
 from services.state_manager.connection_pool import PostgreSQLPool
+
+logger = logging.getLogger(__name__)
 
 
 class MonitoringResults:
@@ -122,7 +125,7 @@ class GuardrailsMonitor:
     
     async def _check_safety(self, outputs: List[str]) -> Dict[str, Any]:
         """
-        Check safety of outputs.
+        Check safety of outputs using real moderation APIs.
         
         Checks for:
         - Harmful content
@@ -131,34 +134,90 @@ class GuardrailsMonitor:
         - Violence
         - Illegal activities
         """
-        # Placeholder implementation
-        # Production implementation would:
-        # 1. Use moderation APIs (OpenAI, Perspective, etc.)
-        # 2. Custom safety rule engine
-        # 3. Content classification models
-        # 4. Keyword-based filtering
+        import os
         
         passed = True
         issues = []
         
-        # Basic keyword checks (placeholder)
-        harmful_keywords = ['kill yourself', 'commit suicide', 'harm others']
-        for output in outputs:
-            lower_output = output.lower()
-            for keyword in harmful_keywords:
-                if keyword in lower_output:
+        # Try OpenAI moderation API first
+        try:
+            import openai
+            moderation_client = openai.OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+            
+            for output in outputs:
+                try:
+                    moderation_result = moderation_client.moderations.create(input=output)
+                    
+                    if moderation_result.results[0].flagged:
+                        # Extract flagged categories
+                        categories = moderation_result.results[0].categories
+                        category_scores = moderation_result.results[0].category_scores
+                        
+                        flagged_categories = []
+                        for cat_name, cat_value in categories.__dict__.items():
+                            if cat_value:
+                                score = getattr(category_scores, cat_name, 0.0)
+                                flagged_categories.append({
+                                    'category': cat_name,
+                                    'score': score
+                                })
+                        
+                        passed = False
+                        issues.append({
+                            'output_sample': output[:200],
+                            'categories': flagged_categories,
+                            'severity': 'critical' if any(cat['score'] > 0.9 for cat in flagged_categories) else 'high',
+                            'source': 'openai_moderation'
+                        })
+                        
+                except Exception as e:
+                    logger.warning(f"Error checking safety with OpenAI: {e}")
+                    # Fallback to keyword checks
                     passed = False
                     issues.append({
-                        'keyword': keyword,
-                        'severity': 'critical'
+                        'output_sample': output[:200],
+                        'error': str(e),
+                        'severity': 'unknown',
+                        'source': 'error'
                     })
+                    
+        except ImportError:
+            logger.warning("OpenAI package not available, using keyword-based fallback")
+        except Exception as e:
+            logger.warning(f"OpenAI moderation unavailable: {e}, using keyword-based fallback")
+        
+        # Fallback: Keyword-based checks if API unavailable
+        if not issues:
+            harmful_keywords = {
+                'critical': ['kill yourself', 'commit suicide', 'harm others', 'violence', 'terror'],
+                'high': ['self harm', 'dangerous', 'illegal activity'],
+                'medium': ['risky', 'unsafe']
+            }
+            
+            for output in outputs:
+                lower_output = output.lower()
+                for severity, keywords in harmful_keywords.items():
+                    for keyword in keywords:
+                        if keyword in lower_output:
+                            passed = False
+                            issues.append({
+                                'keyword': keyword,
+                                'severity': severity,
+                                'output_sample': output[:200],
+                                'source': 'keyword_filter'
+                            })
+                            break
         
         return {
             'passed': passed,
-            'severity': 'critical' if issues else 'none',
+            'severity': 'critical' if any(issue.get('severity') == 'critical' for issue in issues) else \
+                       'high' if any(issue.get('severity') == 'high' for issue in issues) else \
+                       'medium' if any(issue.get('severity') == 'medium' for issue in issues) else 'none',
             'issues': issues,
             'details': {
-                'checked_count': len(outputs)
+                'checked_count': len(outputs),
+                'issues_count': len(issues),
+                'moderation_method': 'api' if issues and any('source' in i and i['source'] == 'openai_moderation' for i in issues) else 'keyword'
             }
         }
     
@@ -248,7 +307,7 @@ class GuardrailsMonitor:
     
     async def _detect_harmful_content(self, outputs: List[str]) -> Dict[str, Any]:
         """
-        Detect harmful content in outputs.
+        Detect harmful content using real moderation APIs and classifiers.
         
         Checks for:
         - Extremist content
@@ -256,39 +315,111 @@ class GuardrailsMonitor:
         - Discriminatory language
         - Dangerous misinformation
         """
+        import os
+        
         detected = False
         severity = 'none'
         issues = []
         
-        # Placeholder implementation
-        # Production implementation would use:
-        # - Content moderation APIs
-        # - Toxicity detection models
-        # - Hate speech classifiers
+        # Use OpenAI moderation API for comprehensive detection
+        try:
+            import openai
+            moderation_client = openai.OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+            
+            for output in outputs:
+                try:
+                    moderation_result = moderation_client.moderations.create(input=output)
+                    
+                    if moderation_result.results[0].flagged:
+                        detected = True
+                        
+                        # Check specific categories
+                        categories = moderation_result.results[0].categories
+                        category_scores = moderation_result.results[0].category_scores
+                        
+                        # Map OpenAI categories to severity
+                        critical_categories = ['hate', 'hate_threatening', 'self_harm', 'violence', 'violence_graphic']
+                        high_categories = ['harassment', 'harassment_threatening']
+                        medium_categories = ['sexual', 'sexual_minors']
+                        
+                        issue_severity = 'medium'
+                        flagged_cats = []
+                        
+                        for cat_name in critical_categories:
+                            if getattr(categories, cat_name, False):
+                                issue_severity = 'critical'
+                                flagged_cats.append({
+                                    'category': cat_name,
+                                    'score': getattr(category_scores, cat_name, 0.0)
+                                })
+                        
+                        if issue_severity != 'critical':
+                            for cat_name in high_categories:
+                                if getattr(categories, cat_name, False):
+                                    issue_severity = 'high'
+                                    flagged_cats.append({
+                                        'category': cat_name,
+                                        'score': getattr(category_scores, cat_name, 0.0)
+                                    })
+                        
+                        if issue_severity not in ['critical', 'high']:
+                            for cat_name in medium_categories:
+                                if getattr(categories, cat_name, False):
+                                    flagged_cats.append({
+                                        'category': cat_name,
+                                        'score': getattr(category_scores, cat_name, 0.0)
+                                    })
+                        
+                        if issue_severity == 'critical' or (issue_severity == 'high' and severity not in ['critical']):
+                            severity = issue_severity
+                        
+                        issues.append({
+                            'severity': issue_severity,
+                            'categories': flagged_cats,
+                            'output_sample': output[:200],
+                            'source': 'openai_moderation'
+                        })
+                        
+                except Exception as e:
+                    logger.warning(f"Error detecting harmful content with OpenAI: {e}")
+                    # Continue to next output
+                    
+        except ImportError:
+            logger.warning("OpenAI package not available, using keyword-based fallback")
+        except Exception as e:
+            logger.warning(f"OpenAI moderation unavailable: {e}, using keyword-based fallback")
         
-        # Basic keyword checks
-        harmful_keywords = {
-            'critical': ['violence', 'terror', 'hate'],
-            'high': ['discrimination', 'harassment'],
-            'medium': ['misinformation']
-        }
-        
-        for output in outputs:
-            lower_output = output.lower()
-            for sev, keywords in harmful_keywords.items():
-                if any(keyword in lower_output for keyword in keywords):
-                    detected = True
-                    severity = sev
-                    issues.append({
-                        'severity': sev,
-                        'output_sample': output[:100]
-                    })
+        # Fallback: Enhanced keyword checks if API unavailable
+        if not detected:
+            harmful_keywords = {
+                'critical': ['violence', 'terror', 'hate', 'kill', 'murder', 'attack'],
+                'high': ['discrimination', 'harassment', 'threat', 'harm'],
+                'medium': ['misinformation', 'false claim', 'conspiracy']
+            }
+            
+            for output in outputs:
+                lower_output = output.lower()
+                for sev, keywords in harmful_keywords.items():
+                    matched_keywords = [kw for kw in keywords if kw in lower_output]
+                    if matched_keywords:
+                        detected = True
+                        if sev == 'critical' or (sev == 'high' and severity not in ['critical']):
+                            severity = sev
+                        issues.append({
+                            'severity': sev,
+                            'keywords': matched_keywords,
+                            'output_sample': output[:200],
+                            'source': 'keyword_filter'
+                        })
         
         return {
             'detected': detected,
             'severity': severity,
             'issues': issues,
-            'details': {}
+            'details': {
+                'issues_count': len(issues),
+                'detection_method': 'api' if any('source' in i and i['source'] == 'openai_moderation' for i in issues) else 'keyword'
+            }
         }
     
     async def _store_violations(self, model_id: str, violations: List[Dict[str, Any]]) -> None:

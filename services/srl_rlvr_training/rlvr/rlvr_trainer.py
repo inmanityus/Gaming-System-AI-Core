@@ -159,16 +159,57 @@ class RLVRTrainer:
         
         Args:
             srl_pretrained_output: Output from SRL-pretrained model
+                Should contain: input_ids, attention_mask, generated_text, expected_outcome
+                For DPO: preferred_output, rejected_output (optional)
             outcome_reward: Outcome-based reward score
         
         Returns:
             Dict with training metrics
         """
-        # TODO: Implement actual RLVR training step
-        # This will use either PPO or DPO algorithm
+        # Prepare training data
+        input_ids = srl_pretrained_output.get("input_ids")
+        attention_mask = srl_pretrained_output.get("attention_mask")
+        generated_text = srl_pretrained_output.get("generated_text", "")
+        expected_outcome = srl_pretrained_output.get("expected_outcome", "")
         
+        # If input_ids not provided, tokenize from text
+        if input_ids is None and generated_text:
+            tokens = self.tokenizer(
+                generated_text,
+                return_tensors="pt",
+                padding=True,
+                truncation=True,
+                max_length=512
+            ).to(self.model.device)
+            input_ids = tokens["input_ids"]
+            attention_mask = tokens["attention_mask"]
+        
+        # Get old log probabilities (from reference policy)
+        with torch.no_grad():
+            ref_state = self.model.state_dict()
+            self.model.load_state_dict(self.reference_policy_state)
+            ref_outputs = self.model(input_ids=input_ids, attention_mask=attention_mask)
+            ref_logits = ref_outputs.logits
+            ref_log_probs = F.log_softmax(ref_logits, dim=-1)
+            old_log_probs = ref_log_probs.mean(dim=-1)
+            self.model.load_state_dict(ref_state)
+        
+        # Add required fields to srl_pretrained_output
+        srl_pretrained_output["input_ids"] = input_ids
+        srl_pretrained_output["attention_mask"] = attention_mask
+        srl_pretrained_output["generated_text"] = generated_text
+        srl_pretrained_output["expected_outcome"] = expected_outcome
+        srl_pretrained_output["old_log_probs"] = old_log_probs
+        
+        # Execute training step
         if self.use_ppo:
-            metrics = self._ppo_step(srl_pretrained_output, outcome_reward)
+            metrics = self._ppo_step(
+                input_ids=input_ids,
+                attention_mask=attention_mask,
+                generated_text=generated_text,
+                expected_outcome=expected_outcome,
+                old_log_probs=old_log_probs
+            )
         elif self.use_dpo:
             metrics = self._dpo_step(srl_pretrained_output, outcome_reward)
         else:
@@ -287,8 +328,132 @@ class RLVRTrainer:
         srl_pretrained_output: Dict[str, Any],
         outcome_reward: float
     ) -> Dict[str, float]:
-        """DPO training step."""
-        # TODO: Implement DPO algorithm
-        logger.debug("DPO training step")
-        return {"loss": 0.0, "reward": outcome_reward}
+        """
+        DPO (Direct Preference Optimization) training step.
+        
+        DPO optimizes directly on preference pairs without a reward model.
+        For RLVR, we use outcome-based preferences (good outcome vs bad outcome).
+        """
+        self.model.train()
+        self.optimizer.zero_grad()
+        
+        # Extract data from SRL pretrained output
+        # In practice, this would contain preferred and rejected outputs
+        preferred_output = srl_pretrained_output.get("preferred_output", "")
+        rejected_output = srl_pretrained_output.get("rejected_output", "")
+        input_ids = srl_pretrained_output.get("input_ids")
+        attention_mask = srl_pretrained_output.get("attention_mask")
+        
+        if input_ids is None or attention_mask is None:
+            # Fallback: Use outcome reward to construct preference
+            # Higher reward = preferred, lower reward = rejected
+            if outcome_reward > 0.5:
+                preferred_output = srl_pretrained_output.get("generated_text", "")
+                rejected_output = srl_pretrained_output.get("expected_outcome", "")
+            else:
+                preferred_output = srl_pretrained_output.get("expected_outcome", "")
+                rejected_output = srl_pretrained_output.get("generated_text", "")
+            
+            # Tokenize
+            preferred_tokens = self.tokenizer(
+                preferred_output,
+                return_tensors="pt",
+                padding=True,
+                truncation=True,
+                max_length=512
+            ).to(self.model.device)
+            
+            rejected_tokens = self.tokenizer(
+                rejected_output,
+                return_tensors="pt",
+                padding=True,
+                truncation=True,
+                max_length=512
+            ).to(self.model.device)
+            
+            input_ids = preferred_tokens["input_ids"]
+            attention_mask = preferred_tokens["attention_mask"]
+        
+        # Get log probabilities for preferred and rejected outputs
+        preferred_outputs = self.model(input_ids=input_ids, attention_mask=attention_mask)
+        preferred_logits = preferred_outputs.logits
+        
+        # Compute log probabilities
+        preferred_log_probs = F.log_softmax(preferred_logits, dim=-1)
+        # Get log prob of sequence (simplified - sum over sequence)
+        preferred_log_prob = preferred_log_probs.mean()
+        
+        # For rejected, compute similarly
+        if rejected_output and isinstance(rejected_output, str):
+            rejected_tokens = self.tokenizer(
+                rejected_output,
+                return_tensors="pt",
+                padding=True,
+                truncation=True,
+                max_length=512
+            ).to(self.model.device)
+            
+            rejected_outputs = self.model(
+                input_ids=rejected_tokens["input_ids"],
+                attention_mask=rejected_tokens["attention_mask"]
+            )
+            rejected_logits = rejected_outputs.logits
+            rejected_log_probs = F.log_softmax(rejected_logits, dim=-1)
+            rejected_log_prob = rejected_log_probs.mean()
+        else:
+            # Use difference from preferred as rejection
+            rejected_log_prob = preferred_log_prob - 0.5  # Penalize preferred
+        
+        # DPO loss: -log(sigma(beta * (log p_preferred - log p_rejected)))
+        # where sigma is sigmoid
+        beta = 0.1  # Temperature parameter
+        log_prob_diff = beta * (preferred_log_prob - rejected_log_prob)
+        dpo_loss = -F.logsigmoid(log_prob_diff)
+        
+        # Add KL penalty
+        with torch.no_grad():
+            ref_state = self.model.state_dict()
+            self.model.load_state_dict(self.reference_policy_state)
+            ref_outputs = self.model(input_ids=input_ids, attention_mask=attention_mask)
+            reference_logits = ref_outputs.logits
+            self.model.load_state_dict(ref_state)
+        
+        kl_penalty = self.kl_controller.compute_kl_penalty(
+            current_policy_logits=preferred_logits,
+            reference_policy_logits=reference_logits
+        )
+        
+        total_loss = dpo_loss + kl_penalty
+        
+        # Backward pass
+        total_loss.backward()
+        torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=1.0)
+        self.optimizer.step()
+        
+        # Compute metrics
+        with torch.no_grad():
+            kl_div = self.kl_controller.compute_kl_divergence(
+                current_policy_logits=preferred_logits,
+                reference_policy_logits=reference_logits
+            )
+        
+        self.training_step_count += 1
+        
+        metrics = {
+            "loss": total_loss.item(),
+            "dpo_loss": dpo_loss.item(),
+            "kl_penalty": kl_penalty.item(),
+            "kl_divergence": kl_div.item(),
+            "preferred_log_prob": preferred_log_prob.item(),
+            "rejected_log_prob": rejected_log_prob.item(),
+            "outcome_reward": outcome_reward
+        }
+        
+        logger.debug(
+            f"RLVR DPO step {self.training_step_count}: "
+            f"loss={metrics['loss']:.4f}, reward={metrics['outcome_reward']:.4f}, "
+            f"kl={metrics['kl_divergence']:.4f}"
+        )
+        
+        return metrics
 
