@@ -12,6 +12,7 @@ from typing import Dict, Any, Optional, List
 
 from ..core.language_definition import LanguageDefinition, LanguageRegistry
 from ..generation.sentence_generator import SentenceGenerator, SentenceRequest
+from ..grpc.grpc_server import LanguageSystemGRPCServer
 
 app = FastAPI(title="Language System API", version="1.0.0")
 
@@ -27,6 +28,9 @@ app.add_middleware(
 # Initialize components
 language_registry = LanguageRegistry()
 sentence_generator = SentenceGenerator()
+
+# Initialize gRPC server (will be started separately if needed)
+grpc_server = None
 
 # Register all languages on startup
 @app.on_event("startup")

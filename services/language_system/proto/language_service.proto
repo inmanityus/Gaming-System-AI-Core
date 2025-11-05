@@ -1,0 +1,123 @@
+syntax = "proto3";
+
+package language_system;
+
+// Language System gRPC Service
+// Provides language generation, translation, and interpretation services
+
+service LanguageService {
+  // Generate a sentence in a specific language
+  rpc GenerateSentence(GenerateSentenceRequest) returns (GenerateSentenceResponse);
+  
+  // Stream sentence generation (for real-time dialogue)
+  rpc GenerateSentenceStream(GenerateSentenceRequest) returns (stream SentenceToken);
+  
+  // Translate text between languages
+  rpc Translate(TranslateRequest) returns (TranslateResponse);
+  
+  // Provide contextual interpretation
+  rpc Interpret(InterpretRequest) returns (InterpretResponse);
+  
+  // List all available languages
+  rpc ListLanguages(ListLanguagesRequest) returns (ListLanguagesResponse);
+  
+  // Get language definition
+  rpc GetLanguage(GetLanguageRequest) returns (GetLanguageResponse);
+  
+  // Health check
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+// Request/Response Messages
+
+message GenerateSentenceRequest {
+  string language_name = 1;
+  string intent = 2;
+  map<string, string> context = 3;
+  string emotion = 4;
+  int32 complexity = 5;
+  bool stream = 6;  // Enable streaming response
+}
+
+message GenerateSentenceResponse {
+  string sentence = 1;
+  string language_name = 2;
+  string intent = 3;
+  string phonemes = 4;  // Phonetic representation
+  map<string, string> metadata = 5;
+}
+
+message SentenceToken {
+  string token = 1;
+  bool is_complete = 2;
+  float progress = 3;  // 0.0 to 1.0
+}
+
+message TranslateRequest {
+  string text = 1;
+  string from_language = 2;
+  string to_language = 3;
+  map<string, string> context = 4;
+  int32 proficiency_level = 5;  // Player's language proficiency
+}
+
+message TranslateResponse {
+  string translated_text = 1;
+  string from_language = 2;
+  string to_language = 3;
+  float confidence = 4;
+  map<string, string> cultural_notes = 5;
+}
+
+message InterpretRequest {
+  string text = 1;
+  string language = 2;
+  map<string, string> context = 3;
+  bool include_hidden_meanings = 4;
+}
+
+message InterpretResponse {
+  string literal_translation = 1;
+  string contextual_meaning = 2;
+  map<string, string> cultural_context = 3;
+  repeated string hidden_meanings = 4;
+  map<string, string> metadata = 5;
+}
+
+message ListLanguagesRequest {
+  string language_type = 1;  // Optional filter: "creature", "real", "music", "power"
+}
+
+message ListLanguagesResponse {
+  repeated LanguageInfo languages = 1;
+}
+
+message LanguageInfo {
+  string name = 1;
+  string language_type = 2;
+  string language_family = 3;
+  string culture = 4;
+  int32 level = 5;
+  string description = 6;
+}
+
+message GetLanguageRequest {
+  string language_name = 1;
+}
+
+message GetLanguageResponse {
+  LanguageInfo language = 1;
+  map<string, string> phonemes = 2;
+  map<string, string> grammar_rules = 3;
+  int32 vocabulary_size = 4;
+}
+
+message HealthCheckRequest {
+}
+
+message HealthCheckResponse {
+  string status = 1;
+  string service = 2;
+  string version = 3;
+}
+
