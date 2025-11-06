@@ -105,6 +105,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Audio Manager")
 	bool IsAudioPlaying(const FString& AudioID) const;
 
+	// Get backend URL (for use by other systems like DialogueManager)
+	UFUNCTION(BlueprintCallable, Category = "Audio Manager")
+	FString GetBackendURL() const { return BackendURL; }
+
 	// ============================================================
 	// VA-002: Ambient & Weather Audio Integration Methods
 	// ============================================================
@@ -291,7 +295,7 @@ private:
 	UPROPERTY()
 	float CurrentStepDuration;
 
-	// Ducking state (shared pointer stored as member)
+	// Ducking state (simple struct, not USTRUCT)
 	struct FDuckingState
 	{
 		int32 StepCount = 0;
@@ -299,8 +303,8 @@ private:
 		float TargetDuck = 0.0f;
 		int32 TotalSteps = 0;
 	};
-	UPROPERTY()
-	TSharedPtr<FDuckingState> CurrentDuckingState;
+	
+	FDuckingState CurrentDuckingState;
 
 	// Constants
 	static constexpr float DEFAULT_AMBIENT_CROSSFADE_DURATION = 30.0f;  // 30 seconds for time-of-day

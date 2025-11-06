@@ -1,0 +1,14 @@
+Package: grpc
+Version: 1.71.0
+Port-Version: 3
+Depends: abseil, c-ares, grpc, openssl, protobuf, re2, utf8-range, vcpkg-cmake, vcpkg-cmake-config, zlib
+Architecture: x64-windows
+Multi-Arch: same
+Abi: b0f0dce61388c2364a4f1435aeb7d218d51bd1c3c199c6e47d4337de0b12dee1
+Description: gRPC is a modern, open source, high-performance remote procedure call (RPC) framework that can run anywhere. gRPC enables client and server applications to communicate transparently, and simplifies the building of connected systems.
+
+Package: grpc
+Feature: codegen
+Architecture: x64-windows
+Multi-Arch: same
+Description: Build code generator machinery

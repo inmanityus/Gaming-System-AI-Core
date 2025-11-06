@@ -9,6 +9,11 @@
 #include "Engine/World.h"
 #include "BodyBrokerGameMode.generated.h"
 
+// Forward declarations
+class ADirectionalLight;
+class ASkyLight;
+class AExponentialHeightFog;
+
 // World state enum for Day/Night system
 UENUM(BlueprintType)
 enum class EWorldState : uint8
@@ -138,4 +143,5 @@ private:
 	TWeakObjectPtr<ADirectionalLight> CachedDirectionalLight;
 	TWeakObjectPtr<ASkyLight> CachedSkyLight;
 	TWeakObjectPtr<AExponentialHeightFog> CachedExponentialHeightFog;
+};
 

@@ -19,7 +19,10 @@ public class BodyBroker : ModuleRules
 			"Niagara",
 			"AudioMixer",
 			"OnlineSubsystem",
-			"OnlineSubsystemSteam"
+			"OnlineSubsystemSteam",
+			"UMG",
+			"Slate",
+			"SlateCore"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });

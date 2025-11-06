@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "BodyBroker",
+			"Path": "..\\Source\\BodyBroker.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "BodyBrokerEditor",
+			"Path": "..\\Source\\BodyBrokerEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}

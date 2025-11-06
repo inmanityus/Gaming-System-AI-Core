@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package bodybroker;
+
+// GE-004: gRPC service definitions for AI inference
+// Generate C++ code with: protoc --cpp_out=. bodybroker.proto
+// Generate TurboLink code: Use TurboLink code generator
+
+// Dialogue request message
+message DialogueRequest {
+    string npc_id = 1;
+    string player_prompt = 2;
+    string context_json = 3;
+    int32 tier = 4;  // 1, 2, or 3
+    string lora_adapter = 5;  // Optional LoRA adapter name
+}
+
+// Dialogue response message (non-streaming)
+message DialogueResponse {
+    string dialogue_text = 1;
+    int32 tokens_used = 2;
+    float latency_ms = 3;
+    string tier = 4;
+    string model = 5;
+}
+
+// Dialogue token message (streaming)
+message DialogueToken {
+    string token = 1;
+    bool is_complete = 2;
+    int32 token_index = 3;
+    float latency_ms = 4;
+}
+
+// AI Inference Service
+service AIInferenceService {
+    // Unary RPC: Request dialogue (non-streaming)
+    rpc RequestDialogue(DialogueRequest) returns (DialogueResponse);
+    
+    // Server streaming RPC: Request dialogue with streaming tokens
+    rpc RequestDialogueStreaming(DialogueRequest) returns (stream DialogueToken);
+    
+    // Health check
+    rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+// Health check messages
+message HealthCheckRequest {
+    string service = 1;
+}
+
+message HealthCheckResponse {
+    bool healthy = 1;
+    string status = 2;
+    float uptime_seconds = 3;
+}
+

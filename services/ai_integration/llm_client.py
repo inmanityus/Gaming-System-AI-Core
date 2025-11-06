@@ -22,6 +22,12 @@ from services.model_management.historical_log_processor import HistoricalLogProc
 from services.model_management.srl_model_adapter import SRLModelAdapter
 from services.model_management.cost_benefit_router import CostBenefitRouter
 
+# AI-002/AI-003: Import vLLM and LoRA managers
+from .vllm_client import VLLMClient
+from .lora_manager import LoRAManager
+# AI-004: Import multi-tier router
+from .multi_tier_router import MultiTierModelRouter, ModelTier
+
 
 class CircuitBreakerError(Exception):
     """Raised when circuit breaker is open."""
@@ -49,6 +55,17 @@ class LLMClient:
         self.historical_log_processor = HistoricalLogProcessor()
         self.srl_adapter = SRLModelAdapter(model_registry=self.model_registry)
         self.cost_benefit_router = CostBenefitRouter(model_registry=self.model_registry)
+        
+        # AI-002/AI-003: Initialize vLLM client and LoRA manager
+        vllm_url = os.getenv("VLLM_BASE_URL", "http://localhost:8000")
+        self.vllm_client = VLLMClient(base_url=vllm_url)
+        self.lora_manager = LoRAManager(vllm_base_url=vllm_url)
+        
+        # AI-004: Initialize multi-tier router
+        self.multi_tier_router = MultiTierModelRouter(
+            vllm_client=self.vllm_client,
+            lora_manager=self.lora_manager
+        )
         
         # LLM Service endpoints (will be updated from Model Registry)
         self.llm_services = {
@@ -254,20 +271,51 @@ class LLMClient:
             # Check if SRL-trained model should be used
             use_srl_model = await self._should_use_srl_model(layer, context)
             
+            # AI-004: Use multi-tier router if context indicates tier-based routing
+            use_multi_tier = context.get("use_multi_tier", True)  # Default to True
+            
             if use_srl_model:
                 # Use SRL model adapter for generation
                 result = await self._generate_with_srl_model(
                     layer, prompt, context, max_tokens, temperature
                 )
+            elif use_multi_tier:
+                # AI-004: Use multi-tier router for tier-based model selection
+                try:
+                    tier_result = await self.multi_tier_router.route_request(
+                        prompt=prompt,
+                        context=context,
+                        max_tokens=max_tokens,
+                        temperature=temperature
+                    )
+                    
+                    if tier_result.get("success"):
+                        result = {
+                            "text": tier_result.get("text", ""),
+                            "tokens_used": tier_result.get("tokens_used", 0),
+                            "tier": tier_result.get("tier"),
+                            "vllm": True,
+                            "multi_tier": True
+                        }
+                    else:
+                        # Fallback to standard vLLM or service
+                        result = await self._fallback_to_vllm_or_service(
+                            service_name, prompt, context, max_tokens, temperature, model_id
+                        )
+                except Exception as e:
+                    # Fallback to standard vLLM or service
+                    result = await self._fallback_to_vllm_or_service(
+                        service_name, prompt, context, max_tokens, temperature, model_id
+                    )
             elif use_router and selected_model_id != "fallback":
                 # Use router-selected model via standard service
                 result = await self._make_request(
                     service_name, prompt, context, max_tokens, temperature
                 )
             else:
-                # Use standard LLM service
-                result = await self._make_request(
-                    service_name, prompt, context, max_tokens, temperature
+                # Fallback to vLLM or standard service
+                result = await self._fallback_to_vllm_or_service(
+                    service_name, prompt, context, max_tokens, temperature, model_id
                 )
             
             # Update load balancing weights
@@ -453,6 +501,62 @@ class LLMClient:
         except Exception as e:
             # Fallback to standard service
             raise LLMServiceUnavailableError(f"SRL model generation failed: {e}")
+    
+    async def _fallback_to_vllm_or_service(
+        self,
+        service_name: str,
+        prompt: str,
+        context: Dict[str, Any],
+        max_tokens: int,
+        temperature: float,
+        model_id: Optional[str]
+    ) -> Dict[str, Any]:
+        """
+        Fallback method: Try vLLM first, then standard service.
+        Used when multi-tier router is not available or fails.
+        """
+        try:
+            vllm_health = await self.vllm_client.health_check()
+            if vllm_health.get("status") == "healthy":
+                # Use vLLM for generation
+                lora_adapter = context.get("lora_adapter")
+                vllm_result = await self.vllm_client.generate(
+                    model=model_id or "llama3.1:8b",
+                    prompt=prompt,
+                    max_tokens=max_tokens,
+                    temperature=temperature,
+                    lora_request=lora_adapter
+                )
+                
+                if not vllm_result.get("error"):
+                    # Extract text from vLLM response
+                    choices = vllm_result.get("choices", [])
+                    if choices:
+                        generated_text = choices[0].get("text", "")
+                        if not generated_text:
+                            # Try chat completion format
+                            message = choices[0].get("message", {})
+                            generated_text = message.get("content", "")
+                        
+                        return {
+                            "text": generated_text,
+                            "tokens_used": vllm_result.get("usage", {}).get("completion_tokens", 0),
+                            "vllm": True
+                        }
+        except Exception:
+            pass
+        
+        # Fallback to standard service
+        return await self._make_request(
+            service_name, prompt, context, max_tokens, temperature
+        )
+    
+    async def get_tier_metrics(self) -> Dict[str, Any]:
+        """
+        Get metrics for all model tiers.
+        AI-004: Multi-tier model serving metrics.
+        """
+        return self.multi_tier_router.get_tier_metrics()
     
     def _get_fallback_response(self, layer: str, prompt: str) -> str:
         """Get fallback response when LLM services are unavailable."""

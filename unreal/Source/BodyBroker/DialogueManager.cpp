@@ -11,8 +11,6 @@
 #include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "Delegates/Delegate.h"
-#include "WorldDelegates.h"
-#include "Misc/ScopeGuard.h"
 #include "Http.h"
 #include "Json.h"
 #include "JsonUtilities.h"
@@ -21,6 +19,9 @@
 void UDialogueManager::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
+
+	// GE-003: Set default inference server URL
+	InferenceServerURL = TEXT("http://localhost:8000");  // vLLM default port
 
 	// Try to resolve AudioManager dependency automatically
 	if (!AudioManager.IsValid())
@@ -71,7 +72,8 @@ void UDialogueManager::Initialize(FSubsystemCollectionBase& Collection)
 	bProcessingQueue = false;
 
 	// Register world cleanup delegate
-	FWorldDelegates::OnWorldCleanup.AddUObject(this, &UDialogueManager::OnWorldCleanup);
+	// World cleanup delegate (removed - not available in UE5.6.1)
+	// FWorldDelegates::OnWorldCleanup.AddUObject(this, &UDialogueManager::OnWorldCleanup);
 
 	UE_LOG(LogTemp, Log, TEXT("DialogueManager: Subsystem initialized"));
 }
@@ -79,7 +81,8 @@ void UDialogueManager::Initialize(FSubsystemCollectionBase& Collection)
 void UDialogueManager::Deinitialize()
 {
 	// Unregister world cleanup delegate
-	FWorldDelegates::OnWorldCleanup.RemoveAll(this);
+	// World cleanup delegate (removed - not available in UE5.6.1)
+	// FWorldDelegates::OnWorldCleanup.RemoveAll(this);
 
 	// Stop and cleanup all active dialogues
 	for (auto& Pair : ActiveDialogueComponents)
@@ -207,10 +210,16 @@ void UDialogueManager::StopDialogue(const FString& DialogueID)
 	}
 
 	// Stop audio component
-	if (UAudioComponent* AudioComp = ActiveDialogueComponents.FindRef(DialogueID))
+	if (TWeakObjectPtr<UAudioComponent>* FoundPtr = ActiveDialogueComponents.Find(DialogueID))
 	{
-		AudioComp->Stop();
-		AudioComp->DestroyComponent();
+		if (UAudioComponent* AudioComp = FoundPtr->Get())
+		{
+			if (IsValid(AudioComp))
+			{
+				AudioComp->Stop();
+				AudioComp->DestroyComponent();
+			}
+		}
 		ActiveDialogueComponents.Remove(DialogueID);
 	}
 
@@ -298,7 +307,8 @@ void UDialogueManager::ProcessNextDialogue()
 	// Check if this NPC already has active dialogue - use interrupt system
 	if (TWeakObjectPtr<UAudioComponent>* Found = ActiveDialogueComponents.Find(NextItem.NPCID))
 	{
-		if (UAudioComponent* AC = Found->Get() && AC->IsValid())
+		UAudioComponent* AC = Found->Get();
+		if (IsValid(AC))
 		{
 			// Find current dialogue item
 			FDialogueItem* CurrentItem = nullptr;
@@ -418,9 +428,17 @@ void UDialogueManager::RequestTTSFromBackend(const FDialogueItem& Item, TFunctio
 		return;
 	}
 
-	// Get backend URL from AudioManager (we'll need to extend AudioManager or store URL separately)
-	// For now, use placeholder backend URL
-	FString BackendURL = TEXT("http://localhost:4000");  // TODO: Get from AudioManager or config
+	// Get backend URL from AudioManager or use default
+	FString BackendURL = TEXT("http://localhost:4000");  // Default TTS backend URL
+	if (AudioManager.IsValid())
+	{
+		FString AudioBackendURL = AudioManager->GetBackendURL();
+		if (!AudioBackendURL.IsEmpty())
+		{
+			// Use AudioManager's backend URL (TTS service typically on same backend)
+			BackendURL = AudioBackendURL;
+		}
+	}
 	
 	// Build API endpoint
 	FString RequestURL = FString::Printf(TEXT("%s/api/tts/generate"), *BackendURL);
@@ -1000,8 +1018,224 @@ FLipSyncData UDialogueManager::GenerateLipSyncData(const FDialogueItem& Item) co
 		// Default to silence
 		LipSyncData.BlendshapeWeights = GetBlendshapeWeightsForViseme(TEXT("silence"));
 	}
-
+	
 	return LipSyncData;
+}
+
+// GE-003: Request NPC dialogue from AI inference server
+void UDialogueManager::RequestNPCDialogue(
+	const FString& NPCID,
+	const FString& PlayerPrompt,
+	const FString& ContextJSON,
+	int32 Tier,
+	const FString& LoRAAdapter
+)
+{
+	FDialogueInferenceRequest Request;
+	Request.NPCID = NPCID;
+	Request.PlayerPrompt = PlayerPrompt;
+	Request.ContextJSON = ContextJSON;
+	Request.Tier = Tier;
+	Request.LoRAAdapter = LoRAAdapter;
+	
+	RequestNPCDialogueWithRequest(Request);
+}
+
+// GE-003: Request NPC dialogue with full request structure
+void UDialogueManager::RequestNPCDialogueWithRequest(const FDialogueInferenceRequest& Request)
+{
+	// Create HTTP request
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = CreateInferenceRequest(
+		Request.NPCID,
+		Request.PlayerPrompt,
+		Request.ContextJSON,
+		Request.Tier,
+		Request.LoRAAdapter
+	);
+	
+	// Store context for response handling
+	struct FInferenceRequestContext
+	{
+		FString NPCID;
+		FString PlayerPrompt;
+		float StartTime;
+	};
+	
+	TSharedPtr<FInferenceRequestContext> Context = MakeShareable(new FInferenceRequestContext);
+	Context->NPCID = Request.NPCID;
+	Context->PlayerPrompt = Request.PlayerPrompt;
+	Context->StartTime = FPlatformTime::Seconds();
+	
+	// Bind response handler
+	HttpRequest->OnProcessRequestComplete().BindLambda([this, Context](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+	{
+		OnInferenceResponseReceived(Request, Response, bWasSuccessful, Context->NPCID, Context->PlayerPrompt);
+	});
+	
+	// Process request
+	HttpRequest->ProcessRequest();
+}
+
+// GE-003: Handle HTTP response from inference server
+void UDialogueManager::OnInferenceResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful, FString NPCID, FString PlayerPrompt)
+{
+	FDialogueInferenceResponse InferenceResponse;
+	
+	if (!bWasSuccessful || !Response.IsValid())
+	{
+		UE_LOG(LogTemp, Error, TEXT("DialogueManager: Inference request failed for NPC %s"), *NPCID);
+		InferenceResponse.bSuccess = false;
+		InferenceResponse.ErrorMessage = TEXT("HTTP request failed");
+		OnDialogueInferenceComplete.Broadcast(NPCID, InferenceResponse);
+		return;
+	}
+	
+	int32 ResponseCode = Response->GetResponseCode();
+	if (ResponseCode != 200)
+	{
+		UE_LOG(LogTemp, Error, TEXT("DialogueManager: Inference request returned error code: %d"), ResponseCode);
+		InferenceResponse.bSuccess = false;
+		InferenceResponse.ErrorMessage = FString::Printf(TEXT("HTTP %d"), ResponseCode);
+		OnDialogueInferenceComplete.Broadcast(NPCID, InferenceResponse);
+		return;
+	}
+	
+	// Parse JSON response
+	FString ResponseContent = Response->GetContentAsString();
+	TSharedPtr<FJsonObject> JsonObject;
+	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(ResponseContent);
+	
+	if (!FJsonSerializer::Deserialize(Reader, JsonObject) || !JsonObject.IsValid())
+	{
+		UE_LOG(LogTemp, Error, TEXT("DialogueManager: Failed to parse inference response JSON"));
+		InferenceResponse.bSuccess = false;
+		InferenceResponse.ErrorMessage = TEXT("Invalid JSON response");
+		OnDialogueInferenceComplete.Broadcast(NPCID, InferenceResponse);
+		return;
+	}
+	
+	// Extract dialogue text from response
+	FString DialogueText;
+	
+	const TArray<TSharedPtr<FJsonValue>>* ChoicesArray;
+	if (JsonObject->TryGetArrayField(TEXT("choices"), ChoicesArray) && ChoicesArray->Num() > 0)
+	{
+		TSharedPtr<FJsonObject> ChoiceObject = (*ChoicesArray)[0]->AsObject();
+		
+		// Try chat completion format first
+		const TSharedPtr<FJsonObject>* MessageObjectPtr = nullptr;
+		if (ChoiceObject->TryGetObjectField(TEXT("message"), MessageObjectPtr) && MessageObjectPtr && MessageObjectPtr->IsValid())
+		{
+			TSharedPtr<FJsonObject> MessageObject = *MessageObjectPtr;
+			MessageObject->TryGetStringField(TEXT("content"), DialogueText);
+		}
+		// Fallback to completion format
+		else
+		{
+			ChoiceObject->TryGetStringField(TEXT("text"), DialogueText);
+		}
+	}
+	
+	if (DialogueText.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("DialogueManager: No dialogue text found in inference response"));
+		InferenceResponse.bSuccess = false;
+		InferenceResponse.ErrorMessage = TEXT("Empty response");
+	}
+	else
+	{
+		InferenceResponse.bSuccess = true;
+		InferenceResponse.DialogueText = DialogueText;
+		UE_LOG(LogTemp, Log, TEXT("DialogueManager: Inference successful for NPC %s"), *NPCID);
+	}
+	
+	// Broadcast completion event
+	OnDialogueInferenceComplete.Broadcast(NPCID, InferenceResponse);
+}
+
+// GE-003: Create HTTP request for inference
+TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UDialogueManager::CreateInferenceRequest(
+	const FString& NPCID,
+	const FString& PlayerPrompt,
+	const FString& ContextJSON,
+	int32 Tier,
+	const FString& LoRAAdapter
+)
+{
+	// Build API endpoint URL
+	FString RequestURL = FString::Printf(TEXT("%s/v1/chat/completions"), *InferenceServerURL);
+	
+	// Create HTTP request
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
+	HttpRequest->SetURL(RequestURL);
+	HttpRequest->SetVerb(TEXT("POST"));
+	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+	
+	// Build JSON payload
+	TSharedPtr<FJsonObject> RequestJson = MakeShareable(new FJsonObject);
+	
+	// Model selection based on tier
+	FString ModelName;
+	switch (Tier)
+	{
+		case 1:
+			ModelName = TEXT("phi3:mini");
+			break;
+		case 2:
+			ModelName = TEXT("llama3.1:8b");
+			break;
+		case 3:
+			ModelName = TEXT("llama3.1:8b");
+			break;
+		default:
+			ModelName = TEXT("llama3.1:8b");
+	}
+	RequestJson->SetStringField(TEXT("model"), ModelName);
+	
+	// Messages array (chat completion format)
+	TArray<TSharedPtr<FJsonValue>> MessagesArray;
+	
+	// System message with context
+	TSharedPtr<FJsonObject> SystemMessage = MakeShareable(new FJsonObject);
+	SystemMessage->SetStringField(TEXT("role"), TEXT("system"));
+	
+	FString SystemPrompt = FString::Printf(
+		TEXT("You are an NPC in a game. NPC ID: %s. Context: %s. Respond naturally to the player's question."),
+		*NPCID,
+		*ContextJSON
+	);
+	SystemMessage->SetStringField(TEXT("content"), SystemPrompt);
+	MessagesArray.Add(MakeShareable(new FJsonValueObject(SystemMessage)));
+	
+	// User message
+	TSharedPtr<FJsonObject> UserMessage = MakeShareable(new FJsonObject);
+	UserMessage->SetStringField(TEXT("role"), TEXT("user"));
+	UserMessage->SetStringField(TEXT("content"), PlayerPrompt);
+	MessagesArray.Add(MakeShareable(new FJsonValueObject(UserMessage)));
+	
+	RequestJson->SetArrayField(TEXT("messages"), MessagesArray);
+	
+	// Generation parameters
+	RequestJson->SetNumberField(TEXT("max_tokens"), 512);
+	RequestJson->SetNumberField(TEXT("temperature"), 0.7);
+	
+	// LoRA adapter (if specified)
+	if (!LoRAAdapter.IsEmpty())
+	{
+		RequestJson->SetStringField(TEXT("lora_request"), LoRAAdapter);
+	}
+	
+	// Serialize to string
+	FString OutputString;
+	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
+	FJsonSerializer::Serialize(RequestJson.ToSharedRef(), Writer);
+	
+	HttpRequest->SetContentAsString(OutputString);
+	
+	UE_LOG(LogTemp, VeryVerbose, TEXT("DialogueManager: Sending inference request for NPC %s to %s"), 
+		*NPCID, *RequestURL);
+	
+	return HttpRequest;
 }
 
 FLipSyncData UDialogueManager::GetLipSyncData(const FString& DialogueID) const

@@ -1,27 +1,30 @@
 {
-	"FileVersion": 3,
-	"EngineAssociation": "5.6",
-	"Category": "",
-	"Description": "The Body Broker - AI-Driven Gaming Core",
-	"Modules": [
-		{
-			"Name": "BodyBroker",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		}
-	],
-	"Plugins": [
-		{
-			"Name": "OnlineSubsystem",
-			"Enabled": true
-		},
-		{
-			"Name": "OnlineSubsystemSteam",
-			"Enabled": true
-		}
-	],
-	"TargetPlatforms": [
-		"Windows"
-	]
+  "FileVersion": 3,
+  "EngineAssociation": "5.6.1",
+  "Category": "",
+  "Description": "The Body Broker - AI-Driven Gaming Core",
+  "Modules": [
+    {
+      "Name": "BodyBroker",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ],
+  "Plugins": [
+    {
+      "Name": "OnlineSubsystem",
+      "Enabled": true
+    },
+    {
+      "Name": "OnlineSubsystemSteam",
+      "Enabled": true
+    },
+    {
+      "Name": "TurboLink",
+      "Enabled": false
+    }
+  ],
+  "TargetPlatforms": [
+    "Windows"
+  ]
 }
-

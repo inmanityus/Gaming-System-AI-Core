@@ -55,7 +55,7 @@ void UBodyBrokerSettingsSaveGame::ResetToDefaults()
 void UBodyBrokerSettingsSaveGame::InitializeDefaults()
 {
 	// Initialize all settings to default values
-	AudioSettings = FAudioSettings();
+	AudioSettings = FBodyBrokerAudioSettings();
 	VideoSettings = FVideoSettings();
 	ControlsSettings = FControlsSettings();
 	GameplaySettings = FGameplaySettings();

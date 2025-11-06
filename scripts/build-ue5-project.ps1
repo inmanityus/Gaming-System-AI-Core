@@ -1,79 +1,61 @@
-# Build UE5 Project - Automated Compilation Script
-# REAL IMPLEMENTATION - Uses actual UnrealBuildTool to compile project
+# UE5 Project Build Script
+# Convenient wrapper for building UE5 projects from command line
 
 param(
+    [Parameter(Mandatory=$false)]
     [string]$ProjectPath = "unreal\BodyBroker.uproject",
+    
+    [Parameter(Mandatory=$false)]
     [string]$Configuration = "Development",
+    
+    [Parameter(Mandatory=$false)]
     [string]$Platform = "Win64",
-    [string]$UEEnginePath = ""
+    
+    [Parameter(Mandatory=$false)]
+    [string]$TargetType = "Editor",
+    
+    [Parameter(Mandatory=$false)]
+    [string]$UEPath = "C:\Program Files\Epic Games\UE_5.6"
 )
 
-Write-Host "[BUILD] Starting UE5 project compilation..." -ForegroundColor Cyan
-Write-Host "[BUILD] Project: $ProjectPath" -ForegroundColor Yellow
-Write-Host "[BUILD] Configuration: $Configuration" -ForegroundColor Yellow
-Write-Host "[BUILD] Platform: $Platform" -ForegroundColor Yellow
+Write-Host "=== UE5 Project Build Script ===" -ForegroundColor Cyan
+Write-Host ""
 
-# Find UE5 Engine
-if ([string]::IsNullOrEmpty($UEEnginePath))
-{
-    $ueInstallPath = Get-ChildItem "C:\Program Files\Epic Games\" -Directory -Filter "UE_*" -ErrorAction SilentlyContinue | 
-        Select-Object -First 1
-    
-    if ($ueInstallPath)
-    {
-        $UEEnginePath = $ueInstallPath.FullName
-        Write-Host "[BUILD] Auto-detected UE5: $UEEnginePath" -ForegroundColor Green
-    }
-    else
-    {
-        Write-Host "[ERROR] UE5 Engine not found. Please specify -UEEnginePath" -ForegroundColor Red
-        exit 1
-    }
-}
+# Resolve project path
+$fullProjectPath = Resolve-Path $ProjectPath -ErrorAction Stop
+Write-Host "Project: $fullProjectPath" -ForegroundColor White
 
-# Find UnrealBuildTool
-$BuildToolPath = Join-Path $UEEnginePath "Engine\Build\BatchFiles\Build.bat"
-if (-not (Test-Path $BuildToolPath))
-{
-    Write-Host "[ERROR] UnrealBuildTool not found at: $BuildToolPath" -ForegroundColor Red
+# Check UE installation
+if (-not (Test-Path $UEPath)) {
+    Write-Host "❌ UE5 not found at: $UEPath" -ForegroundColor Red
+    Write-Host "Please update -UEPath parameter" -ForegroundColor Yellow
     exit 1
 }
 
-Write-Host "[BUILD] Using UnrealBuildTool: $BuildToolPath" -ForegroundColor Green
+$buildBat = Join-Path $UEPath "Engine\Build\BatchFiles\Build.bat"
+if (-not (Test-Path $buildBat)) {
+    Write-Host "❌ Build.bat not found at: $buildBat" -ForegroundColor Red
+    exit 1
+}
 
-# Resolve project path
-$FullProjectPath = Resolve-Path $ProjectPath -ErrorAction Stop
-$ProjectName = [System.IO.Path]::GetFileNameWithoutExtension($FullProjectPath)
-
-Write-Host "[BUILD] Building project: $ProjectName" -ForegroundColor Cyan
-Write-Host "[BUILD] Full path: $FullProjectPath" -ForegroundColor Gray
+Write-Host "UE Path: $UEPath" -ForegroundColor White
+Write-Host "Configuration: $Configuration" -ForegroundColor White
+Write-Host "Platform: $Platform" -ForegroundColor White
+Write-Host "Target Type: $TargetType" -ForegroundColor White
+Write-Host ""
 
 # Build command
-$BuildArgs = @(
-    $ProjectName + "Editor",
-    $Platform,
-    $Configuration,
-    "-project=`"$FullProjectPath`"",
-    "-rocket",
-    "-NoHotReloadFromIDE"
-)
+Write-Host "Starting build..." -ForegroundColor Yellow
+Write-Host ""
 
-Write-Host "[BUILD] Executing: $BuildToolPath $($BuildArgs -join ' ')" -ForegroundColor Cyan
+& cmd.exe /c "`"$buildBat`" $Configuration $Platform -Project=`"$fullProjectPath`" -TargetType=$TargetType -Progress -NoEngineChanges"
 
-# Execute build
-$process = Start-Process -FilePath $BuildToolPath -ArgumentList $BuildArgs -NoNewWindow -Wait -PassThru
-
-if ($process.ExitCode -eq 0)
-{
-    Write-Host "[BUILD] ✅ Compilation successful!" -ForegroundColor Green
+if ($LASTEXITCODE -eq 0) {
+    Write-Host ""
+    Write-Host "✅ Build completed successfully!" -ForegroundColor Green
     exit 0
+} else {
+    Write-Host ""
+    Write-Host "❌ Build failed with exit code: $LASTEXITCODE" -ForegroundColor Red
+    exit $LASTEXITCODE
 }
-else
-{
-    Write-Host "[BUILD] ❌ Compilation failed with exit code: $($process.ExitCode)" -ForegroundColor Red
-    exit $process.ExitCode
-}
-
-
-
-

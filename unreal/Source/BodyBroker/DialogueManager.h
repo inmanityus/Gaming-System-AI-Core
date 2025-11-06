@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "DialogueQueue.h"
+#include "Http.h"
 #include "DialogueManager.generated.h"
 
 class UAudioManager;
@@ -12,6 +13,14 @@ class UDialogueQueue;
 class UAudioComponent;
 class UVoicePool;
 class UWorld;
+
+// Forward declarations for HTTP
+class IHttpRequest;
+class IHttpResponse;
+
+// Forward declaration for HTTP pointers
+typedef TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> FHttpRequestPtr;
+typedef TSharedPtr<IHttpResponse, ESPMode::ThreadSafe> FHttpResponsePtr;
 
 // Interrupt types
 UENUM(BlueprintType)
@@ -112,6 +121,68 @@ struct FLipSyncData
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDialogueComplete, const FString&, DialogueID);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDialogueStarted, const FString&, DialogueID, const FString&, SpeakerName);
 
+// AI Inference Request structure
+USTRUCT(BlueprintType)
+struct FDialogueInferenceRequest
+{
+	GENERATED_BODY()
+
+	// NPC ID
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Inference")
+	FString NPCID;
+
+	// Player prompt/question
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Inference")
+	FString PlayerPrompt;
+
+	// Context data (JSON string)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Inference")
+	FString ContextJSON;
+
+	// Model tier (1, 2, or 3)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Inference")
+	int32 Tier = 2;
+
+	// LoRA adapter name (optional)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Inference")
+	FString LoRAAdapter;
+
+	FDialogueInferenceRequest()
+		: Tier(2)
+	{}
+};
+
+// AI Inference Response structure
+USTRUCT(BlueprintType)
+struct FDialogueInferenceResponse
+{
+	GENERATED_BODY()
+
+	// Generated dialogue text
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Inference")
+	FString DialogueText;
+
+	// Success flag
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Inference")
+	bool bSuccess;
+
+	// Error message (if failed)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Inference")
+	FString ErrorMessage;
+
+	// Response time in milliseconds
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Inference")
+	float ResponseTimeMs;
+
+	FDialogueInferenceResponse()
+		: bSuccess(false)
+		, ResponseTimeMs(0.0f)
+	{}
+};
+
+// Delegate for AI inference completion
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDialogueInferenceComplete, const FString&, NPCID, const FDialogueInferenceResponse&, Response);
+
 // Subtitle event delegates
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSubtitleShow, const FSubtitleData&, Subtitle, float, Duration);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSubtitleHide, const FString&, DialogueID);
@@ -192,6 +263,24 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Dialogue Manager|Events|Subtitle")
 	FOnSubtitleUpdate OnSubtitleUpdate;
+
+	// GE-003: Request NPC dialogue from AI inference server
+	UFUNCTION(BlueprintCallable, Category = "Dialogue Manager|AI Inference")
+	void RequestNPCDialogue(
+		const FString& NPCID,
+		const FString& PlayerPrompt,
+		const FString& ContextJSON = TEXT("{}"),
+		int32 Tier = 2,
+		const FString& LoRAAdapter = TEXT("")
+	);
+
+	// GE-003: Request NPC dialogue with full request structure
+	UFUNCTION(BlueprintCallable, Category = "Dialogue Manager|AI Inference")
+	void RequestNPCDialogueWithRequest(const FDialogueInferenceRequest& Request);
+
+	// GE-003: Event delegate for inference completion
+	UPROPERTY(BlueprintAssignable, Category = "Dialogue Manager|AI Inference|Events")
+	FOnDialogueInferenceComplete OnDialogueInferenceComplete;
 
 private:
 	// Audio manager reference (weak - owned externally)
@@ -274,5 +363,21 @@ private:
 
 	// Crossfade duration constant
 	static constexpr float CROSSFADE_DURATION = 0.5f;
+
+	// GE-003: AI Inference server URL (configurable)
+	UPROPERTY(EditAnywhere, Category = "Dialogue Manager|AI Inference")
+	FString InferenceServerURL;
+
+	// GE-003: Handle HTTP response from inference server
+	void OnInferenceResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful, FString NPCID, FString PlayerPrompt);
+
+	// GE-003: Create HTTP request for inference
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> CreateInferenceRequest(
+		const FString& NPCID,
+		const FString& PlayerPrompt,
+		const FString& ContextJSON,
+		int32 Tier,
+		const FString& LoRAAdapter
+	);
 };
 

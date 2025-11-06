@@ -78,9 +78,21 @@ public:
 	bool ShouldProcessAudio(EAudioLODLevel CurrentLOD) const;
 
 private:
-	// Pools by type
+	// Pools by type - separate arrays (TMap can't hold TArray)
 	UPROPERTY()
-	TMap<EAudioPoolType, TArray<UAudioComponent*>> Pools;
+	TArray<UAudioComponent*> VoicePool;
+	UPROPERTY()
+	TArray<UAudioComponent*> AmbientPool;
+	UPROPERTY()
+	TArray<UAudioComponent*> WeatherPool;
+	UPROPERTY()
+	TArray<UAudioComponent*> EffectPool;
+	UPROPERTY()
+	TArray<UAudioComponent*> UIPool;
+	
+	// Helper to get pool by type
+	TArray<UAudioComponent*>* GetPoolByType(EAudioPoolType Type);
+	const TArray<UAudioComponent*>* GetPoolByType(EAudioPoolType Type) const;
 
 	// In-use tracking (Component -> PoolType)
 	UPROPERTY()

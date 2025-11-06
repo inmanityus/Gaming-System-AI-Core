@@ -9,6 +9,7 @@ import time
 import asyncio
 import math
 import json
+from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 from enum import Enum
 from dataclasses import dataclass, field
@@ -423,6 +424,8 @@ class EnvironmentalNarrativeService:
             markers.extend(["disturbed_ground", "left_behind_items", "extinguished_fire"])
         elif scene_type == SceneType.RECENT_DEPARTURE:
             markers.extend(["fresh_tracks", "warm_embers", "recent_movement"])
+        elif scene_type == SceneType.LONG_TERM_SETTLEMENT:
+            markers.extend(["established_structures", "organized_layout", "permanent_markers", "community_signs"])
         
         return markers
     
@@ -597,7 +600,7 @@ class EnvironmentalNarrativeService:
             "location": location,
             "description": description,
             "player_id": str(player_id) if player_id else None,
-            "timestamp": time.time(),
+            "timestamp": datetime.fromtimestamp(time.time()),
         }
         
         # Persist to database
@@ -618,7 +621,7 @@ class EnvironmentalNarrativeService:
                     location[2],
                     description,
                     player_id,
-                    time.time(),
+                    datetime.fromtimestamp(time.time()),
                 )
         except Exception as e:
             _logger.error(f"Failed to persist environmental change: {e}", exc_info=True)

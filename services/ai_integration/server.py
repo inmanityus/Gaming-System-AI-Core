@@ -11,6 +11,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .api_routes import router
+from .lora_routes import router as lora_router  # AI-003: LoRA adapter routes
+from .multi_tier_routes import router as multi_tier_router  # AI-004: Multi-tier model serving routes
 from .llm_client import LLMClient
 from .context_manager import ContextManager
 from .service_coordinator import ServiceCoordinator
@@ -74,6 +76,8 @@ app.add_middleware(
 
 # Include API routes
 app.include_router(router)
+app.include_router(lora_router)  # AI-003: LoRA adapter management routes
+app.include_router(multi_tier_router)  # AI-004: Multi-tier model serving routes
 
 
 # Root endpoint

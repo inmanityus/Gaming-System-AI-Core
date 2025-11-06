@@ -30,17 +30,42 @@ void UAudioPoolManager::Initialize(int32 VoicePoolSize, int32 AmbientPoolSize, i
 	MaxPoolSizes.Add(EAudioPoolType::UI, UIPoolSize * 2);
 
 	// Initialize empty pools
-	Pools.Empty();
-	Pools.Add(EAudioPoolType::Voice, TArray<UAudioComponent*>());
-	Pools.Add(EAudioPoolType::Ambient, TArray<UAudioComponent*>());
-	Pools.Add(EAudioPoolType::Weather, TArray<UAudioComponent*>());
-	Pools.Add(EAudioPoolType::Effect, TArray<UAudioComponent*>());
-	Pools.Add(EAudioPoolType::UI, TArray<UAudioComponent*>());
+	VoicePool.Empty();
+	AmbientPool.Empty();
+	WeatherPool.Empty();
+	EffectPool.Empty();
+	UIPool.Empty();
 
 	InUseComponents.Empty();
 
 	UE_LOG(LogTemp, Log, TEXT("AudioPoolManager: Initialized with pool sizes (Voice:%d, Ambient:%d, Weather:%d, Effect:%d, UI:%d)"),
 		VoicePoolSize, AmbientPoolSize, WeatherPoolSize, EffectPoolSize, UIPoolSize);
+}
+
+TArray<UAudioComponent*>* UAudioPoolManager::GetPoolByType(EAudioPoolType Type)
+{
+	switch (Type)
+	{
+		case EAudioPoolType::Voice: return &VoicePool;
+		case EAudioPoolType::Ambient: return &AmbientPool;
+		case EAudioPoolType::Weather: return &WeatherPool;
+		case EAudioPoolType::Effect: return &EffectPool;
+		case EAudioPoolType::UI: return &UIPool;
+		default: return nullptr;
+	}
+}
+
+const TArray<UAudioComponent*>* UAudioPoolManager::GetPoolByType(EAudioPoolType Type) const
+{
+	switch (Type)
+	{
+		case EAudioPoolType::Voice: return &VoicePool;
+		case EAudioPoolType::Ambient: return &AmbientPool;
+		case EAudioPoolType::Weather: return &WeatherPool;
+		case EAudioPoolType::Effect: return &EffectPool;
+		case EAudioPoolType::UI: return &UIPool;
+		default: return nullptr;
+	}
 }
 
 UAudioComponent* UAudioPoolManager::AcquireComponent(EAudioPoolType Type, AActor* Owner, const FVector& Location)
@@ -57,7 +82,7 @@ UAudioComponent* UAudioPoolManager::AcquireComponent(EAudioPoolType Type, AActor
 	if (!Component)
 	{
 		// Check if we can grow the pool
-		TArray<UAudioComponent*>* Pool = Pools.Find(Type);
+		TArray<UAudioComponent*>* Pool = GetPoolByType(Type);
 		const int32* MaxSize = MaxPoolSizes.Find(Type);
 		
 		if (Pool && MaxSize && Pool->Num() < *MaxSize)
@@ -132,7 +157,7 @@ void UAudioPoolManager::PrewarmPools(AActor* OwnerActor)
 		EAudioPoolType Type = Pair.Key;
 		int32 Size = Pair.Value;
 
-		TArray<UAudioComponent*>* Pool = Pools.Find(Type);
+		TArray<UAudioComponent*>* Pool = GetPoolByType(Type);
 		if (!Pool)
 		{
 			continue;
@@ -153,7 +178,7 @@ void UAudioPoolManager::PrewarmPools(AActor* OwnerActor)
 
 int32 UAudioPoolManager::GetAvailableCount(EAudioPoolType Type) const
 {
-	const TArray<UAudioComponent*>* Pool = Pools.Find(Type);
+	const TArray<UAudioComponent*>* Pool = GetPoolByType(Type);
 	if (!Pool)
 	{
 		return 0;
@@ -199,18 +224,11 @@ void UAudioPoolManager::ClearAllPools()
 	InUseComponents.Empty();
 
 	// Clear all pools
-	for (auto& Pair : Pools)
-	{
-		for (UAudioComponent* Component : Pair.Value)
-		{
-			if (Component)
-			{
-				Component->Stop();
-				Component->DestroyComponent();
-			}
-		}
-		Pair.Value.Empty();
-	}
+	VoicePool.Empty();
+	AmbientPool.Empty();
+	WeatherPool.Empty();
+	EffectPool.Empty();
+	UIPool.Empty();
 
 	UE_LOG(LogTemp, Log, TEXT("AudioPoolManager: Cleared all pools"));
 }
@@ -241,7 +259,7 @@ UAudioComponent* UAudioPoolManager::CreateNewComponent(EAudioPoolType Type, AAct
 
 UAudioComponent* UAudioPoolManager::FindAvailableComponent(EAudioPoolType Type) const
 {
-	const TArray<UAudioComponent*>* Pool = Pools.Find(Type);
+	const TArray<UAudioComponent*>* Pool = GetPoolByType(Type);
 	if (!Pool)
 	{
 		return nullptr;

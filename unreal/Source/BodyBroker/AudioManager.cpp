@@ -109,7 +109,10 @@ void UAudioManager::BeginDestroy()
 	}
 
 	// Clear ducking state
-	CurrentDuckingState.Reset();
+	CurrentDuckingState.StepCount = 0;
+	CurrentDuckingState.StartDuck = 0.0f;
+	CurrentDuckingState.TargetDuck = 0.0f;
+	CurrentDuckingState.TotalSteps = 0;
 	PendingAmbientComponent = nullptr;
 
 	Super::BeginDestroy();
@@ -300,7 +303,10 @@ void UAudioManager::InitializeVA002Systems()
 	CurrentStepDuration = 0.0f;
 	CrossfadeStepsCompleted = 0;
 	PendingAmbientComponent = nullptr;
-	CurrentDuckingState.Reset();
+	CurrentDuckingState.StepCount = 0;
+	CurrentDuckingState.StartDuck = 0.0f;
+	CurrentDuckingState.TargetDuck = 0.0f;
+	CurrentDuckingState.TotalSteps = 0;
 
 	// Initialize ducking amounts
 	CurrentDuckAmounts.Add(EAudioCategory::Voice, 0.0f);  // Voice never ducked
@@ -471,7 +477,7 @@ void UAudioManager::CrossfadeAmbientProfile(const FString& OldProfile, const FSt
 			if (UWorld* World = GetWorld())
 			{
 				// Clear any existing crossfade timer
-				if (World->GetTimerManager().IsValidTimer(AmbientCrossfadeTimerHandle))
+				if (AmbientCrossfadeTimerHandle.IsValid())
 				{
 					World->GetTimerManager().ClearTimer(AmbientCrossfadeTimerHandle);
 				}
@@ -792,7 +798,7 @@ void UAudioManager::ApplyDucking(EAudioCategory Category, float TargetDuckAmount
 	if (UWorld* World = GetWorld())
 	{
 		FTimerHandle* DuckTimer = DuckingTimerHandles.Find(Category);
-		if (DuckTimer && World->GetTimerManager().IsValidTimer(*DuckTimer))
+		if (DuckTimer && DuckTimer->IsValid())
 		{
 			World->GetTimerManager().ClearTimer(*DuckTimer);
 		}
@@ -800,18 +806,17 @@ void UAudioManager::ApplyDucking(EAudioCategory Category, float TargetDuckAmount
 		float StepDuration = 0.1f;  // Update every 100ms
 		int32 Steps = FMath::Max(1, (int32)(Duration / StepDuration));
 		
-		// Store ducking state as member variable (not local - for lambda safety)
-		CurrentDuckingState = MakeShareable(new FDuckingState());
-		CurrentDuckingState->StartDuck = StartDuckAmount;
-		CurrentDuckingState->TargetDuck = TargetDuckAmount;
-		CurrentDuckingState->TotalSteps = Steps;
-		CurrentDuckingState->StepCount = 0;
+		// Store ducking state as member variable (struct, not pointer)
+		CurrentDuckingState.StartDuck = StartDuckAmount;
+		CurrentDuckingState.TargetDuck = TargetDuckAmount;
+		CurrentDuckingState.TotalSteps = Steps;
+		CurrentDuckingState.StepCount = 0;
 
 		FTimerDelegate DuckDelegate;
 		DuckDelegate.BindLambda([this, Category]()  // Only capture 'this' and Category (enum is safe)
 		{
-			// Validate ducking state exists
-			if (!CurrentDuckingState.IsValid())
+			// Validate ducking state
+			if (CurrentDuckingState.TotalSteps <= 0)
 			{
 				// Clear timer and exit
 				if (UWorld* World = GetWorld())
@@ -825,9 +830,9 @@ void UAudioManager::ApplyDucking(EAudioCategory Category, float TargetDuckAmount
 				return;
 			}
 
-			CurrentDuckingState->StepCount++;  // Increment member shared state (safe)
-			float Progress = (float)CurrentDuckingState->StepCount / (float)CurrentDuckingState->TotalSteps;
-			float CurrentDuck = FMath::Lerp(CurrentDuckingState->StartDuck, CurrentDuckingState->TargetDuck, Progress);
+			CurrentDuckingState.StepCount++;  // Increment member state
+			float Progress = (float)CurrentDuckingState.StepCount / (float)CurrentDuckingState.TotalSteps;
+			float CurrentDuck = FMath::Lerp(CurrentDuckingState.StartDuck, CurrentDuckingState.TargetDuck, Progress);
 			CurrentDuckAmounts.Add(Category, CurrentDuck);
 
 			// Apply to all audio components in this category
@@ -866,7 +871,10 @@ void UAudioManager::ApplyDucking(EAudioCategory Category, float TargetDuckAmount
 						World->GetTimerManager().ClearTimer(*TimerHandle);
 					}
 				}
-				CurrentDuckingState.Reset();  // Clear shared pointer
+				CurrentDuckingState.StepCount = 0;
+		CurrentDuckingState.StartDuck = 0.0f;
+		CurrentDuckingState.TargetDuck = 0.0f;
+		CurrentDuckingState.TotalSteps = 0;  // Clear shared pointer
 			}
 		});
 

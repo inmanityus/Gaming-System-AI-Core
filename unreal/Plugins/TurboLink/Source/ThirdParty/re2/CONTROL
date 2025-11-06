@@ -1,0 +1,7 @@
+Package: re2
+Version: 2025-08-12
+Depends: abseil, vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: e7dbd7e8387acff98e0df44ea682fd271b2bab36c9731ad150494c4f46dbfd2f
+Description: RE2 is a fast, safe, thread-friendly alternative to backtracking regular expression engines like those used in PCRE, Perl, and Python. It is a C++ library.

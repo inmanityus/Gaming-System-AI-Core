@@ -227,7 +227,7 @@ void ABodyBrokerGameMode::ApplyDayLighting()
 	// Adjust DirectionalLight
 	if (ADirectionalLight* DirectionalLight = FindDirectionalLight())
 	{
-		UDirectionalLightComponent* LightComp = DirectionalLight->GetDirectionalLightComponent();
+		UDirectionalLightComponent* LightComp = DirectionalLight->GetComponentByClass<UDirectionalLightComponent>();
 		if (LightComp)
 		{
 			LightComp->SetIntensity(DayLightIntensity);
@@ -255,7 +255,7 @@ void ABodyBrokerGameMode::ApplyNightLighting()
 	// Adjust DirectionalLight
 	if (ADirectionalLight* DirectionalLight = FindDirectionalLight())
 	{
-		UDirectionalLightComponent* LightComp = DirectionalLight->GetDirectionalLightComponent();
+		UDirectionalLightComponent* LightComp = DirectionalLight->GetComponentByClass<UDirectionalLightComponent>();
 		if (LightComp)
 		{
 			LightComp->SetIntensity(NightLightIntensity);

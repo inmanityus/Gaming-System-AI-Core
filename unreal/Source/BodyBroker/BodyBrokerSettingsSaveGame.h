@@ -8,7 +8,7 @@
 
 // Audio settings structure
 USTRUCT(BlueprintType)
-struct FAudioSettings
+struct FBodyBrokerAudioSettings
 {
 	GENERATED_BODY()
 
@@ -27,7 +27,7 @@ struct FAudioSettings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 	float UIVolume;
 
-	FAudioSettings()
+	FBodyBrokerAudioSettings()
 		: MasterVolume(1.0f)
 		, MusicVolume(0.8f)
 		, VoiceVolume(1.0f)
@@ -132,7 +132,7 @@ public:
 
 	// Audio settings
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Settings")
-	FAudioSettings AudioSettings;
+	FBodyBrokerAudioSettings AudioSettings;
 
 	// Video settings
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Settings")
