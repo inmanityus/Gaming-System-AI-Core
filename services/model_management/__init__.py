@@ -11,6 +11,7 @@ Provides:
 - Rollback capability
 - Guardrails monitoring
 - Meta-management orchestration
+- Environment model management (NEW)
 """
 
 from services.model_management.model_registry import ModelRegistry
@@ -25,6 +26,7 @@ from services.model_management.deployment_manager import DeploymentManager
 from services.model_management.rollback_manager import RollbackManager
 from services.model_management.guardrails_monitor import GuardrailsMonitor
 from services.model_management.meta_management_model import MetaManagementModel
+from services.model_management.environment_model_registry import EnvironmentModelRegistry
 
 __all__ = [
     'ModelRegistry',
@@ -39,4 +41,5 @@ __all__ = [
     'RollbackManager',
     'GuardrailsMonitor',
     'MetaManagementModel',
+    'EnvironmentModelRegistry',
 ]

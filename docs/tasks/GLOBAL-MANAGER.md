@@ -20,6 +20,15 @@
 2. **AI Inference**: AI-001 (Ollama Setup)
 3. **State Management**: SM-001 (Redis/PostgreSQL Setup)
 4. **Payment**: PM-001 (Stripe Account Setup)
+5. **Peer Review & Testing**: 
+   - **REV-PERF-001**: Peer code review of REQ-PERF-001 (Dual-Mode Performance Architecture) - Status: ✅ Complete
+   - **REV-ENV-001**: Peer code review of REQ-ENV-001 (Environmental Narrative Service) - Status: ✅ Complete
+   - **FIX-PERF-001**: High-priority fixes for REQ-PERF-001 - Status: ✅ Complete
+   - **FIX-ENV-001**: High-priority fixes for REQ-ENV-001 - Status: ✅ Complete
+   - **TEST-PAIR-PERF**: Pairwise testing for REQ-PERF-001 - Status: ✅ Complete (12/13 passing, 1 adjusted)
+   - **TEST-PAIR-ENV**: Pairwise testing for REQ-ENV-001 - Status: ✅ Core Complete (async methods working, migration needed)
+   - **TEST-INTEGRATION-PERF-ENV**: Integration testing for both services - Status: ✅ Core Complete (migration needed for full tests)
+   - **MIGRATION-010**: Database migration for environmental narrative - Status: ⏳ Pending (file ready: `database/migrations/010_environmental_narrative.sql`)
 
 ### Phase 2: Core Integration (Weeks 5-8)
 1. **Game Engine**: GE-002 (Dual-World), GE-003 (HTTP API)

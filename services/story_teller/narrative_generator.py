@@ -20,6 +20,8 @@ from services.model_management.guardrails_monitor import GuardrailsMonitor
 from services.model_management.historical_log_processor import HistoricalLogProcessor
 from services.ai_integration.llm_client import LLMClient
 from services.story_teller.narrative_loader import NarrativeLoader
+from services.story_teller.feature_awareness import FeatureAwareness
+from services.story_teller.cross_world_consistency import CrossWorldConsistency
 
 
 class NarrativeContext:
@@ -76,6 +78,12 @@ class NarrativeGenerator:
         # Narrative Loader - loads world history from docs/narrative/
         self.narrative_loader = NarrativeLoader()
         logger.info(f"Loaded {len(self.narrative_loader.get_all_narratives())} narrative files")
+        
+        # Feature Awareness - makes story teller aware of all available features
+        self.feature_awareness = FeatureAwareness()
+        
+        # Cross-World Consistency - ensures consistent asset generation
+        self.cross_world_consistency = CrossWorldConsistency()
     
     async def _get_postgres(self) -> PostgreSQLPool:
         """Get PostgreSQL pool instance."""
@@ -289,11 +297,20 @@ class NarrativeGenerator:
         # Get narrative context from loaded files
         narrative_context = self.narrative_loader.get_full_context()
         
+        # Get feature awareness context for story teller
+        feature_context = await self.feature_awareness.build_story_teller_prompt_context(
+            world_type=context.current_world,
+            location_type=context_hints.get("location_type"),
+        )
+        
         prompt = f"""
 Generate a {node_type} story node for "The Body Broker" game.
 
 === WORLD HISTORY & NARRATIVE FOUNDATION ===
 {narrative_context}
+
+=== AVAILABLE SYSTEM FEATURES ===
+{feature_context}
 
 === CURRENT NODE DETAILS ===
 - Title: {title}
