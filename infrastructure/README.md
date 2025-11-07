@@ -62,3 +62,5 @@ kubectl apply -f infrastructure/kubernetes/nlb/nlb-service.yaml
 **Next**: Silver tier (7B-13B) and Bronze tier (671B MoE) infrastructure
 
 
+
+

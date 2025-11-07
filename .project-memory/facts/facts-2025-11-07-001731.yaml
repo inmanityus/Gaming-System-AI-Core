@@ -1,0 +1,2003 @@
+extracted_at: '2025-11-07T00:17:30.884555'
+facts:
+- commands: []
+  compression_ratio: 73.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - √ Cleanup complete! Session health improved.
+  original_size_kb: '0.83'
+  resolutions: []
+  source_file: 20251106-200219-resource-cleanup.log
+  timestamp: '2025-11-06T20:02:20.655838'
+- commands: []
+  compression_ratio: 2.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.18'
+  resolutions: []
+  source_file: 20251106-200240-emergency-flush.log
+  timestamp: '2025-11-06T20:02:41.459086'
+- commands: []
+  compression_ratio: 84.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '1.08'
+  resolutions: []
+  source_file: 20251106-200321-emergency-flush.log
+  timestamp: '2025-11-06T20:03:22.532350'
+- commands: []
+  compression_ratio: 59.9%
+  decisions: []
+  errors: []
+  file_changes:
+  - 'at: .cursor/rules/.auto-rules.md'
+  key_outcomes:
+  - 'Errors: 0'
+  - 'Successful: 3'
+  original_size_kb: '0.58'
+  resolutions: []
+  source_file: 20251106-200339-load-all-rules.log
+  timestamp: '2025-11-06T20:08:50.678868'
+- commands: []
+  compression_ratio: 50.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '0.45'
+  resolutions: []
+  source_file: 20251106-200920-rewrite-memory.log
+  timestamp: '2025-11-06T20:09:21.363149'
+- commands: []
+  compression_ratio: 84.1%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : MissingEndParenthesisInMethodCall'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '2.27'
+  resolutions: []
+  source_file: 20251106-201013-create-memory-json.log
+  timestamp: '2025-11-06T20:10:14.071958'
+- commands: []
+  compression_ratio: 30.3%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : UnexpectedToken'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.48'
+  resolutions: []
+  source_file: 20251106-201037-write-memory.log
+  timestamp: '2025-11-06T20:10:37.619601'
+- commands: []
+  compression_ratio: -71.6%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : MissingEndCurlyBrace'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.20'
+  resolutions: []
+  source_file: 20251106-201058-memory-line1.log
+  timestamp: '2025-11-06T20:10:58.936831'
+- commands: []
+  compression_ratio: -8650.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-201124-memory-line1b.log
+  timestamp: '2025-11-06T20:11:25.103463'
+- commands: []
+  compression_ratio: -8600.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-201152-memory-line2.log
+  timestamp: '2025-11-06T20:11:52.941644'
+- commands: []
+  compression_ratio: -8600.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-201201-memory-line3.log
+  timestamp: '2025-11-06T20:12:02.233510'
+- commands: []
+  compression_ratio: -8600.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-201209-memory-line4.log
+  timestamp: '2025-11-06T20:12:10.068199'
+- commands: []
+  compression_ratio: -8600.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-201218-memory-line5.log
+  timestamp: '2025-11-06T20:12:18.769358'
+- commands: []
+  compression_ratio: 2.5%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : UnexpectedToken'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.35'
+  resolutions: []
+  source_file: 20251106-201226-memory-line6.log
+  timestamp: '2025-11-06T20:12:27.744777'
+- commands: []
+  compression_ratio: -8600.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-201235-memory-line6.log
+  timestamp: '2025-11-06T20:12:35.901174'
+- commands: []
+  compression_ratio: -8900.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-201312-create-memory-json.log
+  timestamp: '2025-11-06T20:13:13.608523'
+- commands: []
+  compression_ratio: 61.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.44'
+  resolutions: []
+  source_file: 20251106-203635-mk-history-dir.log
+  timestamp: '2025-11-06T20:36:36.276628'
+- commands: []
+  compression_ratio: 60.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.44'
+  resolutions: []
+  source_file: 20251106-203647-mk-reasoning-dir.log
+  timestamp: '2025-11-06T20:36:48.290031'
+- commands: []
+  compression_ratio: 44.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : MissingArgument,Microsoft.PowerShell.Commands.SetContentCommand'
+  original_size_kb: '0.47'
+  resolutions: []
+  source_file: 20251106-203723-history-line1.log
+  timestamp: '2025-11-06T20:37:23.974429'
+- commands: []
+  compression_ratio: 44.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : MissingArgument,Microsoft.PowerShell.Commands.SetContentCommand'
+  original_size_kb: '0.47'
+  resolutions: []
+  source_file: 20251106-203742-history-line1.log
+  timestamp: '2025-11-06T20:37:42.934642'
+- commands: []
+  compression_ratio: 40.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : PositionalParameterNotFound,Microsoft.PowerShell.Commands.SetContentCommand'
+  original_size_kb: '0.45'
+  resolutions: []
+  source_file: 20251106-203805-history-line1.log
+  timestamp: '2025-11-06T20:38:05.862783'
+- commands: []
+  compression_ratio: 64.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : PositionalParameterNotFound,Microsoft.PowerShell.Commands.SetContentCommand'
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '0.90'
+  resolutions: []
+  source_file: 20251106-203822-history-line1.log
+  timestamp: '2025-11-06T20:38:23.582733'
+- commands: []
+  compression_ratio: -8650.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-203848-history-line1.log
+  timestamp: '2025-11-06T20:38:49.521572'
+- commands: []
+  compression_ratio: -8650.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-203857-history-blank.log
+  timestamp: '2025-11-06T20:38:58.176728'
+- commands: []
+  compression_ratio: -8650.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-203907-history-line2.log
+  timestamp: '2025-11-06T20:39:07.699207'
+- commands: []
+  compression_ratio: 62.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '0.59'
+  resolutions: []
+  source_file: 20251106-203914-history-line3.log
+  timestamp: '2025-11-06T20:39:14.973127'
+- commands: []
+  compression_ratio: 62.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '0.60'
+  resolutions: []
+  source_file: 20251106-203933-history-line3.log
+  timestamp: '2025-11-06T20:39:33.983542'
+- commands: []
+  compression_ratio: -8650.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-203943-history-line3.log
+  timestamp: '2025-11-06T20:39:44.541944'
+- commands: []
+  compression_ratio: -8650.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-203950-history-line4.log
+  timestamp: '2025-11-06T20:39:51.212406'
+- commands: []
+  compression_ratio: -8650.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-203958-history-line5.log
+  timestamp: '2025-11-06T20:39:59.212544'
+- commands: []
+  compression_ratio: -8600.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-204013-history-next.log
+  timestamp: '2025-11-06T20:40:14.235872'
+- commands: []
+  compression_ratio: -8600.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-204022-reason-line1.log
+  timestamp: '2025-11-06T20:40:23.115936'
+- commands: []
+  compression_ratio: -8600.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-204030-reason-blank.log
+  timestamp: '2025-11-06T20:40:31.064607'
+- commands: []
+  compression_ratio: 62.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '0.59'
+  resolutions: []
+  source_file: 20251106-204041-reason-line2.log
+  timestamp: '2025-11-06T20:40:42.604779'
+- commands: []
+  compression_ratio: 60.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '0.56'
+  resolutions: []
+  source_file: 20251106-204055-reason-line2.log
+  timestamp: '2025-11-06T20:40:56.125443'
+- commands: []
+  compression_ratio: -8600.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-204112-reason-line2.log
+  timestamp: '2025-11-06T20:41:13.775028'
+- commands: []
+  compression_ratio: 68.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '0.69'
+  resolutions: []
+  source_file: 20251106-204126-reason-line3.log
+  timestamp: '2025-11-06T20:41:27.509895'
+- commands: []
+  compression_ratio: -8600.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-204148-reason-line3.log
+  timestamp: '2025-11-06T20:41:48.739796'
+- commands: []
+  compression_ratio: 63.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '0.60'
+  resolutions: []
+  source_file: 20251106-204157-reason-line4.log
+  timestamp: '2025-11-06T20:41:58.020643'
+- commands: []
+  compression_ratio: -8600.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-204206-reason-line4.log
+  timestamp: '2025-11-06T20:42:07.036264'
+- commands: []
+  compression_ratio: 60.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.43'
+  resolutions: []
+  source_file: 20251106-204238-mk-active-dir.log
+  timestamp: '2025-11-06T20:42:38.872130'
+- commands: []
+  compression_ratio: -8750.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-204248-milestone-line1.log
+  timestamp: '2025-11-06T20:42:49.017900'
+- commands: []
+  compression_ratio: -8800.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-204257-milestone-blank1.log
+  timestamp: '2025-11-06T20:42:57.766409'
+- commands: []
+  compression_ratio: -8650.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-204305-milestone-obj.log
+  timestamp: '2025-11-06T20:43:05.637299'
+- commands: []
+  compression_ratio: -8700.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-204315-milestone-obj1.log
+  timestamp: '2025-11-06T20:43:16.583914'
+- commands: []
+  compression_ratio: -8700.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-204324-milestone-obj2.log
+  timestamp: '2025-11-06T20:43:25.207025'
+- commands: []
+  compression_ratio: -8750.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-204343-milestone-tasks.log
+  timestamp: '2025-11-06T20:43:44.082375'
+- commands: []
+  compression_ratio: 63.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '0.61'
+  resolutions: []
+  source_file: 20251106-204351-milestone-task1.log
+  timestamp: '2025-11-06T20:43:52.383186'
+- commands: []
+  compression_ratio: -8750.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-204401-milestone-task1.log
+  timestamp: '2025-11-06T20:44:01.943883'
+- commands: []
+  compression_ratio: 23.5%
+  decisions: []
+  errors:
+  - (:) [], ParseException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : InvalidVariableReferenceWithDrive'
+  - '+ CategoryInfo          : ParserError: (:) [], ParseException'
+  original_size_kb: '0.42'
+  resolutions: []
+  source_file: 20251106-204412-milestone-task2.log
+  timestamp: '2025-11-06T20:44:13.799784'
+- commands: []
+  compression_ratio: 23.5%
+  decisions: []
+  errors:
+  - (:) [], ParseException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : InvalidVariableReferenceWithDrive'
+  - '+ CategoryInfo          : ParserError: (:) [], ParseException'
+  original_size_kb: '0.42'
+  resolutions: []
+  source_file: 20251106-204434-milestone-task2.log
+  timestamp: '2025-11-06T20:44:34.983123'
+- commands: []
+  compression_ratio: -8750.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-204501-milestone-task2.log
+  timestamp: '2025-11-06T20:45:01.798256'
+- commands: []
+  compression_ratio: 56.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '0.51'
+  resolutions: []
+  source_file: 20251106-204513-milestone-task3.log
+  timestamp: '2025-11-06T20:45:14.002766'
+- commands: []
+  compression_ratio: -8750.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-204523-milestone-task3.log
+  timestamp: '2025-11-06T20:45:23.755241'
+- commands: []
+  compression_ratio: -8800.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-204534-milestone-blank3.log
+  timestamp: '2025-11-06T20:45:35.403548'
+- commands: []
+  compression_ratio: -8750.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-204543-milestone-deliv.log
+  timestamp: '2025-11-06T20:45:44.810992'
+- commands: []
+  compression_ratio: -8800.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-204550-milestone-deliv1.log
+  timestamp: '2025-11-06T20:45:51.609419'
+- commands: []
+  compression_ratio: -8800.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-204559-milestone-deliv2.log
+  timestamp: '2025-11-06T20:45:59.746887'
+- commands: []
+  compression_ratio: -8850.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-204623-milestone-success.log
+  timestamp: '2025-11-06T20:46:23.703772'
+- commands: []
+  compression_ratio: -8900.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-204631-milestone-success1.log
+  timestamp: '2025-11-06T20:46:31.689919'
+- commands: []
+  compression_ratio: 0.3%
+  decisions: []
+  errors:
+  - E:\Vibe Code\Gaming System\AI Core\scripts\aws-deploy-services.ps1:92
+  file_changes: []
+  key_outcomes:
+  - 'ParserError: E:\Vibe Code\Gaming System\AI Core\scripts\aws-deploy-services.ps1:92'
+  original_size_kb: '0.32'
+  resolutions: []
+  source_file: 20251106-204706-aws-deploy.log
+  timestamp: '2025-11-06T20:47:07.963241'
+- commands: []
+  compression_ratio: 0.0%
+  decisions: []
+  errors:
+  - E:\Vibe Code\Gaming System\AI Core\scripts\aws-deploy-services.ps1:92
+  file_changes: []
+  key_outcomes:
+  - 'ParserError: E:\Vibe Code\Gaming System\AI Core\scripts\aws-deploy-services.ps1:92'
+  original_size_kb: '0.32'
+  resolutions: []
+  source_file: 20251106-204759-aws-deploy-alt.log
+  timestamp: '2025-11-06T20:48:00.632964'
+- commands: []
+  compression_ratio: 20.2%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : AmpersandNotAllowed'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.43'
+  resolutions: []
+  source_file: 20251106-204848-aws-deploy-run2.log
+  timestamp: '2025-11-06T20:48:48.913888'
+- commands: []
+  compression_ratio: 0.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '[ERROR] Cannot get AWS account ID - check credentials'
+  original_size_kb: '0.22'
+  resolutions: []
+  source_file: 20251106-204908-aws-deploy.log
+  timestamp: '2025-11-06T20:49:10.797947'
+- commands: []
+  compression_ratio: 77.7%
+  decisions: []
+  errors:
+  - No module named 'services'
+  file_changes:
+  - pytest.ini
+  key_outcomes:
+  - ========================= 1 warning, 1 error in 0.84s =========================
+  - '!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!'
+  - ERROR tests/integration/multi_tier/test_e2e_router.py
+  original_size_kb: '1.91'
+  resolutions: []
+  source_file: 20251106-204936-pytest-integration.log
+  timestamp: '2025-11-06T20:49:39.517756'
+- commands: []
+  compression_ratio: 41.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : PositionalParameterNotFound,Microsoft.PowerShell.Commands.SetItemCommand'
+  original_size_kb: '0.44'
+  resolutions: []
+  source_file: 20251106-204959-set-py.log
+  timestamp: '2025-11-06T20:50:00.420256'
+- commands: []
+  compression_ratio: 41.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : PositionalParameterNotFound,Microsoft.PowerShell.Commands.SetItemCommand'
+  original_size_kb: '0.44'
+  resolutions: []
+  source_file: 20251106-205017-set-py.log
+  timestamp: '2025-11-06T20:50:17.650463'
+- commands: []
+  compression_ratio: 3.8%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : InvalidEndOfLine'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.36'
+  resolutions: []
+  source_file: 20251106-205041-pytest-integration.log
+  timestamp: '2025-11-06T20:50:41.859342'
+- commands: []
+  compression_ratio: 98.9%
+  decisions: []
+  errors:
+  - relation "environmental_history" does not exist
+  - relation "object_metadata" does not exist
+  - relation "story_scenes" does not exist
+  file_changes:
+  - pytest.ini
+  key_outcomes:
+  - ====== 7 failed, 68 passed, 27 skipped, 37 warnings in 157.77s (0:02:37) ======
+  - FAILED tests/integration/test_pairwise_perf_env.py::TestIntegrationPerformanceEnvironmental::test_mode_switch_preserves_environmental_history
+  - FAILED tests/integration/test_pairwise_perf_env.py::TestPairwiseEnvironmentalNarrative::test_environmental_history_filtering
+  original_size_kb: '60.49'
+  resolutions: []
+  source_file: 20251106-205108-pytest-integration.log
+  timestamp: '2025-11-06T20:53:48.196060'
+- commands: []
+  compression_ratio: -80.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.09'
+  resolutions: []
+  source_file: 20251106-205453-psql-env.log
+  timestamp: '2025-11-06T20:54:53.840839'
+- commands: []
+  compression_ratio: 95.8%
+  decisions: []
+  errors: []
+  file_changes:
+  - pytest.ini
+  key_outcomes:
+  - =========== 75 passed, 27 skipped, 37 warnings in 158.33s (0:02:38) ===========
+  - tests/integration/test_pairwise_perf_env.py::TestIntegrationPerformanceEnvironmental::test_mode_switch_preserves_environmental_history
+    PASSED [100%]
+  - tests/integration/test_pairwise_perf_env.py::TestIntegrationPerformanceEnvironmental::test_mode_scene_density_integration[PerformanceMode.COMPETITIVE-SceneType.RECENT_DEPARTURE-5]
+    PASSED [ 99%]
+  original_size_kb: '14.51'
+  resolutions: []
+  source_file: 20251106-205525-pytest-integration2.log
+  timestamp: '2025-11-06T20:58:05.493801'
+- commands: []
+  compression_ratio: -8550.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-205839-history-int.log
+  timestamp: '2025-11-06T20:58:39.903889'
+- commands: []
+  compression_ratio: -8600.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-205846-history-int1.log
+  timestamp: '2025-11-06T20:58:47.602860'
+- commands: []
+  compression_ratio: 37.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  - + ... able errors on environmental_history/object_metadata; applied databas ...
+  - '- Initial run failed with UndefinedTable errors on environmental_history/object_metadata'
+  original_size_kb: '0.62'
+  resolutions: []
+  source_file: 20251106-205856-history-int2.log
+  timestamp: '2025-11-06T20:58:57.198077'
+- commands: []
+  compression_ratio: -8600.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-205908-history-int2.log
+  timestamp: '2025-11-06T20:59:08.869495'
+- commands: []
+  compression_ratio: 45.8%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : UnexpectedToken'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  - '+ ... /c echo - Final run: 75 passed, 27 skipped, zero failures (37 warning ...'
+  original_size_kb: '0.77'
+  resolutions: []
+  source_file: 20251106-205916-history-int3.log
+  timestamp: '2025-11-06T20:59:16.774921'
+- commands: []
+  compression_ratio: -8600.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-205933-history-int3.log
+  timestamp: '2025-11-06T20:59:33.594583'
+- commands: []
+  compression_ratio: 64.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '0.62'
+  resolutions: []
+  source_file: 20251106-205946-history-int4.log
+  timestamp: '2025-11-06T20:59:47.463696'
+- commands: []
+  compression_ratio: 65.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '0.64'
+  resolutions: []
+  source_file: 20251106-210001-history-int4.log
+  timestamp: '2025-11-06T21:00:02.055082'
+- commands: []
+  compression_ratio: -8600.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-210014-history-int4.log
+  timestamp: '2025-11-06T21:00:15.543852'
+- commands: []
+  compression_ratio: 64.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '0.61'
+  resolutions: []
+  source_file: 20251106-210028-reason-int.log
+  timestamp: '2025-11-06T21:00:29.861668'
+- commands: []
+  compression_ratio: -8500.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-210038-reason-int.log
+  timestamp: '2025-11-06T21:00:39.634172'
+- commands: []
+  compression_ratio: 62.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '0.59'
+  resolutions: []
+  source_file: 20251106-210048-reason-aws.log
+  timestamp: '2025-11-06T21:00:49.255826'
+- commands: []
+  compression_ratio: -8500.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-210109-reason-aws.log
+  timestamp: '2025-11-06T21:01:09.667601'
+- commands: []
+  compression_ratio: 77.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.76'
+  resolutions: []
+  source_file: 20251106-210143-check-aws-config.log
+  timestamp: '2025-11-06T21:01:43.634710'
+- commands: []
+  compression_ratio: 43.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : PositionalParameterNotFound,Microsoft.PowerShell.Commands.SelectStringCommand'
+  original_size_kb: '0.48'
+  resolutions: []
+  source_file: 20251106-210209-aws-profiles.log
+  timestamp: '2025-11-06T21:02:09.820530'
+- commands: []
+  compression_ratio: 79.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '1.59'
+  resolutions: []
+  source_file: 20251106-210222-aws-profiles.log
+  timestamp: '2025-11-06T21:02:22.835098'
+- commands: []
+  compression_ratio: -866.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.02'
+  resolutions: []
+  source_file: 20251106-210239-aws-profiles.log
+  timestamp: '2025-11-06T21:02:40.482556'
+- commands: []
+  compression_ratio: -8550.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-210303-reason-aws2.log
+  timestamp: '2025-11-06T21:03:04.624458'
+- commands: []
+  compression_ratio: 82.2%
+  decisions: []
+  errors:
+  - 'failed to build: failed to solve: failed to compute cache key: failed to calculate
+    checksum of ref zvv2ykxfu5p2a203pbgqwfrm0::y7jchum210142rqgmmbhb3q90: "/requirements.txt":
+    not found'
+  - 'failed to calculate checksum of ref zvv2ykxfu5p2a203pbgqwfrm0::vwlwxkd9ch4bv7qncvhapnchw:
+    "/requirements.txt": not found'
+  - 'failed to calculate checksum of ref zvv2ykxfu5p2a203pbgqwfrm0::qxv2jvmueazqlrxb8wnhrpqia:
+    "/requirements.txt": not found'
+  - 'failed to build: failed to solve: failed to compute cache key: failed to calculate
+    checksum of ref zvv2ykxfu5p2a203pbgqwfrm0::vwlwxkd9ch4bv7qncvhapnchw: "/requirements.txt":
+    not found'
+  - 'failed to calculate checksum of ref zvv2ykxfu5p2a203pbgqwfrm0::1oj8ax4pgztu51qr5rrnxyfxf:
+    "/requirements.txt": not found'
+  - 'failed to build: failed to solve: failed to compute cache key: failed to calculate
+    checksum of ref zvv2ykxfu5p2a203pbgqwfrm0::8wnubzet4vha5mgpe5wce8c36: "/requirements.txt":
+    not found'
+  - 'failed to calculate checksum of ref zvv2ykxfu5p2a203pbgqwfrm0::8wnubzet4vha5mgpe5wce8c36:
+    "/requirements.txt": not found'
+  - 'failed to calculate checksum of ref zvv2ykxfu5p2a203pbgqwfrm0::y7jchum210142rqgmmbhb3q90:
+    "/requirements.txt": not found'
+  - 'failed to build: failed to solve: failed to compute cache key: failed to calculate
+    checksum of ref zvv2ykxfu5p2a203pbgqwfrm0::1oj8ax4pgztu51qr5rrnxyfxf: "/requirements.txt":
+    not found'
+  - 'failed to build: failed to solve: failed to compute cache key: failed to calculate
+    checksum of ref zvv2ykxfu5p2a203pbgqwfrm0::qxv2jvmueazqlrxb8wnhrpqia: "/requirements.txt":
+    not found'
+  file_changes:
+  - 257B done
+  key_outcomes:
+  - '[AWS DEPLOY] ? Services deployed to AWS ECR'
+  - '[ERROR] Docker build failed for weather_manager'
+  - 'ERROR: failed to build: failed to solve: failed to compute cache key: failed
+    to calculate checksum of ref zvv2ykxfu5p2a203pbgqwfrm0::m8wion1wp5rdvtyin9wnox1rd:
+    "/requirements.txt": not found'
+  original_size_kb: '11.41'
+  resolutions: []
+  source_file: 20251106-210317-aws-deploy-remote.log
+  timestamp: '2025-11-06T21:03:37.059438'
+- commands: []
+  compression_ratio: -71.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.10'
+  resolutions: []
+  source_file: 20251106-210457-aws-deploy-shell.log
+  timestamp: '2025-11-06T21:04:58.471942'
+- commands: []
+  compression_ratio: -89.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.09'
+  resolutions: []
+  source_file: 20251106-210520-aws-deploy-shell.log
+  timestamp: '2025-11-06T21:05:20.823477'
+- commands: []
+  compression_ratio: 98.7%
+  decisions: []
+  errors: []
+  file_changes:
+  - 257B done
+  key_outcomes:
+  - '[AWS DEPLOY] ? Services deployed to AWS ECR'
+  - '[21:06:34] ? weather_manager deployed to ECR'
+  original_size_kb: '21.42'
+  resolutions: []
+  source_file: 20251106-210549-aws-deploy-remote.log
+  timestamp: '2025-11-06T21:06:34.834704'
+- commands: []
+  compression_ratio: -8850.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-210741-history-awsdeploy.log
+  timestamp: '2025-11-06T21:07:42.328287'
+- commands: []
+  compression_ratio: 56.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '0.52'
+  resolutions: []
+  source_file: 20251106-210804-history-awsdeploy1.log
+  timestamp: '2025-11-06T21:08:05.652834'
+- commands: []
+  compression_ratio: -8900.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-210820-history-awsdeploy1.log
+  timestamp: '2025-11-06T21:08:20.772326'
+- commands: []
+  compression_ratio: -8900.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-210831-history-awsdeploy2.log
+  timestamp: '2025-11-06T21:08:31.706354'
+- commands: []
+  compression_ratio: -8900.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-210843-history-awsdeploy3.log
+  timestamp: '2025-11-06T21:08:43.640246'
+- commands: []
+  compression_ratio: -8900.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-210852-history-awsdeploy4.log
+  timestamp: '2025-11-06T21:08:53.383534'
+- commands: []
+  compression_ratio: 2.2%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : MissingPropertyName'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.35'
+  resolutions: []
+  source_file: 20251106-210910-milestone-progress.log
+  timestamp: '2025-11-06T21:09:10.887156'
+- commands: []
+  compression_ratio: 40.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  - + ... /c echo Status - AWS deployment to ECR completed; integration validat ...
+  - Status - AWS deployment to ECR completed
+  original_size_kb: '0.59'
+  resolutions: []
+  source_file: 20251106-210924-milestone-progress.log
+  timestamp: '2025-11-06T21:09:25.054550'
+- commands: []
+  compression_ratio: -8900.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-210938-milestone-progress.log
+  timestamp: '2025-11-06T21:09:39.502855'
+- commands: []
+  compression_ratio: 99.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '94.84'
+  resolutions: []
+  source_file: 20251106-211305-list-instances.log
+  timestamp: '2025-11-06T21:13:08.775344'
+- commands: []
+  compression_ratio: 37.3%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : MissingArgument'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.53'
+  resolutions: []
+  source_file: 20251106-211329-list-names.log
+  timestamp: '2025-11-06T21:13:29.728780'
+- commands: []
+  compression_ratio: 37.3%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : MissingArgument'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.53'
+  resolutions: []
+  source_file: 20251106-211359-list-names.log
+  timestamp: '2025-11-06T21:14:00.242410'
+- commands: []
+  compression_ratio: -8700.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-211452-dump-instances.log
+  timestamp: '2025-11-06T21:14:56.431865'
+- commands: []
+  compression_ratio: 24.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.23'
+  resolutions: []
+  source_file: 20251106-211513-summarize-instances.log
+  timestamp: '2025-11-06T21:15:14.857327'
+- commands: []
+  compression_ratio: 81.7%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : MissingEndParenthesisInMethodCall'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  - Not all parse errors were reported.  Correct the reported errors and try again.
+  original_size_kb: '2.41'
+  resolutions: []
+  source_file: 20251106-211535-summarize-instances.log
+  timestamp: '2025-11-06T21:15:35.849302'
+- commands: []
+  compression_ratio: 80.9%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : MissingEndParenthesisInMethodCall'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  - Not all parse errors were reported.  Correct the reported errors and try again.
+  original_size_kb: '2.31'
+  resolutions: []
+  source_file: 20251106-211546-summarize-instances.log
+  timestamp: '2025-11-06T21:15:47.144714'
+- commands: []
+  compression_ratio: 53.7%
+  decisions: []
+  errors:
+  - '''utf-8'' codec can''t decode byte 0xff in position 0: invalid start byte'
+  file_changes: []
+  key_outcomes:
+  - 'UnicodeDecodeError: ''utf-8'' codec can''t decode byte 0xff in position 0: invalid
+    start byte'
+  - return PathBase.read_text(self, encoding, errors, newline)
+  original_size_kb: '0.87'
+  resolutions: []
+  source_file: 20251106-211746-summarize-instances.log
+  timestamp: '2025-11-06T21:17:47.470255'
+- commands: []
+  compression_ratio: 78.2%
+  decisions: []
+  errors:
+  - '''utf-8'' codec can''t decode byte 0xff in position 0: invalid start byte'
+  file_changes: []
+  key_outcomes:
+  - 'UnicodeDecodeError: ''utf-8'' codec can''t decode byte 0xff in position 0: invalid
+    start byte'
+  - return codecs.utf_8_decode(input, errors, final)
+  - return PathBase.read_text(self, encoding, errors, newline)
+  original_size_kb: '2.09'
+  resolutions: []
+  source_file: 20251106-211817-summarize-instances.log
+  timestamp: '2025-11-06T21:18:18.507174'
+- commands: []
+  compression_ratio: 63.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.48'
+  resolutions: []
+  source_file: 20251106-211842-summ-instances.log
+  timestamp: '2025-11-06T21:18:43.227705'
+- commands: []
+  compression_ratio: -8750.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-211900-describe-i-06f3.log
+  timestamp: '2025-11-06T21:19:03.209595'
+- commands: []
+  compression_ratio: -440.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.03'
+  resolutions: []
+  source_file: 20251106-211919-summ-i-06f3.log
+  timestamp: '2025-11-06T21:19:20.010791'
+- commands: []
+  compression_ratio: -8750.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-211934-describe-i-080f.log
+  timestamp: '2025-11-06T21:19:37.628968'
+- commands: []
+  compression_ratio: -8750.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-211953-describe-i-0a74.log
+  timestamp: '2025-11-06T21:19:55.887993'
+- commands: []
+  compression_ratio: -8450.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-212010-tag-node6.log
+  timestamp: '2025-11-06T21:20:13.534555'
+- commands: []
+  compression_ratio: -8450.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-212019-tag-node7.log
+  timestamp: '2025-11-06T21:20:22.263957'
+- commands: []
+  compression_ratio: -8450.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-212032-tag-node8.log
+  timestamp: '2025-11-06T21:20:35.499744'
+- commands: []
+  compression_ratio: -8700.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-212045-dump-instances.log
+  timestamp: '2025-11-06T21:20:48.764457'
+- commands: []
+  compression_ratio: 68.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.54'
+  resolutions: []
+  source_file: 20251106-212055-summ-instances.log
+  timestamp: '2025-11-06T21:20:56.370655'
+- commands: []
+  compression_ratio: 0.6%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : MissingArgument'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.34'
+  resolutions: []
+  source_file: 20251106-212110-find-ubuntu.log
+  timestamp: '2025-11-06T21:21:10.787963'
+- commands: []
+  compression_ratio: -8550.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-212123-find-ubuntu.log
+  timestamp: '2025-11-06T21:21:25.976724'
+- commands: []
+  compression_ratio: -52.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.11'
+  resolutions: []
+  source_file: 20251106-212153-select-ami.log
+  timestamp: '2025-11-06T21:21:54.171875'
+- commands: []
+  compression_ratio: -70.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - 'Bad value for --query KeyPairs[].: Expecting: [''quoted_identifier'', ''unquoted_identifier'',
+    ''lbracket'', ''lbrace''], got: eof: Parse error at column 11, token "" (EOF),
+    for expression:'
+  original_size_kb: '0.21'
+  resolutions: []
+  source_file: 20251106-212206-list-keypairs.log
+  timestamp: '2025-11-06T21:22:07.541315'
+- commands: []
+  compression_ratio: -8650.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-212214-list-keypairs.log
+  timestamp: '2025-11-06T21:22:16.844956'
+- commands: []
+  compression_ratio: -143.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.07'
+  resolutions: []
+  source_file: 20251106-212234-list-keypairs.log
+  timestamp: '2025-11-06T21:22:35.031582'
+- commands: []
+  compression_ratio: -8450.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-212252-mkdir-aws.log
+  timestamp: '2025-11-06T21:22:53.741470'
+- commands: []
+  compression_ratio: -8500.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-212259-create-key.log
+  timestamp: '2025-11-06T21:23:02.803403'
+- commands: []
+  compression_ratio: -8400.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-212310-check-sg.log
+  timestamp: '2025-11-06T21:23:13.421183'
+- commands: []
+  compression_ratio: 27.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.23'
+  resolutions: []
+  source_file: 20251106-212322-create-sg.log
+  timestamp: '2025-11-06T21:23:24.688121'
+- commands: []
+  compression_ratio: -17.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.14'
+  resolutions: []
+  source_file: 20251106-212337-create-sg.log
+  timestamp: '2025-11-06T21:23:40.075356'
+- commands: []
+  compression_ratio: 66.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.50'
+  resolutions: []
+  source_file: 20251106-212358-allow-ssh.log
+  timestamp: '2025-11-06T21:24:01.597191'
+- commands: []
+  compression_ratio: 96.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '5.27'
+  resolutions: []
+  source_file: 20251106-212434-run-instance.log
+  timestamp: '2025-11-06T21:24:38.840234'
+- commands: []
+  compression_ratio: -8650.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-212452-wait-instance.log
+  timestamp: '2025-11-06T21:24:55.102407'
+- commands: []
+  compression_ratio: -8600.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-212505-describe-new.log
+  timestamp: '2025-11-06T21:25:08.468206'
+- commands: []
+  compression_ratio: -8750.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-212534-describe-volume.log
+  timestamp: '2025-11-06T21:25:36.972745'
+- commands: []
+  compression_ratio: 19.4%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : MissingArgument'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.41'
+  resolutions: []
+  source_file: 20251106-212624-ssh-ue5.log
+  timestamp: '2025-11-06T21:26:25.297138'
+- commands: []
+  compression_ratio: 80.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.83'
+  resolutions: []
+  source_file: 20251106-212749-ssh-ue5.log
+  timestamp: '2025-11-06T21:27:51.197383'
+- commands: []
+  compression_ratio: -123.8%
+  decisions: []
+  errors: []
+  file_changes:
+  - .cursor\aws\gaming-system-ai-core-admin.pem
+  key_outcomes:
+  - Successfully processed 1 files; Failed processing 0 files
+  original_size_kb: '0.12'
+  resolutions: []
+  source_file: 20251106-212807-pem-inherit.log
+  timestamp: '2025-11-06T21:28:07.713166'
+- commands: []
+  compression_ratio: -122.1%
+  decisions: []
+  errors: []
+  file_changes:
+  - .cursor\aws\gaming-system-ai-core-admin.pem
+  key_outcomes:
+  - Successfully processed 1 files; Failed processing 0 files
+  original_size_kb: '0.12'
+  resolutions: []
+  source_file: 20251106-212816-pem-grant.log
+  timestamp: '2025-11-06T21:28:17.360191'
+- commands: []
+  compression_ratio: -283.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Successfully processed 0 files; Failed processing 0 files
+  original_size_kb: '0.06'
+  resolutions: []
+  source_file: 20251106-212825-pem-remove-auth.log
+  timestamp: '2025-11-06T21:28:26.215799'
+- commands: []
+  compression_ratio: -127.9%
+  decisions: []
+  errors: []
+  file_changes:
+  - .cursor\aws\gaming-system-ai-core-admin.pem
+  key_outcomes:
+  - Successfully processed 1 files; Failed processing 0 files
+  original_size_kb: '0.12'
+  resolutions: []
+  source_file: 20251106-212840-pem-remove-users.log
+  timestamp: '2025-11-06T21:28:41.024700'
+- commands: []
+  compression_ratio: -130.3%
+  decisions: []
+  errors: []
+  file_changes:
+  - .cursor\aws\gaming-system-ai-core-admin.pem
+  key_outcomes:
+  - Successfully processed 1 files; Failed processing 0 files
+  original_size_kb: '0.12'
+  resolutions: []
+  source_file: 20251106-212849-pem-remove-everyone.log
+  timestamp: '2025-11-06T21:28:49.828959'
+- commands: []
+  compression_ratio: -74.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Successfully processed 1 files; Failed processing 0 files
+  original_size_kb: '0.13'
+  resolutions: []
+  source_file: 20251106-212858-pem-show.log
+  timestamp: '2025-11-06T21:28:59.421970'
+- commands: []
+  compression_ratio: -3.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.16'
+  resolutions: []
+  source_file: 20251106-212933-ssh-ue5-cmd.log
+  timestamp: '2025-11-06T21:29:35.325320'
+- commands: []
+  compression_ratio: 18.2%
+  decisions: []
+  errors:
+  - Expected one or more names after 'import'
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : MethodNotFound'
+  - Method invocation failed because [System.String] does not contain a method named
+    'read_text'.
+  - 'SyntaxError: Expected one or more names after ''import'''
+  original_size_kb: '0.49'
+  resolutions: []
+  source_file: 20251106-213005-check-key.log
+  timestamp: '2025-11-06T21:30:05.754695'
+- commands: []
+  compression_ratio: 51.1%
+  decisions: []
+  errors:
+  - '''utf-8'' codec can''t decode byte 0xff in position 0: invalid start byte'
+  file_changes: []
+  key_outcomes:
+  - 'UnicodeDecodeError: ''utf-8'' codec can''t decode byte 0xff in position 0: invalid
+    start byte'
+  - return PathBase.read_text(self, encoding, errors, newline)
+  original_size_kb: '0.81'
+  resolutions: []
+  source_file: 20251106-213020-check-key.log
+  timestamp: '2025-11-06T21:30:20.817715'
+- commands: []
+  compression_ratio: 59.5%
+  decisions: []
+  errors:
+  - '[Errno 13] Permission denied: ''.cursor\\aws\\gaming-system-ai-core-admin.pem'''
+  file_changes: []
+  key_outcomes:
+  - 'PermissionError: [Errno 13] Permission denied: ''.cursor\\aws\\gaming-system-ai-core-admin.pem'''
+  - return io.open(self, mode, buffering, encoding, errors, newline)
+  - 'with self.open(mode=''w'', encoding=encoding, errors=errors, newline=newline)
+    as f:'
+  original_size_kb: '1.22'
+  resolutions: []
+  source_file: 20251106-213044-fix-key.log
+  timestamp: '2025-11-06T21:30:45.138567'
+- commands: []
+  compression_ratio: -127.0%
+  decisions: []
+  errors: []
+  file_changes:
+  - .cursor\aws\gaming-system-ai-core-admin.pem
+  key_outcomes:
+  - Successfully processed 1 files; Failed processing 0 files
+  original_size_kb: '0.12'
+  resolutions: []
+  source_file: 20251106-213057-pem-grant-write.log
+  timestamp: '2025-11-06T21:30:57.843115'
+- commands: []
+  compression_ratio: -8350.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-213106-fix-key.log
+  timestamp: '2025-11-06T21:31:07.315947'
+- commands: []
+  compression_ratio: -127.0%
+  decisions: []
+  errors: []
+  file_changes:
+  - .cursor\aws\gaming-system-ai-core-admin.pem
+  key_outcomes:
+  - Successfully processed 1 files; Failed processing 0 files
+  original_size_kb: '0.12'
+  resolutions: []
+  source_file: 20251106-213117-pem-remove-user.log
+  timestamp: '2025-11-06T21:31:17.673010'
+- commands: []
+  compression_ratio: -126.2%
+  decisions: []
+  errors: []
+  file_changes:
+  - .cursor\aws\gaming-system-ai-core-admin.pem
+  key_outcomes:
+  - Successfully processed 1 files; Failed processing 0 files
+  original_size_kb: '0.12'
+  resolutions: []
+  source_file: 20251106-213123-pem-grant-read.log
+  timestamp: '2025-11-06T21:31:24.167409'
+- commands: []
+  compression_ratio: -74.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Successfully processed 1 files; Failed processing 0 files
+  original_size_kb: '0.13'
+  resolutions: []
+  source_file: 20251106-213130-pem-show.log
+  timestamp: '2025-11-06T21:31:31.005581'
+- commands: []
+  compression_ratio: -388.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.03'
+  resolutions: []
+  source_file: 20251106-213145-check-key.log
+  timestamp: '2025-11-06T21:31:45.909846'
+- commands: []
+  compression_ratio: -40.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.12'
+  resolutions: []
+  source_file: 20251106-213159-ssh-ue5-run.log
+  timestamp: '2025-11-06T21:32:02.372973'
+- commands: []
+  compression_ratio: -8450.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-213227-scp-setup.log
+  timestamp: '2025-11-06T21:32:30.231289'
+- commands: []
+  compression_ratio: 99.4%
+  decisions: []
+  errors:
+  - An error occurred during setup
+  - Failed to checkout version 5.6.1-release
+  file_changes: []
+  key_outcomes:
+  - '[2025-11-07 04:34:01] ERROR: An error occurred during setup'
+  - '[2025-11-07 04:34:01] ERROR: Failed to checkout version 5.6.1-release'
+  original_size_kb: '58.01'
+  resolutions: []
+  source_file: 20251106-213321-run-setup.log
+  timestamp: '2025-11-06T21:34:01.292580'
+- commands: []
+  compression_ratio: 3.3%
+  decisions: []
+  errors:
+  - An error occurred during setup
+  - Failed to checkout version 5.6.1-release
+  file_changes: []
+  key_outcomes:
+  - '[2025-11-07 04:34:01] ERROR: An error occurred during setup'
+  - '[2025-11-07 04:34:01] ERROR: Failed to checkout version 5.6.1-release'
+  original_size_kb: '0.38'
+  resolutions: []
+  source_file: 20251106-213455-tail-log.log
+  timestamp: '2025-11-06T21:34:57.475113'
+- commands: []
+  compression_ratio: 38.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : PositionalParameterNotFound,Microsoft.PowerShell.Commands.SetContentCommand'
+  original_size_kb: '0.45'
+  resolutions: []
+  source_file: 20251106-213654-write-remote-cmd.log
+  timestamp: '2025-11-06T21:36:55.695318'
+- commands: []
+  compression_ratio: 38.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : PositionalParameterNotFound,Microsoft.PowerShell.Commands.SetContentCommand'
+  original_size_kb: '0.45'
+  resolutions: []
+  source_file: 20251106-213720-write-remote-cmd.log
+  timestamp: '2025-11-06T21:37:22.038314'
+- commands: []
+  compression_ratio: -8800.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-213752-write-remote-cmd.log
+  timestamp: '2025-11-06T21:37:52.673742'
+- commands: []
+  compression_ratio: -193.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.06'
+  resolutions: []
+  source_file: 20251106-213800-ssh-run-cmd.log
+  timestamp: '2025-11-06T21:38:02.399871'
+- commands: []
+  compression_ratio: -8450.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-213842-write-cmd.log
+  timestamp: '2025-11-06T21:38:42.659721'
+- commands: []
+  compression_ratio: -686.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.02'
+  resolutions: []
+  source_file: 20251106-213913-ssh-run-cmd.log
+  timestamp: '2025-11-06T21:39:15.557787'
+- commands: []
+  compression_ratio: -8450.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-213935-write-cmd.log
+  timestamp: '2025-11-06T21:39:35.968925'
+- commands: []
+  compression_ratio: -1053.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.01'
+  resolutions: []
+  source_file: 20251106-213956-ssh-run-cmd.log
+  timestamp: '2025-11-06T21:39:58.005481'
+- commands: []
+  compression_ratio: -8450.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-214023-write-cmd.log
+  timestamp: '2025-11-06T21:40:24.528491'
+- commands: []
+  compression_ratio: 28.1%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : AmpersandNotAllowed'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.47'
+  resolutions: []
+  source_file: 20251106-214046-ssh-run-cmd.log
+  timestamp: '2025-11-06T21:40:47.003092'
+- commands: []
+  compression_ratio: 8.5%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : InvalidEndOfLine'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.37'
+  resolutions: []
+  source_file: 20251106-214102-ssh-run-cmd.log
+  timestamp: '2025-11-06T21:41:03.330639'
+- commands: []
+  compression_ratio: 32.5%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : MissingTypename'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.50'
+  resolutions: []
+  source_file: 20251106-214124-ssh-run-cmd.log
+  timestamp: '2025-11-06T21:41:24.836848'
+- commands: []
+  compression_ratio: -8700.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-214215-scp-remote-cmd.log
+  timestamp: '2025-11-06T21:42:18.541312'
+- commands: []
+  compression_ratio: -8450.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-214228-write-cmd.log
+  timestamp: '2025-11-06T21:42:29.084022'
+- commands: []
+  compression_ratio: 97.9%
+  decisions: []
+  errors: []
+  file_changes:
+  - Global-Workflows\minimum-model-levels.md
+  - .cursor/file-listing-prohibition-rules.md
+  - .cursor/rules/peer-coding-pairwise-mandatory.md
+  - .cursor/context-window-rules.md
+  key_outcomes:
+  - 'Startup marker created: .cursor\startup-complete.marker'
+  original_size_kb: '18.69'
+  resolutions: []
+  source_file: 20251107-001059-startup.log
+  timestamp: '2025-11-07T00:11:05.198437'
+- commands: []
+  compression_ratio: 74.4%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : IfStatementMissingCondition'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  - + ... e 'CursorTimerService' -ErrorAction SilentlyContinue; if () { Write-H ...
+  original_size_kb: '1.67'
+  resolutions: []
+  source_file: 20251107-001445-check-timer.log
+  timestamp: '2025-11-07T00:14:46.232433'
+- commands: []
+  compression_ratio: 21.1%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : AmpersandNotAllowed'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.43'
+  resolutions: []
+  source_file: 20251107-001520-check-timer.log
+  timestamp: '2025-11-07T00:15:21.680120'
+- commands: []
+  compression_ratio: -2075.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.01'
+  resolutions: []
+  source_file: 20251107-001601-timer-marker.log
+  timestamp: '2025-11-07T00:16:02.052206'
+- commands: []
+  compression_ratio: -8450.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251107-001616-timer-job.log
+  timestamp: '2025-11-07T00:16:17.538453'
+input_directory: .cursor\ai-logs
+logs_processed: 178
+space_saved_mb: '0.28'
+total_compression: 84.5%

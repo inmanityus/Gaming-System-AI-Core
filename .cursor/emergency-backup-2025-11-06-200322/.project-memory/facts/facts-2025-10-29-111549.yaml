@@ -1,0 +1,3463 @@
+extracted_at: '2025-10-29T11:15:49.065812'
+facts:
+- commands: []
+  compression_ratio: -3720.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20250927-001133-create_Project-Management_dir.log
+  timestamp: '2025-09-27T00:11:33.778634'
+- commands: []
+  compression_ratio: -3440.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20250927-114647-mkdir_artifacts.log
+  timestamp: '2025-09-27T11:46:47.901016'
+- commands: []
+  compression_ratio: -3440.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20250927-115553-mkdir_artifacts.log
+  timestamp: '2025-09-27T11:55:54.196504'
+- commands: []
+  compression_ratio: -3600.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20250927-115601-list_Project-Management.log
+  timestamp: '2025-09-27T11:56:01.960757'
+- commands: []
+  compression_ratio: -3600.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20250927-115614-list_Project-Management.log
+  timestamp: '2025-09-27T11:56:14.639884'
+- commands: []
+  compression_ratio: -3600.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20250927-115634-list_Project-Management.log
+  timestamp: '2025-09-27T11:56:35.421944'
+- commands: []
+  compression_ratio: -822.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.02'
+  resolutions: []
+  source_file: 20250927-115712-noop.log
+  timestamp: '2025-09-27T11:57:13.337826'
+- commands: []
+  compression_ratio: 49.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - -a----         9/27/2025  12:14 AM           1027 Task-Failed.md
+  original_size_kb: '0.48'
+  resolutions: []
+  source_file: 20250927-115723-list_Project-Management.log
+  timestamp: '2025-09-27T11:57:24.358007'
+- commands: []
+  compression_ratio: 47.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.34'
+  resolutions: []
+  source_file: 20250927-120716-touch_research-summary.log
+  timestamp: '2025-09-27T12:07:17.351053'
+- commands: []
+  compression_ratio: 49.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.34'
+  resolutions: []
+  source_file: 20250927-120950-touch_auth-plan.log
+  timestamp: '2025-09-27T12:09:51.010359'
+- commands: []
+  compression_ratio: 91.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '1.90'
+  resolutions: []
+  source_file: 20250927-121139-list_workflows.log
+  timestamp: '2025-09-27T12:11:40.484398'
+- commands: []
+  compression_ratio: 48.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.34'
+  resolutions: []
+  source_file: 20250927-121155-touch_infra-plan.log
+  timestamp: '2025-09-27T12:11:55.966417'
+- commands: []
+  compression_ratio: 45.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.33'
+  resolutions: []
+  source_file: 20250927-121318-mkdir_docker-template.log
+  timestamp: '2025-09-27T12:13:18.621414'
+- commands: []
+  compression_ratio: 85.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '1.24'
+  resolutions: []
+  source_file: 20250927-121358-mkdir_docker_dirs.log
+  timestamp: '2025-09-27T12:13:58.728459'
+- commands: []
+  compression_ratio: 92.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '2.31'
+  resolutions: []
+  source_file: 20250927-121736-docker_ls.log
+  timestamp: '2025-09-27T12:17:37.491580'
+- commands: []
+  compression_ratio: 74.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.66'
+  resolutions: []
+  source_file: 20250927-121818-ls_artifacts.log
+  timestamp: '2025-09-27T12:18:19.364856'
+- commands: []
+  compression_ratio: -33.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.13'
+  resolutions: []
+  source_file: 20250927-122249-ensure_scripts.log
+  timestamp: '2025-09-27T12:22:50.296552'
+- commands: []
+  compression_ratio: -233.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.05'
+  resolutions: []
+  source_file: 20250927-122259-verify_progression.log
+  timestamp: '2025-09-27T12:23:00.159332'
+- commands: []
+  compression_ratio: -104.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.08'
+  resolutions: []
+  source_file: 20250927-122335-startup_checks.log
+  timestamp: '2025-09-27T12:23:36.272252'
+- commands: []
+  compression_ratio: -33.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.13'
+  resolutions: []
+  source_file: 20250927-122751-setup-watchdog.log
+  timestamp: '2025-09-27T12:27:52.754362'
+- commands: []
+  compression_ratio: -233.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.05'
+  resolutions: []
+  source_file: 20250927-122759-ensure-progression.log
+  timestamp: '2025-09-27T12:28:00.642149'
+- commands: []
+  compression_ratio: 60.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.43'
+  resolutions: []
+  source_file: 20250927-122911-mkdir-database.log
+  timestamp: '2025-09-27T12:29:11.671299'
+- commands: []
+  compression_ratio: 61.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.44'
+  resolutions: []
+  source_file: 20250927-123253-mkdir-fixtures.log
+  timestamp: '2025-09-27T12:32:54.029701'
+- commands: []
+  compression_ratio: -132.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.07'
+  resolutions: []
+  source_file: 20250927-123346-git-status.log
+  timestamp: '2025-09-27T12:33:46.694753'
+- commands: []
+  compression_ratio: 85.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '1.18'
+  resolutions: []
+  source_file: 20250927-123640-nest-new-api.log
+  timestamp: '2025-09-27T12:36:52.561368'
+- commands: []
+  compression_ratio: 94.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '2.94'
+  resolutions: []
+  source_file: 20250927-123858-tree-apps.log
+  timestamp: '2025-09-27T12:38:59.310747'
+- commands: []
+  compression_ratio: 0.9%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : UnrecognizedToken'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.34'
+  resolutions: []
+  source_file: 20250927-124102-next-new-web.log
+  timestamp: '2025-09-27T12:41:03.411755'
+- commands: []
+  compression_ratio: 90.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Success! Created web at E:\Vibe Code\Be Free Fitness\Website\apps\web
+  - Done in 10.6s using pnpm v10.17.1
+  original_size_kb: '2.98'
+  resolutions: []
+  source_file: 20250927-124110-next-new-web.log
+  timestamp: '2025-09-27T12:41:28.622772'
+- commands: []
+  compression_ratio: -3420.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20250927-124139-remove-web-git.log
+  timestamp: '2025-09-27T12:41:40.456137'
+- commands: []
+  compression_ratio: 99.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '48.33'
+  resolutions: []
+  source_file: 20250927-124205-tree-web.log
+  timestamp: '2025-09-27T12:42:06.538179'
+- commands: []
+  compression_ratio: -67.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.10'
+  resolutions: []
+  source_file: 20250927-124223-pnpm-install.log
+  timestamp: '2025-09-27T12:42:24.988704'
+- commands:
+  - pnpm install --recursive
+  compression_ratio: 99.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+  - '. install: Failed'
+  - '. install: ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.'
+  original_size_kb: '44.58'
+  resolutions: []
+  source_file: 20250927-124255-pnpm-install.log
+  timestamp: '2025-09-27T12:44:14.345026'
+- commands: []
+  compression_ratio: 0.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Processing -File 'Global-Scripts/setup-watchdog-wrapper.ps1\' failed because the
+    file does not have a '.ps1' extension. Specify a valid Windows PowerShell script
+    file name, and then try again.
+  original_size_kb: '0.36'
+  resolutions: []
+  source_file: 20250927-124812-setup-watchdog.log
+  timestamp: '2025-09-27T12:48:14.015717'
+- commands: []
+  compression_ratio: -33.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.13'
+  resolutions: []
+  source_file: 20250927-124838-setup-watchdog.log
+  timestamp: '2025-09-27T12:48:39.318526'
+- commands: []
+  compression_ratio: -233.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.05'
+  resolutions: []
+  source_file: 20250927-124849-ensure-progression.log
+  timestamp: '2025-09-27T12:48:50.957808'
+- commands:
+  - pnpm install --recursive
+  compression_ratio: 99.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+  - '. install: Failed'
+  - '. install: ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.'
+  original_size_kb: '44.62'
+  resolutions: []
+  source_file: 20250927-125302-pnpm-add-auth-deps.log
+  timestamp: '2025-09-27T12:54:17.844814'
+- commands:
+  - pnpm install --recursive
+  compression_ratio: 99.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+  - '. install: Failed'
+  - '. install: ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.'
+  original_size_kb: '44.47'
+  resolutions: []
+  source_file: 20250927-125439-pnpm-add-auth-deps.log
+  timestamp: '2025-09-27T12:55:45.945685'
+- commands: []
+  compression_ratio: 49.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Done in 18s using pnpm v10.17.1
+  - 'Progress: resolved 935, reused 0, downloaded 0, added 0, done'
+  original_size_kb: '0.52'
+  resolutions: []
+  source_file: 20250927-125621-pnpm-add-auth.log
+  timestamp: '2025-09-27T12:56:40.053044'
+- commands:
+  - pnpm install --recursive
+  compression_ratio: 99.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+  - '. install: Failed'
+  - '. install: ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.'
+  original_size_kb: '44.66'
+  resolutions: []
+  source_file: 20250927-125758-pnpm-add-prisma.log
+  timestamp: '2025-09-27T12:59:15.935346'
+- commands: []
+  compression_ratio: 53.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Done in 8s using pnpm v10.17.1
+  - 'Progress: resolved 965, reused 0, downloaded 0, added 0, done'
+  original_size_kb: '0.58'
+  resolutions: []
+  source_file: 20250927-125927-pnpm-add-prisma.log
+  timestamp: '2025-09-27T12:59:35.630263'
+- commands:
+  - pnpm install --recursive
+  compression_ratio: 99.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+  - '. install: Failed'
+  - '. install: ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.'
+  original_size_kb: '44.65'
+  resolutions: []
+  source_file: 20250927-125943-pnpm-add-devtools.log
+  timestamp: '2025-09-27T13:00:56.887428'
+- commands: []
+  compression_ratio: 53.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Done in 19s using pnpm v10.17.1
+  - 'Progress: resolved 975, reused 0, downloaded 0, added 0, done'
+  original_size_kb: '0.58'
+  resolutions: []
+  source_file: 20250927-130103-pnpm-add-devtools.log
+  timestamp: '2025-09-27T13:01:23.400548'
+- commands: []
+  compression_ratio: -73.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Done in 571ms using pnpm v10.17.1
+  original_size_kb: '0.12'
+  resolutions: []
+  source_file: 20250927-130130-pnpm-install-api.log
+  timestamp: '2025-09-27T13:01:32.004083'
+- commands: []
+  compression_ratio: -100.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - 'npm error A complete log of this run can be found in: C:\Users\kento\AppData\Local\npm-cache\_logs\2025-09-27T19_01_43_217Z-debug-0.log'
+  - "\uFEFFnpm error could not determine executable to run"
+  original_size_kb: '0.18'
+  resolutions: []
+  source_file: 20250927-130142-nest-generate-modules.log
+  timestamp: '2025-09-27T13:01:46.295346'
+- commands: []
+  compression_ratio: -117.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.08'
+  resolutions: []
+  source_file: 20250927-130151-nest-generate-modules.log
+  timestamp: '2025-09-27T13:01:53.784580'
+- commands: []
+  compression_ratio: -22.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.15'
+  resolutions: []
+  source_file: 20250927-130204-nest-generate-service.log
+  timestamp: '2025-09-27T13:02:06.356375'
+- commands: []
+  compression_ratio: -18.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.15'
+  resolutions: []
+  source_file: 20250927-130214-nest-generate-controller.log
+  timestamp: '2025-09-27T13:02:16.024446'
+- commands: []
+  compression_ratio: -97.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.09'
+  resolutions: []
+  source_file: 20250927-130225-nest-generate-module.log
+  timestamp: '2025-09-27T13:02:28.557839'
+- commands: []
+  compression_ratio: 3.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.19'
+  resolutions: []
+  source_file: 20250927-130236-nest-generate-service.log
+  timestamp: '2025-09-27T13:02:38.492692'
+- commands: []
+  compression_ratio: 5.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.19'
+  resolutions: []
+  source_file: 20250927-130248-nest-generate-controller.log
+  timestamp: '2025-09-27T13:02:50.543670'
+- commands: []
+  compression_ratio: -106.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.09'
+  resolutions: []
+  source_file: 20250927-130304-nest-generate-module.log
+  timestamp: '2025-09-27T13:03:06.338619'
+- commands: []
+  compression_ratio: -10.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.17'
+  resolutions: []
+  source_file: 20250927-130315-nest-generate-controller.log
+  timestamp: '2025-09-27T13:03:17.173838'
+- commands: []
+  compression_ratio: -13.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.16'
+  resolutions: []
+  source_file: 20250927-130325-nest-generate-service.log
+  timestamp: '2025-09-27T13:03:28.987975'
+- commands: []
+  compression_ratio: -116.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.08'
+  resolutions: []
+  source_file: 20250927-130336-nest-generate-module.log
+  timestamp: '2025-09-27T13:03:38.370031'
+- commands: []
+  compression_ratio: -7.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.17'
+  resolutions: []
+  source_file: 20250927-130345-nest-generate-controller.log
+  timestamp: '2025-09-27T13:03:47.376139'
+- commands: []
+  compression_ratio: -10.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.16'
+  resolutions: []
+  source_file: 20250927-130354-nest-generate-service.log
+  timestamp: '2025-09-27T13:03:57.399668'
+- commands: []
+  compression_ratio: -102.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.09'
+  resolutions: []
+  source_file: 20250927-130536-nest-generate-module.log
+  timestamp: '2025-09-27T13:05:38.662690'
+- commands: []
+  compression_ratio: -12.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.16'
+  resolutions: []
+  source_file: 20250927-130546-nest-generate-controller.log
+  timestamp: '2025-09-27T13:05:48.199565'
+- commands: []
+  compression_ratio: -15.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.15'
+  resolutions: []
+  source_file: 20250927-130558-nest-generate-service.log
+  timestamp: '2025-09-27T13:06:00.436849'
+- commands: []
+  compression_ratio: -68.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.11'
+  resolutions: []
+  source_file: 20250927-130615-nest-generate-module.log
+  timestamp: '2025-09-27T13:06:18.256320'
+- commands: []
+  compression_ratio: 15.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.21'
+  resolutions: []
+  source_file: 20250927-130623-nest-generate-controller.log
+  timestamp: '2025-09-27T13:06:26.929810'
+- commands: []
+  compression_ratio: 14.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.21'
+  resolutions: []
+  source_file: 20250927-130635-nest-generate-service.log
+  timestamp: '2025-09-27T13:06:37.434758'
+- commands: []
+  compression_ratio: -106.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.09'
+  resolutions: []
+  source_file: 20250927-130644-nest-generate-module.log
+  timestamp: '2025-09-27T13:06:46.554272'
+- commands: []
+  compression_ratio: -17.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.16'
+  resolutions: []
+  source_file: 20250927-130655-nest-generate-controller.log
+  timestamp: '2025-09-27T13:06:59.012120'
+- commands: []
+  compression_ratio: -20.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.15'
+  resolutions: []
+  source_file: 20250927-130709-nest-generate-service.log
+  timestamp: '2025-09-27T13:07:11.706607'
+- commands: []
+  compression_ratio: 68.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Γ£û 8 problems (7 errors, 1 warning)
+  - 23:8   error  Unsafe member access .expect on an `error` typed value  @typescript-eslint/no-unsafe-member-access
+  - 22:8   error  Unsafe member access .expect on an `error` typed value  @typescript-eslint/no-unsafe-member-access
+  original_size_kb: '1.41'
+  resolutions: []
+  source_file: 20250927-130721-pnpm-lint.log
+  timestamp: '2025-09-27T13:07:26.910737'
+- commands: []
+  compression_ratio: 71.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Γ£û 8 problems (7 errors, 1 warning)
+  - 23:8   error  Unsafe member access .expect on an `error` typed value  @typescript-eslint/no-unsafe-member-access
+  - 22:8   error  Unsafe member access .expect on an `error` typed value  @typescript-eslint/no-unsafe-member-access
+  original_size_kb: '1.52'
+  resolutions: []
+  source_file: 20250927-130734-pnpm-lint.log
+  timestamp: '2025-09-27T13:07:40.277550'
+- commands: []
+  compression_ratio: 77.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - 'Tests:       15 passed, 15 total'
+  - 'Test Suites: 15 passed, 15 total'
+  original_size_kb: '1.04'
+  resolutions: []
+  source_file: 20250927-130949-nx-test-app.log
+  timestamp: '2025-09-27T13:10:01.046467'
+- commands: []
+  compression_ratio: 61.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Γ£û 7 problems (7 errors, 0 warnings)
+  - 23:8   error  Unsafe member access .expect on an `error` typed value  @typescript-eslint/no-unsafe-member-access
+  - 22:8   error  Unsafe member access .expect on an `error` typed value  @typescript-eslint/no-unsafe-member-access
+  original_size_kb: '1.14'
+  resolutions: []
+  source_file: 20250927-131012-pnpm-lint.log
+  timestamp: '2025-09-27T13:10:17.742328'
+- commands: []
+  compression_ratio: 37.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Γ£û 1 problem (0 errors, 1 warning)
+  original_size_kb: '0.34'
+  resolutions: []
+  source_file: 20250927-131332-pnpm-lint.log
+  timestamp: '2025-09-27T13:13:35.936148'
+- commands: []
+  compression_ratio: 37.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Γ£û 1 problem (0 errors, 1 warning)
+  original_size_kb: '0.34'
+  resolutions: []
+  source_file: 20250927-131538-pnpm-lint.log
+  timestamp: '2025-09-27T13:15:42.673998'
+- commands: []
+  compression_ratio: 37.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Γ£û 1 problem (0 errors, 1 warning)
+  original_size_kb: '0.34'
+  resolutions: []
+  source_file: 20250927-131746-pnpm-lint.log
+  timestamp: '2025-09-27T13:17:51.465957'
+- commands: []
+  compression_ratio: -47.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.11'
+  resolutions: []
+  source_file: 20250927-132009-pnpm-lint.log
+  timestamp: '2025-09-27T13:20:14.199522'
+- commands: []
+  compression_ratio: 77.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - 'Tests:       15 passed, 15 total'
+  - 'Test Suites: 15 passed, 15 total'
+  original_size_kb: '1.04'
+  resolutions: []
+  source_file: 20250927-132026-pnpm-test.log
+  timestamp: '2025-09-27T13:20:38.010295'
+- commands: []
+  compression_ratio: -132.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.07'
+  resolutions: []
+  source_file: 20250927-132101-git-status.log
+  timestamp: '2025-09-27T13:21:01.620116'
+- commands: []
+  compression_ratio: 96.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '5.39'
+  resolutions: []
+  source_file: 20250927-132124-tree-apps-api.log
+  timestamp: '2025-09-27T13:21:25.231213'
+- commands: []
+  compression_ratio: 47.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Γ£û 2 problems (1 error, 1 warning)
+  - 26:32  error    Unexpected `await` of a non-Promise (non-"Thenable") value           @typescript-eslint/await-thenable
+  original_size_kb: '0.63'
+  resolutions: []
+  source_file: 20250927-132210-pnpm-lint.log
+  timestamp: '2025-09-27T13:22:16.562531'
+- commands: []
+  compression_ratio: -47.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.11'
+  resolutions: []
+  source_file: 20250927-132410-pnpm-lint.log
+  timestamp: '2025-09-27T13:24:14.585643'
+- commands: []
+  compression_ratio: 77.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - 'Tests:       15 passed, 15 total'
+  - 'Test Suites: 15 passed, 15 total'
+  original_size_kb: '1.03'
+  resolutions: []
+  source_file: 20250927-132425-pnpm-test.log
+  timestamp: '2025-09-27T13:24:36.321098'
+- commands: []
+  compression_ratio: -33.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.13'
+  resolutions: []
+  source_file: 20250927-140613-setup-watchdog.log
+  timestamp: '2025-09-27T14:06:14.261045'
+- commands: []
+  compression_ratio: -233.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.05'
+  resolutions: []
+  source_file: 20250927-140623-ensure-progression.log
+  timestamp: '2025-09-27T14:06:24.107546'
+- commands: []
+  compression_ratio: 91.1%
+  decisions: []
+  errors:
+  - Cannot convert undefined or null to object
+  file_changes: []
+  key_outcomes:
+  - 'Tests:       35 passed, 35 total'
+  - 'Test Suites: 2 failed, 18 passed, 20 total'
+  original_size_kb: '3.23'
+  resolutions: []
+  source_file: 20250927-144051-api-tests.log
+  timestamp: '2025-09-27T14:41:08.271820'
+- commands: []
+  compression_ratio: 82.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - 'Tests:       46 passed, 46 total'
+  - 'Test Suites: 20 passed, 20 total'
+  original_size_kb: '1.36'
+  resolutions: []
+  source_file: 20250927-144324-api-tests.log
+  timestamp: '2025-09-27T14:43:39.910941'
+- commands: []
+  compression_ratio: -33.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.13'
+  resolutions: []
+  source_file: 20250927-145246-setup-watchdog.log
+  timestamp: '2025-09-27T14:52:47.640129'
+- commands: []
+  compression_ratio: -227.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.05'
+  resolutions: []
+  source_file: 20250927-145254-ensure-progress.log
+  timestamp: '2025-09-27T14:52:55.376796'
+- commands: []
+  compression_ratio: -132.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.07'
+  resolutions: []
+  source_file: 20250927-145347-git-status.log
+  timestamp: '2025-09-27T14:53:48.017875'
+- commands: []
+  compression_ratio: 27.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.23'
+  resolutions: []
+  source_file: 20250927-145407-semgrep-api.log
+  timestamp: '2025-09-27T14:54:09.257141'
+- commands: []
+  compression_ratio: -20.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - 'Progress: resolved 1, reused 0, downloaded 1, added 1, done'
+  original_size_kb: '0.19'
+  resolutions: []
+  source_file: 20250927-145416-semgrep-api.log
+  timestamp: '2025-09-27T14:54:18.240816'
+- commands: []
+  compression_ratio: 51.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '0.46'
+  resolutions: []
+  source_file: 20250927-145431-semgrep-api.log
+  timestamp: '2025-09-27T14:54:32.194472'
+- commands: []
+  compression_ratio: 4.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.18'
+  resolutions: []
+  source_file: 20250927-145437-semgrep-api.log
+  timestamp: '2025-09-27T14:54:38.569776'
+- commands: []
+  compression_ratio: -3320.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20250927-145445-pnpm-list.log
+  timestamp: '2025-09-27T14:54:46.274216'
+- commands: []
+  compression_ratio: -377.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.04'
+  resolutions: []
+  source_file: 20250927-145455-pnpm-audit.log
+  timestamp: '2025-09-27T14:54:56.922404'
+- commands: []
+  compression_ratio: 24.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.22'
+  resolutions: []
+  source_file: 20250927-145510-semgrep-api.log
+  timestamp: '2025-09-27T14:55:12.064564'
+- commands: []
+  compression_ratio: 59.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand'
+  original_size_kb: '0.69'
+  resolutions: []
+  source_file: 20250927-145527-semgrep-download.log
+  timestamp: '2025-09-27T14:55:27.962452'
+- commands: []
+  compression_ratio: 35.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand'
+  original_size_kb: '0.44'
+  resolutions: []
+  source_file: 20250927-145534-semgrep-download.log
+  timestamp: '2025-09-27T14:55:35.488859'
+- commands: []
+  compression_ratio: -319.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.04'
+  resolutions: []
+  source_file: 20250927-145558-docker-version.log
+  timestamp: '2025-09-27T14:55:59.576635'
+- commands: []
+  compression_ratio: -38.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.12'
+  resolutions: []
+  source_file: 20250927-145639-semgrep-api.log
+  timestamp: '2025-09-27T14:56:39.996489'
+- commands: []
+  compression_ratio: -39.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.12'
+  resolutions: []
+  source_file: 20250927-145646-semgrep-api.log
+  timestamp: '2025-09-27T14:56:47.721701'
+- commands: []
+  compression_ratio: 87.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '587605daf798: Pull complete'
+  - 'a062e68777de: Pull complete'
+  - 'a5bbf1bae1e5: Pull complete'
+  original_size_kb: '2.11'
+  resolutions: []
+  source_file: 20250927-145738-semgrep-workdir.log
+  timestamp: '2025-09-27T14:57:53.979975'
+- commands: []
+  compression_ratio: 21.3%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : AmpersandNotAllowed'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.43'
+  resolutions: []
+  source_file: 20250928-102956-trivy-help.log
+  timestamp: '2025-09-28T10:29:56.774404'
+- commands: []
+  compression_ratio: 64.2%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : InvalidVariableReferenceWithDrive'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  - '+         Write-Host "[VISIBILITY] Failed to link $Label: $($_.Exceptio ...'
+  original_size_kb: '1.22'
+  resolutions: []
+  source_file: 20250928-114030-ensure_visibility.log
+  timestamp: '2025-09-28T11:40:31.316714'
+- commands: []
+  compression_ratio: 49.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '[VISIBILITY] Startup script setup-watchdog-wrapper completed.'
+  original_size_kb: '0.48'
+  resolutions: []
+  source_file: 20250928-114156-ensure_visibility_refresh.log
+  timestamp: '2025-09-28T11:41:59.809160'
+- commands: []
+  compression_ratio: -27.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '[VISIBILITY] Startup script setup-watchdog-wrapper completed.'
+  original_size_kb: '0.19'
+  resolutions: []
+  source_file: 20250928-114403-ensure_visibility_update.log
+  timestamp: '2025-09-28T11:44:05.652046'
+- commands: []
+  compression_ratio: -69.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '[VISIBILITY] Startup script ensure-progression-rule completed.'
+  - '[VISIBILITY] Startup script setup-watchdog-wrapper completed.'
+  original_size_kb: '0.18'
+  resolutions: []
+  source_file: 20250928-114742-ensure_visibility_update.log
+  timestamp: '2025-09-28T11:47:45.046699'
+- commands: []
+  compression_ratio: -33.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.13'
+  resolutions: []
+  source_file: 20250928-115241-setup-watchdog.log
+  timestamp: '2025-09-28T11:52:41.908774'
+- commands: []
+  compression_ratio: -63.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.11'
+  resolutions: []
+  source_file: 20250928-115248-ensure-progression.log
+  timestamp: '2025-09-28T11:52:48.930744'
+- commands: []
+  compression_ratio: 49.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '0.45'
+  resolutions: []
+  source_file: 20250928-115345-best-practice-research.log
+  timestamp: '2025-09-28T11:53:46.670345'
+- commands:
+  - pnpm install --recursive
+  compression_ratio: 99.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+  - '. install: Failed'
+  - '. install: ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.'
+  original_size_kb: '43.66'
+  resolutions: []
+  source_file: 20250928-115443-pnpm-install.log
+  timestamp: '2025-09-28T11:55:44.935463'
+- commands: []
+  compression_ratio: -1060.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.01'
+  resolutions: []
+  source_file: 20250928-115558-node-version.log
+  timestamp: '2025-09-28T11:55:59.341459'
+- commands: []
+  compression_ratio: -91.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.09'
+  resolutions: []
+  source_file: 20250928-115604-install-pnpm.log
+  timestamp: '2025-09-28T11:56:07.341647'
+- commands: []
+  compression_ratio: -1238.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.01'
+  resolutions: []
+  source_file: 20250928-115634-pnpm-version.log
+  timestamp: '2025-09-28T11:56:34.882257'
+- commands:
+  - pnpm install --recursive
+  compression_ratio: 99.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+  - '. install: Failed'
+  - '. install: ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.'
+  original_size_kb: '43.66'
+  resolutions: []
+  source_file: 20250928-115646-pnpm-install.log
+  timestamp: '2025-09-28T11:57:49.030387'
+- commands:
+  - pnpm install --recursive
+  compression_ratio: 99.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+  - '. install: Failed'
+  - '. install: ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.'
+  original_size_kb: '43.66'
+  resolutions: []
+  source_file: 20250928-115806-pnpm-install-root.log
+  timestamp: '2025-09-28T11:59:11.532030'
+- commands: []
+  compression_ratio: -1238.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.01'
+  resolutions: []
+  source_file: 20250928-135053-pnpm-version.log
+  timestamp: '2025-09-28T13:50:54.590425'
+- commands: []
+  compression_ratio: -45.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Done in 715ms using pnpm v10.17.1
+  original_size_kb: '0.14'
+  resolutions: []
+  source_file: 20250928-135110-pnpm-install.log
+  timestamp: '2025-09-28T13:51:11.519153'
+- commands: []
+  compression_ratio: -69.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Done in 609ms using pnpm v10.17.1
+  original_size_kb: '0.12'
+  resolutions: []
+  source_file: 20250928-135750-pnpm_install.log
+  timestamp: '2025-09-28T13:57:51.818676'
+- commands: []
+  compression_ratio: 97.8%
+  decisions: []
+  errors:
+  - 'listen EADDRINUSE: address already in use :::4000'
+  - Cannot find module 'E:\Vibe Code\Be Free Fitness\Website\apps\api\dist\main'
+  - Cannot find module './app.module'
+  file_changes: []
+  key_outcomes:
+  - 'Error: Cannot find module ''E:\Vibe Code\Be Free Fitness\Website\apps\api\dist\main'''
+  original_size_kb: '18.60'
+  resolutions: []
+  source_file: 20250928-135931-api_dev.log
+  timestamp: '2025-09-28T20:16:02.583608'
+- commands: []
+  compression_ratio: 88.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '1.50'
+  resolutions: []
+  source_file: 20250928-181035-list_logs.log
+  timestamp: '2025-09-28T18:10:36.216184'
+- commands: []
+  compression_ratio: 88.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '1.50'
+  resolutions: []
+  source_file: 20250928-191537-list_logs.log
+  timestamp: '2025-09-28T19:15:37.619709'
+- commands: []
+  compression_ratio: -3340.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20250928-191557-check_pnpm.log
+  timestamp: '2025-09-28T19:15:57.614322'
+- commands: []
+  compression_ratio: 65.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '{"ts":1759086957,"cwd":"E:\Vibe Code\Be Free Fitness\Website","hash":"16a8542bf9cc022326f160bd72de2665c9b6ce333a99658b560010ca73605613","label":"check
+    pnpm","cmd":"Get-Process pnpm -ErrorAction Silent'
+  original_size_kb: '1.08'
+  resolutions: []
+  source_file: 20250928-191609-tail_last.log
+  timestamp: '2025-09-28T19:16:10.134131'
+- commands: []
+  compression_ratio: 76.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '0.97'
+  resolutions: []
+  source_file: 20250928-191931-playwright_screenshot.log
+  timestamp: '2025-09-28T19:19:32.313616'
+- commands: []
+  compression_ratio: -3440.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20250928-192006-copy_screenshot.log
+  timestamp: '2025-09-28T19:20:06.757260'
+- commands: []
+  compression_ratio: -121.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.08'
+  resolutions: []
+  source_file: 20250928-192808-pnpm_lint_web.log
+  timestamp: '2025-09-28T19:28:12.986122'
+- commands: []
+  compression_ratio: -3380.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20250928-194012-tail_web_log.log
+  timestamp: '2025-09-28T19:40:12.630558'
+- commands: []
+  compression_ratio: -3380.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20250928-194039-tail_web_log.log
+  timestamp: '2025-09-28T19:40:39.855117'
+- commands: []
+  compression_ratio: -3560.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20250928-194111-copy_after_screenshot.log
+  timestamp: '2025-09-28T19:41:12.215146'
+- commands: []
+  compression_ratio: 72.7%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : MissingExpressionAfterOperator'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '1.30'
+  resolutions: []
+  source_file: 20250928-200210-setup-watchdog.log
+  timestamp: '2025-09-28T20:02:11.184107'
+- commands: []
+  compression_ratio: -33.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.13'
+  resolutions: []
+  source_file: 20250928-200253-setup-watchdog.log
+  timestamp: '2025-09-28T20:02:54.738059'
+- commands: []
+  compression_ratio: -63.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.11'
+  resolutions: []
+  source_file: 20250928-200301-ensure-progression.log
+  timestamp: '2025-09-28T20:03:02.545493'
+- commands: []
+  compression_ratio: -63.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.11'
+  resolutions: []
+  source_file: 20250928-200312-ensure-progression.log
+  timestamp: '2025-09-28T20:03:12.976634'
+- commands: []
+  compression_ratio: 34.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : InvalidOperationException,Microsoft.PowerShell.Commands.StartProcessCommand'
+  - 'Start-Process : This command cannot be run because "RedirectStandardOutput" and
+    "RedirectStandardError" are same. Give'
+  original_size_kb: '0.61'
+  resolutions: []
+  source_file: 20250928-200333-start-visual-env.log
+  timestamp: '2025-09-28T20:03:34.141873'
+- commands: []
+  compression_ratio: 59.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : Service ''api'' exited immediately with code 1. See
+    log: E:\Vibe Code\Be Free Fitness\Webs'
+  original_size_kb: '0.71'
+  resolutions: []
+  source_file: 20250928-200716-start-visual-env.log
+  timestamp: '2025-09-28T20:07:17.548336'
+- commands: []
+  compression_ratio: 29.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : ParameterArgumentTransformationError,start-visual-test-env.ps1'
+  - '+ CategoryInfo          : InvalidData: (:) [start-visual-test-env.ps1], ParentContainsErrorRecordException'
+  original_size_kb: '0.53'
+  resolutions: []
+  source_file: 20250928-201039-start-visual-env.log
+  timestamp: '2025-09-28T20:10:40.336496'
+- commands: []
+  compression_ratio: 52.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : Visual testing session file not found at ''E:\Vibe
+    Code\Be Free Fitness\Website\.cursor\v'
+  original_size_kb: '0.61'
+  resolutions: []
+  source_file: 20250928-201316-stop-visual-env.log
+  timestamp: '2025-09-28T20:13:17.498036'
+- commands: []
+  compression_ratio: -43.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.12'
+  resolutions: []
+  source_file: 20250928-202706-stop-visual-env.log
+  timestamp: '2025-09-28T20:27:07.346321'
+- commands: []
+  compression_ratio: -567.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - "\uFEFFWatchdog test successful"
+  original_size_kb: '0.03'
+  resolutions: []
+  source_file: 20250929-072421-test-watchdog.log
+  timestamp: '2025-09-29T07:24:22.050249'
+- commands: []
+  compression_ratio: 55.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Startup configuration complete
+  - Visibility check complete
+  - Visibility check complete
+  original_size_kb: '0.59'
+  resolutions: []
+  source_file: 20250929-114142-run_startup_script.log
+  timestamp: '2025-09-29T11:41:43.198585'
+- commands: []
+  compression_ratio: -73.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.10'
+  resolutions: []
+  source_file: 20250929-114145-find_PRD.log
+  timestamp: '2025-09-29T11:41:46.365381'
+- commands: []
+  compression_ratio: -75.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.10'
+  resolutions: []
+  source_file: 20250929-114148-list_files.log
+  timestamp: '2025-09-29T11:41:49.074195'
+- commands: []
+  compression_ratio: -3780.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20250929-114201-create_project_management_folder.log
+  timestamp: '2025-09-29T11:42:02.279342'
+- commands: []
+  compression_ratio: -297.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.04'
+  resolutions: []
+  source_file: 20250929-114258-create_apps_structure.log
+  timestamp: '2025-09-29T11:42:58.671828'
+- commands: []
+  compression_ratio: -76.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.10'
+  resolutions: []
+  source_file: 20250929-114301-create_apps_directory.log
+  timestamp: '2025-09-29T11:43:02.500343'
+- commands: []
+  compression_ratio: 59.3%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : UnexpectedToken'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.85'
+  resolutions: []
+  source_file: 20250929-114501-start_dev_environment.log
+  timestamp: '2025-09-29T11:45:01.678853'
+- commands: []
+  compression_ratio: -73.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.10'
+  resolutions: []
+  source_file: 20250929-114525-create_directories.log
+  timestamp: '2025-09-29T11:45:25.891854'
+- commands: []
+  compression_ratio: -314.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.04'
+  resolutions: []
+  source_file: 20250929-114529-check_docker.log
+  timestamp: '2025-09-29T11:45:29.647217'
+- commands: []
+  compression_ratio: -273.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.05'
+  resolutions: []
+  source_file: 20250929-114534-start_docker_services.log
+  timestamp: '2025-09-29T11:45:34.839337'
+- commands: []
+  compression_ratio: -80.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.10'
+  resolutions: []
+  source_file: 20250929-114539-check_directory.log
+  timestamp: '2025-09-29T11:45:40.269211'
+- commands: []
+  compression_ratio: -87.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.10'
+  resolutions: []
+  source_file: 20250929-114542-list_current_directory.log
+  timestamp: '2025-09-29T11:45:43.402164'
+- commands: []
+  compression_ratio: -78.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.11'
+  resolutions: []
+  source_file: 20250929-114549-start_docker_services_full_path.log
+  timestamp: '2025-09-29T11:45:49.891201'
+- commands: []
+  compression_ratio: -3460.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20250929-114556-create_env_files.log
+  timestamp: '2025-09-29T11:45:56.730484'
+- commands: []
+  compression_ratio: -453.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.03'
+  resolutions: []
+  source_file: 20250929-114601-copy_env_config.log
+  timestamp: '2025-09-29T11:46:01.831832'
+- commands: []
+  compression_ratio: 20.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - 'unable to get image ''postgres:16-alpine'': error during connect: Get "http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.51/images/postgres:16-alpine/json":
+    open //./pipe/dockerDesktopLinuxEngine: The'
+  original_size_kb: '0.47'
+  resolutions: []
+  source_file: 20250929-114604-start_postgres.log
+  timestamp: '2025-09-29T11:46:05.437959'
+- commands: []
+  compression_ratio: -83.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.10'
+  resolutions: []
+  source_file: 20250929-144642-check-project-status.log
+  timestamp: '2025-09-29T14:46:43.400842'
+- commands: []
+  compression_ratio: 89.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '1.76'
+  resolutions: []
+  source_file: 20250929-144647-check-project-status.log
+  timestamp: '2025-09-29T14:46:48.021435'
+- commands: []
+  compression_ratio: -210.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.06'
+  resolutions: []
+  source_file: 20250929-144655-check-dev-environment.log
+  timestamp: '2025-09-29T14:46:56.784768'
+- commands: []
+  compression_ratio: -122.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.08'
+  resolutions: []
+  source_file: 20250929-144659-check-project-deps.log
+  timestamp: '2025-09-29T14:47:00.452975'
+- commands: []
+  compression_ratio: 87.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '1.42'
+  resolutions: []
+  source_file: 20250929-144706-install-api-deps.log
+  timestamp: '2025-09-29T14:47:39.081955'
+- commands: []
+  compression_ratio: 46.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.32'
+  resolutions: []
+  source_file: 20250929-144741-install-web-deps.log
+  timestamp: '2025-09-29T14:48:05.085028'
+- commands: []
+  compression_ratio: 7.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - 'npm error A complete log of this run can be found in: C:\Users\kento\AppData\Local\npm-cache\_logs\2025-09-29T20_48_34_825Z-debug-0.log'
+  - npm error 404 tarball, folder, http url, or git url.
+  - npm error 404 Note that you can also install from a
+  original_size_kb: '0.45'
+  resolutions: []
+  source_file: 20250929-144834-install-test-deps-api.log
+  timestamp: '2025-09-29T14:48:37.124981'
+- commands: []
+  compression_ratio: -23.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.14'
+  resolutions: []
+  source_file: 20250929-144842-install-test-deps-api.log
+  timestamp: '2025-09-29T14:48:44.416853'
+- commands: []
+  compression_ratio: -22.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.15'
+  resolutions: []
+  source_file: 20250929-144847-install-test-deps-web.log
+  timestamp: '2025-09-29T14:49:04.757313'
+- commands: []
+  compression_ratio: 87.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - npm error command C:\windows\system32\cmd.exe /d /s /c jest
+  - npm error command failed
+  - npm error location E:\Vibe Code\Be Free Fitness\Website\apps\api
+  original_size_kb: '2.46'
+  resolutions: []
+  source_file: 20250929-145120-run-api-tests.log
+  timestamp: '2025-09-29T14:51:25.104782'
+- commands: []
+  compression_ratio: -1358.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.01'
+  resolutions: []
+  source_file: 20250929-145139-jest-test-run.log
+  timestamp: '2025-09-29T14:51:40.859478'
+- commands: []
+  compression_ratio: 42.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - 'Test Suites: 1 failed, 1 total'
+  - "\e[96msrc/__tests__/routes/auth.test.ts\e[0m:\e[93m26\e[0m:\e[93m6\e[0m - \e\
+    [91merror\e[0m\e[90m TS2352: \e[0mConversion of type 'typeof Pool' to type 'Mock<any,\
+    \ any, any>' may be a mistake because neither type"
+  - "\e[96msrc/__tests__/routes/auth.test.ts\e[0m:\e[93m2\e[0m:\e[93m21\e[0m - \e\
+    [91merror\e[0m\e[90m TS2307: \e[0mCannot find module '../main' or its corresponding\
+    \ type declarations."
+  original_size_kb: '1.05'
+  resolutions: []
+  source_file: 20250929-145144-jest-direct-test.log
+  timestamp: '2025-09-29T14:51:47.950140'
+- commands: []
+  compression_ratio: 9.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - 'Test Suites: 1 failed, 1 total'
+  - "\e[96msrc/__tests__/routes/auth.test.ts\e[0m:\e[93m2\e[0m:\e[93m17\e[0m - \e\
+    [91merror\e[0m\e[90m TS2307: \e[0mCannot find module '../main' or its corresponding\
+    \ type declarations."
+  - ΓùÅ Test suite failed to run
+  original_size_kb: '0.47'
+  resolutions: []
+  source_file: 20250929-145202-jest-test-fixed.log
+  timestamp: '2025-09-29T14:52:05.887622'
+- commands: []
+  compression_ratio: 96.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - npm error command C:\windows\system32\cmd.exe /d /s /c tsc
+  - npm error command failed
+  - npm error location E:\Vibe Code\Be Free Fitness\Website\apps\api
+  original_size_kb: '10.16'
+  resolutions: []
+  source_file: 20250929-145216-build-api.log
+  timestamp: '2025-09-29T14:52:18.220154'
+- commands: []
+  compression_ratio: 63.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - 'Tests:       11 passed, 11 total'
+  - 'Test Suites: 1 passed, 1 total'
+  - ΓêÜ should handle error cases (5 ms)
+  original_size_kb: '0.78'
+  resolutions: []
+  source_file: 20250929-145245-basic-test.log
+  timestamp: '2025-09-29T14:52:48.783782'
+- commands: []
+  compression_ratio: 85.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - at Resolver._throwModNotFoundError (../../node_modules/jest-resolve/build/resolver.js:427:11)
+  original_size_kb: '1.79'
+  resolutions: []
+  source_file: 20250929-145256-web-tests.log
+  timestamp: '2025-09-29T16:12:55.229446'
+- commands: []
+  compression_ratio: 96.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - npm error command C:\windows\system32\cmd.exe /d /s /c tsc
+  - npm error command failed
+  - npm error location E:\Vibe Code\Be Free Fitness\Website\apps\api
+  original_size_kb: '10.16'
+  resolutions: []
+  source_file: 20250929-153833-api-compile-check.log
+  timestamp: '2025-09-29T15:38:36.125591'
+- commands: []
+  compression_ratio: 36.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.28'
+  resolutions: []
+  source_file: 20250929-153940-install-missing-deps.log
+  timestamp: '2025-09-29T15:39:45.214094'
+- commands: []
+  compression_ratio: 93.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - 'src/services/workoutEmailService.ts(354,41): error TS2551: Property ''firstName''
+    does not exist on type ''User''. Did you mean ''first_name''?'
+  - 'src/services/workoutEmailService.ts(271,28): error TS2551: Property ''firstName''
+    does not exist on type ''User''. Did you mean ''first_name''?'
+  - 'src/services/workoutEmailService.ts(178,28): error TS2551: Property ''firstName''
+    does not exist on type ''User''. Did you mean ''first_name''?'
+  original_size_kb: '9.13'
+  resolutions: []
+  source_file: 20250929-154024-tsc-check.log
+  timestamp: '2025-09-29T15:40:27.041446'
+- commands: []
+  compression_ratio: 94.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - 'src/services/securityService.ts(293,31): error TS7030: Not all code paths return
+    a value.'
+  - 'src/services/securityService.ts(170,41): error TS7030: Not all code paths return
+    a value.'
+  - 'src/services/securityService.ts(153,10): error TS7030: Not all code paths return
+    a value.'
+  original_size_kb: '8.72'
+  resolutions: []
+  source_file: 20250929-154125-tsc-final.log
+  timestamp: '2025-09-29T15:41:28.114445'
+- commands: []
+  compression_ratio: 41.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '0.38'
+  resolutions: []
+  source_file: 20250929-154205-fix-user-types.log
+  timestamp: '2025-09-29T15:42:06.421646'
+- commands: []
+  compression_ratio: 93.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - 'src/services/securityService.ts(293,31): error TS7030: Not all code paths return
+    a value.'
+  - 'src/services/securityService.ts(170,41): error TS7030: Not all code paths return
+    a value.'
+  - 'src/services/securityService.ts(153,10): error TS7030: Not all code paths return
+    a value.'
+  original_size_kb: '6.48'
+  resolutions: []
+  source_file: 20250929-154229-tsc-final-check.log
+  timestamp: '2025-09-29T15:42:31.998883'
+- commands: []
+  compression_ratio: 93.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - ΓêÜ should handle error cases (6 ms)
+  original_size_kb: '3.36'
+  resolutions: []
+  source_file: 20250929-154242-api-tests.log
+  timestamp: '2025-09-29T16:12:55.238960'
+- commands: []
+  compression_ratio: 84.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - 'apps/api/src/services/securityService.ts(300,31): error TS7030: Not all code
+    paths return a value.'
+  - 'apps/api/src/services/oauthService.ts(208,12): error TS2349: This expression
+    is not callable.'
+  - 'apps/api/src/services/oauthService.ts(200,12): error TS2349: This expression
+    is not callable.'
+  original_size_kb: '3.03'
+  resolutions: []
+  source_file: 20250929-155809-TypeScript_check.log
+  timestamp: '2025-09-29T15:58:11.604216'
+- commands: []
+  compression_ratio: 68.0%
+  decisions: []
+  errors: []
+  file_changes:
+  - 'any, done: any) => Promise<any>'' is not assignable to parameter of type ''VerifyFunctionWithRequest''.'
+  key_outcomes:
+  - 'Argument of type ''(accessToken: string, refreshToken: string, idToken: string,
+    profile: any, done: any) => Promise<any>'' is not assignable to parameter of type
+    ''VerifyFunctionWithRequest''.'
+  - 'Overload 2 of 2, ''(options: AuthenticateOptionsWithRequest, verify: VerifyFunctionWithRequest):
+    AppleStrategy'', gave the following error.'
+  - 'Overload 1 of 2, ''(options: AuthenticateOptions, verify: VerifyFunction): AppleStrategy'',
+    gave the following error.'
+  original_size_kb: '2.31'
+  resolutions: []
+  source_file: 20250929-160139-TypeScript_final_check.log
+  timestamp: '2025-09-29T16:01:41.780152'
+- commands: []
+  compression_ratio: -35.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.13'
+  resolutions: []
+  source_file: 20250929-161152-Testing_Environment_Setup.log
+  timestamp: '2025-09-29T16:12:09.193600'
+- commands: []
+  compression_ratio: -101.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - "\uFEFFerror during connect: Get \"http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.51/containers/json\"\
+    : open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified."
+  original_size_kb: '0.18'
+  resolutions: []
+  source_file: 20250929-161219-Check_Services_Status.log
+  timestamp: '2025-09-29T16:12:20.027430'
+- commands: []
+  compression_ratio: 58.3%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : UnexpectedToken'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.85'
+  resolutions: []
+  source_file: 20250929-161223-Start_Development_Environment.log
+  timestamp: '2025-09-29T16:12:24.863947'
+- commands: []
+  compression_ratio: -70.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.10'
+  resolutions: []
+  source_file: 20250929-161228-Check_Docker_Desktop.log
+  timestamp: '2025-09-29T16:12:29.180408'
+- commands: []
+  compression_ratio: 80.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - "\e[96msrc/__tests__/services/emailService.test.ts\e[0m:\e[93m39\e[0m:\e[93m17\e\
+    [0m - \e[91merror\e[0m\e[90m TS2551: \e[0mProperty 'createTransporter' does not\
+    \ exist on type 'typeof import(\"E:/Vibe Code/Be Free "
+  - "\e[96msrc/__tests__/services/emailService.test.ts\e[0m:\e[93m1\e[0m:\e[93m30\e\
+    [0m - \e[91merror\e[0m\e[90m TS2307: \e[0mCannot find module '../services/emailService'\
+    \ or its corresponding type declarations."
+  - ΓùÅ Test suite failed to run
+  original_size_kb: '3.34'
+  resolutions: []
+  source_file: 20250929-161237-API_Unit_Tests.log
+  timestamp: '2025-09-29T16:12:55.245467'
+- commands: []
+  compression_ratio: 56.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Startup configuration complete
+  - Visibility check complete
+  - Visibility check complete
+  original_size_kb: '0.59'
+  resolutions: []
+  source_file: 20250929-161725-Startup_Script.log
+  timestamp: '2025-09-29T16:17:25.926940'
+- commands: []
+  compression_ratio: 83.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - "\e[96msrc/__tests__/routes/forms.test.ts\e[0m:\e[93m2\e[0m:\e[93m17\e[0m - \e\
+    [91merror\e[0m\e[90m TS2307: \e[0mCannot find module '../main' or its corresponding\
+    \ type declarations."
+  - ΓùÅ Test suite failed to run
+  - "\e[96msrc/__tests__/routes/auth.test.ts\e[0m:\e[93m2\e[0m:\e[93m17\e[0m - \e\
+    [91merror\e[0m\e[90m TS2307: \e[0mCannot find module '../main' or its corresponding\
+    \ type declarations."
+  original_size_kb: '3.40'
+  resolutions: []
+  source_file: 20250929-161823-API_Unit_Tests.log
+  timestamp: '2025-09-29T16:39:38.243332'
+- commands: []
+  compression_ratio: 56.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Startup configuration complete
+  - Visibility check complete
+  - Visibility check complete
+  original_size_kb: '0.59'
+  resolutions: []
+  source_file: 20250930-070529-startup-script.log
+  timestamp: '2025-09-30T07:05:30.586725'
+- commands: []
+  compression_ratio: -11.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Done in 399ms using pnpm v10.17.1
+  original_size_kb: '0.18'
+  resolutions: []
+  source_file: 20250930-070541-install-deps.log
+  timestamp: '2025-09-30T07:05:42.483059'
+- commands: []
+  compression_ratio: -62.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.10'
+  resolutions: []
+  source_file: 20250930-070548-wait-servers.log
+  timestamp: '2025-09-30T07:05:49.094838'
+- commands: []
+  compression_ratio: -137.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.07'
+  resolutions: []
+  source_file: 20250930-070552-check-ports.log
+  timestamp: '2025-09-30T07:05:52.888271'
+- commands: []
+  compression_ratio: -65.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.10'
+  resolutions: []
+  source_file: 20250930-070556-check-processes.log
+  timestamp: '2025-09-30T07:05:56.771580'
+- commands: []
+  compression_ratio: -297.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.04'
+  resolutions: []
+  source_file: 20250930-070600-check-env.log
+  timestamp: '2025-09-30T07:06:01.369917'
+- commands: []
+  compression_ratio: 26.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+  original_size_kb: '0.33'
+  resolutions: []
+  source_file: 20250930-070604-start-api-direct.log
+  timestamp: '2025-09-30T07:06:05.986517'
+- commands: []
+  compression_ratio: 95.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Done in 8.8s using pnpm v10.17.1
+  original_size_kb: '4.15'
+  resolutions: []
+  source_file: 20250930-070610-install-api-deps.log
+  timestamp: '2025-09-30T07:06:19.851420'
+- commands: []
+  compression_ratio: 94.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Done in 18.5s using pnpm v10.17.1
+  original_size_kb: '3.57'
+  resolutions: []
+  source_file: 20250930-070622-install-web-deps.log
+  timestamp: '2025-09-30T07:06:41.131345'
+- commands: []
+  compression_ratio: -273.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.04'
+  resolutions: []
+  source_file: 20250930-070647-create-env.log
+  timestamp: '2025-09-30T07:06:48.125972'
+- commands: []
+  compression_ratio: -61.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.10'
+  resolutions: []
+  source_file: 20250930-070653-copy-env.log
+  timestamp: '2025-09-30T07:06:54.623720'
+- commands: []
+  compression_ratio: -57.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.11'
+  resolutions: []
+  source_file: 20250930-070658-list-files.log
+  timestamp: '2025-09-30T07:06:58.923681'
+- commands: []
+  compression_ratio: -64.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.10'
+  resolutions: []
+  source_file: 20250930-070706-wait-and-check.log
+  timestamp: '2025-09-30T07:07:07.434694'
+- commands: []
+  compression_ratio: -71.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.10'
+  resolutions: []
+  source_file: 20250930-070711-test-web.log
+  timestamp: '2025-09-30T07:07:11.806131'
+- commands: []
+  compression_ratio: -71.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.10'
+  resolutions: []
+  source_file: 20250930-070715-test-api.log
+  timestamp: '2025-09-30T07:07:16.639566'
+- commands: []
+  compression_ratio: 82.9%
+  decisions: []
+  errors:
+  - 'ENOENT: no such file or directory, lstat ''E:\Vibe Code\Be Free Fitness\Website\apps\web\.next\server\vendor-chunks\styled-jsx@5.1.1_@babel+core@7.28.4_react@18.3.1.js'''
+  - Can't resolve './vendor-chunks/styled-jsx@5.1.1_@babel+core@7.28.4_react@18.3.1'
+    in 'E:\Vibe Code\Be Free Fitness\Website\apps\web\.next\server'' instead. Resolving
+    dependencies are ignored for this path.
+  file_changes: []
+  key_outcomes:
+  - '<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT:
+    no such file or directory, lstat ''E:\Vibe Code\Be Free Fitness\Website\apps\web\.next\server\vendor-chunks\styled-jsx@'
+  - <w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './vendor-chunks/styled-jsx@5.1.1_@babel+core@7.28.4_react@18.3.1'
+    in E:\Vibe Code\Be Free Fitness\Website\apps\web\.next\ser
+  - '<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT:
+    no such file or directory, lstat ''E:\Vibe Code\Be Free Fitness\Website\apps\web\.next\server\vendor-chunks\styled-jsx@'
+  original_size_kb: '6.76'
+  resolutions: []
+  source_file: 20250930-070719-start-web-foreground.log
+  timestamp: '2025-09-30T07:25:46.846760'
+- commands: []
+  compression_ratio: 56.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Startup configuration complete
+  - Visibility check complete
+  - Visibility check complete
+  original_size_kb: '0.60'
+  resolutions: []
+  source_file: 20250930-110010-consolidated-startup.log
+  timestamp: '2025-09-30T11:00:11.238949'
+- commands: []
+  compression_ratio: 55.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Startup configuration complete
+  - Visibility check complete
+  - Visibility check complete
+  original_size_kb: '0.59'
+  resolutions: []
+  source_file: 20250930-110747-consolidated-startup.log
+  timestamp: '2025-09-30T11:07:49.042429'
+- commands: []
+  compression_ratio: 99.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '29.77'
+  resolutions: []
+  source_file: 20251001-102300-Stop-processes.log
+  timestamp: '2025-10-01T10:23:02.842723'
+- commands: []
+  compression_ratio: 99.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '29.77'
+  resolutions: []
+  source_file: 20251001-102327-Stop-processes.log
+  timestamp: '2025-10-01T10:23:28.278954'
+- commands: []
+  compression_ratio: -36.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.12'
+  resolutions: []
+  source_file: 20251003-114745-test.log
+  timestamp: '2025-10-03T11:47:46.613133'
+- commands: []
+  compression_ratio: -30.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - Watchdog test successful
+  original_size_kb: '0.14'
+  resolutions: []
+  source_file: 20251003-114749-verify.log
+  timestamp: '2025-10-03T11:47:50.785919'
+- commands: []
+  compression_ratio: 93.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '2.45'
+  resolutions: []
+  source_file: 20251003-115117-examine-schema.log
+  timestamp: '2025-10-03T11:51:18.606096'
+- commands: []
+  compression_ratio: 92.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '2.35'
+  resolutions: []
+  source_file: 20251003-115121-examine-exercises.log
+  timestamp: '2025-10-03T11:51:22.156175'
+- commands: []
+  compression_ratio: -278.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.05'
+  resolutions: []
+  source_file: 20251003-115125-examine-analyses.log
+  timestamp: '2025-10-03T11:51:25.819818'
+- commands: []
+  compression_ratio: 89.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '1.56'
+  resolutions: []
+  source_file: 20251003-115128-list-tables.log
+  timestamp: '2025-10-03T11:51:29.555936'
+- commands: []
+  compression_ratio: 92.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '2.36'
+  resolutions: []
+  source_file: 20251003-115135-examine-workout-sessions.log
+  timestamp: '2025-10-03T11:51:36.349042'
+- commands: []
+  compression_ratio: 67.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.53'
+  resolutions: []
+  source_file: 20251003-115139-check-analyses.log
+  timestamp: '2025-10-03T11:51:40.624172'
+- commands: []
+  compression_ratio: 51.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.36'
+  resolutions: []
+  source_file: 20251003-115147-latest-analyses.log
+  timestamp: '2025-10-03T11:51:48.066364'
+- commands: []
+  compression_ratio: 42.6%
+  decisions: []
+  errors:
+  - ' syntax error at or near "NOT"'
+  - ' column "exercise_order" of relation "workout_exercises" does not exist'
+  - ' check constraint "workout_sessions_status_check" of relation "workout_sessions"
+    is violated by some row'
+  file_changes: []
+  key_outcomes:
+  - 'psql:workout-system-updates.sql:338: ERROR:  column "exercise_order" of relation
+    "workout_exercises" does not exist'
+  - 'psql:workout-system-updates.sql:89: ERROR:  check constraint "workout_sessions_status_check"
+    of relation "workout_sessions" is violated by some row'
+  - 'psql:workout-system-updates.sql:83: ERROR:  syntax error at or near "NOT"'
+  original_size_kb: '1.28'
+  resolutions: []
+  source_file: 20251003-115229-workout-system-update.log
+  timestamp: '2025-10-03T11:52:29.799707'
+- commands: []
+  compression_ratio: -1.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.18'
+  resolutions: []
+  source_file: 20251003-115233-verify-workout-status.log
+  timestamp: '2025-10-03T11:52:33.858389'
+- commands: []
+  compression_ratio: 84.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '1.12'
+  resolutions: []
+  source_file: 20251003-115241-verify-target-areas.log
+  timestamp: '2025-10-03T11:52:42.750111'
+- commands: []
+  compression_ratio: 95.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '4.21'
+  resolutions: []
+  source_file: 20251003-115247-verify-workout-groups.log
+  timestamp: '2025-10-03T11:52:48.157060'
+- commands: []
+  compression_ratio: 5.1%
+  decisions: []
+  errors:
+  - ' column "exercise_order" of relation "workout_exercises" does not exist'
+  - ' relation "missing_lower_workouts" does not exist'
+  file_changes: []
+  key_outcomes:
+  - 'psql:fix-missing-workout-groups.sql:94: ERROR:  column "exercise_order" of relation
+    "workout_exercises" does not exist'
+  - 'psql:fix-missing-workout-groups.sql:80: ERROR:  column "exercise_order" of relation
+    "workout_exercises" does not exist'
+  - 'psql:fix-missing-workout-groups.sql:65: ERROR:  relation "missing_lower_workouts"
+    does not exist'
+  original_size_kb: '0.68'
+  resolutions: []
+  source_file: 20251003-115312-fix-workout-groups.log
+  timestamp: '2025-10-03T11:53:12.850608'
+- commands: []
+  compression_ratio: 95.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '3.88'
+  resolutions: []
+  source_file: 20251003-115316-verify-fixed-groups.log
+  timestamp: '2025-10-03T11:53:16.871347'
+- commands: []
+  compression_ratio: -71.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.10'
+  resolutions: []
+  source_file: 20251003-115321-check-analyses-users.log
+  timestamp: '2025-10-03T11:53:22.440535'
+- commands: []
+  compression_ratio: 6.3%
+  decisions: []
+  errors:
+  - ' column "exercise_order" of relation "workout_exercises" does not exist'
+  - ' relation "current_analysis_ids" does not exist'
+  file_changes: []
+  key_outcomes:
+  - 'psql:targeted-workout-groups-fix.sql:79: ERROR:  column "exercise_order" of relation
+    "workout_exercises" does not exist'
+  - 'psql:targeted-workout-groups-fix.sql:65: ERROR:  column "exercise_order" of relation
+    "workout_exercises" does not exist'
+  - 'psql:targeted-workout-groups-fix.sql:50: ERROR:  relation "current_analysis_ids"
+    does not exist'
+  original_size_kb: '0.68'
+  resolutions: []
+  source_file: 20251003-115340-targeted-fix.log
+  timestamp: '2025-10-03T11:53:41.390617'
+- commands: []
+  compression_ratio: 82.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.98'
+  resolutions: []
+  source_file: 20251003-115345-final-verification.log
+  timestamp: '2025-10-03T11:53:46.410383'
+- commands: []
+  compression_ratio: 97.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '6.52'
+  resolutions: []
+  source_file: 20251003-115352-check-workout-details.log
+  timestamp: '2025-10-03T11:53:53.481022'
+- commands: []
+  compression_ratio: 6.1%
+  decisions: []
+  errors:
+  - ' column "exercise_order" of relation "workout_exercises" does not exist'
+  file_changes: []
+  key_outcomes:
+  - 'psql:fix-workout-target-percentages.sql:34: ERROR:  column "exercise_order" of
+    relation "workout_exercises" does not exist'
+  - 'psql:fix-workout-target-percentages.sql:22: ERROR:  column "exercise_order" of
+    relation "workout_exercises" does not exist'
+  original_size_kb: '0.53'
+  resolutions: []
+  source_file: 20251003-115405-fix-target-percentages.log
+  timestamp: '2025-10-03T11:54:06.036677'
+- commands: []
+  compression_ratio: 77.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.77'
+  resolutions: []
+  source_file: 20251003-115415-verify-final-results.log
+  timestamp: '2025-10-03T11:54:16.421802'
+- commands: []
+  compression_ratio: 76.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '"workout_session_exercises_status_check" CHECK (status::text = ANY (ARRAY[''completed''::character
+    varying, ''skipped''::character varying, ''not_done''::character varying]::text[]))'
+  - status             | character varying(20)       |           |          | 'not_done'::character
+    varying
+  original_size_kb: '2.00'
+  resolutions: []
+  source_file: 20251003-115424-verify-sessions-table.log
+  timestamp: '2025-10-03T11:54:25.357599'
+- commands: []
+  compression_ratio: -8800.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251003-122022-check-api-status.log
+  timestamp: '2025-10-03T12:20:23.528028'
+- commands: []
+  compression_ratio: -14.0%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : InvalidEndOfLine'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.31'
+  resolutions: []
+  source_file: 20251003-132144-Install_FullCalendar_dependencies.log
+  timestamp: '2025-10-03T13:21:45.415658'
+- commands: []
+  compression_ratio: -33.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.14'
+  resolutions: []
+  source_file: 20251003-132155-Install_FullCalendar_dependencies.log
+  timestamp: '2025-10-03T13:22:15.219743'
+- commands: []
+  compression_ratio: 33.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.26'
+  resolutions: []
+  source_file: 20251003-132437-Test_web_build.log
+  timestamp: '2025-10-03T13:29:14.272403'
+- commands: []
+  compression_ratio: 95.7%
+  decisions: []
+  errors:
+  - 'listen EADDRINUSE: address already in use :::4000'
+  file_changes: []
+  key_outcomes:
+  - return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+  - return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+  - return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+  original_size_kb: '9.80'
+  resolutions: []
+  source_file: 20251003-161931-API_Server_Fixed.log
+  timestamp: '2025-10-04T11:22:50.760444'
+- commands: []
+  compression_ratio: 68.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - 'Startup marker created: E:\Vibe Code\Be Free Fitness\Website\.cursor\startup-complete.marker'
+  - Startup configuration complete
+  - Visibility check complete
+  original_size_kb: '1.00'
+  resolutions: []
+  source_file: 20251003-162023-process.log
+  timestamp: '2025-10-03T16:20:24.568883'
+- commands: []
+  compression_ratio: -2012.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.01'
+  resolutions: []
+  source_file: 20251003-162026-process.log
+  timestamp: '2025-10-03T16:20:27.465482'
+- commands: []
+  compression_ratio: 69.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.53'
+  resolutions: []
+  source_file: 20251004-102747-process.log
+  timestamp: '2025-10-04T10:27:47.990014'
+- commands: []
+  compression_ratio: -79.7%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : TerminatorExpectedAtEndOfString'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.19'
+  resolutions: []
+  source_file: 20251004-102752-chore.log
+  timestamp: '2025-10-04T10:27:52.793854'
+- commands: []
+  compression_ratio: 80.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.83'
+  resolutions: []
+  source_file: 20251004-102756-process.log
+  timestamp: '2025-10-04T10:27:57.610244'
+- commands: []
+  compression_ratio: -23.1%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : InvalidEndOfLine'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.27'
+  resolutions: []
+  source_file: 20251004-103310-process.log
+  timestamp: '2025-10-04T10:33:11.010010'
+- commands: []
+  compression_ratio: 64.7%
+  decisions: []
+  errors:
+  - 'EPERM: operation not permitted, open ''E:\Vibe Code\Be Free Fitness\Website\apps\web\.next\trace'']
+    {'
+  file_changes: []
+  key_outcomes:
+  - npm error command C:\windows\system32\cmd.exe /d /s /c next build
+  - npm error command failed
+  - npm error location E:\Vibe Code\Be Free Fitness\Website\apps\web
+  original_size_kb: '1.20'
+  resolutions: []
+  source_file: 20251004-103314-process.log
+  timestamp: '2025-10-04T10:33:38.171194'
+- commands: []
+  compression_ratio: -8350.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251004-103341-process.log
+  timestamp: '2025-10-04T10:33:41.976827'
+- commands: []
+  compression_ratio: -74.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '[main 0967a919] fix(cursor): resolve FullCalendarWidget selectedDate undefined
+    error [chat:workout-scheduling]'
+  original_size_kb: '0.16'
+  resolutions: []
+  source_file: 20251004-103344-process.log
+  timestamp: '2025-10-04T10:33:45.503688'
+- commands: []
+  compression_ratio: -8350.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251004-103430-process.log
+  timestamp: '2025-10-04T10:34:30.817565'
+- commands: []
+  compression_ratio: 43.2%
+  decisions: []
+  errors:
+  - (E:\Vibe Code\Be...\apps\web\.next:DirectoryInfo) [Remove-Item], IOException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : RemoveFileSystemItemIOError,Microsoft.PowerShell.Commands.RemoveItemCommand'
+  - '+ CategoryInfo          : WriteError: (E:\Vibe Code\Be...\apps\web\.next:DirectoryInfo)
+    [Remove-Item], IOException'
+  - '+ FullyQualifiedErrorId : RemoveFileSystemItemArgumentError,Microsoft.PowerShell.Commands.RemoveItemCommand'
+  original_size_kb: '1.00'
+  resolutions: []
+  source_file: 20251004-103434-process.log
+  timestamp: '2025-10-04T10:34:35.013060'
+- commands: []
+  compression_ratio: 43.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - 'modified:   .cursor/startup-complete.marker'
+  original_size_kb: '0.38'
+  resolutions: []
+  source_file: 20251004-122354-check_git_status.log
+  timestamp: '2025-10-04T12:23:55.054439'
+- commands: []
+  compression_ratio: 99.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '55.19'
+  resolutions: []
+  source_file: 20251004-122401-check_running_processes.log
+  timestamp: '2025-10-04T12:24:01.987610'
+- commands: []
+  compression_ratio: 34.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : MissingMandatoryParameter,Microsoft.PowerShell.Commands.InvokeWebRequestCommand'
+  original_size_kb: '0.45'
+  resolutions: []
+  source_file: 20251004-122431-check_email_protection_status.log
+  timestamp: '2025-10-04T12:24:31.955427'
+- commands: []
+  compression_ratio: 39.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand'
+  original_size_kb: '0.47'
+  resolutions: []
+  source_file: 20251004-122437-check_API_status.log
+  timestamp: '2025-10-04T12:24:42.721379'
+- commands: []
+  compression_ratio: -19.5%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : MissingTryStatementBlock'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.29'
+  resolutions: []
+  source_file: 20251004-122523-test_API_connection.log
+  timestamp: '2025-10-04T12:25:23.998693'
+- commands: []
+  compression_ratio: 37.7%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand'
+  original_size_kb: '0.45'
+  resolutions: []
+  source_file: 20251004-122539-check_API_health.log
+  timestamp: '2025-10-04T12:25:44.705964'
+- commands: []
+  compression_ratio: 92.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '2.37'
+  resolutions: []
+  source_file: 20251004-122653-kill_node_processes.log
+  timestamp: '2025-10-04T12:26:54.308599'
+- commands: []
+  compression_ratio: 67.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - 'SUCCESS: The process "node.exe" with PID 29852 has been terminated.'
+  - 'SUCCESS: The process "node.exe" with PID 48684 has been terminated.'
+  - 'SUCCESS: The process "node.exe" with PID 53012 has been terminated.'
+  original_size_kb: '1.21'
+  resolutions: []
+  source_file: 20251004-122701-force_kill_node_processes.log
+  timestamp: '2025-10-04T12:27:02.003791'
+- commands: []
+  compression_ratio: -18.9%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : MissingTryStatementBlock'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.29'
+  resolutions: []
+  source_file: 20251004-122934-test_API_response.log
+  timestamp: '2025-10-04T12:29:35.485354'
+- commands: []
+  compression_ratio: 37.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand'
+  original_size_kb: '0.45'
+  resolutions: []
+  source_file: 20251004-122945-test_API_simple.log
+  timestamp: '2025-10-04T12:29:50.567839'
+- commands: []
+  compression_ratio: 96.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '5.10'
+  resolutions: []
+  source_file: 20251004-123018-test_web_server.log
+  timestamp: '2025-10-04T12:30:22.629412'
+- commands: []
+  compression_ratio: 36.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand'
+  original_size_kb: '0.44'
+  resolutions: []
+  source_file: 20251004-123050-test_API_health.log
+  timestamp: '2025-10-04T12:30:55.522546'
+- commands: []
+  compression_ratio: -18.2%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : MissingTryStatementBlock'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.29'
+  resolutions: []
+  source_file: 20251004-123521-test_web_server.log
+  timestamp: '2025-10-04T12:35:22.241569'
+- commands: []
+  compression_ratio: 34.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand'
+  original_size_kb: '0.44'
+  resolutions: []
+  source_file: 20251004-123528-test_web_server_simple.log
+  timestamp: '2025-10-04T12:35:33.549648'
+- commands: []
+  compression_ratio: -2.6%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : ExpectedExpression'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.33'
+  resolutions: []
+  source_file: 20251004-125314-check_postgres.log
+  timestamp: '2025-10-04T12:53:14.733068'
+- commands: []
+  compression_ratio: 99.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '20.53'
+  resolutions: []
+  source_file: 20251004-125317-check_web_port_3000.log
+  timestamp: '2025-10-04T12:53:17.731632'
+- commands: []
+  compression_ratio: 63.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.48'
+  resolutions: []
+  source_file: 20251004-125449-check_node_processes.log
+  timestamp: '2025-10-04T12:54:50.499072'
+- commands: []
+  compression_ratio: -8950.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251004-125501-stop_node_processes.log
+  timestamp: '2025-10-04T12:55:02.031873'
+- commands: []
+  compression_ratio: 99.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '21.02'
+  resolutions: []
+  source_file: 20251004-125524-verify_services.log
+  timestamp: '2025-10-04T12:55:24.898033'
+- commands: []
+  compression_ratio: -11.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.15'
+  resolutions: []
+  source_file: 20251004-131132-kill_port_4000.log
+  timestamp: '2025-10-04T13:11:32.728763'
+- commands: []
+  compression_ratio: -8700.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251004-131135-kill_port_4001.log
+  timestamp: '2025-10-04T13:11:35.822991'
+- commands: []
+  compression_ratio: 81.5%
+  decisions: []
+  errors:
+  - 'listen EADDRINUSE: address already in use :::4000'
+  file_changes: []
+  key_outcomes:
+  - 'Error: listen EADDRINUSE: address already in use :::4000'
+  original_size_kb: '1.51'
+  resolutions: []
+  source_file: 20251004-131138-start_api_server.log
+  timestamp: '2025-10-04T13:28:49.679798'
+- commands: []
+  compression_ratio: -104.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.09'
+  resolutions: []
+  source_file: 20251004-132817-PostgreSQL_Service.log
+  timestamp: '2025-10-04T13:28:17.791566'
+- commands: []
+  compression_ratio: 11.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.21'
+  resolutions: []
+  source_file: 20251004-132820-Check_PostgreSQL_Services.log
+  timestamp: '2025-10-04T13:28:20.963470'
+- commands: []
+  compression_ratio: -8550.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251004-132823-Check_Ports.log
+  timestamp: '2025-10-04T13:28:23.963938'
+- commands: []
+  compression_ratio: 94.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '3.32'
+  resolutions: []
+  source_file: 20251004-132826-Check_Node_Processes.log
+  timestamp: '2025-10-04T13:28:26.895328'
+- commands: []
+  compression_ratio: 68.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.56'
+  resolutions: []
+  source_file: 20251004-132839-Kill_Node_Processes.log
+  timestamp: '2025-10-04T13:28:45.624540'
+- commands: []
+  compression_ratio: -8950.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251004-132905-Check_Service_Ports.log
+  timestamp: '2025-10-04T13:29:05.801612'
+- commands: []
+  compression_ratio: -85.8%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : TerminatorExpectedAtEndOfString'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.19'
+  resolutions: []
+  source_file: 20251004-132908-Check_Node_Status.log
+  timestamp: '2025-10-04T13:29:09.382571'
+- commands: []
+  compression_ratio: 51.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.36'
+  resolutions: []
+  source_file: 20251004-132912-Check_Node_Status.log
+  timestamp: '2025-10-04T13:29:12.653482'
+- commands: []
+  compression_ratio: 78.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - ΓÇëELIFECYCLEΓÇë Command failed with exit code 4294967295.
+  - Email templates initialization complete
+  - 'Updated email template: ai_analysis_complete'
+  original_size_kb: '1.57'
+  resolutions: []
+  source_file: 20251004-132915-API_Server_Start.log
+  timestamp: '2025-10-04T14:58:46.216863'
+- commands: []
+  compression_ratio: 76.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - ΓÇëELIFECYCLEΓÇë Command failed with exit code 4294967295.
+  - Email templates initialization complete
+  - 'Updated email template: ai_analysis_complete'
+  original_size_kb: '1.42'
+  resolutions: []
+  source_file: 20251005-220656-API_Server.log
+  timestamp: '2025-10-05T22:10:43.009784'
+- commands: []
+  compression_ratio: 95.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '3.74'
+  resolutions: []
+  source_file: 20251005-220657-Web_Server.log
+  timestamp: '2025-10-05T22:10:40.495431'
+- commands: []
+  compression_ratio: 93.9%
+  decisions: []
+  errors:
+  - Cannot read properties of undefined (reading 'call')
+  file_changes: []
+  key_outcomes:
+  - 'Γ¿» TypeError: Cannot read properties of undefined (reading ''call'')'
+  original_size_kb: '4.88'
+  resolutions: []
+  source_file: 20251006-001643-Web_Server.log
+  timestamp: '2025-10-06T09:20:51.887860'
+- commands: []
+  compression_ratio: 97.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '6.10'
+  resolutions: []
+  source_file: 20251006-095938-MailHog.log
+  timestamp: '2025-10-06T10:34:48.123953'
+- commands: []
+  compression_ratio: 95.2%
+  decisions: []
+  errors:
+  - 'listen EADDRINUSE: address already in use :::4000'
+  file_changes: []
+  key_outcomes:
+  - 'Error: listen EADDRINUSE: address already in use :::4000'
+  original_size_kb: '5.68'
+  resolutions: []
+  source_file: 20251006-102418-API_Server.log
+  timestamp: '2025-10-06T12:37:20.559004'
+- commands: []
+  compression_ratio: 94.8%
+  decisions: []
+  errors:
+  - 'listen EADDRINUSE: address already in use :::4000'
+  - Greeting never received
+  file_changes: []
+  key_outcomes:
+  - 'Error: listen EADDRINUSE: address already in use :::4000'
+  original_size_kb: '5.73'
+  resolutions: []
+  source_file: 20251006-102606-API_Server.log
+  timestamp: '2025-10-06T12:37:20.966537'
+- commands: []
+  compression_ratio: 94.0%
+  decisions: []
+  errors:
+  - 'listen EADDRINUSE: address already in use :::4000'
+  - read ECONNRESET
+  - Greeting never received
+  file_changes: []
+  key_outcomes:
+  - at SMTPConnection._onError (E:\Vibe Code\Be Free Fitness\Website\node_modules\nodemailer\lib\smtp-connection\index.js:795:20)
+  - at SMTPConnection._formatError (E:\Vibe Code\Be Free Fitness\Website\node_modules\nodemailer\lib\smtp-connection\index.js:809:19)
+  - 'Error sending email: Error: Greeting never received'
+  original_size_kb: '9.43'
+  resolutions: []
+  source_file: 20251006-102919-API_Server.log
+  timestamp: '2025-10-06T12:37:11.595091'
+- commands: []
+  compression_ratio: 94.8%
+  decisions: []
+  errors:
+  - 'listen EADDRINUSE: address already in use :::4000'
+  - Greeting never received
+  file_changes: []
+  key_outcomes:
+  - 'Error: listen EADDRINUSE: address already in use :::4000'
+  original_size_kb: '5.73'
+  resolutions: []
+  source_file: 20251006-103038-API_Server.log
+  timestamp: '2025-10-06T12:37:20.278359'
+- commands: []
+  compression_ratio: 94.4%
+  decisions: []
+  errors:
+  - 'listen EADDRINUSE: address already in use :::4000'
+  file_changes: []
+  key_outcomes:
+  - 'Error: listen EADDRINUSE: address already in use :::4000'
+  original_size_kb: '4.87'
+  resolutions: []
+  source_file: 20251006-103208-API_Server.log
+  timestamp: '2025-10-06T12:37:14.587566'
+- commands: []
+  compression_ratio: 95.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '4.06'
+  resolutions: []
+  source_file: 20251006-103449-MailHog.log
+  timestamp: '2025-10-06T10:36:53.992521'
+- commands: []
+  compression_ratio: 95.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '4.07'
+  resolutions: []
+  source_file: 20251006-103657-MailHog.log
+  timestamp: '2025-10-06T10:37:54.506210'
+- commands: []
+  compression_ratio: 96.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '4.58'
+  resolutions: []
+  source_file: 20251006-103802-MailHog.log
+  timestamp: '2025-10-06T10:49:37.690836'
+- commands: []
+  compression_ratio: 88.5%
+  decisions: []
+  errors:
+  - 'listen EADDRINUSE: address already in use :::4000'
+  file_changes: []
+  key_outcomes:
+  - 'Error: listen EADDRINUSE: address already in use :::4000'
+  original_size_kb: '2.39'
+  resolutions: []
+  source_file: 20251006-104726-API_Server.log
+  timestamp: '2025-10-06T12:37:19.111611'
+- commands: []
+  compression_ratio: 96.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '4.49'
+  resolutions: []
+  source_file: 20251006-104941-MailHog.log
+  timestamp: '2025-10-06T10:59:09.940424'
+- commands: []
+  compression_ratio: 96.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '4.41'
+  resolutions: []
+  source_file: 20251006-105916-MailHog.log
+  timestamp: '2025-10-06T11:09:08.669394'
+- commands: []
+  compression_ratio: 96.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '4.32'
+  resolutions: []
+  source_file: 20251006-110912-MailHog.log
+  timestamp: '2025-10-06T11:15:54.019864'
+- commands: []
+  compression_ratio: 96.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '4.32'
+  resolutions: []
+  source_file: 20251006-111557-MailHog.log
+  timestamp: '2025-10-06T11:22:02.133572'
+- commands: []
+  compression_ratio: 82.8%
+  decisions: []
+  errors:
+  - read ECONNRESET
+  file_changes: []
+  key_outcomes:
+  - 'Error sending email: Error: read ECONNRESET'
+  - 'Login SMS sent successfully to: 555-5678'
+  - 'Login email sent successfully to: newtestuser@example.com'
+  original_size_kb: '1.93'
+  resolutions: []
+  source_file: 20251006-111601-API_Server.log
+  timestamp: '2025-10-06T12:37:18.574869'
+- commands: []
+  compression_ratio: 97.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '6.80'
+  resolutions: []
+  source_file: 20251006-112218-MailHog.log
+  timestamp: '2025-10-06T12:37:24.709099'
+- commands: []
+  compression_ratio: 21.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '[HTTP] Error binding to address 0.0.0.0:8025: listen tcp 0.0.0.0:8025: bind:
+    Only one usage of each socket address (protocol/network address/port) is normally
+    permitted.'
+  original_size_kb: '0.42'
+  resolutions: []
+  source_file: 20251006-112908-MailHog.log
+  timestamp: '2025-10-06T11:29:08.982121'
+- commands: []
+  compression_ratio: 78.8%
+  decisions: []
+  errors:
+  - 'listen EADDRINUSE: address already in use :::4000'
+  file_changes: []
+  key_outcomes:
+  - 'Error: listen EADDRINUSE: address already in use :::4000'
+  original_size_kb: '1.30'
+  resolutions: []
+  source_file: 20251006-124612-API_Server.log
+  timestamp: '2025-10-06T20:05:26.673316'
+- commands: []
+  compression_ratio: 78.8%
+  decisions: []
+  errors:
+  - 'listen EADDRINUSE: address already in use :::4000'
+  file_changes: []
+  key_outcomes:
+  - 'Error: listen EADDRINUSE: address already in use :::4000'
+  original_size_kb: '1.30'
+  resolutions: []
+  source_file: 20251006-124637-API_Server.log
+  timestamp: '2025-10-06T20:05:25.600846'
+- commands: []
+  compression_ratio: 35.8%
+  decisions: []
+  errors:
+  - 'EPERM: operation not permitted, open ''E:\Vibe Code\Be Free Fitness\Website\apps\web\.next\trace'']
+    {'
+  file_changes: []
+  key_outcomes:
+  - '[Error: EPERM: operation not permitted, open ''E:\Vibe Code\Be Free Fitness\Website\apps\web\.next\trace'']
+    {'
+  - ΓÇëELIFECYCLEΓÇë Command failed with exit code 4294967295.
+  original_size_kb: '0.72'
+  resolutions: []
+  source_file: 20251006-124639-Web_Server.log
+  timestamp: '2025-10-06T15:20:59.530606'
+- commands: []
+  compression_ratio: -48.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.12'
+  resolutions: []
+  source_file: 20251006-124641-Service_Health_Check.log
+  timestamp: '2025-10-06T12:46:52.700881'
+- commands: []
+  compression_ratio: 45.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.31'
+  resolutions: []
+  source_file: 20251006-124655-Port_Check.log
+  timestamp: '2025-10-06T12:46:56.292777'
+- commands: []
+  compression_ratio: -140.2%
+  decisions: []
+  errors:
+  - .Exception.Message
+  file_changes: []
+  key_outcomes:
+  - 'Web Server Error: .Exception.Message'
+  - 'API Server Error: .Exception.Message'
+  original_size_kb: '0.11'
+  resolutions: []
+  source_file: 20251006-124700-Service_Health_Check_2.log
+  timestamp: '2025-10-06T12:47:16.237335'
+- commands: []
+  compression_ratio: 83.2%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '1.05'
+  resolutions: []
+  source_file: 20251006-124720-Node_Process_Check.log
+  timestamp: '2025-10-06T12:47:21.527547'
+- commands: []
+  compression_ratio: 53.3%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.GetContentCommand'
+  original_size_kb: '0.55'
+  resolutions: []
+  source_file: 20251006-125732-Check_API_Logs.log
+  timestamp: '2025-10-06T12:57:33.628484'
+- commands: []
+  compression_ratio: 1.6%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : IfStatementMissingCondition'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.36'
+  resolutions: []
+  source_file: 20251006-125738-Check_API_Logs_Fixed.log
+  timestamp: '2025-10-06T12:57:39.527596'
+- commands: []
+  compression_ratio: 84.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '1.20'
+  resolutions: []
+  source_file: 20251006-134135-Create_Testing_Structure.log
+  timestamp: '2025-10-06T13:41:35.769766'
+- commands: []
+  compression_ratio: 78.8%
+  decisions: []
+  errors:
+  - 'listen EADDRINUSE: address already in use :::4000'
+  file_changes: []
+  key_outcomes:
+  - 'Error: listen EADDRINUSE: address already in use :::4000'
+  original_size_kb: '1.30'
+  resolutions: []
+  source_file: 20251006-145639-API_Server.log
+  timestamp: '2025-10-06T20:05:25.034556'
+- commands: []
+  compression_ratio: 63.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.45'
+  resolutions: []
+  source_file: 20251006-145643-Web_Server.log
+  timestamp: '2025-10-06T15:20:50.687387'
+- commands: []
+  compression_ratio: 72.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '1.00'
+  resolutions: []
+  source_file: 20251007-123121-kill-api.log
+  timestamp: '2025-10-07T12:31:22.481648'
+- commands: []
+  compression_ratio: 72.1%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.
+  - '[ERROR] 1 test suite(s) failed. Check report for details.'
+  - '[ERROR] 1 test suite(s) failed. Please review the report.'
+  original_size_kb: '1.33'
+  resolutions: []
+  source_file: 20251007-210346-comprehensive-test-run.log
+  timestamp: '2025-10-07T21:04:01.733653'
+input_directory: .cursor\ai-logs
+logs_processed: 308
+space_saved_mb: '0.79'
+total_compression: 89.9%

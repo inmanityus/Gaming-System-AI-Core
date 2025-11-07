@@ -6,6 +6,10 @@
 #include "Sound/SoundBase.h"
 #include "Sound/SoundWave.h"
 #include "Sound/SoundAttenuation.h"
+#include "Sound/SoundSubmix.h"
+#include "Sound/SoundEffectSubmix.h"
+#include "Sound/ReverbEffect.h"
+#include "AudioDecompress.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "GameFramework/GameModeBase.h"
@@ -26,6 +30,10 @@ UAudioManager::UAudioManager(const FObjectInitializer& ObjectInitializer)
 	CategoryVolumes.Add(EAudioCategory::Music, 0.7f);
 	CategoryVolumes.Add(EAudioCategory::Effect, 1.0f);
 	CategoryVolumes.Add(EAudioCategory::UI, 0.9f);
+
+	CurrentReverbSendLevel = DefaultReverbSendLevel;
+	ActiveReverbTag = NAME_None;
+	ActiveReverbEffect = nullptr;
 }
 
 void UAudioManager::BeginPlay()
@@ -77,11 +85,31 @@ void UAudioManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	{
 		if (Pair.Value)
 		{
+			Pair.Value->OnAudioFinished.RemoveAll(this);
 			Pair.Value->Stop();
 			Pair.Value->DestroyComponent();
 		}
 	}
 	ActiveAudioComponents.Empty();
+	AudioComponentCategories.Empty();
+	
+	if (ActiveReverbTag != NAME_None && GetWorld())
+	{
+		UGameplayStatics::DeactivateReverbEffect(GetWorld(), ActiveReverbTag);
+		ActiveReverbTag = NAME_None;
+		ActiveReverbEffect = nullptr;
+	}
+
+	// Clear fade timers
+	for (auto& Pair : FadeTimerHandles)
+	{
+		if (UWorld* World = GetWorld())
+		{
+			World->GetTimerManager().ClearTimer(Pair.Value);
+		}
+	}
+	FadeTimerHandles.Empty();
+	ActiveFades.Empty();
 
 	// Clear timers
 	if (UWorld* World = GetWorld())
@@ -239,14 +267,34 @@ void UAudioManager::OnAudioRequestComplete(FHttpRequestPtr Request, FHttpRespons
 
 void UAudioManager::HandleAudioData(const FString& AudioID, EAudioCategory Category, float Volume, TArray<uint8> AudioData)
 {
-	// Create sound wave from data
-	USoundWave* SoundWave = NewObject<USoundWave>(this);
-	if (SoundWave)
+	FWaveModInfo WaveInfo;
+	if (!WaveInfo.ReadWaveInfo(AudioData.GetData(), AudioData.Num()))
 	{
-		// Note: This is a simplified version. In production, you'd need proper audio format parsing
-		// (WAV, OGG, etc.) and proper sound wave setup
-		UE_LOG(LogTemp, Warning, TEXT("AudioManager: Sound wave creation from raw data requires proper format parsing"));
+		UE_LOG(LogTemp, Error, TEXT("AudioManager: Unsupported audio format for %s"), *AudioID);
+		return;
 	}
+
+	USoundWave* SoundWave = NewObject<USoundWave>(this, USoundWave::StaticClass());
+	if (!SoundWave)
+	{
+		UE_LOG(LogTemp, Error, TEXT("AudioManager: Failed to create sound wave for %s"), *AudioID);
+		return;
+	}
+
+	SoundWave->InvalidateCompressedData();
+	SoundWave->RawPCMDataSize = WaveInfo.SampleDataSize;
+	SoundWave->RawPCMData = static_cast<uint8*>(FMemory::Malloc(WaveInfo.SampleDataSize));
+	FMemory::Memcpy(SoundWave->RawPCMData, WaveInfo.SampleDataStart, WaveInfo.SampleDataSize);
+	SoundWave->NumChannels = WaveInfo.pChannels ? *WaveInfo.pChannels : 1;
+	const uint32 SampleRate = WaveInfo.pSamplesPerSec ? *WaveInfo.pSamplesPerSec : 44100;
+	SoundWave->SetSampleRate(SampleRate);
+	const uint16 BitsPerSample = WaveInfo.pBitsPerSample ? *WaveInfo.pBitsPerSample : 16;
+	const float BytesPerSample = static_cast<float>(BitsPerSample) / 8.0f;
+	const float TotalSamples = static_cast<float>(SoundWave->RawPCMDataSize) / (BytesPerSample * SoundWave->NumChannels);
+	SoundWave->Duration = TotalSamples / static_cast<float>(SampleRate);
+	SoundWave->SoundGroup = SOUNDGROUP_Voice;
+	SoundWave->bProcedural = false;
+	SoundWave->bLooping = false;
 
 	// Create audio component and play
 	UAudioComponent* AudioComp = CreateAudioComponent(AudioID, Category, Volume);
@@ -276,10 +324,184 @@ UAudioComponent* UAudioManager::CreateAudioComponent(const FString& AudioID, EAu
 		AudioComp->bAutoActivate = false;
 		float CategoryVol = CategoryVolumes.FindRef(Category);
 		AudioComp->SetVolumeMultiplier(MasterVolume * CategoryVol * Volume);
+		if (AmbientReverbSubmix)
+		{
+			AudioComp->SetSubmixSend(AmbientReverbSubmix, CurrentReverbSendLevel);
+		}
 		AudioComp->RegisterComponent();
+		
+		// Store category with component for efficient lookup
+		AudioComponentCategories.Add(AudioComp, Category);
+		
+		// Bind completion callback (OnAudioFinished is a multicast delegate, use AddUObject)
+		AudioComp->OnAudioFinished.AddDynamic(this, &UAudioManager::OnAudioComponentFinished);
 	}
 
 	return AudioComp;
+}
+
+// DialogueManager integration methods
+UAudioComponent* UAudioManager::PlayAudioFromBackendAndGetComponent(const FString& AudioID, EAudioCategory Category, float Volume)
+{
+	// Check if already playing
+	if (IsAudioPlaying(AudioID))
+	{
+		return GetAudioComponent(AudioID);
+	}
+
+	// Use existing PlayAudioFromBackend which will create component asynchronously
+	// For synchronous return, we need to handle this differently
+	// For now, return nullptr and DialogueManager will need to poll or use callback
+	PlayAudioFromBackend(AudioID, Category, Volume);
+	
+	// Return component if it exists (may be null if still loading)
+	return GetAudioComponent(AudioID);
+}
+
+UAudioComponent* UAudioManager::GetAudioComponent(const FString& AudioID) const
+{
+	UAudioComponent* const* AudioCompPtr = ActiveAudioComponents.Find(AudioID);
+	return AudioCompPtr ? *AudioCompPtr : nullptr;
+}
+
+void UAudioManager::SetVolumeOverTime(const FString& AudioID, float TargetVolume, float Duration)
+{
+	UAudioComponent* AudioComp = GetAudioComponent(AudioID);
+	if (!AudioComp)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AudioManager: SetVolumeOverTime - Audio %s not found"), *AudioID);
+		return;
+	}
+
+	// Store fade state
+	FFadeState FadeState;
+	FadeState.AudioID = AudioID;
+	FadeState.StartVolume = AudioComp->VolumeMultiplier;
+	FadeState.TargetVolume = TargetVolume;
+	FadeState.Duration = Duration;
+	FadeState.ElapsedTime = 0.0f;
+	FadeState.Category = AudioComponentCategories.FindRef(AudioComp);
+	
+	ActiveFades.Add(AudioID, FadeState);
+	
+	// Start fade timer
+	if (UWorld* World = GetWorld())
+	{
+		FTimerHandle FadeTimerHandle;
+		FTimerDelegate FadeDelegate;
+		FString AudioIDToFade = AudioID;  // Capture by value
+		FadeDelegate.BindLambda([this, AudioIDToFade]()
+		{
+			UpdateFade(AudioIDToFade);
+		});
+		World->GetTimerManager().SetTimer(FadeTimerHandle, FadeDelegate, 0.016f, true); // ~60fps updates
+		FadeTimerHandles.Add(AudioID, FadeTimerHandle);
+	}
+}
+
+void UAudioManager::PauseAudio(const FString& AudioID)
+{
+	UAudioComponent* AudioComp = GetAudioComponent(AudioID);
+	if (AudioComp)
+	{
+		AudioComp->SetPaused(true);
+		UE_LOG(LogTemp, Log, TEXT("AudioManager: Paused audio %s"), *AudioID);
+	}
+}
+
+void UAudioManager::ResumeAudio(const FString& AudioID)
+{
+	UAudioComponent* AudioComp = GetAudioComponent(AudioID);
+	if (AudioComp)
+	{
+		AudioComp->SetPaused(false);
+		UE_LOG(LogTemp, Log, TEXT("AudioManager: Resumed audio %s"), *AudioID);
+	}
+}
+
+void UAudioManager::UpdateFade(const FString& AudioID)
+{
+	FFadeState* FadeState = ActiveFades.Find(AudioID);
+	if (!FadeState)
+	{
+		// Fade complete or invalid - clean up timer
+		if (FTimerHandle* TimerHandle = FadeTimerHandles.Find(AudioID))
+		{
+			if (UWorld* World = GetWorld())
+			{
+				World->GetTimerManager().ClearTimer(*TimerHandle);
+			}
+			FadeTimerHandles.Remove(AudioID);
+		}
+		return;
+	}
+
+	UAudioComponent* AudioComp = GetAudioComponent(AudioID);
+	if (!AudioComp)
+	{
+		// Component removed - clean up
+		ActiveFades.Remove(AudioID);
+		if (FTimerHandle* TimerHandle = FadeTimerHandles.Find(AudioID))
+		{
+			if (UWorld* World = GetWorld())
+			{
+				World->GetTimerManager().ClearTimer(*TimerHandle);
+			}
+			FadeTimerHandles.Remove(AudioID);
+		}
+		return;
+	}
+
+	// Update fade
+	FadeState->ElapsedTime += 0.016f; // ~60fps
+	float Alpha = FMath::Clamp(FadeState->ElapsedTime / FadeState->Duration, 0.0f, 1.0f);
+	float CurrentVolume = FMath::Lerp(FadeState->StartVolume, FadeState->TargetVolume, Alpha);
+	
+	// Apply volume (accounting for master and category volumes)
+	float CategoryVol = CategoryVolumes.FindRef(FadeState->Category);
+	AudioComp->SetVolumeMultiplier(MasterVolume * CategoryVol * CurrentVolume);
+
+	// Check if fade complete
+	if (Alpha >= 1.0f)
+	{
+		ActiveFades.Remove(AudioID);
+		if (FTimerHandle* TimerHandle = FadeTimerHandles.Find(AudioID))
+		{
+			if (UWorld* World = GetWorld())
+			{
+				World->GetTimerManager().ClearTimer(*TimerHandle);
+			}
+			FadeTimerHandles.Remove(AudioID);
+		}
+	}
+}
+
+void UAudioManager::OnAudioComponentFinished()
+{
+	// Find which audio component finished
+	for (auto& Pair : ActiveAudioComponents)
+	{
+		UAudioComponent* AudioComp = Pair.Value;
+		if (AudioComp && !AudioComp->IsPlaying())
+		{
+			FString AudioID = Pair.Key;
+			OnAudioPlaybackComplete.Broadcast(AudioID, AudioComp);
+			
+			// Clean up
+			ActiveAudioComponents.Remove(AudioID);
+			AudioComponentCategories.Remove(AudioComp);
+			ActiveFades.Remove(AudioID);
+			if (FTimerHandle* TimerHandle = FadeTimerHandles.Find(AudioID))
+			{
+				if (UWorld* World = GetWorld())
+				{
+					World->GetTimerManager().ClearTimer(*TimerHandle);
+				}
+				FadeTimerHandles.Remove(AudioID);
+			}
+			break;
+		}
+	}
 }
 
 // ============================================================
@@ -296,6 +518,10 @@ void UAudioManager::InitializeVA002Systems()
 	CurrentWeatherIntensity = 0.0f;
 	CurrentZoneProfile = TEXT("");
 	CurrentReverbPreset = TEXT("");
+	CurrentReverbSendLevel = DefaultReverbSendLevel;
+	ReverbTransitionState = FReverbTransitionState();
+	ActiveReverbTag = NAME_None;
+	ActiveReverbEffect = nullptr;
 
 	// Initialize crossfade parameters
 	CurrentCategoryVolume = 1.0f;
@@ -314,6 +540,9 @@ void UAudioManager::InitializeVA002Systems()
 	CurrentDuckAmounts.Add(EAudioCategory::Music, 0.0f);
 	CurrentDuckAmounts.Add(EAudioCategory::Effect, 0.0f);
 	CurrentDuckAmounts.Add(EAudioCategory::UI, 0.0f);
+
+	// Ensure existing components respect current reverb send level
+	ApplyReverbSendLevel(CurrentReverbSendLevel);
 
 	// Bind to TimeOfDayManager events
 	BindToTimeOfDayManager();
@@ -414,6 +643,10 @@ void UAudioManager::SetTimeOfDayAmbient(const FString& TimeState)
 					TimeOfDayAmbientComponent->bAutoActivate = false;
 					TimeOfDayAmbientComponent->bIsUISound = false;
 					TimeOfDayAmbientComponent->RegisterComponent();
+					if (AmbientReverbSubmix)
+					{
+						TimeOfDayAmbientComponent->SetSubmixSend(AmbientReverbSubmix, CurrentReverbSendLevel);
+					}
 				}
 			}
 
@@ -468,6 +701,10 @@ void UAudioManager::CrossfadeAmbientProfile(const FString& OldProfile, const FSt
 			NewAmbientComponent->bAutoActivate = false;
 			NewAmbientComponent->bIsUISound = false;
 			NewAmbientComponent->RegisterComponent();
+			if (AmbientReverbSubmix)
+			{
+				NewAmbientComponent->SetSubmixSend(AmbientReverbSubmix, CurrentReverbSendLevel);
+			}
 			NewAmbientComponent->SetSound(NewMetaSound);
 			float CategoryVol = CategoryVolumes.FindRef(EAudioCategory::Ambient);
 			NewAmbientComponent->SetVolumeMultiplier(0.0f);  // Start silent
@@ -604,6 +841,10 @@ void UAudioManager::UpdateWeatherLayers(EWeatherState WeatherState, float Intens
 					LayerComponent->bAutoActivate = false;
 					LayerComponent->bIsUISound = false;
 					LayerComponent->RegisterComponent();
+					if (AmbientReverbSubmix)
+					{
+						LayerComponent->SetSubmixSend(AmbientReverbSubmix, CurrentReverbSendLevel);
+					}
 					WeatherLayerComponents.Add(WeatherState, LayerComponent);
 				}
 			}
@@ -631,6 +872,10 @@ void UAudioManager::UpdateWeatherLayers(EWeatherState WeatherState, float Intens
 				Layer2Component->bAutoActivate = false;
 				Layer2Component->bIsUISound = false;
 				Layer2Component->RegisterComponent();
+				if (AmbientReverbSubmix)
+				{
+					Layer2Component->SetSubmixSend(AmbientReverbSubmix, CurrentReverbSendLevel);
+				}
 				Layer2Component->SetSound(Layer2Sound);
 				Layer2Component->SetVolumeMultiplier(MasterVolume * Intensity * 0.7f);  // Layer 2 is quieter
 				Layer2Component->Play();
@@ -733,6 +978,10 @@ void UAudioManager::SetZoneAmbientProfile(const FString& ZoneProfileName)
 				ZoneAmbientComponent->bAutoActivate = false;
 				ZoneAmbientComponent->bIsUISound = false;
 				ZoneAmbientComponent->RegisterComponent();
+				if (AmbientReverbSubmix)
+				{
+					ZoneAmbientComponent->SetSubmixSend(AmbientReverbSubmix, CurrentReverbSendLevel);
+				}
 			}
 		}
 
@@ -755,6 +1004,10 @@ void UAudioManager::SetZoneAmbientProfile(const FString& ZoneProfileName)
 							ZoneAmbientComponent->SetSound(ZoneMetaSound);
 							float CategoryVol = CategoryVolumes.FindRef(EAudioCategory::Ambient);
 							ZoneAmbientComponent->SetVolumeMultiplier(MasterVolume * CategoryVol);
+							if (AmbientReverbSubmix)
+							{
+								ZoneAmbientComponent->SetSubmixSend(AmbientReverbSubmix, CurrentReverbSendLevel);
+							}
 							ZoneAmbientComponent->FadeIn(DEFAULT_ZONE_TRANSITION_DURATION);
 						}
 					});
@@ -926,6 +1179,10 @@ void UAudioManager::PlayThunderStrike(float Volume)
 			ThunderComponent->bAutoActivate = false;
 			ThunderComponent->bIsUISound = false;
 			ThunderComponent->RegisterComponent();
+			if (AmbientReverbSubmix)
+			{
+				ThunderComponent->SetSubmixSend(AmbientReverbSubmix, CurrentReverbSendLevel);
+			}
 			ThunderComponent->SetSound(ThunderSound);
 			Volume = FMath::Clamp(Volume, 0.0f, 1.0f);
 			float RandomizedVolume = FMath::RandRange(Volume * 0.7f, Volume);  // Randomize volume (0.7-1.0x)
@@ -999,30 +1256,189 @@ float UAudioManager::CalculateAudioOcclusion(const FVector& SourceLocation, cons
 
 void UAudioManager::SetReverbPreset(const FString& PresetName, float TransitionDuration)
 {
-	if (PresetName == CurrentReverbPreset)
+	if (!AmbientReverbSubmix)
 	{
-		return;  // Already set
+		UE_LOG(LogTemp, Warning, TEXT("AudioManager: AmbientReverbSubmix not assigned - reverb send control will be skipped"));
 	}
 
-	CurrentReverbPreset = PresetName;
-	
-	// In production, load reverb preset asset and apply to ambient submix
-	// This is a placeholder - actual reverb preset loading would use:
-	// USoundEffectSubmixPreset* ReverbPreset = LoadObject<USoundEffectSubmixPreset>(nullptr, *PresetPath);
-	// Apply to ambient submix send level
+	if (PresetName == CurrentReverbPreset && !ReverbTransitionState.bActive)
+	{
+		return;
+	}
 
-	UE_LOG(LogTemp, Log, TEXT("AudioManager: Set reverb preset to %s"), *PresetName);
-	
-	// Reverb transition is handled via submix send level interpolation
-	// Placeholder for future implementation
-	UpdateReverbSendLevel(0.5f, TransitionDuration);  // Example: 50% wet level
+	UReverbEffect* LoadedEffect = nullptr;
+	FName PresetTag = NAME_None;
+
+	if (!PresetName.IsEmpty())
+	{
+		if (TSoftObjectPtr<UReverbEffect>* EffectPtr = ReverbEffectMap.Find(PresetName))
+		{
+			LoadedEffect = EffectPtr->IsValid() ? EffectPtr->Get() : EffectPtr->LoadSynchronous();
+		}
+
+		if (!LoadedEffect)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("AudioManager: Reverb preset '%s' not found"), *PresetName);
+		}
+		else
+		{
+			PresetTag = FName(*PresetName);
+		}
+	}
+
+	ApplyReverbPresetEffect(LoadedEffect, PresetTag, TransitionDuration);
+	CurrentReverbPreset = PresetName;
+
+	// Determine target send level
+	float TargetLevel = DefaultReverbSendLevel;
+	if (const float* LevelPtr = ReverbPresetLevels.Find(PresetName))
+	{
+		TargetLevel = FMath::Clamp(*LevelPtr, 0.0f, 1.0f);
+	}
+
+	UpdateReverbSendLevel(TargetLevel, TransitionDuration);
 }
 
 void UAudioManager::UpdateReverbSendLevel(float TargetLevel, float Duration)
 {
-	// Placeholder for reverb send level interpolation
-	// In production, interpolate submix send level for ambient category
-	UE_LOG(LogTemp, Verbose, TEXT("AudioManager: Updating reverb send level to %f over %f seconds"), TargetLevel, Duration);
+	TargetLevel = FMath::Clamp(TargetLevel, 0.0f, 1.0f);
+
+	if (Duration <= KINDA_SMALL_NUMBER)
+	{
+		CurrentReverbSendLevel = TargetLevel;
+		if (AmbientReverbSubmix)
+		{
+			ApplyReverbSendLevel(TargetLevel);
+		}
+
+		if (ActiveReverbEffect && ActiveReverbTag != NAME_None)
+		{
+			UReverbEffect* Effect = ActiveReverbEffect;
+			FName Tag = ActiveReverbTag;
+			ApplyReverbPresetEffect(Effect, Tag, 0.0f);
+		}
+
+		ReverbTransitionState = FReverbTransitionState();
+		if (UWorld* World = GetWorld())
+		{
+			World->GetTimerManager().ClearTimer(ReverbTransitionTimerHandle);
+		}
+		return;
+	}
+
+	ReverbTransitionState.StartLevel = CurrentReverbSendLevel;
+	ReverbTransitionState.TargetLevel = TargetLevel;
+	ReverbTransitionState.Duration = Duration;
+	ReverbTransitionState.ElapsedTime = 0.0f;
+	ReverbTransitionState.bActive = true;
+
+	if (UWorld* World = GetWorld())
+	{
+		World->GetTimerManager().ClearTimer(ReverbTransitionTimerHandle);
+		World->GetTimerManager().SetTimer(ReverbTransitionTimerHandle, this, &UAudioManager::HandleReverbTransition, 0.016f, true);
+	}
+}
+
+void UAudioManager::ApplyReverbSendLevel(float Level)
+{
+	if (!AmbientReverbSubmix)
+	{
+		return;
+	}
+
+	const float ClampedLevel = FMath::Clamp(Level, 0.0f, 1.0f);
+
+	if (TimeOfDayAmbientComponent)
+	{
+		TimeOfDayAmbientComponent->SetSubmixSend(AmbientReverbSubmix, ClampedLevel);
+	}
+
+	if (PendingAmbientComponent)
+	{
+		PendingAmbientComponent->SetSubmixSend(AmbientReverbSubmix, ClampedLevel);
+	}
+
+	if (ZoneAmbientComponent)
+	{
+		ZoneAmbientComponent->SetSubmixSend(AmbientReverbSubmix, ClampedLevel);
+	}
+
+	for (auto& Pair : WeatherLayerComponents)
+	{
+		if (Pair.Value)
+		{
+			Pair.Value->SetSubmixSend(AmbientReverbSubmix, ClampedLevel);
+		}
+	}
+
+	for (auto& Pair : ActiveAudioComponents)
+	{
+		if (Pair.Value)
+		{
+			Pair.Value->SetSubmixSend(AmbientReverbSubmix, ClampedLevel);
+		}
+	}
+}
+
+void UAudioManager::HandleReverbTransition()
+{
+	if (!ReverbTransitionState.bActive)
+	{
+		if (UWorld* World = GetWorld())
+		{
+			World->GetTimerManager().ClearTimer(ReverbTransitionTimerHandle);
+		}
+		return;
+	}
+
+	ReverbTransitionState.ElapsedTime += 0.016f;
+	const float Alpha = (ReverbTransitionState.Duration > KINDA_SMALL_NUMBER)
+		? FMath::Clamp(ReverbTransitionState.ElapsedTime / ReverbTransitionState.Duration, 0.0f, 1.0f)
+		: 1.0f;
+
+	const float NewLevel = FMath::Lerp(ReverbTransitionState.StartLevel, ReverbTransitionState.TargetLevel, Alpha);
+	ApplyReverbSendLevel(NewLevel);
+	CurrentReverbSendLevel = NewLevel;
+
+	if (Alpha >= 1.0f)
+	{
+		ReverbTransitionState = FReverbTransitionState();
+		if (UWorld* World = GetWorld())
+		{
+			World->GetTimerManager().ClearTimer(ReverbTransitionTimerHandle);
+		}
+
+		if (ActiveReverbEffect && ActiveReverbTag != NAME_None)
+		{
+			UReverbEffect* Effect = ActiveReverbEffect;
+			FName Tag = ActiveReverbTag;
+			ApplyReverbPresetEffect(Effect, Tag, 0.0f);
+		}
+	}
+}
+
+void UAudioManager::ApplyReverbPresetEffect(UReverbEffect* Preset, const FName& PresetTag, float FadeTime)
+{
+	if (!GetWorld())
+	{
+		return;
+	}
+
+	if (ActiveReverbTag != NAME_None)
+	{
+		UGameplayStatics::DeactivateReverbEffect(GetWorld(), ActiveReverbTag);
+	}
+
+	ActiveReverbEffect = nullptr;
+	ActiveReverbTag = NAME_None;
+
+	if (Preset && PresetTag != NAME_None)
+	{
+		const float Volume = FMath::Clamp(CurrentReverbSendLevel, 0.0f, 1.0f);
+		UGameplayStatics::ActivateReverbEffect(GetWorld(), Preset, PresetTag, /*Priority*/0.0f, Volume, FadeTime);
+		ActiveReverbEffect = Preset;
+		ActiveReverbTag = PresetTag;
+	}
 }
 
 USoundBase* UAudioManager::LoadMetaSoundTemplate(const FString& TemplateName)

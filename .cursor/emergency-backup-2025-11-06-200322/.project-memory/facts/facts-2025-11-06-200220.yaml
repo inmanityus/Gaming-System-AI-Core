@@ -1,0 +1,152 @@
+extracted_at: '2025-11-06T20:02:20.495288'
+facts:
+- commands: []
+  compression_ratio: 40.6%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : IncorrectValueForCommandParameter'
+  original_size_kb: '0.40'
+  resolutions: []
+  source_file: 20251106-195647-drop-memory-active.log
+  timestamp: '2025-11-06T19:56:47.719443'
+- commands: []
+  compression_ratio: 19.5%
+  decisions: []
+  errors:
+  - (:) [], ParentContainsErrorRecordException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : AmpersandNotAllowed'
+  - '+ CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException'
+  original_size_kb: '0.43'
+  resolutions: []
+  source_file: 20251106-195712-drop-memory-active.log
+  timestamp: '2025-11-06T19:57:13.384542'
+- commands: []
+  compression_ratio: 40.4%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : IncorrectValueForCommandParameter'
+  original_size_kb: '0.40'
+  resolutions: []
+  source_file: 20251106-195741-drop-memory-active2.log
+  timestamp: '2025-11-06T19:57:42.214446'
+- commands: []
+  compression_ratio: -8900.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-195810-drop-memory-active.log
+  timestamp: '2025-11-06T19:58:11.182021'
+- commands: []
+  compression_ratio: -9150.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-195827-drop-memory-checkpoints.log
+  timestamp: '2025-11-06T19:58:28.112298'
+- commands: []
+  compression_ratio: -9050.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-195846-drop-memory-construct.log
+  timestamp: '2025-11-06T19:58:47.126731'
+- commands: []
+  compression_ratio: 59.8%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.43'
+  resolutions: []
+  source_file: 20251106-195906-ensure-rules-dir.log
+  timestamp: '2025-11-06T19:59:07.368788'
+- commands: []
+  compression_ratio: 66.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : PositionalParameterNotFound,Microsoft.PowerShell.Commands.SetContentCommand'
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '0.98'
+  resolutions: []
+  source_file: 20251106-195933-create-memory.log
+  timestamp: '2025-11-06T19:59:34.694568'
+- commands: []
+  compression_ratio: 63.9%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : PositionalParameterNotFound,Microsoft.PowerShell.Commands.SetContentCommand'
+  - '+ FullyQualifiedErrorId : CommandNotFoundException'
+  original_size_kb: '0.90'
+  resolutions: []
+  source_file: 20251106-195956-create-memory2.log
+  timestamp: '2025-11-06T19:59:56.766471'
+- commands: []
+  compression_ratio: 18.8%
+  decisions: []
+  errors:
+  - '"The string '
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : CannotConvertArgumentNoMessage,Microsoft.PowerShell.Commands.GetDateCommand'
+  - 'Get-Date : Cannot bind parameter ''Date''. Cannot convert value "HH:mm:ss" to
+    type "System.DateTime". Error: "The string'
+  original_size_kb: '0.50'
+  resolutions: []
+  source_file: 20251106-200020-get-date.log
+  timestamp: '2025-11-06T20:00:21.240593'
+- commands: []
+  compression_ratio: -656.5%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.02'
+  resolutions: []
+  source_file: 20251106-200052-get-date-alt.log
+  timestamp: '2025-11-06T20:00:53.030021'
+- commands: []
+  compression_ratio: -9100.0%
+  decisions: []
+  errors: []
+  file_changes: []
+  key_outcomes: []
+  original_size_kb: '0.00'
+  resolutions: []
+  source_file: 20251106-200112-write-memory-construct.log
+  timestamp: '2025-11-06T20:01:12.637936'
+- commands: []
+  compression_ratio: 16.9%
+  decisions: []
+  errors:
+  - (:) [], ParseException
+  file_changes: []
+  key_outcomes:
+  - '+ FullyQualifiedErrorId : MissingEndCurlyBrace'
+  - '+ CategoryInfo          : ParserError: (:) [], ParseException'
+  original_size_kb: '0.37'
+  resolutions: []
+  source_file: 20251106-200139-resource-cleanup.log
+  timestamp: '2025-11-06T20:01:40.444144'
+input_directory: .cursor\ai-logs
+logs_processed: 13
+space_saved_mb: '0.00'
+total_compression: 12.4%

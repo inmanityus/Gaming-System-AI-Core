@@ -111,3 +111,5 @@ def _clamp(self, value: float, min_val: float = 0.0, max_val: float = 1.0) -> fl
 - Thread safety properly implemented
 - Validation patterns consistent with dialogue_style_profile.py
 
+
+

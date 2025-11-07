@@ -99,3 +99,5 @@ Write-Host "  2. Monitor training: .\scripts\monitor-training.ps1" -ForegroundCo
 Write-Host ""
 
 
+
+

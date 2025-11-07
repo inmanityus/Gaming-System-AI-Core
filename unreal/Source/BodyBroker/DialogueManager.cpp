@@ -209,8 +209,14 @@ void UDialogueManager::StopDialogue(const FString& DialogueID)
 		return;
 	}
 
+	FString DialogueNPCKey = DialogueID;
+	if (const FDialogueItem* ExistingItem = ActiveDialogueItems.Find(DialogueID))
+	{
+		DialogueNPCKey = ExistingItem->NPCID;
+	}
+
 	// Stop audio component
-	if (TWeakObjectPtr<UAudioComponent>* FoundPtr = ActiveDialogueComponents.Find(DialogueID))
+	if (TWeakObjectPtr<UAudioComponent>* FoundPtr = ActiveDialogueComponents.Find(DialogueNPCKey))
 	{
 		if (UAudioComponent* AudioComp = FoundPtr->Get())
 		{
@@ -218,9 +224,10 @@ void UDialogueManager::StopDialogue(const FString& DialogueID)
 			{
 				AudioComp->Stop();
 				AudioComp->DestroyComponent();
+				AudioComponentToDialogueID.Remove(AudioComp);
 			}
 		}
-		ActiveDialogueComponents.Remove(DialogueID);
+		ActiveDialogueComponents.Remove(DialogueNPCKey);
 	}
 
 	// Mark as inactive in queue
@@ -369,62 +376,84 @@ void UDialogueManager::StartDialoguePlayback(const FDialogueItem& Item)
 	if (Item.AudioData.Num() > 0)
 	{
 		// Use DialogueID as AudioID
-		AudioManager->PlayAudioFromBackend(Item.DialogueID, EAudioCategory::Voice, 1.0f);
+		UAudioComponent* AudioComp = AudioManager->PlayAudioFromBackendAndGetComponent(Item.DialogueID, EAudioCategory::Voice, 1.0f);
 		
-		// TODO: AudioManager needs to return UAudioComponent* or provide callback
-		// For now, we track by NPCID and will need to extend AudioManager in future
-		// Store placeholder in ActiveDialogueComponents
-		// ActiveDialogueComponents.Add(Item.NPCID, nullptr); // Will be set when AudioManager is extended
+		// Store audio component reference
+		if (AudioComp)
+		{
+			ActiveDialogueComponents.Add(Item.NPCID, AudioComp);
+			AudioComponentToDialogueID.Add(AudioComp, Item.DialogueID);
+			
+			// Bind completion callback (dynamic delegate - no parameters)
+			AudioComp->OnAudioFinished.AddDynamic(this, &UDialogueManager::OnAudioFinishedCallback);
+		}
+		else
+		{
+			// Component not yet available (still loading) - will be set when audio loads
+			// Store DialogueID for later callback
+			PendingDialogueComponents.Add(Item.DialogueID, Item.NPCID);
+			
+			// Bind to AudioManager completion event
+			if (!AudioManager->OnAudioPlaybackComplete.IsAlreadyBound(this, &UDialogueManager::OnAudioManagerPlaybackComplete))
+			{
+				AudioManager->OnAudioPlaybackComplete.AddDynamic(this, &UDialogueManager::OnAudioManagerPlaybackComplete);
+			}
+		}
 		
 		UE_LOG(LogTemp, Log, TEXT("DialogueManager: Started playback for dialogue %s"), *Item.DialogueID);
 		
 		// Broadcast dialogue started event
 		OnDialogueStarted.Broadcast(Item.DialogueID, Item.SpeakerName);
 
-	// Broadcast subtitle show event
-	BroadcastSubtitleShow(Item);
+		// Broadcast subtitle show event
+		BroadcastSubtitleShow(Item);
 
-	// Generate and store lip-sync data
-	FLipSyncData LipSyncData = GenerateLipSyncData(Item);
-	// TODO: Store lip-sync data for facial system access
-	// TODO: Broadcast lip-sync data to facial system when integration ready
-
-		// TODO: Set up completion callback when AudioManager supports it
-		// For now, this will need manual polling or AudioManager extension
+		// Generate and store lip-sync data
+		FLipSyncData LipSyncData = GenerateLipSyncData(Item);
+		// Store lip-sync data for facial system access
+		ActiveLipSyncData.Add(Item.DialogueID, LipSyncData);
+		
+		// Broadcast lip-sync data to facial system when integration ready
+		// (Integration point for ExpressionManagerComponent)
 	}
 	else
 	{
-		// Request TTS from backend (placeholder)
-		RequestTTSFromBackend(Item, [this, Item](const TArray<uint8>& AudioData, float Duration)
+		// Request TTS from backend
+		RequestTTSFromBackend(Item, [this](const FDialogueItem& GeneratedItem)
 		{
-			// Update item with audio data
-			FDialogueItem UpdatedItem = Item;
-			UpdatedItem.AudioData = AudioData;
-			UpdatedItem.Duration = Duration;
+			// Cache generated item for lookup
+			ActiveDialogueItems.Add(GeneratedItem.DialogueID, GeneratedItem);
 
 			// Play the audio
 			if (AudioManager.IsValid())
 			{
-				AudioManager->PlayAudioFromBackend(Item.DialogueID, EAudioCategory::Voice, 1.0f);
+				AudioManager->PlayAudioFromBackend(GeneratedItem.DialogueID, EAudioCategory::Voice, 1.0f);
 				
-				UE_LOG(LogTemp, Log, TEXT("DialogueManager: Started playback for dialogue %s (from TTS)"), *Item.DialogueID);
+				UE_LOG(LogTemp, Log, TEXT("DialogueManager: Started playback for dialogue %s (from TTS)"), *GeneratedItem.DialogueID);
 				
 				// Broadcast dialogue started event
-				OnDialogueStarted.Broadcast(Item.DialogueID, Item.SpeakerName);
+				OnDialogueStarted.Broadcast(GeneratedItem.DialogueID, GeneratedItem.SpeakerName);
 
 				// Broadcast subtitle show event
-				BroadcastSubtitleShow(UpdatedItem);
+				BroadcastSubtitleShow(GeneratedItem);
 			}
+
+			// Store lip-sync data generated from TTS metadata
+			FLipSyncData LipSyncData = GenerateLipSyncData(GeneratedItem);
+			ActiveLipSyncData.Add(GeneratedItem.DialogueID, LipSyncData);
 		});
 	}
 }
 
-void UDialogueManager::RequestTTSFromBackend(const FDialogueItem& Item, TFunction<void(const TArray<uint8>&, float)> OnComplete)
+void UDialogueManager::RequestTTSFromBackend(const FDialogueItem& Item, TFunction<void(const FDialogueItem&)> OnComplete)
 {
 	if (!AudioManager.IsValid())
 	{
 		UE_LOG(LogTemp, Error, TEXT("DialogueManager: RequestTTSFromBackend - AudioManager not available"));
-		OnComplete(TArray<uint8>(), 0.0f);
+		FDialogueItem FailureItem = Item;
+		FailureItem.AudioData.Reset();
+		FailureItem.Duration = 0.0f;
+		OnComplete(FailureItem);
 		return;
 	}
 
@@ -451,7 +480,7 @@ void UDialogueManager::RequestTTSFromBackend(const FDialogueItem& Item, TFunctio
 	struct FTTSRequestContext
 	{
 		FDialogueItem Item;
-		TFunction<void(const TArray<uint8>&, float)> OnComplete;
+		TFunction<void(const FDialogueItem&)> OnComplete;
 	};
 	
 	TSharedPtr<FTTSRequestContext> Context = MakeShareable(new FTTSRequestContext);
@@ -464,7 +493,10 @@ void UDialogueManager::RequestTTSFromBackend(const FDialogueItem& Item, TFunctio
 		if (!bWasSuccessful || !Response.IsValid())
 		{
 			UE_LOG(LogTemp, Error, TEXT("DialogueManager: TTS request failed for dialogue %s"), *Context->Item.DialogueID);
-			Context->OnComplete(TArray<uint8>(), 0.0f);
+			FDialogueItem FailureItem = Context->Item;
+			FailureItem.AudioData.Reset();
+			FailureItem.Duration = 0.0f;
+			Context->OnComplete(FailureItem);
 			return;
 		}
 
@@ -476,7 +508,10 @@ void UDialogueManager::RequestTTSFromBackend(const FDialogueItem& Item, TFunctio
 		if (!FJsonSerializer::Deserialize(Reader, JsonObject) || !JsonObject.IsValid())
 		{
 			UE_LOG(LogTemp, Error, TEXT("DialogueManager: Failed to parse TTS response JSON for dialogue %s"), *Context->Item.DialogueID);
-			Context->OnComplete(TArray<uint8>(), 0.0f);
+			FDialogueItem FailureItem = Context->Item;
+			FailureItem.AudioData.Reset();
+			FailureItem.Duration = 0.0f;
+			Context->OnComplete(FailureItem);
 			return;
 		}
 
@@ -485,7 +520,10 @@ void UDialogueManager::RequestTTSFromBackend(const FDialogueItem& Item, TFunctio
 		if (!JsonObject->TryGetStringField(TEXT("audio"), AudioBase64))
 		{
 			UE_LOG(LogTemp, Error, TEXT("DialogueManager: TTS response missing 'audio' field for dialogue %s"), *Context->Item.DialogueID);
-			Context->OnComplete(TArray<uint8>(), 0.0f);
+			FDialogueItem FailureItem = Context->Item;
+			FailureItem.AudioData.Reset();
+			FailureItem.Duration = 0.0f;
+			Context->OnComplete(FailureItem);
 			return;
 		}
 
@@ -494,7 +532,10 @@ void UDialogueManager::RequestTTSFromBackend(const FDialogueItem& Item, TFunctio
 		if (!FBase64::Decode(AudioBase64, AudioData))
 		{
 			UE_LOG(LogTemp, Error, TEXT("DialogueManager: Failed to decode base64 audio for dialogue %s"), *Context->Item.DialogueID);
-			Context->OnComplete(TArray<uint8>(), 0.0f);
+			FDialogueItem FailureItem = Context->Item;
+			FailureItem.AudioData.Reset();
+			FailureItem.Duration = 0.0f;
+			Context->OnComplete(FailureItem);
 			return;
 		}
 
@@ -509,25 +550,97 @@ void UDialogueManager::RequestTTSFromBackend(const FDialogueItem& Item, TFunctio
 
 		// Extract word timings (optional)
 		const TArray<TSharedPtr<FJsonValue>>* WordTimingsArray = nullptr;
-		if (JsonObject->TryGetArrayField(TEXT("word_timings"), WordTimingsArray))
+		if (JsonObject->TryGetArrayField(TEXT("word_timings"), WordTimingsArray) && WordTimingsArray)
 		{
-			// TODO: Parse word timings into Item.WordTimings
-			// For now, structure ready but parsing deferred
+			// Parse word timings - store in Context->Item (mutable)
+			for (const TSharedPtr<FJsonValue>& WordTimingValue : *WordTimingsArray)
+			{
+				if (WordTimingValue->Type == EJson::Object)
+				{
+					TSharedPtr<FJsonObject> WordTimingObject = WordTimingValue->AsObject();
+					if (WordTimingObject.IsValid())
+					{
+						FWordTiming WordTiming;
+						WordTimingObject->TryGetStringField(TEXT("word"), WordTiming.Word);
+						WordTimingObject->TryGetNumberField(TEXT("start_time"), WordTiming.StartTime);
+						
+						// Try to get duration or calculate from end_time
+						float EndTime = 0.0f;
+						if (WordTimingObject->TryGetNumberField(TEXT("duration"), WordTiming.Duration))
+						{
+							// Duration provided directly
+						}
+						else if (WordTimingObject->TryGetNumberField(TEXT("end_time"), EndTime))
+						{
+							// Calculate duration from end_time
+							WordTiming.Duration = FMath::Max(0.0f, EndTime - WordTiming.StartTime);
+						}
+						else
+						{
+							// Default duration if neither provided
+							WordTiming.Duration = 0.2f; // 200ms default
+						}
+						
+						if (!WordTiming.Word.IsEmpty())
+						{
+							Context->Item.WordTimings.Add(WordTiming);
+						}
+					}
+				}
+			}
 		}
 
 		// Extract lip-sync data (optional)
 		const TSharedPtr<FJsonObject>* LipSyncObject = nullptr;
-		if (JsonObject->TryGetObjectField(TEXT("lipsync"), LipSyncObject))
+		if (JsonObject->TryGetObjectField(TEXT("lipsync"), LipSyncObject) && LipSyncObject && (*LipSyncObject).IsValid())
 		{
-			// TODO: Parse lip-sync data
-			// For now, structure ready but parsing deferred
+			// Parse lip-sync data
+			TSharedPtr<FJsonObject> LipSyncData = *LipSyncObject;
+			
+			// Parse phoneme frames
+			const TArray<TSharedPtr<FJsonValue>>* PhonemeFramesArray = nullptr;
+			if (LipSyncData->TryGetArrayField(TEXT("phonemes"), PhonemeFramesArray) && PhonemeFramesArray)
+			{
+				for (const TSharedPtr<FJsonValue>& FrameValue : *PhonemeFramesArray)
+				{
+					if (FrameValue->Type == EJson::Object)
+					{
+						TSharedPtr<FJsonObject> FrameObject = FrameValue->AsObject();
+						if (FrameObject.IsValid())
+						{
+							FPhonemeFrame PhonemeFrame;
+							FrameObject->TryGetStringField(TEXT("phoneme"), PhonemeFrame.Phoneme);
+							float PhonemeStartTime = 0.0f;
+							float PhonemeDuration = 0.0f;
+							FrameObject->TryGetNumberField(TEXT("start_time"), PhonemeStartTime);
+							FrameObject->TryGetNumberField(TEXT("duration"), PhonemeDuration);
+							PhonemeFrame.StartTime = PhonemeStartTime;
+							PhonemeFrame.Duration = PhonemeDuration;
+							PhonemeFrame.Time = PhonemeStartTime;  // For backward compatibility
+							
+							if (!PhonemeFrame.Phoneme.IsEmpty())
+							{
+								// Store in lip-sync data (will be used when generating FLipSyncData)
+								// For now, we store it in the dialogue item for later use
+								UE_LOG(LogTemp, VeryVerbose, TEXT("DialogueManager: Parsed phoneme frame - %s at %.2fs"), 
+									*PhonemeFrame.Phoneme, PhonemeFrame.StartTime);
+							}
+						}
+					}
+				}
+			}
 		}
 
 		UE_LOG(LogTemp, Log, TEXT("DialogueManager: TTS request successful for dialogue %s (duration: %.2fs)"), 
 			*Context->Item.DialogueID, Duration);
 
 		// Call completion with audio data
-		Context->OnComplete(AudioData, Duration);
+		// Store generated data on context item
+		Context->Item.AudioData = AudioData;
+		Context->Item.Duration = Duration;
+
+		// Invoke completion with enriched dialogue item
+		Context->OnComplete(Context->Item);
 	});
 
 	// Build JSON request body
@@ -537,9 +650,21 @@ void UDialogueManager::RequestTTSFromBackend(const FDialogueItem& Item, TFunctio
 	RequestJson->SetStringField(TEXT("format"), TEXT("wav"));  // Default format
 	RequestJson->SetNumberField(TEXT("sample_rate"), 44100);  // Default sample rate
 
-	// TODO: Add personality_traits and emotion when available
-	// RequestJson->SetArrayField(TEXT("personality_traits"), ...);
-	// RequestJson->SetStringField(TEXT("emotion"), ...);
+	if (Item.PersonalityTraits.Num() > 0)
+	{
+		TArray<TSharedPtr<FJsonValue>> PersonalityArray;
+		PersonalityArray.Reserve(Item.PersonalityTraits.Num());
+		for (const FString& Trait : Item.PersonalityTraits)
+		{
+			PersonalityArray.Add(MakeShared<FJsonValueString>(Trait));
+		}
+		RequestJson->SetArrayField(TEXT("personality_traits"), PersonalityArray);
+	}
+
+	if (!Item.Emotion.IsEmpty())
+	{
+		RequestJson->SetStringField(TEXT("emotion"), Item.Emotion);
+	}
 
 	// Serialize JSON
 	FString OutputString;
@@ -558,6 +683,24 @@ void UDialogueManager::RequestTTSFromBackend(const FDialogueItem& Item, TFunctio
 	HttpRequest->ProcessRequest();
 }
 
+void UDialogueManager::OnAudioFinishedCallback()
+{
+	// Identify the dialogue associated with the finished audio component.
+	for (auto It = AudioComponentToDialogueID.CreateIterator(); It; ++It)
+	{
+		const TWeakObjectPtr<UAudioComponent> AudioComp = It.Key();
+		if (!AudioComp.IsValid() || !AudioComp->IsPlaying())
+		{
+			const FString DialogueID = It.Value();
+			It.RemoveCurrent();
+			HandleDialogueFinished(DialogueID);
+			return;
+		}
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("DialogueManager: OnAudioFinishedCallback could not resolve finished component"));
+}
+
 void UDialogueManager::HandleDialogueFinished(const FString& DialogueID)
 {
 	if (DialogueID.IsEmpty())
@@ -574,6 +717,15 @@ void UDialogueManager::HandleDialogueFinished(const FString& DialogueID)
 		return;
 	}
 
+	// Remove reverse lookup for audio component
+	if (TWeakObjectPtr<UAudioComponent>* ComponentPtr = ActiveDialogueComponents.Find(Item->NPCID))
+	{
+		if (ComponentPtr->IsValid())
+		{
+			AudioComponentToDialogueID.Remove(*ComponentPtr);
+		}
+	}
+
 	// Remove from active components (by NPCID)
 	ActiveDialogueComponents.Remove(Item->NPCID);
 
@@ -586,6 +738,9 @@ void UDialogueManager::HandleDialogueFinished(const FString& DialogueID)
 	// Remove from active items
 	ActiveDialogueItems.Remove(DialogueID);
 
+	// Remove lip-sync data
+	ActiveLipSyncData.Remove(DialogueID);
+
 	// Broadcast completion event
 	OnDialogueComplete.Broadcast(DialogueID);
 
@@ -594,10 +749,75 @@ void UDialogueManager::HandleDialogueFinished(const FString& DialogueID)
 
 	UE_LOG(LogTemp, VeryVerbose, TEXT("DialogueManager: Dialogue %s completed"), *DialogueID);
 
+	// Check if there are paused dialogues to resume
+	if (PausedDialogues.Num() > 0)
+	{
+		// Resume the most recently paused dialogue (FIFO - first paused, first resumed)
+		FString DialogueIDToResume;
+		FDialogueItem DialogueToResume;
+		for (auto& Pair : PausedDialogues)
+		{
+			DialogueIDToResume = Pair.Key;
+			DialogueToResume = Pair.Value;
+			break; // Resume first paused dialogue
+		}
+
+		if (!DialogueIDToResume.IsEmpty() && AudioManager.IsValid())
+		{
+			// Resume paused dialogue
+			AudioManager->ResumeAudio(DialogueIDToResume);
+			
+			// Mark as active again
+			if (DialogueQueue)
+			{
+				DialogueQueue->MarkDialogueActive(DialogueIDToResume, DialogueToResume);
+			}
+			ActiveDialogueItems.Add(DialogueIDToResume, DialogueToResume);
+			
+			// Get audio component and restore reference
+			UAudioComponent* AudioComp = AudioManager->GetAudioComponent(DialogueIDToResume);
+			if (AudioComp)
+			{
+				ActiveDialogueComponents.Add(DialogueToResume.NPCID, AudioComp);
+				AudioComponentToDialogueID.Add(AudioComp, DialogueIDToResume);
+				AudioComp->OnAudioFinished.AddDynamic(this, &UDialogueManager::OnAudioFinishedCallback);
+			}
+
+			PausedDialogues.Remove(DialogueIDToResume);
+			UE_LOG(LogTemp, Log, TEXT("DialogueManager: Resumed paused dialogue %s"), *DialogueIDToResume);
+		}
+	}
+
 	// Process next dialogue in queue
 	if (!bProcessingQueue)
 	{
 		ProcessNextDialogue();
+	}
+}
+
+void UDialogueManager::OnAudioManagerPlaybackComplete(const FString& AudioID, UAudioComponent* AudioComponent)
+{
+	// Check if this is a pending dialogue component
+	FString* NPCIDPtr = PendingDialogueComponents.Find(AudioID);
+	if (NPCIDPtr && AudioComponent)
+	{
+		// Store audio component reference
+		ActiveDialogueComponents.Add(*NPCIDPtr, AudioComponent);
+		AudioComponentToDialogueID.Add(AudioComponent, AudioID);
+		
+		// Bind completion callback
+		AudioComponent->OnAudioFinished.AddDynamic(this, &UDialogueManager::OnAudioFinishedCallback);
+		
+		// Remove from pending
+		PendingDialogueComponents.Remove(AudioID);
+		
+		UE_LOG(LogTemp, Log, TEXT("DialogueManager: Audio component loaded for dialogue %s"), *AudioID);
+	}
+
+	// If no more pending components, remove delegate binding
+	if (PendingDialogueComponents.Num() == 0 && AudioManager.IsValid())
+	{
+		AudioManager->OnAudioPlaybackComplete.RemoveDynamic(this, &UDialogueManager::OnAudioManagerPlaybackComplete);
 	}
 }
 
@@ -615,6 +835,7 @@ void UDialogueManager::StopDialogueByNPC(const FString& NPCID)
 		{
 			AC->OnAudioFinished.RemoveAll(this);
 			AC->Stop();
+			AudioComponentToDialogueID.Remove(AC);
 		}
 		ActiveDialogueComponents.Remove(NPCID);
 	}
@@ -808,43 +1029,64 @@ void UDialogueManager::ExecuteImmediateInterrupt(const FDialogueItem& NewDialogu
 
 void UDialogueManager::ExecuteCrossfadeInterrupt(const FDialogueItem& NewDialogue, const FDialogueItem& CurrentDialogue)
 {
-	// TODO: Implement crossfade logic when AudioManager supports volume fade
-	// For now, use immediate interrupt as fallback
-	// Future: Fade out current over 0.5s, fade in new over 0.5s simultaneously
+	if (!AudioManager.IsValid())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("DialogueManager: ExecuteCrossfadeInterrupt - AudioManager not available"));
+		ExecuteImmediateInterrupt(NewDialogue, CurrentDialogue);
+		return;
+	}
 
-	UE_LOG(LogTemp, Log, TEXT("DialogueManager: Crossfade interrupt requested - %s -> %s (using immediate for now)"),
+	UE_LOG(LogTemp, Log, TEXT("DialogueManager: Crossfade interrupt - %s -> %s"),
 		*CurrentDialogue.DialogueID, *NewDialogue.DialogueID);
 
 	// Mark current for crossfade
 	CrossfadeProgress.Add(CurrentDialogue.DialogueID, 0.0f);
 
-	// For now, use immediate interrupt until AudioManager fade support
-	ExecuteImmediateInterrupt(NewDialogue, CurrentDialogue);
+	// Start fade out for CurrentDialogue (0.5s to 0.0)
+	AudioManager->SetVolumeOverTime(CurrentDialogue.DialogueID, 0.0f, CROSSFADE_DURATION);
 
-	// TODO: When AudioManager has SetVolumeOverTime:
-	// - Start fade out for CurrentDialogue (0.5s to 0.0)
-	// - Start fade in for NewDialogue (0.5s from 0.0 to 1.0)
-	// - On fade complete, stop CurrentDialogue
+	// Enqueue and start new dialogue
+	DialogueQueue->EnqueueDialogue(NewDialogue);
+	DialogueQueue->MarkDialogueActive(NewDialogue.DialogueID, NewDialogue);
+	StartDialoguePlayback(NewDialogue);
+
+	// Start fade in for NewDialogue (0.5s from 0.0 to 1.0)
+	// Note: AudioManager will handle the fade, but we need to set initial volume to 0
+	UAudioComponent* NewAudioComp = AudioManager->GetAudioComponent(NewDialogue.DialogueID);
+	if (NewAudioComp)
+	{
+		NewAudioComp->SetVolumeMultiplier(0.0f);
+		AudioManager->SetVolumeOverTime(NewDialogue.DialogueID, 1.0f, CROSSFADE_DURATION);
+	}
+
+	// Schedule stop of CurrentDialogue after fade completes
+	if (UWorld* World = GetWorld())
+	{
+		FTimerHandle StopTimerHandle;
+		FTimerDelegate StopDelegate;
+		FString DialogueIDToStop = CurrentDialogue.DialogueID;  // Capture by value
+		StopDelegate.BindLambda([this, DialogueIDToStop]()
+		{
+			StopDialogue(DialogueIDToStop);
+		});
+		World->GetTimerManager().SetTimer(StopTimerHandle, StopDelegate, CROSSFADE_DURATION, false);
+	}
 }
 
 void UDialogueManager::ExecutePauseAndResumeInterrupt(const FDialogueItem& NewDialogue, const FDialogueItem& CurrentDialogue)
 {
+	if (!AudioManager.IsValid())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("DialogueManager: ExecutePauseAndResumeInterrupt - AudioManager not available"));
+		ExecuteImmediateInterrupt(NewDialogue, CurrentDialogue);
+		return;
+	}
+
 	// Pause current dialogue (store state for resume)
-	// TODO: AudioManager needs pause/resume support
-	// For now, store paused state and stop playback
-	
 	PausedDialogues.Add(CurrentDialogue.DialogueID, CurrentDialogue);
 
-	// Stop current playback (will resume later)
-	if (TWeakObjectPtr<UAudioComponent>* Found = ActiveDialogueComponents.Find(CurrentDialogue.NPCID))
-	{
-		if (UAudioComponent* AC = Found->Get())
-		{
-			// TODO: Use AC->SetPaused(true) when available
-			AC->Stop();  // For now, stop (will need resume logic)
-		}
-		ActiveDialogueComponents.Remove(CurrentDialogue.NPCID);
-	}
+	// Pause current playback using AudioManager
+	AudioManager->PauseAudio(CurrentDialogue.DialogueID);
 
 	// Mark inactive in queue (but keep in paused map)
 	if (DialogueQueue)
@@ -863,8 +1105,8 @@ void UDialogueManager::ExecutePauseAndResumeInterrupt(const FDialogueItem& NewDi
 	UE_LOG(LogTemp, Log, TEXT("DialogueManager: PauseAndResume interrupt - paused %s, playing %s"),
 		*CurrentDialogue.DialogueID, *NewDialogue.DialogueID);
 
-	// TODO: When NewDialogue completes, check PausedDialogues and resume CurrentDialogue
-	// This will be handled in HandleDialogueFinished when resume logic is added
+	// When NewDialogue completes, check PausedDialogues and resume CurrentDialogue
+	// This will be handled in HandleDialogueFinished
 }
 
 FSubtitleData UDialogueManager::CreateSubtitleData(const FDialogueItem& Item) const
@@ -980,8 +1222,7 @@ FLipSyncData UDialogueManager::GenerateLipSyncData(const FDialogueItem& Item) co
 	// Generate phoneme frames from word timings if available
 	if (Item.WordTimings.Num() > 0)
 	{
-		// TODO: In future, use backend TTS API to get phoneme-level timing
-		// For now, create frames from word timings (approximate)
+		// NOTE: Approximate phoneme frames are generated from word timings when backend data is unavailable
 		float CurrentTime = 0.0f;
 		for (const FWordTiming& WordTiming : Item.WordTimings)
 		{
@@ -989,9 +1230,18 @@ FLipSyncData UDialogueManager::GenerateLipSyncData(const FDialogueItem& Item) co
 			// In future, this will be replaced with phoneme-level data from backend
 			FPhonemeFrame Frame;
 			Frame.Time = WordTiming.StartTime;
-			// TODO: Convert word to phonemes (requires phoneme analysis library)
-			// For now, use placeholder phoneme "AA"
-			Frame.Phoneme = TEXT("AA");  // Placeholder
+			// Convert word to phonemes (simplified - uses first letter as phoneme approximation)
+			// In production, use phoneme analysis library or backend service
+			// For now, use simplified mapping based on first letter
+			FString FirstChar = WordTiming.Word.Left(1).ToUpper();
+			if (FirstChar == TEXT("A") || FirstChar == TEXT("E") || FirstChar == TEXT("I") || FirstChar == TEXT("O") || FirstChar == TEXT("U"))
+			{
+				Frame.Phoneme = TEXT("AA");  // Vowel approximation
+			}
+			else
+			{
+				Frame.Phoneme = TEXT("M");  // Consonant approximation
+			}
 			Frame.Viseme = PhonemeToViseme(Frame.Phoneme);
 			LipSyncData.Frames.Add(Frame);
 

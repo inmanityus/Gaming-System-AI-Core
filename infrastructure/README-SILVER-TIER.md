@@ -60,3 +60,5 @@ kubectl apply -f infrastructure/kubernetes/nlb/silver-tier-nlb.yaml
 **Status**: Planning phase - ready for implementation
 
 
+
+

@@ -38,8 +38,10 @@ docs/updates/
 docs/success-output/
 docs/temp/
 docs/logs/
+Project-Management/Documentation/Success/
+Project-Management/Documentation/Status/
 
-# BUT track important documentation
+# BUT track important documentation (old docs/ structure - being phased out)
 !docs/Requirements/
 !docs/Solutions/
 !docs/Tasks/
@@ -50,6 +52,16 @@ docs/logs/
 !docs/User-Guides/
 !docs/Troubleshooting/
 !docs/Changelog/
+
+# Track important Project-Management documentation
+!Project-Management/Documentation/Requirements/
+!Project-Management/Documentation/Solutions/
+!Project-Management/Documentation/Tasks/
+!Project-Management/Documentation/Milestones/
+!Project-Management/Documentation/Sessions/
+!Project-Management/Documentation/Testing/
+!Project-Management/Documentation/Deployment/
+!Project-Management/Documentation/Reviews/
 
 # Global junctions - should not be committed
 Global-Rules/

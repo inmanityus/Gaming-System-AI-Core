@@ -9,7 +9,8 @@
 class USoundBase;
 class UAudioComponent;
 class USoundAttenuation;
-class USoundEffectSubmixPreset;
+class USoundSubmixBase;
+class UReverbEffect;
 class IHttpRequest;
 class IHttpResponse;
 class UTimeOfDayManager;
@@ -19,6 +20,9 @@ class UAudioPoolManager;
 typedef TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> FHttpRequestPtr;
 typedef TSharedPtr<IHttpResponse, ESPMode::ThreadSafe> FHttpResponsePtr;
 
+// Delegate for audio playback completion
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAudioPlaybackComplete, const FString&, AudioID, UAudioComponent*, AudioComponent);
+
 UENUM(BlueprintType)
 enum class EAudioCategory : uint8
 {
@@ -27,6 +31,31 @@ enum class EAudioCategory : uint8
 	Music		UMETA(DisplayName = "Music"),
 	Effect		UMETA(DisplayName = "Effect"),
 	UI			UMETA(DisplayName = "UI")
+};
+
+// Fade state struct (for DialogueManager crossfade support)
+USTRUCT()
+struct FFadeState
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString AudioID;
+
+	UPROPERTY()
+	float StartVolume = 0.0f;
+
+	UPROPERTY()
+	float TargetVolume = 0.0f;
+
+	UPROPERTY()
+	float Duration = 0.0f;
+
+	UPROPERTY()
+	float ElapsedTime = 0.0f;
+
+	UPROPERTY()
+	EAudioCategory Category = EAudioCategory::Voice;
 };
 
 /**
@@ -88,6 +117,30 @@ public:
 	// Play audio from backend API
 	UFUNCTION(BlueprintCallable, Category = "Audio Manager")
 	void PlayAudioFromBackend(const FString& AudioID, EAudioCategory Category, float Volume = 1.0f);
+
+	// Play audio from backend API and return audio component (for DialogueManager integration)
+	UFUNCTION(BlueprintCallable, Category = "Audio Manager")
+	UAudioComponent* PlayAudioFromBackendAndGetComponent(const FString& AudioID, EAudioCategory Category, float Volume = 1.0f);
+
+	// Event delegate for audio playback completion
+	UPROPERTY(BlueprintAssignable, Category = "Audio Manager|Events")
+	FOnAudioPlaybackComplete OnAudioPlaybackComplete;
+
+	// Get audio component by ID (for DialogueManager integration)
+	UFUNCTION(BlueprintCallable, Category = "Audio Manager")
+	UAudioComponent* GetAudioComponent(const FString& AudioID) const;
+
+	// Set volume over time (fade support for DialogueManager)
+	UFUNCTION(BlueprintCallable, Category = "Audio Manager")
+	void SetVolumeOverTime(const FString& AudioID, float TargetVolume, float Duration);
+
+	// Pause audio playback
+	UFUNCTION(BlueprintCallable, Category = "Audio Manager")
+	void PauseAudio(const FString& AudioID);
+
+	// Resume audio playback
+	UFUNCTION(BlueprintCallable, Category = "Audio Manager")
+	void ResumeAudio(const FString& AudioID);
 
 	// Stop audio playback
 	UFUNCTION(BlueprintCallable, Category = "Audio Manager")
@@ -169,6 +222,10 @@ private:
 	UPROPERTY()
 	TMap<FString, UAudioComponent*> ActiveAudioComponents;
 
+	// Category per component (for efficient lookup)
+	UPROPERTY()
+	TMap<UAudioComponent*, EAudioCategory> AudioComponentCategories;
+
 	// Category volume settings
 	UPROPERTY()
 	TMap<EAudioCategory, float> CategoryVolumes;
@@ -226,6 +283,9 @@ private:
 
 	// Update reverb send level smoothly
 	void UpdateReverbSendLevel(float TargetLevel, float Duration);
+	void ApplyReverbSendLevel(float Level);
+	void HandleReverbTransition();
+	void ApplyReverbPresetEffect(UReverbEffect* Preset, const FName& PresetTag, float FadeTime);
 
 	// VA-002 State Tracking
 	UPROPERTY()
@@ -242,6 +302,27 @@ private:
 
 	UPROPERTY()
 	FString CurrentReverbPreset;
+
+	UPROPERTY(EditAnywhere, Category = "Audio Manager|Reverb")
+	TObjectPtr<USoundSubmixBase> AmbientReverbSubmix;
+
+	UPROPERTY(EditAnywhere, Category = "Audio Manager|Reverb")
+	TMap<FString, TSoftObjectPtr<UReverbEffect>> ReverbEffectMap;
+
+	UPROPERTY(EditAnywhere, Category = "Audio Manager|Reverb")
+	TMap<FString, float> ReverbPresetLevels;
+
+	UPROPERTY(EditAnywhere, Category = "Audio Manager|Reverb")
+	float DefaultReverbSendLevel = 0.5f;
+
+	UPROPERTY()
+	TObjectPtr<UReverbEffect> ActiveReverbEffect;
+
+	UPROPERTY()
+	FName ActiveReverbTag;
+
+	UPROPERTY()
+	float CurrentReverbSendLevel = 0.5f;
 
 	// Active audio components for VA-002 systems
 	UPROPERTY()
@@ -266,6 +347,17 @@ private:
 
 	UPROPERTY()
 	FTimerHandle ReverbTransitionTimerHandle;
+
+	struct FReverbTransitionState
+	{
+		float StartLevel = 0.0f;
+		float TargetLevel = 0.0f;
+		float Duration = 0.0f;
+		float ElapsedTime = 0.0f;
+		bool bActive = false;
+	};
+
+	FReverbTransitionState ReverbTransitionState;
 
 	// MetaSound template cache
 	UPROPERTY()
@@ -305,6 +397,19 @@ private:
 	};
 	
 	FDuckingState CurrentDuckingState;
+
+	UPROPERTY()
+	TMap<FString, FFadeState> ActiveFades;
+
+	UPROPERTY()
+	TMap<FString, FTimerHandle> FadeTimerHandles;
+
+	// Update fade (called by timer)
+	void UpdateFade(const FString& AudioID);
+
+	// Audio component finished callback
+	UFUNCTION()
+	void OnAudioComponentFinished();
 
 	// Constants
 	static constexpr float DEFAULT_AMBIENT_CROSSFADE_DURATION = 30.0f;  // 30 seconds for time-of-day

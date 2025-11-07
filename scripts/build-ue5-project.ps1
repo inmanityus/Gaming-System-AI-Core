@@ -15,7 +15,7 @@ param(
     [string]$TargetType = "Editor",
     
     [Parameter(Mandatory=$false)]
-    [string]$UEPath = "C:\Program Files\Epic Games\UE_5.6"
+    [string]$UEPath = ""
 )
 
 Write-Host "=== UE5 Project Build Script ===" -ForegroundColor Cyan
@@ -25,10 +25,22 @@ Write-Host ""
 $fullProjectPath = Resolve-Path $ProjectPath -ErrorAction Stop
 Write-Host "Project: $fullProjectPath" -ForegroundColor White
 
+# Auto-detect UE5.6.1 if path not provided
+if ([string]::IsNullOrEmpty($UEPath)) {
+    # CRITICAL: UE 5.6.1 is installed at UE_5.6 folder (version 5.6.1, folder name is UE_5.6)
+    $UEPath = "C:\Program Files\Epic Games\UE_5.6"
+    
+    if (-not (Test-Path $UEPath)) {
+        Write-Host "❌ UE 5.6.1 not found at: $UEPath" -ForegroundColor Red
+        Write-Host "Please install UE 5.6.1 or update -UEPath parameter" -ForegroundColor Yellow
+        exit 1
+    }
+}
+
 # Check UE installation
 if (-not (Test-Path $UEPath)) {
     Write-Host "❌ UE5 not found at: $UEPath" -ForegroundColor Red
-    Write-Host "Please update -UEPath parameter" -ForegroundColor Yellow
+    Write-Host "Please install UE 5.6.1 or update -UEPath parameter" -ForegroundColor Yellow
     exit 1
 }
 
@@ -39,6 +51,7 @@ if (-not (Test-Path $buildBat)) {
 }
 
 Write-Host "UE Path: $UEPath" -ForegroundColor White
+Write-Host "✓ Using UE 5.6.1 (correct version)" -ForegroundColor Green
 Write-Host "Configuration: $Configuration" -ForegroundColor White
 Write-Host "Platform: $Platform" -ForegroundColor White
 Write-Host "Target Type: $TargetType" -ForegroundColor White

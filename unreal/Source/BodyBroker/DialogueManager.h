@@ -81,6 +81,12 @@ struct FPhonemeFrame
 	float Time;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lip Sync")
+	float StartTime;  // Start time for this phoneme
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lip Sync")
+	float Duration;   // Duration of this phoneme
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lip Sync")
 	FString Phoneme;  // "AA", "IH", "TH", etc. (ARPAbet)
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Lip Sync")
@@ -88,6 +94,8 @@ struct FPhonemeFrame
 
 	FPhonemeFrame()
 		: Time(0.0f)
+		, StartTime(0.0f)
+		, Duration(0.0f)
 	{}
 };
 
@@ -298,9 +306,21 @@ private:
 	UPROPERTY()
 	TMap<FString, TWeakObjectPtr<UAudioComponent>> ActiveDialogueComponents;
 
+	// Reverse mapping: AudioComponent -> DialogueID (for OnAudioFinished callbacks)
+	UPROPERTY()
+	TMap<TWeakObjectPtr<UAudioComponent>, FString> AudioComponentToDialogueID;
+
 	// Active dialogue items (DialogueID -> DialogueItem)
 	UPROPERTY()
 	TMap<FString, FDialogueItem> ActiveDialogueItems;
+
+	// Pending dialogue components (DialogueID -> NPCID) for async loading
+	UPROPERTY()
+	TMap<FString, FString> PendingDialogueComponents;
+
+	// Active lip-sync data (DialogueID -> LipSyncData)
+	UPROPERTY()
+	TMap<FString, FLipSyncData> ActiveLipSyncData;
 
 	// Reentrancy protection
 	bool bProcessingQueue;
@@ -310,6 +330,14 @@ private:
 
 	// Handle audio completion callback
 	void HandleDialogueFinished(const FString& DialogueID);
+
+	// Audio finished callback (no parameters - looks up DialogueID from component)
+	UFUNCTION()
+	void OnAudioFinishedCallback();
+
+	// Handle AudioManager playback complete callback (for async loading)
+	UFUNCTION()
+	void OnAudioManagerPlaybackComplete(const FString& AudioID, UAudioComponent* AudioComponent);
 
 	// World cleanup handler
 	void OnWorldCleanup(UWorld* World, bool bSessionEnded, bool bCleanupResources);
@@ -338,8 +366,8 @@ private:
 	// Get blendshape weights for viseme
 	TMap<FString, float> GetBlendshapeWeightsForViseme(const FString& Viseme) const;
 
-	// Request TTS from backend (placeholder - will be implemented in Milestone 7)
-	void RequestTTSFromBackend(const FDialogueItem& Item, TFunction<void(const TArray<uint8>&, float)> OnComplete);
+	// Request TTS from backend and invoke callback with enriched dialogue item
+	void RequestTTSFromBackend(const FDialogueItem& Item, TFunction<void(const FDialogueItem&)> OnComplete);
 
 	// Determine interrupt type based on priority matrix
 	EInterruptType DetermineInterruptType(int32 NewPriority, int32 CurrentPriority) const;

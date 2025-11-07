@@ -1,0 +1,19 @@
+[
+  {
+    "ResourceType": "instance",
+    "Tags": [
+      { "Key": "Name", "Value": "Gaming-System-AI-Core-UE5-Builder" },
+      { "Key": "Project", "Value": "Gaming-System-AI-Core" },
+      { "Key": "Environment", "Value": "dev" },
+      { "Key": "Owner", "Value": "Cursor-AI" }
+    ]
+  },
+  {
+    "ResourceType": "volume",
+    "Tags": [
+      { "Key": "Name", "Value": "Gaming-System-AI-Core-UE5-Builder" },
+      { "Key": "Project", "Value": "Gaming-System-AI-Core" }
+    ]
+  }
+]
+

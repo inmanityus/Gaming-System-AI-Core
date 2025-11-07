@@ -82,3 +82,5 @@ Write-Host "All infrastructure deployed successfully" -ForegroundColor Green
 Write-Host "Next: Launch training jobs using training orchestrator" -ForegroundColor Yellow
 
 
+
+

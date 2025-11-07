@@ -340,7 +340,62 @@ if (Test-Path $syncScript) {
     Write-Host "Global rules sync script not found (optional)" -ForegroundColor Gray
 }
 
+# ================================================================
+# TOOL PATH VERIFICATION (MANDATORY)
+# ================================================================
+# CRITICAL: Verify all tool locations to prevent session crashes
+# This loads verified paths for Python, Node, Docker, AWS CLI, etc.
+
+Write-Host ""
+Write-Host "Verifying tool locations..." -ForegroundColor Yellow
+
+$toolPathsScript = Join-Path $ProjectRoot "Global-Scripts\tool-paths.ps1"
+if (Test-Path $toolPathsScript) {
+    try {
+        # Load verified tool paths
+        $global:ToolPaths = & $toolPathsScript
+        
+        # Report critical tools
+        $criticalTools = @("Python", "Node", "Docker", "Git")
+        $foundTools = @()
+        $missingTools = @()
+        
+        foreach ($tool in $criticalTools) {
+            if ($global:ToolPaths[$tool]) {
+                $foundTools += $tool
+            } else {
+                $missingTools += $tool
+            }
+        }
+        
+        if ($foundTools.Count -gt 0) {
+            Write-Host "[OK] Verified tools: $($foundTools -join ', ')" -ForegroundColor Green
+        }
+        
+        if ($missingTools.Count -gt 0) {
+            Write-Host "[WARNING] Missing tools: $($missingTools -join ', ')" -ForegroundColor Yellow
+            Write-Host "          Some features may not work without these tools" -ForegroundColor Yellow
+        }
+        
+        # Special handling for Python (avoid Windows App Alias)
+        if ($global:ToolPaths.Python) {
+            Write-Host "[OK] Python 3.13 verified at: $($global:ToolPaths.Python)" -ForegroundColor Green
+        } else {
+            Write-Host "[WARNING] Python 3.13 not found!" -ForegroundColor Yellow
+            Write-Host "          Expected: C:\Users\kento\AppData\Local\Programs\Python\Python313\python.exe" -ForegroundColor Yellow
+        }
+        
+    } catch {
+        Write-Host "[ERROR] Tool verification failed: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "        Continuing without verified tool paths..." -ForegroundColor Yellow
+    }
+} else {
+    Write-Host "[WARNING] Tool verification script not found: $toolPathsScript" -ForegroundColor Yellow
+    Write-Host "          Tool paths will not be verified" -ForegroundColor Yellow
+}
+
 # Check PostgreSQL connectivity (universal)
+Write-Host ""
 Write-Host "Checking PostgreSQL connectivity..." -ForegroundColor Yellow
 try {
     $testResult = & psql -h localhost -U postgres -d postgres -p 5443 -c "SELECT version();" 2>&1

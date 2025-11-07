@@ -11,17 +11,17 @@ Write-Host "[GEN] Generating Visual Studio solution files..." -ForegroundColor C
 # Find UE5 Engine
 if ([string]::IsNullOrEmpty($UEEnginePath))
 {
-    $ueInstallPath = Get-ChildItem "C:\Program Files\Epic Games\" -Directory -Filter "UE_*" -ErrorAction SilentlyContinue | 
-        Select-Object -First 1
+    # CRITICAL: UE 5.6.1 is installed at UE_5.6 folder (version 5.6.1, folder name is UE_5.6)
+    $UEEnginePath = "C:\Program Files\Epic Games\UE_5.6"
     
-    if ($ueInstallPath)
+    if (Test-Path $UEEnginePath)
     {
-        $UEEnginePath = $ueInstallPath.FullName
-        Write-Host "[GEN] Auto-detected UE5: $UEEnginePath" -ForegroundColor Green
+        Write-Host "[GEN] Using UE 5.6.1 (correct version): $UEEnginePath" -ForegroundColor Green
     }
     else
     {
-        Write-Host "[ERROR] UE5 Engine not found. Please specify -UEEnginePath" -ForegroundColor Red
+        Write-Host "[ERROR] UE 5.6.1 not found at: $UEEnginePath" -ForegroundColor Red
+        Write-Host "[ERROR] Please install UE 5.6.1 or specify -UEEnginePath" -ForegroundColor Red
         exit 1
     }
 }

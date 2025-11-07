@@ -16,8 +16,9 @@ public class BodyBroker : ModuleRules
 			"HTTP",
 			"Json",
 			"JsonUtilities",
-			"Niagara",
-			"AudioMixer",
+		"Niagara",
+		"AudioMixer",
+		"AnimationCore",
 			"OnlineSubsystem",
 			"OnlineSubsystemSteam",
 			"UMG",
@@ -25,7 +26,12 @@ public class BodyBroker : ModuleRules
 			"SlateCore"
 		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] { });
+		PrivateDependencyModuleNames.AddRange(new string[] { 
+			"AssetRegistry",
+			"UnrealEd",
+			"ToolMenus",
+			"EditorSubsystem"
+		});
 
 		// Uncomment if you are using online features
 		// PrivateDependencyModuleNames.Add("OnlineSubsystem");

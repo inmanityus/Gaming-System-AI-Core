@@ -52,6 +52,7 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host "[$(Get-Date -Format 'HH:mm:ss')] ✅ Logged into ECR" -ForegroundColor Green
 
 # Build and push Docker images for each service
+$buildFailures = @()
 $services = @(
     "story_teller",
     "ai_integration",
@@ -79,21 +80,26 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
 COPY . .
+
+RUN if [ -f requirements.txt ]; then pip install --no-cache-dir -r requirements.txt; fi
 
 CMD ["python", "-m", "uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8000"]
 "@ | Out-File "$servicePath\Dockerfile" -Encoding utf8
     }
 
+    # Ensure a stub requirements file exists so Docker build does not fail
+    if (-not (Test-Path "$servicePath\requirements.txt")) {
+        "" | Out-File "$servicePath\requirements.txt" -Encoding utf8
+    }
+
     # Build image
-    $imageTag = "$ecrUri:$service-latest"
+    $imageTag = "{0}:{1}-latest" -f $ecrUri, $service
     docker build -t $imageTag "$servicePath" 2>&1 | Write-Host
     
     if ($LASTEXITCODE -ne 0) {
         Write-Host "[ERROR] Docker build failed for $service" -ForegroundColor Red
+        $buildFailures += "$service (build)"
         continue
     }
 
@@ -103,6 +109,7 @@ CMD ["python", "-m", "uvicorn", "server:app", "--host", "0.0.0.0", "--port", "80
     
     if ($LASTEXITCODE -ne 0) {
         Write-Host "[ERROR] Docker push failed for $service" -ForegroundColor Red
+        $buildFailures += "$service (push)"
         continue
     }
 
@@ -110,8 +117,17 @@ CMD ["python", "-m", "uvicorn", "server:app", "--host", "0.0.0.0", "--port", "80
 }
 
 Write-Host ""
-Write-Host "[AWS DEPLOY] ✅ Services deployed to AWS ECR" -ForegroundColor Green
-Write-Host "[NEXT] Deploy services to ECS/EKS/Lambda using infrastructure scripts" -ForegroundColor Cyan
+if ($buildFailures.Count -eq 0) {
+    Write-Host "[AWS DEPLOY] ✅ Services deployed to AWS ECR" -ForegroundColor Green
+    Write-Host "[NEXT] Deploy services to ECS/EKS/Lambda using infrastructure scripts" -ForegroundColor Cyan
+} else {
+    Write-Host "[AWS DEPLOY] ⚠️  Completed with issues" -ForegroundColor Yellow
+    Write-Host "  Failed components:" -ForegroundColor Yellow
+    foreach ($failure in $buildFailures) {
+        Write-Host "   - $failure" -ForegroundColor Red
+    }
+    exit 1
+}
 
 
 

@@ -110,3 +110,5 @@ kubectl apply -f infrastructure/kubernetes/bronze-tier/job-queue.yaml
 **Next**: Deploy and measure actual costs vs for-pay models
 
 
+
+

@@ -101,3 +101,5 @@ Write-Host "  - Review: infrastructure/terraform/eks-gold-tier/UPGRADE-K8S-1.32.
 Write-Host "  - Run upgrade: .\scripts\aws-upgrade-eks-k8s.ps1" -ForegroundColor White
 
 
+
+

@@ -63,6 +63,14 @@ struct FDialogueItem
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
 	float Duration;
 
+	// Personality traits that should influence TTS delivery
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+	TArray<FString> PersonalityTraits;
+
+	// Emotion hint for TTS delivery
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+	FString Emotion;
+
 	// Timing data for lip-sync
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
 	TArray<FWordTiming> WordTimings;

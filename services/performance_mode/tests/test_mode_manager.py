@@ -163,3 +163,5 @@ class TestModeManager:
         assert "config" in status
         assert status["mode"] == "immersive"
         assert status["target_fps"] == 90.0
+
+

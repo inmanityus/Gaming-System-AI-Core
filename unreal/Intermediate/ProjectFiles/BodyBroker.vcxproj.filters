@@ -172,6 +172,12 @@
     <ClInclude Include="..\..\Source\BodyBroker\AudioPoolManager.h">
       <Filter>Source\BodyBroker</Filter>
     </ClInclude>
+    <ClCompile Include="..\..\Source\BodyBroker\BiomeManager.cpp">
+      <Filter>Source\BodyBroker</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\BodyBroker\BiomeManager.h">
+      <Filter>Source\BodyBroker</Filter>
+    </ClInclude>
     <None Include="..\..\Source\BodyBroker\BodyBroker.Build.cs">
       <Filter>Source\BodyBroker</Filter>
     </None>
@@ -214,6 +220,12 @@
     <ClInclude Include="..\..\Source\BodyBroker\BodyBrokerSettingsWidget.h">
       <Filter>Source\BodyBroker</Filter>
     </ClInclude>
+    <ClCompile Include="..\..\Source\BodyBroker\BodyLanguageComponent.cpp">
+      <Filter>Source\BodyBroker</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\BodyBroker\BodyLanguageComponent.h">
+      <Filter>Source\BodyBroker</Filter>
+    </ClInclude>
     <ClCompile Include="..\..\Source\BodyBroker\DialogueManager.cpp">
       <Filter>Source\BodyBroker</Filter>
     </ClCompile>
@@ -226,6 +238,54 @@
     <ClInclude Include="..\..\Source\BodyBroker\DialogueQueue.h">
       <Filter>Source\BodyBroker</Filter>
     </ClInclude>
+    <ClCompile Include="..\..\Source\BodyBroker\EcosystemIntegrationManager.cpp">
+      <Filter>Source\BodyBroker</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\BodyBroker\EcosystemIntegrationManager.h">
+      <Filter>Source\BodyBroker</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\BodyBroker\ExpressionIntegrationManager.cpp">
+      <Filter>Source\BodyBroker</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\BodyBroker\ExpressionIntegrationManager.h">
+      <Filter>Source\BodyBroker</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\BodyBroker\ExpressionManagerComponent.cpp">
+      <Filter>Source\BodyBroker</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\BodyBroker\ExpressionManagerComponent.h">
+      <Filter>Source\BodyBroker</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\BodyBroker\FaunaManager.cpp">
+      <Filter>Source\BodyBroker</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\BodyBroker\FaunaManager.h">
+      <Filter>Source\BodyBroker</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\BodyBroker\FloraManager.cpp">
+      <Filter>Source\BodyBroker</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\BodyBroker\FloraManager.h">
+      <Filter>Source\BodyBroker</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\BodyBroker\GameEventBus.cpp">
+      <Filter>Source\BodyBroker</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\BodyBroker\GameEventBus.h">
+      <Filter>Source\BodyBroker</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\BodyBroker\LipSyncComponent.cpp">
+      <Filter>Source\BodyBroker</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\BodyBroker\LipSyncComponent.h">
+      <Filter>Source\BodyBroker</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\BodyBroker\MetaHumanExpressionComponent.cpp">
+      <Filter>Source\BodyBroker</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\BodyBroker\MetaHumanExpressionComponent.h">
+      <Filter>Source\BodyBroker</Filter>
+    </ClInclude>
     <ClCompile Include="..\..\Source\BodyBroker\TimeOfDayManager.cpp">
       <Filter>Source\BodyBroker</Filter>
     </ClCompile>
@@ -236,6 +296,30 @@
       <Filter>Source\BodyBroker</Filter>
     </ClCompile>
     <ClInclude Include="..\..\Source\BodyBroker\VoicePool.h">
+      <Filter>Source\BodyBroker</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\BodyBroker\WeatherManager.cpp">
+      <Filter>Source\BodyBroker</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\BodyBroker\WeatherManager.h">
+      <Filter>Source\BodyBroker</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\BodyBroker\WeatherMaterialManager.cpp">
+      <Filter>Source\BodyBroker</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\BodyBroker\WeatherMaterialManager.h">
+      <Filter>Source\BodyBroker</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\BodyBroker\WeatherParticleManager.cpp">
+      <Filter>Source\BodyBroker</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\BodyBroker\WeatherParticleManager.h">
+      <Filter>Source\BodyBroker</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\BodyBroker\WeatherPresetLibrary.cpp">
+      <Filter>Source\BodyBroker</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\BodyBroker\WeatherPresetLibrary.h">
       <Filter>Source\BodyBroker</Filter>
     </ClInclude>
   </ItemGroup>

@@ -43,6 +43,26 @@ docker-compose down
 ## MCP Protection
 **CRITICAL**: Use safe-kill scripts. NEVER: `Get-Process node | Stop-Process`
 
+## Tool Verification (MANDATORY)
+**CRITICAL**: ALWAYS verify tool locations before execution. NEVER run executables without verification.
+
+**Use verified paths**:
+```powershell
+# After startup, use global variable
+& $global:ToolPaths.Python script.py
+& $global:ToolPaths.Node app.js
+
+# Or use helper function
+$pythonPath = & "Global-Scripts\verify-tool.ps1" -Tool Python -RequireOrExit
+& $pythonPath script.py
+```
+
+**Why**: Prevents session crashes from missing/incorrectly pathed tools (Python, Node, Docker, etc.)
+
+**Python Special Case**: Use `C:\Users\kento\AppData\Local\Programs\Python\Python313\python.exe` (NOT Windows App Alias)
+
+**See**: `Global-Rules/TOOL-VERIFICATION-MANDATORY.md` for full details
+
 ## Automated Systems
 - 45-minute milestones auto-activate for tasks > 1 hour
 - Resource management monitors session health (enables 12+ hour sessions)
@@ -123,11 +143,53 @@ Gaming-System-AI-Core/
 - **Project-Level Reasoning**: Use `.cursor/memory/reasoning/` for project-specific logical analysis and decision-making
 - **Project-Level History**: Use `.cursor/memory/history/` for project-specific problem-solving patterns and solutions
 
+## Unreal Engine 5.6.1 CLI Access - MANDATORY
+**CRITICAL RULE**: You have CLI access to Unreal Engine 5.6.1. You MUST use the correct version (5.6.1, NOT 5.6 or 5.6+).
+
+**Engine Path**: `C:\Program Files\Epic Games\UE_5.6` (This is UE 5.6.1 - the folder name is UE_5.6)
+
+**Available CLI Tools**:
+- **UnrealBuildTool**: `C:\Program Files\Epic Games\UE_5.6\Engine\Build\BatchFiles\Build.bat`
+- **UnrealVersionSelector**: `C:\Program Files\Epic Games\UE_5.6\Engine\Binaries\DotNET\UnrealVersionSelector\UnrealVersionSelector.exe`
+- **UAT (Unreal Automation Tool)**: `C:\Program Files\Epic Games\UE_5.6\Engine\Build\BatchFiles\RunUAT.bat`
+
+**Common Commands**:
+```powershell
+# Generate Visual Studio solution files
+& "C:\Program Files\Epic Games\UE_5.6\Engine\Binaries\DotNET\UnrealVersionSelector\UnrealVersionSelector.exe" -projectfiles -project="unreal\BodyBroker.uproject" -game -rocket -progress
+
+# Build project (Development Editor)
+& "C:\Program Files\Epic Games\UE_5.6\Engine\Build\BatchFiles\Build.bat" Development Win64 -Project="unreal\BodyBroker.uproject" -TargetType=Editor -Progress -NoEngineChanges
+
+# Build project (Shipping)
+& "C:\Program Files\Epic Games\UE_5.6\Engine\Build\BatchFiles\Build.bat" Shipping Win64 -Project="unreal\BodyBroker.uproject" -TargetType=Game -Progress -NoEngineChanges
+```
+
+**Helper Scripts**:
+- `scripts/build-ue5-project.ps1` - Build UE5 project (uses 5.6.1)
+- `scripts/generate-vs-files.ps1` - Generate Visual Studio solution files
+- `scripts/automated-ue5-build.ps1` - Full automated build pipeline
+
+**ENFORCEMENT**:
+- ALWAYS use UE 5.6.1 (exact version) - NEVER use 5.6 or 5.6+
+- ALWAYS verify engine path before running commands
+- Use helper scripts when available (they handle version correctly)
+- For compilation testing, use CLI tools instead of requiring UE5 Editor GUI
+
+**Version Verification**:
+```powershell
+# Check installed UE5 versions
+Get-ChildItem "C:\Program Files\Epic Games\" -Directory -Filter "UE_*" | Select-Object Name
+
+# Verify 5.6.1 exists (folder name is UE_5.6, but version is 5.6.1)
+Test-Path "C:\Program Files\Epic Games\UE_5.6"
+```
+
 ## AWS Deployment Workflow - MANDATORY
 **CRITICAL RULE**: All AI models must run in AWS, not locally. Local dev computer cannot handle model inference.
 
 **Workflow** (MUST be followed for ALL deployments):
-1. **Build Everything Locally** - Compile all code (Python, UE5, etc.)
+1. **Build Everything Locally** - Compile all code (Python, UE5 5.6.1, etc.)
 2. **Test Everything Locally** - Run ALL tests, ensure 100% pass rate
 3. **Verify Dev System** - Ensure dev system integrity before deploying
 4. **Deploy to AWS** - Deploy services, infrastructure, configuration

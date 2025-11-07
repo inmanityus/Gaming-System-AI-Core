@@ -1,0 +1,67 @@
+extracted_at: '2025-11-04T18:36:08.286880'
+facts:
+- commands: []
+  compression_ratio: 87.6%
+  decisions: []
+  errors:
+  - Unreadable module directory
+  - Duplicate output definition
+  file_changes: []
+  key_outcomes:
+  - '? Gold tier Terraform init failed'
+  - 'Γöé Error: Duplicate output definition'
+  - 'Γöé Error: Duplicate output definition'
+  original_size_kb: '3.02'
+  resolutions: []
+  source_file: deployment-continued-20251103-165410.log
+  timestamp: '2025-11-03T16:54:19.776394'
+- commands: []
+  compression_ratio: 99.2%
+  decisions: []
+  errors:
+  - 'waiting for EKS Node Group (gaming-ai-gold-tier:gold-tier-gpu-20251104000617088300000017)
+    create: unexpected state ''CREATE_FAILED'', wanted target ''ACTIVE''. last error:
+    eks-gold-tier-gpu-20251104000617088300000017-b0cd2617-c87e-e2f8-09c6-878608c0235b:
+    AsgInstanceLaunchFailures: Could not launch On-Demand Instances. VcpuLimitExceeded
+    - You have requested more vCPU capacity than your current vCPU limit of 8 allows
+    for the instance bucket that the specified instance type belongs to. Please visit
+    http://aws.amazon.com/contact-us/ec2-request to request an adjustment to this
+    limit. Launching EC2 instance failed.'
+  file_changes: []
+  key_outcomes:
+  - '? Gold tier Terraform apply failed'
+  - 'Γöé i-013bd2ebf3963d8d8, i-056fa826bce829ce6, i-05f3a0b5415bef63f, i-0ba9892c051e33672:
+    NodeCreationFailure: Instances failed to join the kubernetes cluster'
+  - 'Γöé Error: waiting for EKS Node Group (gaming-ai-gold-tier:gold-tier-gpu-20251104000617088300000017)
+    create: unexpected state ''CREATE_FAILED'', wanted target ''ACTIVE''. last error:
+    eks-gold-tier-gpu-202'
+  original_size_kb: '150.13'
+  resolutions: []
+  source_file: deployment-fixed-20251103-165452.log
+  timestamp: '2025-11-03T17:39:51.438529'
+- commands: []
+  compression_ratio: 98.2%
+  decisions: []
+  errors:
+  - 'waiting for EKS Node Group (gaming-ai-gold-tier:gold-tier-gpu-20251104051326540800000001)
+    create: unexpected state ''CREATE_FAILED'', wanted target ''ACTIVE''. last error:
+    eks-gold-tier-gpu-20251104051326540800000001-32cd26a4-6405-64b9-11dd-40e472c357cf:
+    AsgInstanceLaunchFailures: Could not launch On-Demand Instances. VcpuLimitExceeded
+    - You have requested more vCPU capacity than your current vCPU limit of 16 allows
+    for the instance bucket that the specified instance type belongs to. Please visit
+    http://aws.amazon.com/contact-us/ec2-request to request an adjustment to this
+    limit. Launching EC2 instance failed.'
+  file_changes: []
+  key_outcomes:
+  - '? Gold tier Terraform apply failed'
+  - 'Γöé Error: waiting for EKS Node Group (gaming-ai-gold-tier:gold-tier-gpu-20251104051326540800000001)
+    create: unexpected state ''CREATE_FAILED'', wanted target ''ACTIVE''. last error:
+    eks-gold-tier-gpu-202'
+  original_size_kb: '57.06'
+  resolutions: []
+  source_file: deployment-full-20251103-221308.log
+  timestamp: '2025-11-03T22:46:39.637117'
+input_directory: .cursor\ai-logs
+logs_processed: 3
+space_saved_mb: '0.20'
+total_compression: 98.7%
