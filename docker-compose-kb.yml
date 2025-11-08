@@ -1,0 +1,22 @@
+# Knowledge Base PostgreSQL with pgvector
+version: '3.8'
+
+services:
+  kb-postgres:
+    image: ankane/pgvector:latest
+    container_name: kb-postgres
+    environment:
+      - POSTGRES_DB=gaming_system_ai_core
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Inn0vat1on!
+    volumes:
+      - kb_postgres_data:/var/lib/postgresql/data
+      - ./database/migrations/knowledge_base:/docker-entrypoint-initdb.d
+    ports:
+      - "5443:5432"
+    restart: unless-stopped
+    command: postgres -c shared_preload_libraries=vector
+
+volumes:
+  kb_postgres_data:
+
