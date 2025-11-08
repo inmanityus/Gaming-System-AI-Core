@@ -24,7 +24,7 @@ async def health():
 @app.on_event("startup")
 async def startup():
     """Start time progression on server startup."""
-    from .api_routes import get_time_manager
+    from api_routes import get_time_manager
     time_manager = get_time_manager()
     await time_manager.start()
 
@@ -32,7 +32,7 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     """Stop time progression on server shutdown."""
-    from .api_routes import get_time_manager
+    from api_routes import get_time_manager
     time_manager = get_time_manager()
     await time_manager.stop()
 

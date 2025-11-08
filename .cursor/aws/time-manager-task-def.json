@@ -5,6 +5,7 @@
   "cpu": "256",
   "memory": "512",
   "executionRoleArn": "arn:aws:iam::695353648052:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::695353648052:role/timeManagerTaskRole",
   "containerDefinitions": [
     {
       "name": "time-manager",
@@ -20,6 +21,14 @@
         {
           "name": "SERVICE_NAME",
           "value": "time-manager"
+        },
+        {
+          "name": "WEATHER_EVENTS_TOPIC_ARN",
+          "value": "arn:aws:sns:us-east-1:695353648052:gaming-system-weather-events"
+        },
+        {
+          "name": "AWS_REGION",
+          "value": "us-east-1"
         }
       ],
       "logConfiguration": {
