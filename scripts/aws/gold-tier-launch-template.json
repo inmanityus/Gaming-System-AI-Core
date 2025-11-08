@@ -1,0 +1,35 @@
+{
+  "LaunchTemplateName": "AI-Gaming-Gold-Tier-Template",
+  "VersionDescription": "Gold tier g5.xlarge for real-time AI (Qwen2.5-3B-AWQ)",
+  "LaunchTemplateData": {
+    "ImageId": "ami-0c7217cdde317cfec",
+    "InstanceType": "g5.xlarge",
+    "KeyName": "gaming-system-ai-core-admin",
+    "SecurityGroupIds": ["sg-00419f4094a7d2101"],
+    "BlockDeviceMappings": [{
+      "DeviceName": "/dev/sda1",
+      "Ebs": {
+        "VolumeSize": 100,
+        "VolumeType": "gp3",
+        "Iops": 3000,
+        "Throughput": 125,
+        "DeleteOnTermination": true
+      }
+    }],
+    "TagSpecifications": [{
+      "ResourceType": "instance",
+      "Tags": [
+        {"Key": "Name", "Value": "AI-Gaming-Gold-GPU"},
+        {"Key": "Tier", "Value": "Gold"},
+        {"Key": "Model", "Value": "Qwen2.5-3B-AWQ"},
+        {"Key": "ManagedBy", "Value": "AutoScaling"},
+        {"Key": "Project", "Value": "AI-Gaming-System"}
+      ]
+    }],
+    "MetadataOptions": {
+      "HttpTokens": "required",
+      "HttpPutResponseHopLimit": 1
+    }
+  }
+}
+

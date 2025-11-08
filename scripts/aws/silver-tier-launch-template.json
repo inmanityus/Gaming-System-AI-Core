@@ -1,0 +1,35 @@
+{
+  "LaunchTemplateName": "AI-Gaming-Silver-Tier-Template",
+  "VersionDescription": "Silver tier g5.2xlarge for interactive AI (Qwen2.5-7B)",
+  "LaunchTemplateData": {
+    "ImageId": "ami-0c7217cdde317cfec",
+    "InstanceType": "g5.2xlarge",
+    "KeyName": "gaming-system-ai-core-admin",
+    "SecurityGroupIds": ["sg-00419f4094a7d2101"],
+    "BlockDeviceMappings": [{
+      "DeviceName": "/dev/sda1",
+      "Ebs": {
+        "VolumeSize": 150,
+        "VolumeType": "gp3",
+        "Iops": 3000,
+        "Throughput": 125,
+        "DeleteOnTermination": true
+      }
+    }],
+    "TagSpecifications": [{
+      "ResourceType": "instance",
+      "Tags": [
+        {"Key": "Name", "Value": "AI-Gaming-Silver-GPU"},
+        {"Key": "Tier", "Value": "Silver"},
+        {"Key": "Model", "Value": "Qwen2.5-7B-Instruct"},
+        {"Key": "ManagedBy", "Value": "AutoScaling"},
+        {"Key": "Project", "Value": "AI-Gaming-System"}
+      ]
+    }],
+    "MetadataOptions": {
+      "HttpTokens": "required",
+      "HttpPutResponseHopLimit": 1
+    }
+  }
+}
+
