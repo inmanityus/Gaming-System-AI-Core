@@ -8,10 +8,10 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
 
-from .story_manager import StoryManager, StoryNode
-from .narrative_generator import NarrativeGenerator
-from .choice_processor import ChoiceProcessor, ChoiceValidationError
-from .story_branching import StoryBranching, StoryBranch
+from story_manager import StoryManager, StoryNode
+from narrative_generator import NarrativeGenerator
+from choice_processor import ChoiceProcessor, ChoiceValidationError
+from story_branching import StoryBranching, StoryBranch
 
 
 # Request/Response Models

@@ -3,7 +3,7 @@ Event Bus Service Server - FastAPI server for event bus.
 """
 
 from fastapi import FastAPI
-from .api_routes import router
+from api_routes import router
 
 app = FastAPI(
     title="Game Event Bus Service",

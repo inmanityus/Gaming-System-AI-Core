@@ -11,12 +11,12 @@ This service handles:
 - Cross-world consistency (NEW)
 """
 
-from .story_manager import StoryManager
-from .narrative_generator import NarrativeGenerator
-from .choice_processor import ChoiceProcessor
-from .story_branching import StoryBranching
-from .feature_awareness import FeatureAwareness
-from .cross_world_consistency import CrossWorldConsistency, AssetTemplate
+from story_manager import StoryManager
+from narrative_generator import NarrativeGenerator
+from choice_processor import ChoiceProcessor
+from story_branching import StoryBranching
+from feature_awareness import FeatureAwareness
+from cross_world_consistency import CrossWorldConsistency, AssetTemplate
 
 __all__ = [
     "StoryManager",

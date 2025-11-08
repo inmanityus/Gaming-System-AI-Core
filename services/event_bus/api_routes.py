@@ -8,7 +8,7 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 
-from .event_bus import GameEventBus, GameEvent, EventType
+from event_bus import GameEventBus, GameEvent, EventType
 
 
 router = APIRouter(prefix="/events", tags=["events"])

@@ -8,7 +8,7 @@ from typing import Dict, Any
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 
-from .api_routes import router
+from api_routes import router
 from services.state_manager.connection_pool import get_postgres_pool, get_redis_pool
 
 

@@ -10,9 +10,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict, Any, Optional, List
 
-from ..core.language_definition import LanguageDefinition, LanguageRegistry
-from ..generation.sentence_generator import SentenceGenerator, SentenceRequest
-from ..grpc.grpc_server import LanguageSystemGRPCServer
+from core.language_definition import LanguageDefinition, LanguageRegistry
+from generation.sentence_generator import SentenceGenerator, SentenceRequest
+from grpc.grpc_server import LanguageSystemGRPCServer
 
 app = FastAPI(title="Language System API", version="1.0.0")
 
