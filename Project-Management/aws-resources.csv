@@ -1,0 +1,29 @@
+ResourceType,ResourceName,ResourceID,IP/Hostname,ConsoleLocation,Status,Purpose,CreatedDate,Cost,Notes
+ECS-Cluster,AI-Gaming-Cluster,gaming-system-cluster,N/A,ECS > Clusters,Active,Main container orchestration cluster,2025-11-07,$50/mo,Running 17 services
+Security-Group,AI-Gaming-Services-SG,sg-00419f4094a7d2101,N/A,EC2 > Security Groups,Active,Security group for all ECS services,2025-11-07,Free,Allows inter-service communication
+VPC,Default-VPC,vpc-045c9e283c23ae01e,172.31.0.0/16,VPC > Your VPCs,Active,Default VPC for all resources,Pre-existing,Free,Using default AWS VPC
+Subnet,Default-Subnet-1D,subnet-0f353054b8e31561d,172.31.16.0/20,VPC > Subnets,Active,Subnet in us-east-1d,Pre-existing,Free,Used by ECS services
+Subnet,Default-Subnet-1C,subnet-036ef66c03b45b1da,172.31.80.0/20,VPC > Subnets,Active,Subnet in us-east-1c,Pre-existing,Free,Used by ECS services
+SNS-Topic,AI-Gaming-Weather-Events,gaming-system-weather-events,N/A,SNS > Topics,Active,Binary event messaging for weather/time,2025-11-07,$5/mo,102 events/min
+SQS-Queue,AI-Gaming-Weather-Queue,gaming-system-weather-manager-events,https://sqs.us-east-1.amazonaws.com/695353648052/gaming-system-weather-manager-events,SQS > Queues,Active,Event queue for weather manager,2025-11-07,$2/mo,Subscribed to SNS topic
+IAM-Role,AI-Gaming-ECS-Execution,ecsTaskExecutionRole,N/A,IAM > Roles,Active,ECS task execution role,Pre-existing,Free,ECR pull + CloudWatch logs
+IAM-Role,AI-Gaming-Weather-Task,weatherManagerTaskRole,N/A,IAM > Roles,Active,Task role for weather-manager,2025-11-07,Free,SNS/SQS permissions
+IAM-Role,AI-Gaming-Time-Task,timeManagerTaskRole,N/A,IAM > Roles,Active,Task role for time-manager,2025-11-07,Free,SNS/SQS permissions
+IAM-Role,AI-Gaming-Services-Task,gamingSystemServicesTaskRole,N/A,IAM > Roles,Active,Shared task role for services,2025-11-07,Free,Binary messaging permissions
+IAM-Policy,AI-Gaming-Messaging-Policy,GamingSystemDistributedMessaging,N/A,IAM > Policies,Active,SNS/SQS permissions policy,2025-11-07,Free,Attached to task roles
+EC2-Instance,AI-Gaming-UE5-Builder,i-0f27f842a79e1c59e,3.95.183.186,EC2 > Instances,Running,UE5 build server,2025-11-07,$326/mo,c5.4xlarge (16 vCPUs)
+ECS-Service,AI-Gaming-Weather,weather-manager,N/A,ECS > Clusters > gaming-system-cluster,Running,Weather state management,2025-11-07,$3/mo,Binary messaging publisher
+ECS-Service,AI-Gaming-Time,time-manager,N/A,ECS > Clusters > gaming-system-cluster,Running,Day/night time progression,2025-11-07,$3/mo,Publishing 102 events/min
+ECS-Service,AI-Gaming-Capability,capability-registry,N/A,ECS > Clusters > gaming-system-cluster,Running,UE5 capability database,2025-11-07,$3/mo,API service on port 8080
+ECS-Service,AI-Gaming-EventBus,event-bus,N/A,ECS > Clusters > gaming-system-cluster,Running,Central event routing,2025-11-07,$5/mo,Core messaging infrastructure
+ECS-Service,AI-Gaming-Storyteller,storyteller,N/A,ECS > Clusters > gaming-system-cluster,Running,Story integration service,2025-11-07,$3/mo,Integration layer
+ECS-Service,AI-Gaming-UE-Monitor,ue-version-monitor,N/A,ECS > Clusters > gaming-system-cluster,Running,UE5 version monitoring,2025-11-07,$3/mo,Tracks UE updates
+ECS-Service,AI-Gaming-EnvNarrative,environmental-narrative,N/A,ECS > Clusters > gaming-system-cluster,Running,Environmental storytelling,2025-11-07,$3/mo,Narrative integration
+ECS-Service,AI-Gaming-Payment,payment,N/A,ECS > Clusters > gaming-system-cluster,Running,Payment processing,2025-11-07,$3/mo,Stripe integration
+ECS-Service,AI-Gaming-Quests,quest-system,N/A,ECS > Clusters > gaming-system-cluster,Running,Quest generation,2025-11-07,$3/mo,Quest management
+ECS-Service,AI-Gaming-Router,router,N/A,ECS > Clusters > gaming-system-cluster,Running,Intelligent routing,2025-11-07,$3/mo,Request routing
+ECS-Service,AI-Gaming-StateManager,state-manager,N/A,ECS > Clusters > gaming-system-cluster,Running,State persistence,2025-11-07,$5/mo,PostgreSQL + Redis
+ECR-Repository,AI-Gaming-Services-Repo,bodybroker-services,695353648052.dkr.ecr.us-east-1.amazonaws.com/bodybroker-services,ECR > Repositories,Active,Container image repository,Pre-existing,$1/mo,Stores all service images
+CloudWatch-LogGroup,AI-Gaming-Weather-Logs,/ecs/gaming-system/weather-manager,N/A,CloudWatch > Log groups,Active,Weather manager logs,2025-11-07,$1/mo,Auto-created by ECS
+CloudWatch-LogGroup,AI-Gaming-Time-Logs,/ecs/gaming-system/time-manager,N/A,CloudWatch > Log groups,Active,Time manager logs,2025-11-07,$1/mo,Auto-created by ECS
+

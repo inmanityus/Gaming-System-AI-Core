@@ -1,0 +1,19 @@
+{
+  "ImageId": "ami-0c02fb55c47d74a84",
+  "InstanceType": "g5.xlarge",
+  "KeyName": "gaming-system-ai-core-admin",
+  "SecurityGroupIds": ["sg-00419f4094a7d2101"],
+  "TagSpecifications": [
+    {
+      "ResourceType": "instance",
+      "Tags": [
+        {"Key": "Name", "Value": "AI-Gaming-Gold-GPU-1"},
+        {"Key": "Project", "Value": "GamingSystemAICore"},
+        {"Key": "Tier", "Value": "Gold"},
+        {"Key": "Purpose", "Value": "Real-time AI inference Qwen2.5-3B"}
+      ]
+    }
+  ],
+  "UserData": "IyEvYmluL2Jhc2gKZWNobyAiQUktR2FtaW5nLUdvbGQtR1BVLTEgaW5pdGlhbGl6aW5nLi4uIgo="
+}
+
