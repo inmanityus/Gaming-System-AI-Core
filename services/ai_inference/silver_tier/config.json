@@ -1,0 +1,17 @@
+{
+  "tier": "silver",
+  "model_name": "meta-llama/Llama-3.1-8B-Instruct",
+  "target_latency_ms": 250,
+  "max_concurrent_requests": 4,
+  "quantization": "int8",
+  "gpu_type": "A10G",
+  "instance_type": "g5.2xlarge",
+  "use_cases": [
+    "key_npc_conversations",
+    "quest_givers",
+    "complex_dialogue",
+    "mission_coordination",
+    "player_support"
+  ]
+}
+

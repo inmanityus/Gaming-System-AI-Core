@@ -1,0 +1,17 @@
+{
+  "tier": "gold",
+  "model_name": "Qwen/Qwen2.5-3B-Instruct-AWQ",
+  "target_latency_ms": 16,
+  "max_concurrent_requests": 8,
+  "quantization": "AWQ",
+  "gpu_type": "L4",
+  "instance_type": "g5.xlarge",
+  "use_cases": [
+    "npc_action_selection",
+    "short_utterances",
+    "intent_classification",
+    "environmental_reactions",
+    "procedural_descriptions"
+  ]
+}
+
