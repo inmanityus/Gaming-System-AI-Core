@@ -10,11 +10,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-
-from services.event_bus.event_bus import GameEventBus, GameEvent, EventType
+from event_publisher import publish_weather_event
+from event_subscriber import get_event_subscriber
 
 
 class WeatherState(Enum):
@@ -77,19 +74,20 @@ class WeatherManager:
     
     def __init__(
         self,
-        event_bus: Optional[GameEventBus] = None,
         season: Season = Season.SPRING,
-        initial_weather: Optional[WeatherState] = None
+        initial_weather: Optional[WeatherState] = None,
+        enable_time_subscription: bool = False
     ):
         """
         Initialize Weather Manager.
         
         Args:
-            event_bus: Event bus instance (creates new if None)
             season: Current season
             initial_weather: Initial weather state (random if None)
+            enable_time_subscription: Whether to subscribe to time change events via SQS
         """
-        self.event_bus = event_bus or GameEventBus(use_redis=False)
+        self.enable_time_subscription = enable_time_subscription
+        self.event_subscriber = get_event_subscriber() if enable_time_subscription else None
         self.season = season
         
         # Current weather state
@@ -128,11 +126,11 @@ class WeatherManager:
         if self._running:
             return
         
-        # Subscribe to time changes
-        self._time_subscription_id = await self.event_bus.subscribe(
-            EventType.TIME_OF_DAY_CHANGED,
-            self._handle_time_change
-        )
+        # Subscribe to time changes via distributed event system
+        if self.enable_time_subscription and self.event_subscriber:
+            self.event_subscriber.subscribe("time.changed", self._handle_time_change)
+            # Start subscriber polling in background
+            asyncio.create_task(self.event_subscriber.start())
         
         self._running = True
         self._progression_task = asyncio.create_task(self._progression_loop())
@@ -146,11 +144,9 @@ class WeatherManager:
         
         self._running = False
         
-        if self._time_subscription_id:
-            await self.event_bus.unsubscribe(
-                EventType.TIME_OF_DAY_CHANGED,
-                self._time_subscription_id
-            )
+        if self.enable_time_subscription and self.event_subscriber:
+            self.event_subscriber.unsubscribe("time.changed")
+            await self.event_subscriber.stop()
             self._time_subscription_id = None
         
         if self._progression_task:
@@ -339,12 +335,12 @@ class WeatherManager:
         wind_variation = random.uniform(-5.0, 5.0)
         self.current_weather.wind_speed = max(0.0, min(150.0, self.current_weather.wind_speed + wind_variation))
     
-    async def _handle_time_change(self, event: GameEvent):
-        """Handle time of day changes from Time Manager."""
+    async def _handle_time_change(self, event: Dict[str, Any]):
+        """Handle time of day changes from Time Manager via distributed events."""
         # Weather can change based on time of day
         # For example: storms more likely at night, fog more likely in morning
         
-        time_data = event.data.get("time_state", "")
+        time_data = event.get("data", {}).get("time_state", "")
         
         if time_data == "dawn":
             # Fog/mist more likely at dawn
@@ -401,19 +397,16 @@ class WeatherManager:
         print(f"[WEATHER MANAGER] Season changed to: {season.value}")
     
     async def _publish_weather_change(self, old_state: WeatherState, new_state: WeatherState):
-        """Publish weather change event to Event Bus."""
-        event = GameEvent(
-            event_type=EventType.WEATHER_CHANGED,
-            source="WeatherManager",
-            data={
-                "old_state": old_state.value,
-                "new_state": new_state.value,
-                "weather": self.current_weather.to_dict(),
-            }
-        )
+        """Publish weather change event via distributed messaging."""
+        event_data = {
+            "old_state": old_state.value,
+            "new_state": new_state.value,
+            "weather": self.current_weather.to_dict(),
+        }
         
-        notified = await self.event_bus.publish(event)
-        print(f"[WEATHER MANAGER] Weather change event published ({notified} subscribers)")
+        success = await publish_weather_event("weather.changed", event_data)
+        status = "published" if success else "failed to publish"
+        print(f"[WEATHER MANAGER] Weather change event {status}")
     
     def get_current_weather(self) -> WeatherData:
         """Get current weather data."""
