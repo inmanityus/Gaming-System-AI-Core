@@ -1,0 +1,38 @@
+{
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "containerDefinitions": [
+    {
+      "image": "695353648052.dkr.ecr.us-east-1.amazonaws.com/bodybroker-services:world-state-latest",
+      "name": "world-state",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "protocol": "tcp"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-create-group": "true",
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-region": "us-east-1",
+          "awslogs-group": "/ecs/gaming-system/world-state"
+        }
+      },
+      "environment": [
+        {
+          "value": "world-state",
+          "name": "SERVICE_NAME"
+        }
+      ]
+    }
+  ],
+  "family": "world-state",
+  "executionRoleArn": "arn:aws:iam::695353648052:role/ecsTaskExecutionRole",
+  "memory": "512",
+  "cpu": "256"
+}
