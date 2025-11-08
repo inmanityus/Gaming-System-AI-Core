@@ -11,14 +11,14 @@ import time
 from uuid import UUID, uuid4
 from typing import Dict, Any
 
-from services.story_teller.world_simulation_engine import WorldSimulationEngine
-from services.story_teller.temporal_orchestrator import TemporalOrchestrator
-from services.story_teller.faction_simulator import FactionSimulator
-from services.story_teller.npc_behavior_system import NPCBehaviorSystem
-from services.story_teller.economic_simulator import EconomicSimulator
-from services.story_teller.spatial_manager import SpatialManager
-from services.story_teller.causal_chain import CausalChain
-from services.state_manager.connection_pool import get_postgres_pool
+from world_simulation_engine import WorldSimulationEngine
+from temporal_orchestrator import TemporalOrchestrator
+from faction_simulator import FactionSimulator
+from npc_behavior_system import NPCBehaviorSystem
+from economic_simulator import EconomicSimulator
+from spatial_manager import SpatialManager
+from causal_chain import CausalChain
+from database_connection import get_postgres
 
 
 @pytest_asyncio.fixture(scope="function", autouse=True)

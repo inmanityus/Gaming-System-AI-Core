@@ -8,7 +8,8 @@ import hashlib
 from typing import Any, Dict, List, Optional, Tuple
 from uuid import UUID, uuid4
 
-from services.state_manager.connection_pool import get_postgres_pool, PostgreSQLPool
+from database_connection import get_postgres
+import asyncpg
 
 
 class AssetTemplate:

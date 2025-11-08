@@ -12,7 +12,9 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from services.state_manager.connection_pool import get_postgres_pool, PostgreSQLPool
+# Direct database connection (shared pattern)
+import asyncpg
+import os
 
 
 class ContextManager:
@@ -22,15 +24,23 @@ class ContextManager:
     """
     
     def __init__(self):
-        self.postgres: Optional[PostgreSQLPool] = None
+        self.postgres_pool: Optional[asyncpg.Pool] = None
         self._context_cache: Dict[str, Dict[str, Any]] = {}
         self._cache_ttl = 300  # 5 minutes
     
-    async def _get_postgres(self) -> PostgreSQLPool:
+    async def _get_postgres(self) -> asyncpg.Pool:
         """Get PostgreSQL pool instance."""
-        if self.postgres is None:
-            self.postgres = await get_postgres_pool()
-        return self.postgres
+        if self.postgres_pool is None:
+            self.postgres_pool = await asyncpg.create_pool(
+                host=os.getenv("POSTGRES_HOST", "localhost"),
+                port=int(os.getenv("POSTGRES_PORT", "5443")),
+                user=os.getenv("POSTGRES_USER", "postgres"),
+                password=os.getenv("POSTGRES_PASSWORD", "Inn0vat1on!"),
+                database=os.getenv("POSTGRES_DB", "gaming_system_ai_core"),
+                min_size=1,
+                max_size=10
+            )
+        return self.postgres_pool
     
     async def get_player_context(self, player_id: UUID) -> Dict[str, Any]:
         """
@@ -59,7 +69,7 @@ class ContextManager:
             FROM players
             WHERE id = $1
         """
-        player_result = await postgres.fetch(player_query, player_id)
+        player_result = await postgres.fetchrow(player_query, player_id)
         
         if not player_result:
             raise ValueError(f"Player {player_id} not found")
@@ -72,7 +82,7 @@ class ContextManager:
             ORDER BY updated_at DESC
             LIMIT 1
         """
-        game_state_result = await postgres.fetch(game_state_query, player_id)
+        game_state_result = await postgres.fetchrow(game_state_query, player_id)
         
         # Get recent story history
         story_query = """
@@ -82,7 +92,7 @@ class ContextManager:
             ORDER BY created_at DESC
             LIMIT 10
         """
-        story_results = await postgres.fetch_all(story_query, player_id)
+        story_results = await postgres.fetch(story_query, player_id)
         
         # Build context
         context = {
@@ -150,7 +160,7 @@ class ContextManager:
             ORDER BY created_at DESC
             LIMIT 1
         """
-        world_result = await postgres.fetch(world_query)
+        world_result = await postgres.fetchrow(world_query)
         
         if not world_result:
             return self._get_default_world_context()
@@ -169,7 +179,7 @@ class ContextManager:
             )
             LIMIT 20
         """
-        npc_results = await postgres.fetch_all(npc_query)
+        npc_results = await postgres.fetch(npc_query)
         
         # Build world context
         context = {

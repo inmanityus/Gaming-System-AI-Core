@@ -23,6 +23,9 @@ ECS-Service,AI-Gaming-Payment,payment,N/A,ECS > Clusters > gaming-system-cluster
 ECS-Service,AI-Gaming-Quests,quest-system,N/A,ECS > Clusters > gaming-system-cluster,Running,Quest generation,2025-11-07,$3/mo,Quest management
 ECS-Service,AI-Gaming-Router,router,N/A,ECS > Clusters > gaming-system-cluster,Running,Intelligent routing,2025-11-07,$3/mo,Request routing
 ECS-Service,AI-Gaming-StateManager,state-manager,N/A,ECS > Clusters > gaming-system-cluster,Running,State persistence,2025-11-07,$5/mo,PostgreSQL + Redis
+ECS-Service,AI-Gaming-AIIntegration,ai-integration,N/A,ECS > Clusters > gaming-system-cluster,Running,AI integration with refactored HTTP clients,2025-11-08,$5/mo,Refactored 2025-11-08
+ECS-Service,AI-Gaming-StoryTeller,story-teller,N/A,ECS > Clusters > gaming-system-cluster,Running,Story generation with direct DB connections,2025-11-08,$5/mo,Refactored 2025-11-08
+ECS-Service,AI-Gaming-LanguageSystem,language-system,N/A,ECS > Clusters > gaming-system-cluster,Running,Language system with flattened imports,2025-11-08,$5/mo,Refactored 2025-11-08
 ECR-Repository,AI-Gaming-Services-Repo,bodybroker-services,695353648052.dkr.ecr.us-east-1.amazonaws.com/bodybroker-services,ECR > Repositories,Active,Container image repository,Pre-existing,$1/mo,Stores all service images
 CloudWatch-LogGroup,AI-Gaming-Weather-Logs,/ecs/gaming-system/weather-manager,N/A,CloudWatch > Log groups,Active,Weather manager logs,2025-11-07,$1/mo,Auto-created by ECS
 CloudWatch-LogGroup,AI-Gaming-Time-Logs,/ecs/gaming-system/time-manager,N/A,CloudWatch > Log groups,Active,Time manager logs,2025-11-07,$1/mo,Auto-created by ECS

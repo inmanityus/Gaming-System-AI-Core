@@ -9,11 +9,11 @@ from typing import Dict, Any, AsyncIterator
 import grpc
 from concurrent import futures
 
-from ..core.language_definition import LanguageRegistry
-from ..generation.sentence_generator import SentenceGenerator, SentenceRequest
-from ..translation.translator import Translator
-from ..translation.interpreter import Interpreter
-from ..data.language_definitions import (
+from core.language_definition import LanguageRegistry
+from generation.sentence_generator import SentenceGenerator, SentenceRequest
+from translation.translator import Translator
+from translation.interpreter import Interpreter
+from data.language_definitions import (
     create_vampire_language,
     create_werewolf_language,
     create_zombie_language,
@@ -27,7 +27,7 @@ from ..data.language_definitions import (
 )
 
 # Import generated protobuf code
-from ..proto import language_service_pb2, language_service_pb2_grpc
+from proto import language_service_pb2, language_service_pb2_grpc
 
 logger = logging.getLogger(__name__)
 

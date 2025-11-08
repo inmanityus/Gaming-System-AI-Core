@@ -7,8 +7,12 @@ import json
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
-from services.model_management.model_registry import ModelRegistry
-from services.model_management.environment_model_registry import EnvironmentModelRegistry
+# HTTP client for model management
+import aiohttp
+import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class FeatureAwareness:

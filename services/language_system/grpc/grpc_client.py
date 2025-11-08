@@ -8,7 +8,7 @@ import logging
 from typing import Dict, Any, AsyncIterator, Optional
 import grpc
 
-from ..proto import language_service_pb2, language_service_pb2_grpc
+from proto import language_service_pb2, language_service_pb2_grpc
 
 logger = logging.getLogger(__name__)
 

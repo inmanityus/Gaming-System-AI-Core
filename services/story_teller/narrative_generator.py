@@ -12,16 +12,20 @@ from uuid import UUID
 
 logger = logging.getLogger(__name__)
 
-from services.state_manager.connection_pool import get_postgres_pool, PostgreSQLPool
+from database_connection import get_postgres
+import asyncpg
 
 # Add parent directory to path for model_management imports
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-from services.model_management.guardrails_monitor import GuardrailsMonitor
-from services.model_management.historical_log_processor import HistoricalLogProcessor
-from services.ai_integration.llm_client import LLMClient
-from services.story_teller.narrative_loader import NarrativeLoader
-from services.story_teller.feature_awareness import FeatureAwareness
-from services.story_teller.cross_world_consistency import CrossWorldConsistency
+from narrative_loader import NarrativeLoader
+from feature_awareness import FeatureAwareness
+from cross_world_consistency import CrossWorldConsistency
+
+# HTTP clients for cross-service communication
+import aiohttp
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class NarrativeContext:
@@ -65,15 +69,15 @@ class NarrativeGenerator:
     Integrated with Model Management System for guardrails monitoring.
     """
     
-    def __init__(self, guardrails_monitor: Optional[GuardrailsMonitor] = None, llm_client: Optional[LLMClient] = None):
-        self.postgres: Optional[PostgreSQLPool] = None
+    def __init__(self, ai_integration_url: str = None):
+        self.postgres_pool: Optional[asyncpg.Pool] = None
         
-        # Real LLM Client integration - uses actual HTTP calls to inference services
-        self.llm_client = llm_client or LLMClient()
-        
-        # Model Management System integration
-        self.guardrails_monitor = guardrails_monitor or GuardrailsMonitor()
-        self.historical_log_processor = HistoricalLogProcessor()
+        # AI Integration service URL for LLM calls
+        self.ai_integration_url = ai_integration_url or os.getenv(
+            "AI_INTEGRATION_URL",
+            "http://ai-integration:8080"
+        )
+        self.session: Optional[aiohttp.ClientSession] = None
         
         # Narrative Loader - loads world history from docs/narrative/
         self.narrative_loader = NarrativeLoader()
@@ -85,21 +89,32 @@ class NarrativeGenerator:
         # Cross-World Consistency - ensures consistent asset generation
         self.cross_world_consistency = CrossWorldConsistency()
     
-    async def _get_postgres(self) -> PostgreSQLPool:
+    async def _get_postgres(self) -> asyncpg.Pool:
         """Get PostgreSQL pool instance."""
-        if self.postgres is None:
-            self.postgres = await get_postgres_pool()
-        return self.postgres
+        if self.postgres_pool is None:
+            self.postgres_pool = await get_postgres()
+        return self.postgres_pool
+    
+    async def _get_session(self) -> aiohttp.ClientSession:
+        """Get or create aiohttp session."""
+        if self.session is None or self.session.closed:
+            self.session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=30.0))
+        return self.session
     
     async def _get_model_id_for_logging(self) -> Optional[str]:
-        """Get current model ID for story generation use case."""
+        """Get current model ID for story generation use case via HTTP."""
         try:
-            from services.model_management.model_registry import ModelRegistry
-            registry = ModelRegistry()
-            current_model = await registry.get_current_model("story_generation")
-            return current_model.get("model_id") if current_model else None
-        except Exception:
-            return None
+            session = await self._get_session()
+            model_mgmt_url = os.getenv("MODEL_MANAGEMENT_URL", "http://model-management:8080")
+            url = f"{model_mgmt_url}/api/models/current/story_generation"
+            
+            async with session.get(url) as response:
+                if response.status == 200:
+                    result = await response.json()
+                    return result.get("model_id")
+        except Exception as e:
+            logger.error(f"Error getting model ID: {e}")
+        return None
     
     async def _get_player_context(self, player_id: UUID) -> NarrativeContext:
         """Get comprehensive player context for narrative generation."""
@@ -112,7 +127,7 @@ class NarrativeGenerator:
             LEFT JOIN game_states gs ON p.id = gs.player_id AND gs.is_active = TRUE
             WHERE p.id = $1
         """
-        player_result = await postgres.fetch(player_query, player_id)
+        player_result = await postgres.fetchrow(player_query, player_id)
         
         if not player_result:
             raise ValueError(f"Player {player_id} not found")
@@ -129,7 +144,7 @@ class NarrativeGenerator:
             ORDER BY created_at DESC
             LIMIT 10
         """
-        history_results = await postgres.fetch_all(history_query, player_id)
+        history_results = await postgres.fetch(history_query, player_id)
         story_history = []
         for result in history_results:
             story_history.append({
@@ -147,7 +162,7 @@ class NarrativeGenerator:
             ORDER BY created_at DESC
             LIMIT 1
         """
-        world_result = await postgres.fetch(world_query)
+        world_result = await postgres.fetchrow(world_query)
         world_state = {}
         if world_result:
             world_state = {
@@ -174,7 +189,7 @@ class NarrativeGenerator:
             )
             LIMIT 20
         """
-        npc_results = await postgres.fetch_all(npc_query)
+        npc_results = await postgres.fetch(npc_query)
         npc_relationships = {}
         for result in npc_results:
             relationships = json.loads(result["relationships"]) if isinstance(result["relationships"], str) else result["relationships"]

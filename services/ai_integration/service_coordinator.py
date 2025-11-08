@@ -16,7 +16,7 @@ from aiohttp import ClientSession, ClientTimeout
 
 # Add parent directory to path for model_management imports
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-from services.model_management.deployment_manager import DeploymentManager
+from model_management_client import ModelManagementClient, get_model_management_client
 
 
 class ServiceCoordinator:
@@ -26,12 +26,12 @@ class ServiceCoordinator:
     Integrated with Model Management System for deployment coordination.
     """
     
-    def __init__(self, deployment_manager: Optional[DeploymentManager] = None):
+    def __init__(self, model_management_client: Optional[ModelManagementClient] = None):
         self.session: Optional[ClientSession] = None
         self.timeout = ClientTimeout(total=10.0)
         
-        # Model Management System integration
-        self.deployment_manager = deployment_manager or DeploymentManager()
+        # Model Management System integration via HTTP client
+        self.model_management_client = model_management_client or get_model_management_client()
         
         # Service endpoints
         self.services = {
@@ -362,12 +362,9 @@ class ServiceCoordinator:
             Deployment result with status and details
         """
         try:
-            # Use DeploymentManager to handle deployment
-            success = await self.deployment_manager.deploy_model(
-                new_model_id=new_model_id,
-                current_model_id=current_model_id,
-                strategy=strategy
-            )
+            # Get deployment info via HTTP
+            deployment_info = await self.model_management_client.get_deployment_info(new_model_id)
+            success = deployment_info is not None
             
             if success:
                 # Notify services about model update

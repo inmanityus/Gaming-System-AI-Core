@@ -13,7 +13,9 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from services.state_manager.connection_pool import get_postgres_pool, get_redis_pool, PostgreSQLPool, RedisPool
+from database_connection import get_postgres, get_redis
+import asyncpg
+import aioredis
 
 
 class TimeScale(Enum):

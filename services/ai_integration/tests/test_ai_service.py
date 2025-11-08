@@ -12,10 +12,10 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
-from services.ai_integration.llm_client import LLMClient
-from services.ai_integration.context_manager import ContextManager
-from services.ai_integration.service_coordinator import ServiceCoordinator
-from services.ai_integration.response_optimizer import ResponseOptimizer
+from llm_client import LLMClient
+from context_manager import ContextManager
+from service_coordinator import ServiceCoordinator
+from response_optimizer import ResponseOptimizer
 
 
 @pytest_asyncio.fixture(scope="function", autouse=True)
@@ -103,7 +103,7 @@ async def response_optimizer():
 async def test_player_id():
     """Test player ID fixture."""
     # Create a test player in the database
-    from services.state_manager.connection_pool import get_postgres_pool
+    # Database connection handled internally by context_manager
     
     postgres = await get_postgres_pool()
     player_id = uuid4()
@@ -294,7 +294,7 @@ async def test_integration_flow(llm_client, context_manager, test_player_id):
 async def test_error_handling(llm_client):
     """Test error handling in LLM client."""
     # Test circuit breaker
-    from services.ai_integration.llm_client import CircuitBreakerError
+    from llm_client import CircuitBreakerError
     
     # This should not raise an exception
     try:

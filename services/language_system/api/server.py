@@ -37,7 +37,7 @@ grpc_server = None
 async def register_languages():
     """Register all language definitions on startup."""
     try:
-        from ..data.language_definitions import (
+        from data.language_definitions import (
             create_vampire_language,
             create_werewolf_language,
             create_zombie_language,

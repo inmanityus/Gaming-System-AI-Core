@@ -6,7 +6,8 @@ import json
 from typing import Any, Dict, List, Optional, Tuple
 from uuid import UUID
 
-from services.state_manager.connection_pool import get_postgres_pool, PostgreSQLPool
+from database_connection import get_postgres
+import asyncpg
 
 
 class ChoiceValidationError(Exception):

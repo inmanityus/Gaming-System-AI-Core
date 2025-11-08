@@ -15,12 +15,8 @@ from uuid import UUID
 import aiohttp
 from aiohttp import ClientSession, ClientTimeout
 
-# Add parent directory to path for model_management imports
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-from services.model_management.model_registry import ModelRegistry
-from services.model_management.historical_log_processor import HistoricalLogProcessor
-from services.model_management.srl_model_adapter import SRLModelAdapter
-from services.model_management.cost_benefit_router import CostBenefitRouter
+# Import HTTP clients for cross-service communication
+from model_management_client import ModelManagementClient, get_model_management_client
 
 # AI-002/AI-003: Import vLLM and LoRA managers
 from vllm_client import VLLMClient
@@ -46,15 +42,12 @@ class LLMClient:
     Integrated with Model Management System for model selection and tracking.
     """
     
-    def __init__(self, model_registry: Optional[ModelRegistry] = None):
+    def __init__(self, model_management_client: Optional[ModelManagementClient] = None):
         self.session: Optional[ClientSession] = None
         self.timeout = ClientTimeout(total=30.0)
         
-        # Model Management System integration
-        self.model_registry = model_registry or ModelRegistry()
-        self.historical_log_processor = HistoricalLogProcessor()
-        self.srl_adapter = SRLModelAdapter(model_registry=self.model_registry)
-        self.cost_benefit_router = CostBenefitRouter(model_registry=self.model_registry)
+        # Model Management System integration via HTTP client
+        self.model_management_client = model_management_client or get_model_management_client()
         
         # AI-002/AI-003: Initialize vLLM client and LoRA manager
         vllm_url = os.getenv("VLLM_BASE_URL", "http://localhost:8000")
@@ -122,11 +115,11 @@ class LLMClient:
             await self.session.close()
     
     async def _update_models_from_registry(self):
-        """Update service configurations from Model Registry."""
+        """Update service configurations from Model Registry via HTTP."""
         try:
             for layer_name, service in self.llm_services.items():
                 use_case = service["use_case"]
-                current_model = await self.model_registry.get_current_model(use_case)
+                current_model = await self.model_management_client.get_current_model(use_case)
                 
                 if current_model:
                     service["model_id"] = current_model.get("model_id")
@@ -229,17 +222,17 @@ class LLMClient:
         use_case = None
         
         try:
-            # Use cost-benefit router to select optimal model
+            # Use cost-benefit router to select optimal model via HTTP
             priority = context.get("priority", "balanced")
-            routing_decision = await self.cost_benefit_router.select_optimal_model(
+            routing_decision = await self.model_management_client.select_optimal_model(
                 task_type=layer,
                 context=context,
                 priority=priority
             )
             
             # Use selected model from router
-            selected_model_id = routing_decision.selected_model_id
-            selected_model_name = routing_decision.selected_model_name
+            selected_model_id = routing_decision.get("selected_model_id", "fallback")
+            selected_model_name = routing_decision.get("selected_model_name", "fallback")
             
             # Fallback to service selection if router fails
             if selected_model_id == "fallback":
@@ -325,10 +318,10 @@ class LLMClient:
             tokens_used = result.get("tokens_used", 0)
             latency = time.time() - start_time
             
-            # Log to historical logs for model management
+            # Log to historical logs for model management via HTTP
             if model_id:
                 try:
-                    await self.historical_log_processor.log_inference(
+                    await self.model_management_client.log_inference(
                         model_id=UUID(model_id) if isinstance(model_id, str) else model_id,
                         use_case=use_case,
                         prompt=prompt,
@@ -357,10 +350,10 @@ class LLMClient:
         except CircuitBreakerError as e:
             fallback_text = self._get_fallback_response(layer, prompt)
             
-            # Log failure
+            # Log failure via HTTP
             if model_id:
                 try:
-                    await self.historical_log_processor.log_inference(
+                    await self.model_management_client.log_inference(
                         model_id=UUID(model_id) if isinstance(model_id, str) else model_id,
                         use_case=use_case or layer,
                         prompt=prompt,
@@ -385,10 +378,10 @@ class LLMClient:
         except LLMServiceUnavailableError as e:
             fallback_text = self._get_fallback_response(layer, prompt)
             
-            # Log failure
+            # Log failure via HTTP
             if model_id:
                 try:
-                    await self.historical_log_processor.log_inference(
+                    await self.model_management_client.log_inference(
                         model_id=UUID(model_id) if isinstance(model_id, str) else model_id,
                         use_case=use_case or layer,
                         prompt=prompt,
@@ -434,8 +427,8 @@ class LLMClient:
         
         use_case = srl_use_cases.get(layer)
         if use_case:
-            # Check if SRL model exists for this use case
-            model = await self.model_registry.get_current_model(use_case)
+            # Check if SRL model exists for this use case via HTTP
+            model = await self.model_management_client.get_current_model(use_case)
             return model is not None
         
         return False
@@ -474,23 +467,15 @@ class LLMClient:
         adapter_name = context.get("adapter_name")
         
         try:
-            if adapter_name:
-                # Generate with LoRA adapter
-                generated_text = await self.srl_adapter.generate_with_adapter(
-                    base_model_name=model_name,
-                    adapter_name=adapter_name,
-                    prompt=prompt,
-                    max_tokens=max_tokens,
-                    temperature=temperature
-                )
-            else:
-                # Generate with base model only
-                generated_text = await self.srl_adapter.generate_with_base_model(
-                    base_model_name=model_name,
-                    prompt=prompt,
-                    max_tokens=max_tokens,
-                    temperature=temperature
-                )
+            # Generate with SRL model via HTTP
+            generated_text = await self.model_management_client.generate_with_srl_model(
+                tier=tier,
+                model_name=model_name,
+                adapter_name=adapter_name,
+                prompt=prompt,
+                max_tokens=max_tokens,
+                temperature=temperature
+            )
             
             return {
                 "text": generated_text,

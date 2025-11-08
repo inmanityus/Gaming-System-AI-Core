@@ -13,13 +13,15 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from services.state_manager.connection_pool import get_postgres_pool, get_redis_pool, PostgreSQLPool, RedisPool
-from services.story_teller.temporal_orchestrator import TemporalOrchestrator
-from services.story_teller.faction_simulator import FactionSimulator
-from services.story_teller.npc_behavior_system import NPCBehaviorSystem
-from services.story_teller.economic_simulator import EconomicSimulator
-from services.story_teller.spatial_manager import SpatialManager
-from services.story_teller.causal_chain import CausalChain
+from database_connection import get_postgres, get_redis
+import asyncpg
+import aioredis
+from temporal_orchestrator import TemporalOrchestrator
+from faction_simulator import FactionSimulator
+from npc_behavior_system import NPCBehaviorSystem
+from economic_simulator import EconomicSimulator
+from spatial_manager import SpatialManager
+from causal_chain import CausalChain
 
 
 class WorldSimulationEngine:

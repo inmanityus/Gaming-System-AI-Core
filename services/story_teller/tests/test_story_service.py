@@ -9,10 +9,10 @@ import asyncio
 from uuid import UUID, uuid4
 import json
 
-from services.story_teller.story_manager import StoryManager
-from services.story_teller.narrative_generator import NarrativeGenerator
-from services.story_teller.choice_processor import ChoiceProcessor
-from services.story_teller.story_branching import StoryBranching
+from story_manager import StoryManager
+from narrative_generator import NarrativeGenerator
+from choice_processor import ChoiceProcessor
+from story_branching import StoryBranching
 
 
 @pytest_asyncio.fixture(scope="function", autouse=True)
