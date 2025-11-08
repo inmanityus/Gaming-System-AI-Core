@@ -1,0 +1,38 @@
+{
+  "containerDefinitions": [
+    {
+      "name": "ai-router",
+      "environment": [
+        {
+          "value": "ai-router",
+          "name": "SERVICE_NAME"
+        }
+      ],
+      "portMappings": [
+        {
+          "containerPort": 8010,
+          "protocol": "tcp"
+        }
+      ],
+      "logConfiguration": {
+        "options": {
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-group": "/ecs/gaming-system/ai-router",
+          "awslogs-create-group": "true"
+        },
+        "logDriver": "awslogs"
+      },
+      "image": "695353648052.dkr.ecr.us-east-1.amazonaws.com/bodybroker-services:ai-router-latest",
+      "essential": true
+    }
+  ],
+  "executionRoleArn": "arn:aws:iam::695353648052:role/ecsTaskExecutionRole",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "family": "ai-router",
+  "memory": "512",
+  "cpu": "256"
+}
