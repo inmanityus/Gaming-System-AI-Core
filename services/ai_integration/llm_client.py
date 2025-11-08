@@ -23,10 +23,10 @@ from services.model_management.srl_model_adapter import SRLModelAdapter
 from services.model_management.cost_benefit_router import CostBenefitRouter
 
 # AI-002/AI-003: Import vLLM and LoRA managers
-from .vllm_client import VLLMClient
-from .lora_manager import LoRAManager
+from vllm_client import VLLMClient
+from lora_manager import LoRAManager
 # AI-004: Import multi-tier router
-from .multi_tier_router import MultiTierModelRouter, ModelTier
+from multi_tier_router import MultiTierModelRouter, ModelTier
 
 
 class CircuitBreakerError(Exception):

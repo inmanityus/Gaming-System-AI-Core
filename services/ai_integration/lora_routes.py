@@ -7,7 +7,7 @@ from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 
-from .lora_manager import LoRAManager, LoRAAdapter
+from lora_manager import LoRAManager, LoRAAdapter
 
 router = APIRouter(prefix="/api/v1/lora", tags=["LoRA Adapters"])
 

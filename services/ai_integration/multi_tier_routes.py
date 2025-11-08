@@ -7,8 +7,8 @@ from typing import Dict, Any, Optional
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 
-from .multi_tier_router import MultiTierModelRouter, ModelTier
-from .llm_client import LLMClient
+from multi_tier_router import MultiTierModelRouter, ModelTier
+from llm_client import LLMClient
 
 router = APIRouter(prefix="/api/v1/multi-tier", tags=["Multi-Tier Model Serving"])
 

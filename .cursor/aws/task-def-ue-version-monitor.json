@@ -1,0 +1,38 @@
+{
+  "memory": "512",
+  "containerDefinitions": [
+    {
+      "name": "ue-version-monitor",
+      "image": "695353648052.dkr.ecr.us-east-1.amazonaws.com/bodybroker-services:ue-version-monitor-latest",
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-region": "us-east-1",
+          "awslogs-create-group": "true",
+          "awslogs-group": "/ecs/gaming-system/ue-version-monitor",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "portMappings": [
+        {
+          "containerPort": 8007,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "value": "ue-version-monitor",
+          "name": "SERVICE_NAME"
+        }
+      ],
+      "essential": true
+    }
+  ],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "256",
+  "networkMode": "awsvpc",
+  "executionRoleArn": "arn:aws:iam::695353648052:role/ecsTaskExecutionRole",
+  "family": "ue-version-monitor"
+}

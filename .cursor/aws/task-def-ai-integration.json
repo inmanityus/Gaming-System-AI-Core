@@ -1,0 +1,47 @@
+{
+  "family": "ai-integration",
+  "networkMode": "awsvpc",
+  "executionRoleArn": "arn:aws:iam::695353648052:role/ecsTaskExecutionRole",
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "taskRoleArn": "arn:aws:iam::695353648052:role/gamingSystemServicesTaskRole",
+  "memory": "1024",
+  "containerDefinitions": [
+    {
+      "name": "ai-integration",
+      "image": "695353648052.dkr.ecr.us-east-1.amazonaws.com/bodybroker-services:ai-integration-latest",
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-region": "us-east-1",
+          "awslogs-create-group": "true",
+          "awslogs-group": "/ecs/gaming-system/ai-integration",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "portMappings": [
+        {
+          "containerPort": 8001,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "value": "ai-integration",
+          "name": "SERVICE_NAME"
+        },
+        {
+          "value": "arn:aws:sns:us-east-1:695353648052:gaming-system-weather-events",
+          "name": "WEATHER_EVENTS_TOPIC_ARN"
+        },
+        {
+          "value": "us-east-1",
+          "name": "AWS_REGION"
+        }
+      ],
+      "essential": true
+    }
+  ],
+  "cpu": "512"
+}

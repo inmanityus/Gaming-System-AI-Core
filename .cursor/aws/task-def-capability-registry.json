@@ -1,0 +1,38 @@
+{
+  "memory": "512",
+  "containerDefinitions": [
+    {
+      "name": "capability-registry",
+      "image": "695353648052.dkr.ecr.us-east-1.amazonaws.com/bodybroker-services:capability-registry-latest",
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-region": "us-east-1",
+          "awslogs-create-group": "true",
+          "awslogs-group": "/ecs/gaming-system/capability-registry",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "value": "capability-registry",
+          "name": "SERVICE_NAME"
+        }
+      ],
+      "essential": true
+    }
+  ],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "256",
+  "networkMode": "awsvpc",
+  "executionRoleArn": "arn:aws:iam::695353648052:role/ecsTaskExecutionRole",
+  "family": "capability-registry"
+}
