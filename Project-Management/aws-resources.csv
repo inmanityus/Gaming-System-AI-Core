@@ -27,4 +27,4 @@ ECR-Repository,AI-Gaming-Services-Repo,bodybroker-services,695353648052.dkr.ecr.
 CloudWatch-LogGroup,AI-Gaming-Weather-Logs,/ecs/gaming-system/weather-manager,N/A,CloudWatch > Log groups,Active,Weather manager logs,2025-11-07,$1/mo,Auto-created by ECS
 CloudWatch-LogGroup,AI-Gaming-Time-Logs,/ecs/gaming-system/time-manager,N/A,CloudWatch > Log groups,Active,Time manager logs,2025-11-07,$1/mo,Auto-created by ECS
 
-EC2-Instance,AI-Gaming-Gold-GPU-1,i-0f6d71a28e76ead32,54.198.220.209,EC2 > Instances,Running,Gold tier AI inference with Qwen2.5-3B,2025-11-07,$730/mo,g5.xlarge NVIDIA L4 24GB
+EC2-Instance,AI-Gaming-Gold-GPU-1,i-02f620203b6ccd334,54.234.135.254,EC2 > Instances,Running,Gold tier AI inference Qwen2.5-3B,2025-11-07,$730/mo,g5.xlarge A10G 24GB 100GB disk

@@ -1,0 +1,27 @@
+{
+  "ImageId": "ami-01c6d0ac19b4810ee",
+  "InstanceType": "g5.xlarge",
+  "KeyName": "gaming-system-ai-core-admin",
+  "SecurityGroupIds": ["sg-00419f4094a7d2101"],
+  "BlockDeviceMappings": [
+    {
+      "DeviceName": "/dev/xvda",
+      "Ebs": {
+        "VolumeSize": 100,
+        "VolumeType": "gp3",
+        "DeleteOnTermination": true
+      }
+    }
+  ],
+  "TagSpecifications": [
+    {
+      "ResourceType": "instance",
+      "Tags": [
+        {"Key": "Name", "Value": "AI-Gaming-Gold-GPU-1"},
+        {"Key": "Project", "Value": "GamingSystemAICore"},
+        {"Key": "Tier", "Value": "Gold"},
+        {"Key": "Purpose", "Value": "Real-time AI inference Qwen2.5-3B"}
+      ]
+    }
+  ]
+}
