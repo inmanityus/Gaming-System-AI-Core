@@ -11,11 +11,7 @@ from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
 from uuid import uuid4
 
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-
-from services.event_bus.event_bus import GameEventBus, GameEvent, EventType
+from event_publisher import publish_weather_event
 
 
 class TimeState(Enum):
@@ -77,8 +73,7 @@ class TimeOfDayManager:
     def __init__(
         self,
         time_scale: float = 60.0,  # 1 real second = 60 game minutes
-        start_hour: int = 7,  # Start at 7:00 AM (day)
-        event_bus: Optional[GameEventBus] = None
+        start_hour: int = 7  # Start at 7:00 AM (day)
     ):
         """
         Initialize TimeOfDayManager.
@@ -86,7 +81,6 @@ class TimeOfDayManager:
         Args:
             time_scale: Real seconds per game hour (default: 60 = 1 minute real = 1 hour game)
             start_hour: Starting hour (0-23)
-            event_bus: Event bus instance (creates new if None)
         """
         self.time_scale = time_scale  # Real seconds per game hour
         self.game_minutes_per_real_second = 60.0 / time_scale
@@ -103,9 +97,6 @@ class TimeOfDayManager:
         # Time-aware subscribers
         self._subscribers: List[TimeAwareInterface] = []
         self._subscriber_lock = asyncio.Lock()
-        
-        # Event bus for broadcasting
-        self.event_bus = event_bus or GameEventBus(use_redis=True)
         
         # Running state
         self._running = False
@@ -220,56 +211,34 @@ class TimeOfDayManager:
         print(f"[TIME MANAGER] State changed: {old_state.value} → {new_state.value} ({self.current_time.time_string})")
         
         # Publish event via event bus
-        event = GameEvent(
-            event_type=EventType.TIME_OF_DAY_CHANGED,
-            source="time_manager",
-            data={
-                "old_state": old_state.value,
-                "new_state": new_state.value,
-                "hour": self.current_time.hour,
-                "minute": self.current_time.minute,
-                "day": self.current_time.day,
-                "time_string": self.current_time.time_string,
-            },
-            priority="high"
-        )
+        # Publish time state change event via distributed messaging
+        event_data = {
+            "old_state": old_state.value,
+            "new_state": new_state.value,
+            "hour": self.current_time.hour,
+            "minute": self.current_time.minute,
+            "day": self.current_time.day,
+            "time_string": self.current_time.time_string,
+        }
         
-        await self.event_bus.publish(event)
+        await publish_weather_event("time.changed", event_data)
         self._stats["events_published"] += 1
         
         # Also publish specific activation events
         if new_state == TimeState.DAY:
-            day_event = GameEvent(
-                event_type=EventType.DAY_WORLD_ACTIVATED,
-                source="time_manager",
-                data=self.current_time.to_dict(),
-                priority="high"
-            )
-            await self.event_bus.publish(day_event)
+            await publish_weather_event("time.day_activated", self.current_time.to_dict())
         
         elif new_state == TimeState.NIGHT:
-            night_event = GameEvent(
-                event_type=EventType.NIGHT_WORLD_ACTIVATED,
-                source="time_manager",
-                data=self.current_time.to_dict(),
-                priority="high"
-            )
-            await self.event_bus.publish(night_event)
+            await publish_weather_event("time.night_activated", self.current_time.to_dict())
     
     async def _broadcast_time_update(self):
-        """Broadcast time update event."""
+        """Broadcast time update event via distributed messaging."""
         # Only broadcast major updates (every minute of game time)
         if self.current_time.minute % 1 == 0:  # Every game minute
-            event = GameEvent(
-                event_type=EventType.WORLD_STATE_UPDATED,
-                source="time_manager",
-                data={
-                    "time": self.current_time.to_dict(),
-                    "update_type": "time_progression"
-                },
-                priority="normal"
-            )
-            await self.event_bus.publish(event)
+            await publish_weather_event("time.updated", {
+                "time": self.current_time.to_dict(),
+                "update_type": "time_progression"
+            })
     
     async def _notify_subscribers(self):
         """Notify all time-aware subscribers - REAL IMPLEMENTATION."""

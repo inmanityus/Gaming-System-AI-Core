@@ -1,0 +1,16 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Effect": "Allow",
+    "Principal": {
+      "Service": "sns.amazonaws.com"
+    },
+    "Action": "sqs:SendMessage",
+    "Resource": "arn:aws:sqs:us-east-1:695353648052:gaming-system-weather-manager-events",
+    "Condition": {
+      "ArnEquals": {
+        "aws:SourceArn": "arn:aws:sns:us-east-1:695353648052:gaming-system-weather-events"
+      }
+    }
+  }]
+}

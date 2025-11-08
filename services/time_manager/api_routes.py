@@ -7,7 +7,7 @@ from typing import Any, Dict, Optional
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 
-from .time_manager import TimeOfDayManager, TimeData
+from time_manager import TimeOfDayManager, TimeData
 
 
 router = APIRouter(prefix="/time", tags=["time"])

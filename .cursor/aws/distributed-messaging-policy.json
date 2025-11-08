@@ -1,0 +1,22 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "sns:Publish"
+      ],
+      "Resource": "arn:aws:sns:us-east-1:695353648052:gaming-system-weather-events"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "sqs:ReceiveMessage",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl"
+      ],
+      "Resource": "arn:aws:sqs:us-east-1:695353648052:gaming-system-weather-manager-events"
+    }
+  ]
+}

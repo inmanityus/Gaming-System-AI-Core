@@ -1,0 +1,57 @@
+// Event Protocol Definitions for Gaming System
+// Binary protocol using Protocol Buffers for high-performance messaging
+
+syntax = "proto3";
+
+package gaming.events;
+
+// Event types enumeration
+enum EventType {
+  EVENT_TYPE_UNSPECIFIED = 0;
+  WEATHER_CHANGED = 1;
+  WEATHER_SEVERE = 2;
+  TIME_CHANGED = 3;
+  TIME_DAY_ACTIVATED = 4;
+  TIME_NIGHT_ACTIVATED = 5;
+  TIME_UPDATED = 6;
+  WORLD_STATE_UPDATED = 7;
+}
+
+// Base event message
+message GameEvent {
+  string event_id = 1;              // Unique event ID (UUID)
+  EventType event_type = 2;         // Type of event
+  string source = 3;                // Source service name
+  int64 timestamp = 4;              // Unix timestamp (milliseconds)
+  bytes payload = 5;                // Binary payload (specific event data)
+  map<string, string> metadata = 6; // Optional metadata
+}
+
+// Weather event payload
+message WeatherEvent {
+  string old_state = 1;
+  string new_state = 2;
+  float intensity = 3;
+  float temperature = 4;
+  float wind_speed = 5;
+  float humidity = 6;
+  string season = 7;
+  int32 duration_minutes = 8;
+}
+
+// Time event payload
+message TimeEvent {
+  string old_state = 1;
+  string new_state = 2;
+  int32 hour = 3;
+  int32 minute = 4;
+  int32 day = 5;
+  string time_string = 6;
+}
+
+// Generic state update payload
+message StateUpdate {
+  map<string, string> state = 1;
+  string update_type = 2;
+}
+
