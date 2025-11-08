@@ -9,10 +9,10 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 
-from .world_state_manager import WorldStateManager
-from .event_system import EventSystem
-from .faction_manager import FactionManager
-from .economic_manager import EconomicManager
+from world_state_manager import WorldStateManager
+from event_system import EventSystem
+from faction_manager import FactionManager
+from economic_manager import EconomicManager
 
 
 # Pydantic models

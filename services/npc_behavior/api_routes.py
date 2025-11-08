@@ -8,10 +8,10 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
-from .behavior_engine import BehaviorEngine
-from .personality_system import PersonalitySystem
-from .goal_manager import GoalManager
-from .interaction_router import InteractionRouter
+from behavior_engine import BehaviorEngine
+from personality_system import PersonalitySystem
+from goal_manager import GoalManager
+from interaction_router import InteractionRouter
 from services.ai_integration.llm_client import LLMClient
 
 

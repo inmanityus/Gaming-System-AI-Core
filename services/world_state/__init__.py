@@ -8,10 +8,10 @@ This service handles:
 - Economic state and market dynamics
 """
 
-from .world_state_manager import WorldStateManager
-from .event_system import EventSystem
-from .faction_manager import FactionManager
-from .economic_manager import EconomicManager
+from world_state_manager import WorldStateManager
+from event_system import EventSystem
+from faction_manager import FactionManager
+from economic_manager import EconomicManager
 
 __all__ = [
     "WorldStateManager",

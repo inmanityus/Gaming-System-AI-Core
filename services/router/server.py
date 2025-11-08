@@ -10,8 +10,8 @@ from typing import AsyncGenerator
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .api_routes import router
-from .intelligent_router import IntelligentRouter
+from api_routes import router
+from intelligent_router import IntelligentRouter
 
 
 # Global instance

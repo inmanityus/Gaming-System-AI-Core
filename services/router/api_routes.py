@@ -7,7 +7,7 @@ from typing import Any, Dict
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-from .intelligent_router import IntelligentRouter
+from intelligent_router import IntelligentRouter
 
 
 # Pydantic models
@@ -47,7 +47,7 @@ async def route_request(request: RoutingRequest) -> RoutingResponse:
     """
     try:
         # Get router instance
-        from .server import router_service
+        from server import router_service
         if router_service is None:
             raise HTTPException(
                 status_code=503,
@@ -92,7 +92,7 @@ async def get_tier_health() -> Dict[str, Any]:
         Dict with health status for each tier
     """
     try:
-        from .server import router_service
+        from server import router_service
         if router_service is None:
             raise HTTPException(
                 status_code=503,
@@ -117,7 +117,7 @@ async def check_tier_health(tier: str = None) -> Dict[str, Any]:
         Health status
     """
     try:
-        from .server import router_service
+        from server import router_service
         if router_service is None:
             raise HTTPException(
                 status_code=503,
@@ -126,7 +126,7 @@ async def check_tier_health(tier: str = None) -> Dict[str, Any]:
         
         if tier:
             # Import Tier enum
-            from .intelligent_router import Tier
+            from intelligent_router import Tier
             tier_enum = Tier(tier.lower())
             is_healthy = await router_service.check_health(tier_enum)
             return {tier: is_healthy}

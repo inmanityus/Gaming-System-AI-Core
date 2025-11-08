@@ -18,13 +18,13 @@ from pydantic import BaseModel, Field
 
 
 
-from .config_manager import ConfigManager, ConfigValidationError
+from config_manager import ConfigManager, ConfigValidationError
 
-from .feature_flags import FeatureFlagManager
+from feature_flags import FeatureFlagManager
 
-from .preference_handler import PreferenceHandler
+from preference_handler import PreferenceHandler
 
-from .tier_manager import TierManager
+from tier_manager import TierManager
 
 
 

@@ -10,8 +10,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from .api_routes import router
-from .hot_reload import HotReloadManager
+from api_routes import router
+from hot_reload import HotReloadManager
 from services.state_manager.connection_pool import close_pools, get_postgres_pool, get_redis_pool
 
 
