@@ -5,8 +5,8 @@ REAL IMPLEMENTATION - No mocks, real server.
 
 from fastapi import FastAPI
 
-from services.weather_manager.api_routes import router, weather_manager
-from services.weather_manager.weather_manager import WeatherManager, Season
+from api_routes import router, weather_manager
+from weather_manager import WeatherManager, Season
 
 app = FastAPI(
     title="Weather Manager Service",

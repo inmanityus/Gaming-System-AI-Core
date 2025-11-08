@@ -4,7 +4,7 @@ Time Manager Service Server - FastAPI server for time management.
 
 import asyncio
 from fastapi import FastAPI
-from .api_routes import router
+from api_routes import router
 
 app = FastAPI(
     title="Time Manager Service",

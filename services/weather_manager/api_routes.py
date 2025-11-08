@@ -8,11 +8,7 @@ from typing import List, Optional
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-
-from services.weather_manager.weather_manager import WeatherManager, WeatherState, WeatherData, Season
+from weather_manager import WeatherManager, WeatherState, WeatherData, Season
 
 router = APIRouter(prefix="/api/weather", tags=["Weather"])
 
