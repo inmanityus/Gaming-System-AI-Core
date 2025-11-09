@@ -1,0 +1,8 @@
+{
+  "commands": [
+    "cd /home/ubuntu",
+    "for task in personality dialogue_style action_policy emotional_response world_knowledge social_dynamics goal_prioritization; do python3 training/train_lora_adapter.py --archetype vampire --task $task >> training-vampire-all.log 2>&1; done",
+    "echo 'All vampire adapters trained'"
+  ]
+}
+

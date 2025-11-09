@@ -1,0 +1,8 @@
+{
+  "commands": [
+    "cd /home/ubuntu",
+    "for task in personality dialogue_style action_policy emotional_response world_knowledge social_dynamics goal_prioritization; do python3 training/train_lora_adapter.py --archetype zombie --task $task >> training-zombie-all.log 2>&1; done",
+    "echo 'All zombie adapters trained'"
+  ]
+}
+
