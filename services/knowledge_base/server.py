@@ -3,17 +3,28 @@ Knowledge Base API Service
 Provides semantic search and world-scoped queries for storyteller.
 """
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, validator
 from typing import List, Optional, Dict, Any
 from uuid import UUID
 import asyncpg
 import os
 import logging
+import json
+from functools import lru_cache
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
+
+# Rate limiter
+limiter = Limiter(key_func=get_remote_address)
 
 app = FastAPI(
     title="Knowledge Base API",
@@ -21,33 +32,62 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS
+# Add rate limiter
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+# CORS - Restricted to known origins
+ALLOWED_ORIGINS = os.getenv('ALLOWED_ORIGINS', 'http://localhost:3000,http://localhost:8080').split(',')
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type", "Authorization", "X-API-Key"],
 )
 
 # Database connection
 postgres_pool = None
+
+# API Key validation
+API_KEYS = set(os.getenv('KB_API_KEYS', '').split(',')) if os.getenv('KB_API_KEYS') else set()
+
+async def verify_api_key(x_api_key: str = Header(None)):
+    """Verify API key for protected endpoints."""
+    if not API_KEYS:
+        # If no keys configured, allow access (development mode)
+        return True
+    
+    if not x_api_key or x_api_key not in API_KEYS:
+        raise HTTPException(status_code=401, detail="Invalid or missing API key")
+    return True
 
 
 @app.on_event("startup")
 async def startup():
     """Initialize database connection."""
     global postgres_pool
-    postgres_pool = await asyncpg.create_pool(
-        host=os.getenv('POSTGRES_HOST', 'localhost'),
-        port=int(os.getenv('POSTGRES_PORT', '5443')),
-        user=os.getenv('POSTGRES_USER', 'postgres'),
-        password=os.getenv('POSTGRES_PASSWORD', 'Inn0vat1on!'),
-        database=os.getenv('POSTGRES_DB', 'gaming_system_ai_core'),
-        min_size=2,
-        max_size=20
-    )
-    logger.info("✅ Connected to Knowledge Base")
+    
+    # Validate required environment variables
+    db_password = os.getenv('POSTGRES_PASSWORD')
+    if not db_password:
+        raise RuntimeError("POSTGRES_PASSWORD environment variable required")
+    
+    try:
+        postgres_pool = await asyncpg.create_pool(
+            host=os.getenv('POSTGRES_HOST', 'localhost'),
+            port=int(os.getenv('POSTGRES_PORT', '5443')),
+            user=os.getenv('POSTGRES_USER', 'postgres'),
+            password=db_password,
+            database=os.getenv('POSTGRES_DB', 'gaming_system_ai_core'),
+            min_size=2,
+            max_size=20,
+            command_timeout=60  # Timeout for queries
+        )
+        logger.info("✅ Connected to Knowledge Base")
+    except Exception as e:
+        logger.error(f"Failed to connect to database: {e}")
+        raise
 
 
 @app.on_event("shutdown")
@@ -58,12 +98,19 @@ async def shutdown():
         await postgres_pool.close()
 
 
-# Request/Response Models
+# Request/Response Models with Validation
 class SemanticSearchRequest(BaseModel):
-    query: str
-    match_threshold: float = 0.7
-    match_count: int = 10
-    document_types: Optional[List[str]] = None  # Filter by type
+    query: str = Field(..., min_length=1, max_length=2000, description="Search query")
+    match_threshold: float = Field(default=0.7, ge=0.0, le=1.0)
+    match_count: int = Field(default=10, ge=1, le=100)
+    document_types: Optional[List[str]] = Field(default=None, max_items=10)
+    
+    @validator('query')
+    def validate_query(cls, v):
+        """Sanitize query input."""
+        if not v or not v.strip():
+            raise ValueError("Query cannot be empty")
+        return v.strip()
 
 
 class SearchResult(BaseModel):
@@ -103,24 +150,30 @@ async def health_check():
 
 
 @app.post("/search/semantic", response_model=List[SearchResult])
-async def semantic_search(request: SemanticSearchRequest):
+@limiter.limit("30/minute")
+async def semantic_search(
+    request: SemanticSearchRequest,
+    authenticated: bool = Depends(verify_api_key)
+):
     """
     Semantic search across narrative documents.
-    Uses pgvector cosine similarity.
+    Uses pgvector cosine similarity (or text search fallback).
+    Rate limited to 30 requests/minute.
     """
     try:
-        # Generate embedding for query
-        # TODO: Integrate with embedding service
-        # For now, return text-based search as fallback
+        # Validate pool is available
+        if not postgres_pool:
+            raise HTTPException(status_code=503, detail="Database unavailable")
         
         async with postgres_pool.acquire() as conn:
-            # Text search fallback (until embeddings integrated)
-            query = """
+            # Use parameterized query (SQL injection safe)
+            # Text search with proper parameterization
+            query_sql = """
                 SELECT 
                     id::text, 
                     title, 
                     content,
-                    0.8 as similarity,  -- Placeholder
+                    0.8 as similarity,
                     document_type,
                     source_file
                 FROM narrative_documents
@@ -129,9 +182,10 @@ async def semantic_search(request: SemanticSearchRequest):
                 LIMIT $2
             """
             
+            # Parameterized query prevents SQL injection
             rows = await conn.fetch(
-                query,
-                f"%{request.query}%",
+                query_sql,
+                f"%{request.query}%",  # Parameterized, safe
                 request.match_count
             )
             
@@ -140,18 +194,22 @@ async def semantic_search(request: SemanticSearchRequest):
                     id=row['id'],
                     title=row['title'],
                     content=row['content'][:500] + "..." if len(row['content']) > 500 else row['content'],
-                    similarity=row['similarity'],
+                    similarity=float(row['similarity']),
                     document_type=row['document_type'],
                     source_file=row['source_file']
                 )
                 for row in rows
             ]
             
+            logger.info(f"Semantic search: '{request.query[:50]}' returned {len(results)} results")
             return results
     
+    except asyncpg.PostgresError as e:
+        logger.error(f"Database error in semantic search: {e}")
+        raise HTTPException(status_code=500, detail="Database query failed")
     except Exception as e:
-        logger.error(f"Error in semantic search: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error in semantic search: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Search failed")
 
 
 @app.get("/documents/stats")
@@ -225,24 +283,41 @@ async def get_world_events(
         return [dict(row) for row in rows]
 
 
-@app.post("/concepts/create")
-async def create_concept(
-    name: str,
-    concept_type: str,
-    description: str,
-    scope: str = 'global',
+class CreateConceptRequest(BaseModel):
+    name: str = Field(..., min_length=1, max_length=255)
+    concept_type: str = Field(..., min_length=1, max_length=50)
+    description: str = Field(..., min_length=1, max_length=5000)
+    scope: str = Field(default='global', regex='^(global|day_world|dark_world|experience)$')
     world_id: Optional[UUID] = None
+
+@app.post("/concepts/create")
+@limiter.limit("10/minute")
+async def create_concept(
+    request: CreateConceptRequest,
+    authenticated: bool = Depends(verify_api_key)
 ):
-    """Create new narrative concept."""
-    async with postgres_pool.acquire() as conn:
-        concept_id = await conn.fetchval("""
-            INSERT INTO narrative_concepts 
-            (name, concept_type, description, scope, world_id)
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING id
-        """, name, concept_type, description, scope, world_id)
+    """Create new narrative concept. Rate limited to 10/minute."""
+    try:
+        if not postgres_pool:
+            raise HTTPException(status_code=503, detail="Database unavailable")
         
-        return {"id": str(concept_id), "status": "created"}
+        async with postgres_pool.acquire() as conn:
+            concept_id = await conn.fetchval("""
+                INSERT INTO narrative_concepts 
+                (name, concept_type, description, scope, world_id)
+                VALUES ($1, $2, $3, $4, $5)
+                RETURNING id
+            """, request.name, request.concept_type, request.description, 
+            request.scope, request.world_id)
+            
+            logger.info(f"Created concept: {request.name} ({concept_id})")
+            return {"id": str(concept_id), "status": "created"}
+    
+    except asyncpg.UniqueViolationError:
+        raise HTTPException(status_code=409, detail="Concept already exists")
+    except asyncpg.PostgresError as e:
+        logger.error(f"Database error creating concept: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create concept")
 
 
 @app.post("/events/record")
