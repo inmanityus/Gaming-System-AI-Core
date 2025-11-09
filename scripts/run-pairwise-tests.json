@@ -1,0 +1,12 @@
+{
+  "commands": [
+    "cd /home/ubuntu",
+    "export PYTHONPATH=/home/ubuntu:$PYTHONPATH",
+    "python3 examples/body_broker_complete_demo.py > test-demo.log 2>&1",
+    "pytest tests/integration/ -v > test-integration.log 2>&1 || true",
+    "echo 'Tests complete'",
+    "cat test-demo.log",
+    "cat test-integration.log"
+  ]
+}
+

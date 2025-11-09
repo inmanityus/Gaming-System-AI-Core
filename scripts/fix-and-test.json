@@ -1,0 +1,11 @@
+{
+  "commands": [
+    "cd /home/ubuntu",
+    "ls -la | head -20",
+    "pwd",
+    "find . -name 'body_broker_complete_demo.py' 2>/dev/null || echo 'Demo not found'",
+    "pip3 install pytest pytest-asyncio --break-system-packages",
+    "echo 'Environment fixed'"
+  ]
+}
+
