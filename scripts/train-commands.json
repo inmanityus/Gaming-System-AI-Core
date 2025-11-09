@@ -1,0 +1,12 @@
+{
+  "commands": [
+    "cd /home/ubuntu",
+    "export PYTHONPATH=/home/ubuntu:$PYTHONPATH",
+    "nohup python3 -m vllm.entrypoints.openai.api_server --model Qwen/Qwen2.5-7B-Instruct --quantization awq --enable-lora --max-loras 35 --port 8000 > vllm.log 2>&1 &",
+    "sleep 30",
+    "echo 'Starting adapter training...'",
+    "python3 training/train_lora_adapter.py --archetype vampire --task personality > training-vampire-personality.log 2>&1",
+    "echo 'First adapter training complete'"
+  ]
+}
+

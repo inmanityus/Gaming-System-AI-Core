@@ -1,0 +1,14 @@
+{
+  "InstanceIds": ["i-089e3ab2b8830e3d2"],
+  "DocumentName": "AWS-RunShellScript",
+  "Parameters": {
+    "commands": [
+      "cd /home/ubuntu",
+      "aws s3 cp s3://body-broker-training-9728/body-broker-code.tar.gz .",
+      "tar -xzf body-broker-code.tar.gz",
+      "pip3 install -r requirements-complete.txt --break-system-packages 2>&1 | head -20",
+      "echo 'Body Broker code deployed'"
+    ]
+  }
+}
+

@@ -13,7 +13,7 @@ IAM-Role,AI-Gaming-Services-Task,gamingSystemServicesTaskRole,N/A,IAM > Roles,Ac
 IAM-Policy,AI-Gaming-Messaging-Policy,GamingSystemDistributedMessaging,N/A,IAM > Policies,Active,SNS/SQS permissions policy,2025-11-07,Free,Attached to task roles
 EC2-Instance,AI-Gaming-UE5-Builder,i-0f27f842a79e1c59e,3.95.183.186,EC2 > Instances,Running,UE5 build server,2025-11-07,$326/mo,c5.4xlarge (16 vCPUs)
 EC2-Instance,AI-Gaming-Gold-GPU-1,i-02f620203b6ccd334,54.234.135.254,EC2 > Instances,Running,Gold tier AI inference Qwen2.5-3B,2025-11-07,$730/mo,g5.xlarge A10G 24GB 100GB disk
-EC2-Instance,AI-Gaming-Silver-GPU-1,i-089e3ab2b8830e3d2,18.208.225.146,EC2 > Instances,Running,Silver tier AI inference Qwen2.5-7B,2025-11-07,$870/mo,g5.2xlarge A10G 24GB 150GB disk
+EC2-Instance,AI-Gaming-Silver-GPU-1,i-089e3ab2b8830e3d2,18.208.225.146,EC2 > Instances,Running,Silver tier AI inference + Body Broker training,2025-11-09,$870/mo,g5.2xlarge A10G 24GB 150GB disk | KEY: gaming-system-ai-core-admin | PEM: C:\Users\kento\.ssh\gaming-system-ai-core-admin.pem
 Launch-Template,AI-Gaming-Gold-Tier-Template,lt-02625ef0413f7c763,N/A,EC2 > Launch Templates,Active,Gold tier g5.xlarge launch config,2025-11-08,Free,For Auto Scaling Group
 Launch-Template,AI-Gaming-Silver-Tier-Template,lt-0c7ff07746ca28cc8,N/A,EC2 > Launch Templates,Active,Silver tier g5.2xlarge launch config,2025-11-08,Free,For Auto Scaling Group
 ASG,AI-Gaming-Gold-Tier-ASG,arn:aws:autoscaling:us-east-1:695353648052:autoScalingGroup:*:autoScalingGroupName/AI-Gaming-Gold-Tier-ASG,N/A,EC2 > Auto Scaling Groups,Active,Gold GPU auto-scaling (min:1 max:50),2025-11-08,Variable,Currently 2 instances
@@ -33,6 +33,9 @@ ECS-Service,AI-Gaming-AIIntegration,ai-integration,N/A,ECS > gaming-system-clust
 ECS-Service,AI-Gaming-StoryTeller,story-teller,N/A,ECS > gaming-system-cluster,Running,Story generation with DB connections,2025-11-08,$5/mo,Refactored 2025-11-08
 ECS-Service,AI-Gaming-LanguageSystem,language-system,N/A,ECS > gaming-system-cluster,Running,Language system flattened imports,2025-11-08,$5/mo,Refactored 2025-11-08
 ECS-Service,AI-Gaming-KnowledgeBase,knowledge-base,N/A,ECS > gaming-system-cluster,Running,Semantic search and storyteller memory,2025-11-08,$5/mo,Peer-reviewed + tested
+EC2-Instance,Body-Broker-Training-GPU,i-05a16e074a5d79473,13.222.142.205,EC2 > Instances,Running,Body Broker LoRA training g5.2xlarge,2025-11-09,$870/mo,SSM-enabled auto-setup from S3 | BUCKET: s3://body-broker-training-9728
+S3-Bucket,Body-Broker-Training,body-broker-training-9728,s3://body-broker-training-9728,S3 > Buckets,Active,Code deployment and training data,2025-11-09,$1/mo,Contains body-broker-code.tar.gz
+IAM-Role,Gaming-System-SSM-Role,gaming-system-ssm-role,N/A,IAM > Roles,Active,SSM + S3 access for GPU instances,2025-11-09,Free,AmazonSSMManagedInstanceCore + S3ReadOnly
 ECR-Repository,AI-Gaming-Services-Repo,bodybroker-services,695353648052.dkr.ecr.us-east-1.amazonaws.com/bodybroker-services,ECR > Repositories,Active,Container image repository,Pre-existing,$1/mo,Stores all service images
 CloudWatch-LogGroup,AI-Gaming-Weather-Logs,/ecs/gaming-system/weather-manager,N/A,CloudWatch > Log groups,Active,Weather manager logs,2025-11-07,$1/mo,Auto-created by ECS
 CloudWatch-LogGroup,AI-Gaming-Time-Logs,/ecs/gaming-system/time-manager,N/A,CloudWatch > Log groups,Active,Time manager logs,2025-11-07,$1/mo,Auto-created by ECS
