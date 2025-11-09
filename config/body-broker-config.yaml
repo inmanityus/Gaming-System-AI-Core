@@ -1,0 +1,52 @@
+# Body Broker Configuration
+
+services:
+  vllm:
+    base_url: "http://localhost:8000"
+    model: "Qwen/Qwen2.5-7B-Instruct"
+    quantization: "awq"
+    max_loras: 35
+  
+  redis:
+    host: "localhost"
+    port: 6379
+    db_registry: 0
+    db_memory: 1
+    db_loom: 2
+    ttl_seconds: 3600
+  
+  postgres:
+    host: "localhost"
+    port: 5443
+    database: "gaming_system_ai_core"
+    user: "postgres"
+
+archetype_system:
+  max_loaded_adapters: 35
+  local_cache_ttl_seconds: 300
+  cache_size: 64
+
+memory_system:
+  gpu_cache:
+    max_turns: 20
+    ttl_minutes: 30
+    max_npcs: 500
+  redis_memory:
+    ttl_days: 30
+  postgres_archiver:
+    batch_size: 100
+    batch_window_ms: 100
+
+body_broker:
+  harvesting:
+    decay_time_hours: 24
+    preservation_bonus_hours: 24
+  negotiation:
+    base_reputation: 50
+    reputation_range: [0, 100]
+  drugs:
+    types: 8
+  clients:
+    families: 8
+    starting_unlocked: ["carrion_kin", "chatter_swarm"]
+
