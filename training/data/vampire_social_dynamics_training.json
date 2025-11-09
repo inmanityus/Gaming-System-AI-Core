@@ -1,0 +1,2047 @@
+{
+  "archetype": "vampire",
+  "adapter_task": "social_dynamics",
+  "total_examples": 255,
+  "examples": [
+    {
+      "input": "Context: 1. **Dark World History** (`01-DARK-WORLD-HISTORY.md`)\n   - Ancient races and civilizations\n   - Major families and houses\n   - Guilds and magical organizations\n   - Historical calamities and cataclysms\n   - Fallen empires and lost knowledge\n   - Inter-racial conflicts and alliances\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "00-OVERVIEW.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: - **Duality**: Light and Dark worlds coexisting but separate\n- **Power Struggles**: Both worlds defined by hierarchies, families, and conflicts\n- **Mystery**: Ancient secrets, lost knowledge, and hidden truths\n- **Violence**: Realistic darkness in Light World, supernatural danger in Dark World\n- **Choice**: History provides context, but doesn't dictate player's path\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "00-OVERVIEW.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: 1. [The Ancient Epochs](#the-ancient-epochs)\n2. [The Great Races](#the-great-races)\n3. [Major Houses and Families](#major-houses-and-families)\n4. [Guilds and Organizations](#guilds-and-organizations)\n5. [Magical Traditions](#magical-traditions)\n6. [Historical Calamities](#historical-calamities)\n7. [Fallen Empires and Lost Knowledge](#fallen-empires-and-lost-knowledge)\n8. [Inter-Racial Conflicts](#inter-racial-conflicts)\n9. [The Shadow Wars](#the-shadow-wars)\n10. [The Current Age](#the-current-ag...\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ## The Ancient Epochs\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **What the Story Teller Should Know:**\n- This epoch lasted for thousands of millennia (exact timeline intentionally vague)\n- Multiple \"waves\" of otherworldly entities arrived during this time\n- These entities became the ancestors of current Dark World races\n- Ancient conflicts shaped the landscape itself (hence the jagged terrain, floating ruins, and areas where physics don't quite work right)\n- **Fill In**: Specific arrival dates, names of the first entities, details of the earliest conflicts\u2014u...\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Story Teller Notes:**\n- Some of these sealed entities might be discovered (or accidentally released) by players\n- The unstable zones can be used for unique locations, quests, or environmental hazards\n- References to \"the time before the Shattering\" can add mystery to ancient ruins or artifacts\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Key Developments:**\n- First established houses form among vampires, werewolves, and other long-lived races\n- Magical guilds begin organizing and codifying their practices\n- Trade routes and territories are established\n- The first laws governing inter-racial interactions are created\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Vampires (The Blood Court)\n**Origins**: Unknown, but believed to be descended from one of the first waves of entities from another dimension. They've existed for at least 12,000 years in their current form.\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Characteristics**:\n- Long-lived (some ancient ones may be truly immortal)\n- Organized into houses with rigid hierarchies\n- Obsessed with bloodlines, heritage, and power\n- Highly political and manipulative\n- Various sub-clans with different abilities and weaknesses\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Major Houses** (Story Teller can add more):\n- **House Crimson**: Oldest and most powerful, claims direct descent from the First Blood\n- **House Obsidian**: Known for assassins and spies, plays all sides\n- **House Silver**: Traders and merchants, maintains neutrality for profit\n- **House Ashen**: Mystics and scholars, hoards ancient knowledge\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Major Packs**:\n- **The Iron Claw Pack**: Largest urban pack, controls several territories\n- **The Wild Hunt**: Nomadic pack, respects no boundaries\n- **The Steel Fangs**: Military-focused pack, sells mercenary services\n- **The Moon's Shadow**: Mystical pack, has ancient connections to lunar magic\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Liches (The Immortal Scholars)\n**Origins**: Beings who achieved immortality through forbidden magical rituals. Each lich is unique\u2014there's no single method, just desperate beings who found ways to avoid death.\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Characteristics**:\n- Each one is ancient and powerful\n- Hoard knowledge and magical artifacts\n- Live in isolated strongholds\n- Form occasional alliances but mostly work alone\n- Some have apprentices, some have legions of undead\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Other Races\n**The Fae-Touched**: Entities with connection to primal nature magic. Include various types of fey, changelings, and nature spirits. Highly territorial and follow ancient pacts.\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **The Bone Constructs**: Animated remains of fallen empires, created by ancient magic. Some are mindless guardians, some have achieved true sentience.\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: The Dark World is ruled by ancient bloodlines and established houses. These aren't just families\u2014they're political entities, economic powers, and sometimes armies.\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### House Politics\nAll major races have house systems, though they work differently:\n- **Vampires**: Rigid hierarchies, bloodline obsessions, arranged marriages for power\n- **Werewolves**: Pack-based, alpha leadership, territorial claims\n- **Liches**: Independent but form temporary councils when needed\n- **Others**: Varies by race\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Inter-House Conflicts\n**Historical Examples** (Story Teller can create current conflicts):\n- **The Crimson-Obsidian War** (3,000 years ago): Lasted 200 years, reshaped vampire territories\n- **The Pack Schism** (1,500 years ago): Split werewolf packs into urban vs. wild factions\n- **The Lich Purge** (800 years ago): Houses united to destroy a lich who threatened all of them\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Family Feuds\nBeyond the major houses, smaller families constantly feud over:\n- Territory\n- Resources\n- Old grudges\n- Business interests\n- Magical artifacts\n- Bloodline purity\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### The Scholars' Circle\n**Purpose**: Preservation and study of ancient knowledge\n**Membership**: Anyone with significant contributions to magical or historical research\n**Power**: Intellectual and magical influence\n**Conflicts**: Sometimes hunted by those who want their knowledge suppressed\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Blood Magic\n**Origin**: Ancient vampire traditions, possibly predating vampires themselves\n**Practitioners**: Primarily vampires, but some others learn it\n**Nature**: Life force manipulation, curses, bonds, transformations\n**Limitations**: Requires blood (vampire or other sentient beings), has severe costs\n**Status**: Legal but heavily regulated by vampire houses\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Necromancy\n**Origin**: Multiple origins\u2014some from liches, some from ancient plagues, some from forbidden research\n**Practitioners**: Liches, some dark mages, necromancer guilds\n**Nature**: Death magic, animation, soul manipulation, curses\n**Limitations**: Taboo in many areas, requires corpses or souls, has psychological costs\n**Status**: Legal status varies by region and practitioner\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Shadow Magic\n**Origin**: Unknown, possibly from the Shadowkin or entities from shadow dimensions\n**Practitioners**: Shadowkin, assassins, some mystics\n**Nature**: Stealth, illusions, teleportation through shadows, hiding\n**Limitations**: Requires darkness or shadows, some forms are temporary\n**Status**: Neutral\u2014neither banned nor encouraged\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Dimensional Magic\n**Origin**: Study of the rifts created during the Shattering\n**Practitioners**: Rare, mostly liches and ancient scholars\n**Nature**: Portal creation, reality manipulation, dimensional travel\n**Limitations**: Extremely dangerous, unpredictable, requires vast power\n**Status**: Heavily restricted, only permitted in specific circumstances\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Primal Magic\n**Origin**: Connection to natural forces, possibly from Fae-Touched origins\n**Practitioners**: Fae-Touched, some druids, nature spirits\n**Nature**: Nature manipulation, weather, growth, decay\n**Limitations**: Tied to natural environments, seasonal variations\n**Status**: Accepted in wild areas, restricted in cities\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### The Shattering (First Major Catastrophe)\n**When**: End of the Age of Divisions\n**What**: Reality itself cracked, creating permanent rifts and unstable zones\n**Effects**: Loss of ancient entities, destruction of early civilizations, creation of dangerous zones\n**Survivors**: Only the strongest races survived\n**Current Impact**: Unstable zones still exist, some entities may still be sealed away\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### The Blood Plague (8,000 years ago)\n**When**: Middle of the Age of Consolidation\n**What**: Mysterious disease that affected all races, caused massive death toll\n**Effects**: Reduced populations by an estimated 60%, changed power structures\n**Survivors**: Those with strongest magical resistance or isolation\n**Current Impact**: Some areas still considered cursed, references in modern culture\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### The First Empire (Name Lost)\n**When**: Before the Shattering\n**What**: First major civilization to unify large portions of the Dark World\n**Why Fell**: The Shattering destroyed it\n**What Remains**: Ruins in unstable zones, artifacts scattered across the world\n**Lost Knowledge**: Their magical techniques, their understanding of reality manipulation\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### The Necropolis Dominion\n**When**: 6,000-4,000 years ago\n**What**: Empire of liches and undead that controlled vast territories\n**Why Fell**: Internal conflict, eventually shattered by living races\n**What Remains**: Floating necropolises, cursed burial grounds, undead guardians\n**Lost Knowledge**: Advanced necromancy, soul manipulation, immortality techniques\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Dead Languages\nSeveral languages exist only in ancient texts and artifacts:\n- **First Speech**: Language of the First Empire, now only in fragments\n- **Necrotic Script**: Written language of the Necropolis Dominion, magical in nature\n- **Shadow Glyphs**: Visual language of the Shadow Kingdom, can only be read in darkness\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### The Eternal Feud (Vampires vs. Werewolves)\n**Origin**: Disputed\u2014some say territorial, some say a betrayal, some say bloodline purity\n**Duration**: Off and on for 10,000+ years\n**Current Status**: Cold war, occasional flare-ups, some houses/packs have truces\n**Story Teller Use**: Tension between these groups creates opportunities for players to choose sides or exploit the conflict\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: The Dark World today is a complex web of:\n- Ancient houses maintaining power\n- Modern guilds carving out influence\n- Magical traditions both old and new\n- Tensions that could explode into war at any moment\n- Mysteries from the past waiting to be uncovered\n- Opportunities for those bold enough to seize them\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: 1. **Ancient Secrets**: Player discovers references to sealed entities from the Shattering\u2014are they still there? Can they be freed? Should they be?\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: The Light World is our reality\u2014or close to it. This is the world humans know, the world where they live their daily lives, unaware that just beyond the veil exists an entire other reality populated by monsters and supernatural beings. But the Dark World's influence, subtle though it may be, has shaped human history in ways they don't understand.\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "02-LIGHT-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### The Ancient Foundations (Pre-Recorded History)\nHumans have existed for tens of thousands of years, building civilizations that rose and fell. Early humans built great cities, created art, developed agriculture, and fought wars. But they also experienced things they couldn't explain\u2014disappearances in the night, creatures that shouldn't exist, strange lights in the darkness.\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "02-LIGHT-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **What Humans Don't Know**: Many of these \"myths\" were real encounters with the Dark World. Some disappearances were kidnappings. Some monsters were real entities bleeding through the veil. Ancient humans developed superstitions, religions, and protections based on these encounters, even though they didn't understand what they were protecting themselves against.\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "02-LIGHT-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Story Teller Fill-In**: Specific ancient civilizations (can be based on real history but twisted darker), what encounters with Dark World happened, what protections were developed, what knowledge was lost\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "02-LIGHT-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### The Traditional Lands\n**Characteristics**: Maintain old ways, resistant to change, suspicious of outsiders\n**Regions**: Remote areas, cultural strongholds\n**Social Structure**: Traditional hierarchies, clan-based\n**Story Teller Use**: Mysterious knowledge, ancient traditions, potential Dark World connections\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "02-LIGHT-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **The Hidden**: Small, fast, good at staying unnoticed. Often found in stealth operations, smuggling, hiding. Descended from populations that needed to remain undetected.\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "02-LIGHT-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### The Ancient Origins (5,000+ years ago)\n**Forms**: Smuggling networks, protection rackets, assassination guilds\n**Purpose**: Profit, power, survival\n**Structure**: Loose networks, family-based\n**Story Teller Use**: Ancient secrets, old grudges, hidden knowledge\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "02-LIGHT-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### The Medieval Period (1,500-500 years ago)\n**Forms**: Thieves' guilds, mercenary companies, pirate organizations\n**Purpose**: Expanded to include political influence\n**Structure**: More organized, territories established\n**Story Teller Use**: Ancient guilds that still exist, old rivalries, historical connections\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "02-LIGHT-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: Human history is written in blood. These conflicts have shaped the modern world.\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "02-LIGHT-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### The Myths\n**Vampires**: Stories about blood-drinking creatures that live in darkness\n- **Reality**: Based on real encounters, but humans don't know they're still active\n- **Story Teller Use**: Players might use these myths to their advantage, or discover they're true\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "02-LIGHT-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Demons/Spirits**: Stories about supernatural entities\n- **Reality**: Various Dark World entities that have crossed over\n- **Story Teller Use**: Unexplained phenomena, players might encounter real entities\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "02-LIGHT-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Key Features**:\n- **The Port District**: Where goods come in, smuggling happens, deals are made\n- **The Industrial Zone**: Factories, warehouses, abandoned buildings (perfect for hideouts)\n- **The Business District**: Corporate headquarters, banks, legal fronts\n- **The Residential Areas**: Working class neighborhoods, slums, upper-class enclaves\n- **The Old City**: Historic districts, ancient buildings (some have secrets)\n- **The Outskirts**: Where the city ends and the world begins, less cont...\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "03-CURRENT-WORLD-STATE.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: The starting city has one or more known (to those in the know) points where Light and Dark worlds connect. These might be:\n- Abandoned buildings where reality is thin\n- Old graveyards with ancient connections\n- Industrial sites built on breach points\n- Hidden locations known only to certain groups\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "03-CURRENT-WORLD-STATE.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Core Premises**:\n- Light World and Dark World exist and are connected\n- Major races exist (vampires, werewolves, zombies, liches, etc.)\n- Organized crime is dominant in Light World\n- Class systems are rigid\n- History happened (you can't undo major historical events)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-STORY-TELLER-GUIDE.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **2. Major Races and Houses**\n- All major races exist (Vampires, Werewolves, etc.)\n- Core characteristics are consistent\n- Major houses/factions exist (House Crimson, Iron Claw Pack, etc.)\n- If you create a new major house, it must be added to shared lore\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-STORY-TELLER-GUIDE.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Major bosses are**:\n- Leaders of major houses (vampire house leaders)\n- Leaders of major packs (werewolf pack alphas)\n- Leaders of major organizations (guild masters, crime bosses)\n- Powerful independent entities (ancient liches, major players)\n- Cross-world significant figures\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-STORY-TELLER-GUIDE.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **History Says**: \"The Blood Plague (8,000 years ago) reduced populations by 60%\"\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-STORY-TELLER-GUIDE.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **History Says**: \"House Crimson is oldest vampire house, House Obsidian known for assassins\"\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-STORY-TELLER-GUIDE.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Characteristics**:\n- Physically unstable (buildings collapse, ground shifts)\n- Temporally unstable (time doesn't work right)\n- Entities from both worlds trapped here\n- Ancient artifacts scattered about\n- High risk, high reward\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "05-ENHANCEMENTS.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ## Technology and the Supernatural\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "05-ENHANCEMENTS.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **The Digital Divide**\nSome Dark World entities adapt quickly to technology, others reject it entirely. This creates new power structures:\n- Tech-savvy vampires use digital surveillance and hacking\n- Old-school houses see technology as weakness\n- Younger entities embrace it, older ones fear it\n- Creates generational conflicts within houses\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "05-ENHANCEMENTS.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Vampires**:\n- **Allies**: Often align with Liches (mutual respect for age and power), some Merchant Guilds (trade relationships)\n- **Enemies**: Traditional conflict with Werewolves, some tension with Shadowkin\n- **Neutral**: Zombies/Ghouls (see them as tools), most Guilds (transactional)\n- **Complex**: Other Vampire Houses (allies and enemies depending on politics)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "05-ENHANCEMENTS.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Werewolves**:\n- **Allies**: Some Fae-Touched (shared connection to nature), Hunters' Brotherhood (respect for combat)\n- **Enemies**: Vampires (traditional feud), some Liches (territorial disputes)\n- **Neutral**: Most Guilds, Zombies/Ghouls\n- **Complex**: Other Werewolf Packs (territorial conflicts, but also mutual aid)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "05-ENHANCEMENTS.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Liches**:\n- **Allies**: Scholars' Circle (shared interest in knowledge), sometimes Vampires (respect for power)\n- **Enemies**: Hunters' Brotherhood (see them as threats), some Houses (fear their power)\n- **Neutral**: Most others (isolated, don't interact much)\n- **Complex**: Other Liches (sometimes collaborate, sometimes compete)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "05-ENHANCEMENTS.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **The Blood Codex** (Known location: House Crimson Library)\n- What it is: Ancient text with lost blood magic techniques\n- Who wants it: All vampire houses, some scholars\n- Danger level: High (House Crimson guards it heavily)\n- Story Teller Use: Heist mission, diplomatic mission, or discovery that it's a fake\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "05-ENHANCEMENTS.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Example**: The Shattering happened in all worlds, the Blood Plague affected all worlds the same way, the Dimensional Invasion occurred in all worlds.\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "06-CROSS-WORLD-CONSISTENCY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### 2. Major Races and Their Characteristics\n**MANDATORY CONSISTENCY**\n- All major races exist in all worlds (Vampires, Werewolves, Liches, etc.)\n- Core characteristics of each race are consistent\n- Major houses/factions within races exist (House Crimson, The Iron Claw Pack, etc.)\n- Racial abilities, weaknesses, and cultural traits are consistent\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "06-CROSS-WORLD-CONSISTENCY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Example**: House Crimson exists in all worlds as the oldest vampire house. The Iron Claw Pack exists in all worlds as the largest urban werewolf pack.\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "06-CROSS-WORLD-CONSISTENCY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Example**: Blood magic requires blood, lunar magic is tied to moon phases, shadow magic requires shadows\u2014these rules are the same in all worlds.\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "06-CROSS-WORLD-CONSISTENCY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Major bosses are**:\n- Leaders of major houses (Vampire house leaders)\n- Leaders of major packs (Werewolf pack alphas)\n- Leaders of major organizations (Guild masters, crime bosses)\n- Powerful independent entities (Ancient liches, major players)\n- Cross-world significant figures (Key political leaders, major power brokers)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "06-CROSS-WORLD-CONSISTENCY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Action**: Story Teller creates \"House Vermillion\" as a new vampire house in World A\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "06-CROSS-WORLD-CONSISTENCY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Dark World \u2705\n- \u2705 Ancient epochs and historical timeline\n- \u2705 7 major races with detailed characteristics\n- \u2705 Multiple houses and families with political structures\n- \u2705 5 major guilds and organizations\n- \u2705 6 magical traditions\n- \u2705 6 historical calamities\n- \u2705 3 fallen empires with lost knowledge\n- \u2705 Inter-racial conflicts and Shadow Wars\n- \u2705 Current age context\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "IMPLEMENTATION-STATUS.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Light World \u2705\n- \u2705 Historical epochs from ancient to modern\n- \u2705 5 major cultural groups\n- \u2705 5 races of humanity\n- \u2705 Organized crime evolution\n- \u2705 5-tier class system\n- \u2705 4 major ongoing conflicts\n- \u2705 Dark World influences (myths, legends, superstitions)\n- \u2705 Modern era context\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "IMPLEMENTATION-STATUS.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Enhancements \u2705\n- \u2705 Gray zones and cross-world interactions\n- \u2705 Neutral organizations\n- \u2705 Technology's impact on supernatural\n- \u2705 Faction relationship matrices\n- \u2705 Additional historical events\n- \u2705 Specific lost artifacts and languages\n- \u2705 Player impact mechanisms\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "IMPLEMENTATION-STATUS.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: 2. **Modern Technology Impact**\n   - How technology affects supernatural society\n   - New tools and methods in both worlds\n   - Digital age adaptations\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "PEER-REVIEW-FEEDBACK.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Dark World History\n- Ancient epochs: First Darkness, Age of Divisions, Age of Consolidation\n- Major races: Vampires (4 houses), Werewolves (4 packs), Zombies/Ghouls, Liches, Fae-Touched, Shadowkin, Wraith Lords\n- Major houses with political structures\n- Guilds: Merchant Consortium, Assassins' Guild, Scholars' Circle, Hunters' Brotherhood, Alchemists' League\n- Magical traditions: Blood, Lunar, Necromancy, Shadow, Dimensional, Primal\n- Historical calamities: The Shattering, Blood Plague, Dimen...\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "REVIEW-SUMMARY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Light World History\n- Historical epochs from ancient foundations to modern age\n- Cultures: Industrial Powers, Colonial Territories, Frontier Regions, Corporate States, Traditional Lands\n- Races of humanity: Builders, Traders, Watchers, Wanderers, Hidden\n- Organized crime evolution from ancient times to modern cartels\n- Class systems: Upper, Middle, Working, Underclass, Criminal\n- Major conflicts: Resource Wars, Class Wars, Cartel Wars, Police-Criminal Conflict\n- Dark World influences as myth...\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "REVIEW-SUMMARY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### 6. **Stealth Infiltration**\nEspionage missions in hostile territories with detection mechanics.\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "00-EXPERIENCES-OVERVIEW.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: - `01-DUNGEON-DIVING.md` - Procedural dungeons and roguelike mechanics\n- `02-ALTERNATE-REALITY-PORTALS.md` - Dimensional travel and alternate worlds\n- `03-HISTORICAL-BATTLES.md` - Time-travel combat experiences\n- `04-SCI-FI-TRANSITIONS.md` - Futuristic technology scenarios\n- `05-ARENA-COMBAT.md` - Gladiatorial and wave-based challenges\n- `06-STEALTH-INFILTRATION.md` - Espionage and covert operations\n- `07-SURVIVAL-CHALLENGES.md` - Resource management and endurance\n- `08-PUZZLE-LABYRINTHS.md` - C...\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "00-EXPERIENCES-OVERVIEW.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Art Style Options\n- **Dark Fantasy**: Gothic stone corridors, torch-lit ambiance, volumetric fog\n- **Ancient Ruins**: Weathered architecture, overgrown vegetation, mysterious glyphs\n- **Crystal Caverns**: Luminescent minerals, reflective surfaces, magical lighting\n- **Undead Crypts**: Bone-strewn halls, spectral effects, eerie greenish hues\n- **Dwarven Fortresses**: Metallic structures, forges, industrial aesthetics\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DUNGEON-DIVING.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### 2. **Undead Crypt**\n- Skeleton and zombie enemies\n- Necrotic damage, life drain\n- Boss: Lich or Death Knight\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "01-DUNGEON-DIVING.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Historical Battles** transport players to pivotal moments in history, allowing them to participate in legendary conflicts. Players experience authentic combat scenarios from various eras, from ancient warfare to modern combat, with historically accurate weapons, armor, and tactics.\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "03-HISTORICAL-BATTLES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### 1. **Ancient Warfare (3000 BCE - 500 CE)**\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "03-HISTORICAL-BATTLES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Battle of Hastings (1066)**\n```\nSetting: Senlac Hill, England\nForces: Norman invasion vs Saxon defenders\nRole Options: Knight, archer, footman\nDuration: 2-3 hours\nObjective: Capture/defend the hill\n```\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "03-HISTORICAL-BATTLES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Ancient Era\n```\nUE5 Configuration:\n- Materials: Bronze, leather, linen textures\n- Lighting: Natural sunlight, dramatic god rays\n- Color Grading: Earthy tones, dusty atmosphere\n- VFX: Dust clouds, blood spray, shield impacts\n- Audio: Clanging metal, war cries, horn calls\n```\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "03-HISTORICAL-BATTLES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Modern Era\n```\nUE5 Configuration:\n- Materials: Tactical gear, modern vehicles, urban/desert environments\n- Lighting: Realistic outdoor/indoor lighting, night vision\n- Color Grading: Military film aesthetic, high contrast\n- VFX: Tracer rounds, explosions, helicopter downdraft\n- Audio: Modern gunfire, radio comms, vehicle engines\n```\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "03-HISTORICAL-BATTLES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Time Portal Devices\n- **Ancient Obelisks**: Stone structures channeling temporal energy\n- **Temporal Rifts**: Tears in space-time from magical/sci-fi sources\n- **Historian NPCs**: Scholars with time-travel abilities\n- **Mystical Artifacts**: Items that transport wielder through time\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "03-HISTORICAL-BATTLES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ```yaml\nHistoricalBattles:\n  Frequency: Low-Medium\n  MinPlayerLevel: 15\n  AccessType: QuestBased\n  BattleOptions:\n    - Thermopylae:\n        Era: Ancient\n        Duration: 60-90min\n        Difficulty: Medium\n        PlayerCount: 1-10\n    - Hastings:\n        Era: Medieval\n        Duration: 120-180min\n        Difficulty: Medium\n        PlayerCount: 1-20\n    - Waterloo:\n        Era: Gunpowder\n        Duration: 120-180min\n        Difficulty: High\n        PlayerCount: 1-20\n    - DDay:\n        Era: WW...\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "03-HISTORICAL-BATTLES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: 1. [04 - Sci-Fi Transitions](#04---sci-fi-transitions)\n2. [05 - Arena Combat](#05---arena-combat)\n3. [06 - Stealth Infiltration](#06---stealth-infiltration)\n4. [07 - Survival Challenges](#07---survival-challenges)\n5. [08 - Puzzle Labyrinths](#08---puzzle-labyrinths)\n6. [09 - Boss Gauntlets](#09---boss-gauntlets)\n7. [10 - Racing & Vehicular](#10---racing--vehicular)\n8. [11 - Urban Warfare](#11---urban-warfare)\n9. [12 - Underwater Expeditions](#12---underwater-expeditions)\n10. [13 - Desert Wastela...\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Cyberpunk City Heist**\n- Blade Runner-style neon city\n- Hacking terminals, stealth mechanics\n- Corporate security forces\n- Objective: Steal valuable data/tech\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Colosseum (Roman)**\n- Ancient stone arena, crowd atmosphere\n- Gladiator weapons (sword, shield, trident)\n- Beast encounters (lions, elephants)\n- Emperor's favor system\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Visual Identity\n```\nUE5 Configuration:\n- Dramatic lighting (spotlights on combat area)\n- Crowd animation systems (NPC spectators)\n- Dynamic blood/impact effects\n- Slow-motion camera on finishing moves\n- Victory pose/defeat animations\n```\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ## 06 - Stealth Infiltration\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Overview\nEspionage missions in hostile territories emphasizing stealth over combat. Detection mechanics, silent takedowns, and strategic planning.\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Castle Infiltration**\n- Medieval castle with guard patrols\n- Steal documents, assassinate target, rescue prisoner\n- Medieval stealth tools (smoke bombs, lockpicks)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Enemy Base Reconnaissance**\n- Military compound (WW2, modern, or futuristic)\n- Gather intelligence, sabotage equipment\n- Night vision, silenced weapons\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Supernatural Sneaking**\n- Haunted mansion or cursed castle\n- Avoid spectral guardians\n- Use shadows and cover from paranormal threats\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Stealth Tools**\n- Distraction items (thrown objects, noisemakers)\n- Silent weapons (bows, suppressed guns, knives)\n- Gadgets (grappling hooks, lock picks, hacking devices)\n- Disguises (blend in with enemies)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Rewards\n- **Stealth Gear**: Cloaks, silent boots, lockpicks\n- **Assassination Weapons**: Silent, high-damage daggers/crossbows\n- **Intel Documents**: Lore, secrets, map reveals\n- **Reputation**: Stealth-focused factions\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Portal-Style Physics Puzzles**\n- Momentum-based challenges\n- Teleportation mechanics\n- Gravity manipulation\n- Timing and precision\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Ancient Temple Riddles**\n- Symbol matching\n- Pressure plate sequences\n- Light beam redirection\n- Water/fire element puzzles\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Time Manipulation Puzzles**\n- Rewind/fast-forward mechanics\n- Past/present versions of same room\n- Causality loops\n- Temporal clones\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Visual Identity\n```\nUE5 Configuration:\n- Clean, minimalist aesthetics (Portal style) OR\n- Ancient mystical (Zelda temples) OR\n- Surreal impossible geometry (Monument Valley)\n- Bright, clear lighting for visibility\n- Distinct color coding for mechanics\n- Calm, puzzle-focused audio (minimal combat sounds)\n```\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Rewards\n- **Intelligence Stat Boosts**\n- **Puzzle-Solving Items**: Keys, tools usable elsewhere\n- **Cosmetic Rewards**: Themed to labyrinth aesthetic\n- **Lore/Knowledge**: Wisdom from solving ancient puzzles\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Chariot Racing**\n- Ancient Roman/Ben-Hur style\n- Tight turns, narrow tracks\n- Whip mechanics (speed your horses)\n- Crowd-pleasing maneuvers\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Heist Missions**\n- Plan and execute bank/museum robberies\n- Stealth or loud approach options\n- Police response escalation\n- Getaway sequences\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Law Enforcement**\n- Wanted level system\n- Police response scales with chaos\n- SWAT/military at high levels\n- Stealth reduces heat\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Visual Identity\n```\nUE5 Configuration:\n- Realistic urban environments (photoreal)\n- Night-time neon aesthetic OR daylight realism\n- Lumen for realistic lighting\n- Explosion VFX, fire, smoke\n- Urban soundscape (traffic, sirens, gunfire)\n```\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Sunken City of Atlantis**\n- Ancient ruins with mystical technology\n- Mer-people inhabitants (friendly or hostile)\n- Treasure vaults\n- Magical artifacts\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Underwater Cave System**\n- Labyrinthine passages\n- Air pocket mechanics\n- Underground lakes\n- Ancient sea monster lair\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Classic Desert**\n- Sand dunes, oasis, ancient temples\n- Scorpions, giant sandworms\n- Nomadic tribes (trade or combat)\n- Buried treasures\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Cursed Desert**\n- Undead wanderers\n- Sandstorm ghosts\n- Ancient curse mechanics\n- Egyptian-themed ruins\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Rewards\n- **Desert Survival Gear**: Heat-resistant armor, canteens\n- **Scavenged Tech**: Rare components\n- **Ancient Relics**: From buried ruins\n- **Vehicle Parts**: For desert vehicles\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Reality Manipulation**\n- Create/destroy platforms\n- Alter gravity direction\n- Phase through walls\n- Time loops\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Dungeon Tower (Inverted)**\n- Descend instead of ascend\n- Underground floors getting darker/deeper\n- Eventually reach hell/underworld\n- Ancient evil at bottom\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: | ID | Experience Type | Duration | Difficulty | Players | Key Feature |\n|----|-----------------|----------|------------|---------|-------------|\n| 04 | Sci-Fi Transitions | 30-90min | Med-High | 1-5 | High-tech future combat |\n| 05 | Arena Combat | 10-30min | Scalable | 1-4 | Gladiatorial battles |\n| 06 | Stealth Infiltration | 30-60min | Medium | 1-2 | Espionage and stealth |\n| 07 | Survival Challenges | 45-120min | High | 1-4 | Resource management |\n| 08 | Puzzle Labyrinths | 20-60min | Mediu...\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: UE5 Control Model \u2192 Storyteller\nResponse: {\n    \"status\": \"success\",\n    \"world_loaded\": True,\n    \"spawn_location\": [1234.5, 6789.0, 100.0],\n    \"estimated_duration\": \"60-90 minutes\",\n    \"visual_profile\": \"Ancient_Greece\",\n    \"enemy_count\": 150\n}\n```\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "AUTOMATION-ARCHITECTURE.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Tier 3 Content (8-12 weeks)\n- [ ] **9.4** Sci-Fi Transitions (4 scenarios) (15 days)\n- [ ] **9.5** Stealth Infiltration (4 missions) (15 days)\n- [ ] **9.6** Survival Challenges (5 environments) (15 days)\n- [ ] **9.7** Racing & Vehicular (5 race types) (12 days)\n- [ ] **9.8** Urban Warfare (3 scenarios) (15 days)\n- [ ] **9.9** Underwater Expeditions (4 locations) (15 days)\n- [ ] **9.10** Desert Wasteland (3 scenarios) (12 days)\n- [ ] **9.11** Ethereal Realms (4 realms) (15 days)\n- [ ] **9.12*...\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "IMPLEMENTATION-TASKS.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ```python\n# Prepare training data\ntraining_examples = [\n    {\n        \"messages\": [\n            {\"role\": \"system\", \"content\": \"You are the Storyteller AI...\"},\n            {\"role\": \"user\", \"content\": \"The player is level 15 and exploring ancient ruins. What experience should I offer?\"},\n            {\"role\": \"assistant\", \"content\": \"Based on the narrative context (ancient ruins) and player level (15), I recommend: AlternateRealityPortals-AncientCivilization or HistoricalBattles-AncientEra. These ...\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "KNOWLEDGE-INGESTION-GUIDE.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Test 5: Narrative Integration\n**Query:** \"Player's storyline involves investigating ancient mystery. How can experiences support this?\"\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "KNOWLEDGE-INGESTION-GUIDE.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Expected Response:** Should suggest relevant experiences (Historical Battles-Ancient, Alternate Reality Portals-Ancient Civilization, Puzzle Labyrinths-Temple) and explain narrative connection.\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "KNOWLEDGE-INGESTION-GUIDE.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ```python\ndef validate_storyteller_knowledge(storyteller_api):\n    \"\"\"Run comprehensive validation tests.\"\"\"\n    \n    tests = [\n        {\n            \"name\": \"Experience Type Recognition\",\n            \"query\": \"List all experience types you can spawn.\",\n            \"must_contain\": [\"Dungeon Diving\", \"Historical Battles\", \"Tower Ascension\"]\n        },\n        {\n            \"name\": \"API Endpoint Knowledge\",\n            \"query\": \"What API endpoint spawns an experience?\",\n            \"must_contain\":...\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "KNOWLEDGE-INGESTION-GUIDE.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: | ID | Experience Type | Duration | Key Feature | Visual Style |\n|----|-----------------|----------|-------------|--------------|\n| 01 | Dungeon Diving | 30-90min | Procedural dungeons | Dark Fantasy/Varied |\n| 02 | Alternate Reality Portals | 15-60min | Visual diversity | Any style (Anime to Real) |\n| 03 | Historical Battles | 45-180min | Epic battles | Period-accurate |\n| 04 | Sci-Fi Transitions | 30-90min | Futuristic tech | Sci-Fi/Cyberpunk |\n| 05 | Arena Combat | 10-30min | Wave combat | Gl...\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "PROJECT-SUMMARY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **1. Player Level & Power**\n```yaml\nif player.level < 5:\n  # Too early for most experiences\n  available_experiences = []\n  \nelif player.level 5-15:\n  # Early game experiences\n  available_experiences = [\n    \"DungeonDiving-Simple\",\n    \"ArenaCombat-Basic\",\n    \"PuzzleLabyrinths-Easy\"\n  ]\n  \nelif player.level 15-30:\n  # Mid-game experiences\n  available_experiences = [\n    \"AlternateRealityPortals\",\n    \"HistoricalBattles-Ancient\",\n    \"SurvivalChallenges-Standard\"\n  ]\n  \nelif player.level 30+...\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "STORYTELLER-INTEGRATION-GUIDE.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **3. Narrative Context**\n```python\ndef select_narrative_appropriate_experience(story_arc, location, player_state):\n    \"\"\"\n    Match experience to current story context.\n    \"\"\"\n    \n    # Example: Player investigating ancient ruins\n    if story_arc == \"AncientMystery\" and location.type == \"Ruins\":\n        return [\n            \"AlternateRealityPortals-AncientCivilization\",\n            \"HistoricalBattles-AncientEra\",\n            \"PuzzleLabyrinths-TempleRiddles\"\n        ]\n    \n    # Example: ...\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "STORYTELLER-INTEGRATION-GUIDE.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: | Experience Type | Frequency | Reason |\n|-----------------|-----------|--------|\n| Dungeon Diving | High | Core gameplay loop |\n| Arena Combat | High | Quick, repeatable |\n| Alternate Reality Portals | Medium | Special, not overused |\n| Historical Battles | Low | Epic, memorable events |\n| Stealth Infiltration | Medium | Varies gameplay |\n| Survival Challenges | Low | Intense, draining |\n| Puzzle Labyrinths | Medium | Mental break from combat |\n| Boss Gauntlets | Low | High difficulty, special ...\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "STORYTELLER-INTEGRATION-GUIDE.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ```yaml\nScenario: Player discovers ancient obelisk\n  - Trigger: Touch obelisk\n  - Experience: AlternateRealityPortals-AncientCivilization\n  - Purpose: Show civilization at its peak\n  - Reward: Knowledge codex, artifacts\n  - Narrative Outcome: Player understands why civilization fell\n```\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "STORYTELLER-INTEGRATION-GUIDE.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Application**:\n```\nBad: \"A vampire burst through the door.\"\nGood: \"The door creaked open. Slow. Deliberate. A shadow fell across the threshold, impossibly tall. The temperature dropped ten degrees.\"\n```\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "emotional-storytelling-techniques.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Techniques**:\n- Remote locations\n- Night time\n- Power outage\n- Separated from group\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "emotional-storytelling-techniques.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Smell**:\n- Rot, decay\n- Metallic blood\n- Sulfur, burning\n- Wrong smells in familiar places\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "emotional-storytelling-techniques.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **External Conflict**:\n- Character vs character\n- Character vs nature\n- Character vs society\n- Character vs supernatural\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "emotional-storytelling-techniques.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Environmental**:\n- Sunrise after dark night\n- Silence after battle\n- Cheering crowds\n- Music swells\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "emotional-storytelling-techniques.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Scale**:\n- Vast landscapes\n- Cosmic scope\n- Ancient things\n- Incomprehensible size\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "emotional-storytelling-techniques.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Avoid Manipulation**:\n- \"Earned tears\" vs \"cheap tears\"\n- Don't exploit (dead dog)\n- Serve story\n- Respect reader\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "emotional-storytelling-techniques.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: - See `human-world-darkness.md` for elements that evoke fear, anger, despair\n- See `positive-elements.md` for elements that evoke love, joy, hope\n- See `supernatural-creatures-compendium.md` for creatures that evoke various emotions\n- See `magic-systems-compendium.md` for magical elements with emotional impact\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "emotional-storytelling-techniques.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Mafia/La Cosa Nostra**\n- **Structure**: Boss (Don) \u2192 Underboss \u2192 Caporegime (Captain) \u2192 Soldiers \u2192 Associates\n- **Code**: Omert\u00e0 (code of silence), blood oaths, \"made men\"\n- **Activities**: Protection rackets, loan sharking, gambling, waste management, union control\n- **Psychology**: Family as business, honor among thieves, ultimate loyalty test\n- **Conflict**: Blood family vs \"Family\", legitimate aspirations vs criminal legacy\n- **Examples**: *The Godfather*, *Goodfellas*, *The Sopranos*\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "human-world-darkness.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Triads**\n- **Structure**: 489 (Dragon Head) \u2192 Officers with numerical designations\n- **Traditions**: Blood oaths, 36 oaths, ceremonies\n- **Activities**: Drug trafficking, counterfeiting, human trafficking\n- **Psychology**: Brotherhood, Chinese diaspora community control\n- **Global**: International operations, legitimate business integration\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "human-world-darkness.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Street Gangs**\n- **Structure**: Varies by gang (Blood sets, Crip sets, Latin Kings chapters)\n- **Territories**: Block by block, neighborhood control\n- **Activities**: Drug dealing, theft, protection, recruitment of youth\n- **Psychology**: Belonging, family substitute, respect, survival\n- **Colors/Signs**: Gang colors, hand signs, graffiti tagging\n- **Cycle**: Generational poverty, limited opportunities, gang becomes family\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "human-world-darkness.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### The Sensory Assault\n**Narrative Technique**: Immerse through senses\n- **Sound**: Deafening explosions, ringing ears, screams\n- **Smell**: Cordite, blood, decay, burning\n- **Sight**: Violence, wounds, death, destruction\n- **Touch**: Grit in teeth, shaking hands, weight of gear\n- **Taste**: Dust, blood, fear\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "human-world-darkness.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Internal Wounds**:\n- PTSD: Flashbacks, hypervigilance, nightmares\n- Guilt: Survivor's guilt, actions taken\n- Inability to communicate: Civilians can't understand\n- Loss of faith: In humanity, God, country, self\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "human-world-darkness.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Tech Surveillance**\n- **Examples**: Data harvesting, selling personal information\n- **Mechanism**: \"Free\" services paid for with privacy\n- **Consequences**: Manipulation, election interference, mental health impact\n- **Narrative**: Big Brother through voluntary surveillance\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "human-world-darkness.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Counterintelligence**:\n- Mole hunts: Finding traitors within\n- Deception: Feeding false information\n- Turning Assets: Converting enemy agents\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "human-world-darkness.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Antisocial Personality Disorder (Sociopathy/Psychopathy)**\n- **Symptoms**: Lack of empathy, disregard for others, manipulation\n- **Psychopathy**: Genetic, born, completely lacking empathy, charming facade\n- **Sociopathy**: Environmental, developed, some capacity for loyalty to in-group\n- **Narrative Use**: Villain who doesn't care about suffering caused, perfect liar\n- **Important**: Not all violent, many successful in business/politics\n- **Examples**: Hannibal Lecter (extreme), Anton Chi...\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "human-world-darkness.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Post-Traumatic Stress Disorder (PTSD)**\n- **Symptoms**: Flashbacks, nightmares, hypervigilance, avoidance, emotional numbing\n- **Triggers**: Sensory reminders of trauma\n- **Narrative Use**: War veteran, abuse survivor, struggling to function\n- **Complex PTSD**: From prolonged trauma (abuse, captivity)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "human-world-darkness.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Gaslighting\n**Definition**: Deliberate manipulation to make someone doubt their sanity\n- Deny events occurred\n- Move objects, claim they're misremembering\n- Tell them they're crazy\n- Isolate from others who might confirm reality\n- **Result**: Victim questions everything, helpless\n- **Narrative**: Audience experiences with victim\n- **Examples**: *Gaslight* (film that named the phenomenon), abusive relationships\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "human-world-darkness.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Story Potential\n- Deep character studies\n- Terrifying explorations of trauma\n- Blur line between real and perceived\n- Horror without supernatural (scarier because it could happen)\n- Recovery and hope narratives\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "human-world-darkness.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Narrative Elements**:\n- Survival skills and resourcefulness\n- Community among homeless\n- Small victories (hot meal, safe night)\n- Attempts to return to housed life\n- Dignity in adversity\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "human-world-darkness.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Torture**:\n- Inflicting pain for information, punishment, or control\n- Psychological torture (sleep deprivation, sensory manipulation)\n- Destroys victims psychologically\n- Often ineffective (people say anything to stop pain)\n- Moral stain on torturer\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "human-world-darkness.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Serial Killers**:\n- **Organized**: Planned, leaves few clues, often charming\n- **Disorganized**: Chaotic, leaves evidence, socially awkward\n- **Motives**: Power/control, sexual gratification, delusions, thrill\n- **Examples**: Ted Bundy (organized), Richard Ramirez (disorganized)\n- **Psychology**: Combination of genetics, brain damage, childhood trauma\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "human-world-darkness.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Lying & Manipulation**:\n- To self and others\n- Justification and denial\n- Destroyed trust\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "human-world-darkness.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Information Warfare**:\n- Fake news\n- Conspiracy theories\n- Manipulation\n- Distrust in institutions\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "human-world-darkness.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: - See `positive-elements.md` for balancing darkness with light\n- See `emotional-storytelling-techniques.md` for evoking emotions around these topics\n- See `supernatural-creatures-compendium.md` for supernatural evil vs human evil comparisons\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "human-world-darkness.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Purpose**: Comprehensive reference for all types of magic systems across fantasy, sci-fi, and supernatural genres for storyteller AI.\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Hard Magic** (Rule-Based):\n- **Definition**: Magic with clearly defined rules, limitations, and costs\n- **Characteristics**: \n  - Predictable outcomes\n  - Clear energy sources\n  - Defined limitations\n  - Quantifiable power levels\n- **Examples**:\n  - *Fullmetal Alchemist*: Law of Equivalent Exchange\n  - *Brandon Sanderson's Cosmere*: Allomancy (metals), Surgebinding (Stormlight)\n  - *Avatar: The Last Airbender*: Elemental bending with martial arts forms\n  - *The Inheritance Cycle*: Ancient Lang...\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### 4. **Innate/Sorcery** (Inborn Power)\n- **Source**: Born with magic in bloodline or essence\n- **Users**: Sorcerers, mutants, gifted individuals\n- **Characteristics**:\n  - No training required to access (though refinement helps)\n  - Often unpredictable or emotion-driven\n  - Can be hereditary\n  - May manifest spontaneously\n- **Examples**:\n  - *X-Men*: Mutant powers\n  - *D&D Sorcerers*: Draconic bloodline\n  - *Elric Saga*: Melnibon\u00e9an blood magic\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### 6. **Blood Magic** (Life Force & Sacrifice)\n- **Source**: Power from blood, life essence, or sacrifice\n- **Users**: Blood mages, necromancers, dark ritualists\n- **Characteristics**:\n  - Powerful but costly\n  - Often considered forbidden or dark\n  - Can use own blood or others'\n  - Permanent consequences\n- **Examples**:\n  - *Dragon Age*: Blood magic\n  - *Berserk*: Brand of Sacrifice\n  - *Aztec rituals*: Heart sacrifice to sun god\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Darkness/Shadow**:\n- Shadow step, darkness, fear, shadow creatures, stealth\n- *Examples*: Shadow magic (*Warcraft*), Shadowmancy\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Core Concept**: Manipulation of death, undeath, and life force\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Abilities**:\n- **Raise Dead**: Animate corpses as zombies, skeletons, or other undead\n- **Speak with Dead**: Communicate with spirits of the deceased\n- **Life Drain**: Siphon life force from living beings\n- **Death Touch**: Kill with a touch\n- **Soul Manipulation**: Trap, bind, or destroy souls\n- **Plague/Disease**: Spread supernatural sickness\n- **Bone Shaping**: Create weapons and armor from bones\n- **Lichdom**: Transform into immortal undead mage\n- **Ghost Binding**: Command spirits\n- **Dea...\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Examples**:\n- *D&D*: Necromancer wizards\n- *Diablo*: Necromancer class\n- *The Old Kingdom* (Garth Nix): Charter Magic and Free Magic necromancy\n- *World of Warcraft*: Death Knights\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Examples**:\n- *Naruto*: Genjutsu\n- *Doctor Strange*: Mirror Dimension manipulation\n- *D&D*: Illusionist wizards\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Mind Control**:\n- Charm person\n- Dominate will\n- Suggestion\n- Sleep\n- Fear\n- Confusion\n- Memory modification\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Examples**:\n- *The Dresden Files*: Magical circles and wards\n- *Supernatural*: Salt circles, sigils\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Core Concept**: Manipulation of temporal flow (often considered most powerful/dangerous)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Core Concept**: Manipulation of space and gravitational forces\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Abilities**:\n- **Teleportation**: Instant travel\n- **Gravity Manipulation**: Increase/decrease gravity\n- **Portal Creation**: Doors through space\n- **Pocket Dimensions**: Create extradimensional spaces\n- **Spatial Lock**: Prevent teleportation in area\n- **Fold Space**: Bring distant places together\n- **Black Hole**: Ultimate gravity well\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Definition**: Ancient alphabetic symbols imbued with magical power\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Components**:\n- **Primary Circle**: Outer boundary containing power\n- **Secondary Circle**: Inner boundary protecting caster\n- **Geometric Patterns**: Triangles, pentagrams, hexagrams\n- **Runes/Words of Power**: Along circumference\n- **Material Components**: Candles, salt, blood, chalk\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Examples**:\n- *Fullmetal Alchemist*: Transmutation circles (must be drawn precisely)\n- *Supernatural*: Devil's trap\n- *The Dresden Files*: Thaumaturgy circles\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Applications**:\n- **True Name Magic**: Control over entities whose name you know\n- **Ancient Language**: Words that cannot lie (*Eragon*)\n- **Words of Power**: Single words that reshape reality\n- **Naming**: Power to define and thus control reality\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Incantations**: Spoken words of power\n- Latin-style spells (*Harry Potter*: \"Expelliarmus\", \"Avada Kedavra\")\n- Ancient languages (*Eragon*: Ancient Language)\n- Made-up languages (*Lord of the Rings*: Black Speech)\n- Command words (*D&D*: simple verbal components)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Consumed in Casting**:\n- Bat guano (fireball)\n- Diamond dust (resurrection)\n- Rare herbs\n- Blood (blood magic)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Types**:\n- **Death Curse**: Kill target (sometimes requires sacrifice)\n- **Ill Fortune**: Bad luck curse\n- **Transformation Curse**: Turn target into animal/object\n- **Disease Curse**: Inflict supernatural illness\n- **Generational Curse**: Affects family line\n- **Object Curse**: Cursed items\n- **Binding Curse**: Prevent specific actions\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Charms & Blessings\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Types**:\n- **Protection Charm**: Ward against harm\n- **Luck Charm**: Improve fortune\n- **Love Charm**: Attract affection (often controversial)\n- **Health Blessing**: Improve wellness\n- **Fertility Blessing**: Aid conception\n- **Prosperity Charm**: Attract wealth\n- **Travel Blessing**: Safe journey\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Charm Objects**:\n- Four-leaf clover\n- Rabbit's foot\n- Horseshoe\n- Dreamcatcher\n- Evil eye amulet\n- St. Christopher medal\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Alchemical Goals**:\n- Philosopher's Stone (immortality, transmutation)\n- Elixir of Life\n- Universal Solvent (Alkahest)\n- Transmutation of base metals to gold\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Materials**:\n- Salt circles (*Supernatural*)\n- Iron (anti-fey)\n- Silver (anti-werewolf/undead)\n- Holy water/symbols\n- Rowan wood\n- Cold iron\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Methods**:\n- **Crystal Ball**: Classic scrying tool\n- **Mirror Scrying**: Black mirrors\n- **Water Scrying**: Still pools or bowls\n- **Fire Scrying**: Flames\n- **Blood Scrying**: Using blood connection\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Classic Familiars**:\n- **Cats**: Stealth, night vision, independence\n- **Ravens/Crows**: Intelligence, omens, can speak\n- **Owls**: Wisdom, silent flight, keen sight\n- **Toads/Frogs**: Potion ingredients, amphibious\n- **Serpents**: Wisdom, danger sense, venom\n- **Rats**: Stealth, squeezing through small spaces\n- **Bats**: Echolocation, night activity\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Dragons**:\n- Ancient and intelligent\n- Hoard treasure\n- Breath weapons\n- Scales resist magic\n- Some can shapeshift\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Phoenixes**:\n- Immortal birds\n- Rebirth from ashes\n- Healing tears\n- Loyalty to worthy masters\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Ancient/Primordial Magic\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Examples**:\n- *Lord of the Rings*: Rings of Power, palant\u00edri\n- *Dragon Age*: Ancient elven magic\n- *Elder Scrolls*: Dwemer (Dwarven) technology-magic\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Examples**:\n- *Harry Potter*: Horcruxes, Unforgivable Curses\n- *Warhammer 40K*: Chaos sorcery\n- *Dragon Age*: Blood magic\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: 1. **Abjuration**: Protection, wards, counterspells\n2. **Conjuration**: Summoning, creation, teleportation\n3. **Divination**: Knowledge, prophecy, detection\n4. **Enchantment**: Mind control, charm, enhancement\n5. **Evocation**: Direct energy, blasting, elemental\n6. **Illusion**: Deception, phantasms, invisibility\n7. **Necromancy**: Death, undead, life drain\n8. **Transmutation**: Transformation, alteration, polymorph\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Chronomancy**: Time manipulation\n**Geomancy**: Earth and ley line magic\n**Thaumaturgy**: Miracle-working, divine magic\n**Theurgy**: Summoning and commanding angels/demons\n**Goetia**: Specifically summoning demons\n**Pyromancy**: Fire magic specialization\n**Cryomancy**: Ice magic specialization\n**Hemomancy**: Blood magic\n**Arithmancy**: Magic through numbers\n**Runecraft**: Rune-based magic\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **World Building**:\n- How does magic affect society?\n- Who can use magic (everyone, elite, bloodlines)?\n- How is magic regulated?\n- What's the relationship between magic and technology?\n- Are there magical law enforcement?\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: - See `supernatural-creatures-compendium.md` for magical beings and monsters\n- See `emotional-storytelling-techniques.md` for using magic to evoke emotions\n- See `positive-elements.md` for beneficial magic uses\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Starry Night Sky**:\n- Vast expanse of stars\n- Milky Way visible\n- Shooting stars\n- Constellations\n- **Emotional Impact**: Wonder, perspective, peace\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "positive-elements.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Ancient Forest**:\n- Towering old trees\n- Filtered green light\n- Cathedral-like quiet\n- **Emotional Impact**: Awe, peace, timelessness\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "positive-elements.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Friendly Dragon**:\n- Protective, not destructive\n- Wise and ancient\n- Majestic flight\n- **Emotional Impact**: Wonder, protection, awe\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "positive-elements.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Helpful Brownie**:\n- House spirit\n- Does chores at night\n- Rewards kindness\n- **Emotional Impact**: Whimsy, gratitude, domestic magic\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "positive-elements.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Sacred Grove**:\n- Ancient trees\n- Healing spring\n- Protected space\n- **Emotional Impact**: Reverence, healing, sanctuary\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "positive-elements.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Mountains**:\n- Towering peaks\n- Vast and ancient\n- Humbling scale\n- **Emotional Impact**: Awe, perspective, majesty\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "positive-elements.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Ocean from Shore**:\n- Endless horizon\n- Power and peace\n- Ancient and vast\n- **Emotional Impact**: Perspective, peace, infinity\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "positive-elements.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Total Solar Eclipse**:\n- Moon perfectly covering sun\n- Corona visible\n- Day turns to night\n- Birds silent\n- **Emotional Impact**: Awe, cosmic scale, beauty\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "positive-elements.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: - See `human-world-darkness.md` for contrasting human cruelty\n- See `emotional-storytelling-techniques.md` for evoking positive emotions\n- See `supernatural-creatures-compendium.md` for benevolent magical beings\n- See `magic-systems-compendium.md` for beneficial magic\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "positive-elements.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### 1. [Magic Systems Compendium](magic-systems-compendium.md)\n**Comprehensive catalog of magic systems across all fantasy and supernatural genres**\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "README.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Contents**:\n- Magic paradigms (hard vs soft, arcane, divine, primal, innate, pact, blood, chaos, psychic)\n- Elemental magic (fire, water, earth, air, lightning, ice, light, shadow, metal, nature, sound)\n- Specialized schools (necromancy, transmutation, illusion, enchantment, divination, abjuration, conjuration, time, space/gravity)\n- Magical symbols & writing (runes, sigils, glyphs, arcane circles, true names)\n- Spell casting methods (verbal, somatic, material, ritual)\n- Magical practices (cur...\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "README.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### 2. [Supernatural Creatures & Monsters Compendium](supernatural-creatures-compendium.md)\n**Exhaustive catalog of creatures, monsters, undead, spirits, and supernatural entities**\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "README.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Contents**:\n- Monster taxonomy framework (by origin, type, behavior, horror element)\n- Undead (zombies, vampires, liches, mummies, wraiths, death knights)\n- Spirits & ghosts (residual haunts, intelligent ghosts, poltergeists, vengeful spirits)\n- Demons & infernal entities (demon hierarchy, cultural variations, possession)\n- Angels & celestial beings (angel hierarchy, fallen angels, nephilim)\n- Shapeshifters & lycanthropes (werewolves, kitsune, selkies, skinwalkers, doppelg\u00e4ngers)\n- Vampires (c...\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "README.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Use For**:\n- Creating realistic human antagonists\n- Understanding dark motivations\n- Portraying social issues authentically\n- Generating conflict from human nature\n- Balancing supernatural with human evil\n- Creating psychological horror\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "README.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Night World vs Human World\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "README.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Night World** (Supernatural/Fantasy):\n- Use magic systems compendium\n- Use supernatural creatures\n- Magical beauty elements\n- Blend with human elements\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "README.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Crossover** (Urban Fantasy/Paranormal):\n- Combine both realms\n- Supernatural invading mundane\n- Magic hidden in modern world\n- Rich possibility space\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "README.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Fantasy/Supernatural Stories**:\n- [Magic Systems Compendium](magic-systems-compendium.md)\n- [Supernatural Creatures Compendium](supernatural-creatures-compendium.md)\n- [Positive Elements](positive-elements.md) (magical beauty section)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "README.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Horror/Dark Stories**:\n- [Supernatural Creatures Compendium](supernatural-creatures-compendium.md) (horror section)\n- [Human World Darkness](human-world-darkness.md)\n- [Emotional Storytelling Techniques](emotional-storytelling-techniques.md) (fear section)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "README.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Choose a monster/creature** \u2192 [Supernatural Creatures Compendium](supernatural-creatures-compendium.md)\n- Use taxonomy to filter (origin, type, behavior, horror element)\n- Consider narrative role\n- Check cross-references for related creatures\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "README.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Creatures & Monsters**: 200+ detailed entries\n- Undead, spirits, demons, angels\n- Shapeshifters, vampires, fey, dragons\n- Mythological creatures across cultures\n- Horror and eldritch entities\n- Environmental and urban monsters\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "README.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Magic Systems** \u2194 **Supernatural Creatures**: Summoning, magical beings, creature abilities\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "README.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Supernatural Creatures** \u2194 **Emotional Techniques**: Using creatures to evoke specific emotions\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "README.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Example 1: Horror Scene**\n- **Creature**: Wendigo (supernatural creatures)\n- **Human Element**: Survivor's desperation (human darkness)\n- **Emotion**: Building fear through unknown (emotional techniques)\n- **Balance**: Small moment of human connection (positive elements)\n- **Magic**: Protective ward failing (magic systems)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "README.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Example 2: Triumphant Moment**\n- **Creature**: Facing dragon (supernatural creatures)\n- **Magic**: Learned spell finally mastered (magic systems)\n- **Emotion**: Earned victory techniques (emotional techniques)\n- **Human**: Support from found family (positive elements)\n- **Contrast**: Remembering earlier defeat (human darkness)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "README.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: # Supernatural Creatures & Monsters Compendium\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Purpose**: Comprehensive catalog of creatures, monsters, undead, spirits, and supernatural entities for storyteller AI.\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ## Table of Contents\n1. [Monster Taxonomy Framework](#monster-taxonomy-framework)\n2. [Undead](#undead)\n3. [Spirits & Ghosts](#spirits--ghosts)\n4. [Demons & Infernal Entities](#demons--infernal-entities)\n5. [Angels & Celestial Beings](#angels--celestial-beings)\n6. [Shapeshifters & Lycanthropes](#shapeshifters--lycanthropes)\n7. [Vampires](#vampires)\n8. [Fey & Fairies](#fey--fairies)\n9. [Dragons & Dragonkin](#dragons--dragonkin)\n10. [Mythological Creatures](#mythological-creatures)\n11. [Horror Crea...\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Mythological**\n- From ancient religious texts and epic tales\n- Often tied to gods and cosmic forces\n- Epic scale and legendary status\n- **Examples**: Hydra, Minotaur, Phoenix, J\u00f6rmungandr\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Intelligent/Mastermind**\n- Human-level or greater intelligence\n- Plans and schemes\n- Can be negotiated with (maybe)\n- **Examples**: Liches, Elder Vampires, Dragons, Mind Flayers\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Classic Zombie** (Romero-style)\n- **Origin**: Recent dead reanimated\n- **Behavior**: Slow, mindless, hungry for flesh/brains\n- **Transmission**: Bite/scratch infection\n- **Weaknesses**: Head destruction, fire\n- **Swarm Nature**: Dangerous in numbers\n- **Examples**: *Night of the Living Dead*, *The Walking Dead*\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Fast Zombie** (Rage Virus)\n- **Origin**: Viral infection while living\n- **Behavior**: Aggressive, fast, feral\n- **Transmission**: Bloodborne pathogen\n- **Weaknesses**: Still mortal, bleed out\n- **Examples**: *28 Days Later*, *World War Z* (movie)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Vampires\n*(See dedicated Vampires section below)*\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Definition**: Undead spellcasters who achieved immortality through dark magic\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Variants**:\n- **Archlich**: Good-aligned lich (very rare)\n- **Demilich**: Ancient lich, only skull remains\n- **Baelnorn**: Elf lich guarding sacred places\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Death Knights\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Examples**:\n- *Warcraft*: Arthas Menethil\n- *D&D*: Death knights (cursed paladins)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Greater Demons**\n- **Balor**: Massive, flaming, whip-wielding\n- **Marilith**: Six-armed serpentine demon\n- **Pit Fiend**: Ultimate devil form (Lawful Evil)\n- **Characteristics**: Ancient, powerful, lead demon armies\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Demon Abilities (Common)\n- Possession (taking control of human body)\n- Deals/Pacts (granting power for souls)\n- Shapeshifting\n- Fire/shadow manipulation\n- Immortality (must be banished, not killed)\n- Corruption (turning good to evil over time)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Demonic Possession Signs\n- Change in voice\n- Knowledge of hidden things\n- Speaking languages never learned\n- Supernatural strength\n- Aversion to holy symbols\n- Sudden personality change\n- Levitation\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Angel Characteristics\n- Immortal, ageless\n- Powerful warriors\n- Holy/radiant energy\n- Often incomprehensible true forms (\"Be not afraid\")\n- Can take human appearance\n- Bound by divine law\n- Cannot lie (in many traditions)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Nephilim\n- **Origin**: Children of angels and humans\n- **Characteristics**: Half-angel, half-human\n- **Abilities**: Supernatural strength, long life, holy powers\n- **Status**: Often considered abominations\n- **Examples**: *Supernatural*, *Shadowhunters*\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Examples**:\n- *Underworld*: Lycans vs Vampires\n- *Teen Wolf*: Pack dynamics\n- *The Howling*, *An American Werewolf in London*\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ## Vampires\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Classic Vampire Traits\n- Immortal, ageless\n- Drink blood to survive\n- Enhanced strength, speed, senses\n- Rapid healing\n- Attractive/seductive\n- Cannot enter home without invitation\n- Create new vampires through bite/blood exchange\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Vampire Weaknesses (Traditional)\n- **Sunlight**: Burns/kills\n- **Stake through heart**: Kills\n- **Decapitation**: Kills\n- **Holy symbols**: Repels\n- **Garlic**: Repels\n- **Running water**: Cannot cross\n- **Need invitation**: Cannot enter homes uninvited\n- **Reflection**: Don't have one\n- **Counting**: Compelled to count small objects (some traditions)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Modern Vampire Variations\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Sunlight-Resistant**:\n- *Twilight*: Sparkle in sunlight\n- *Daywalker* (*Blade*): Immune to sunlight\n- *True Blood*: Drink synthetic blood\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Emotional/Psychic Vampires**:\n- Feed on life force/emotions instead of blood\n- Can walk in daylight\n- Often more subtle\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Viral Vampires**:\n- *Blade*, *I Am Legend*: Scientific/viral origin\n- More zombie-like, less intelligent\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Vampire Society\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Hierarchy**:\n- Ancient elders (centuries/millennia old)\n- Vampire lords/ladies\n- Fledglings (newly turned)\n- Progeny (created by specific vampire)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Courts & Clans**:\n- Political structures\n- Territorial disputes\n- Masquerade (hiding from humans)\n- Different clans with different abilities (*Vampire: The Masquerade*)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Examples**:\n- *Dracula*: Original novel, elegant noble\n- *Underworld*: Vampire vs Lycan war\n- *Castlevania*: Dracula and vampire aristocracy\n- *Vampire: The Masquerade*: Complex political RPG\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Fey Characteristics\n- Immortal or extremely long-lived\n- Bound by complex rules and bargains\n- Cannot lie (but can mislead)\n- Names have power (never give true name)\n- Capricious and dangerous\n- Iron is anathema (burns/poisons)\n- Time moves differently in fey realm\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Redcaps**:\n- Malevolent goblin-like fey\n- Dye caps in victim's blood\n- Wear iron boots\n- Scottish borders\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Age Categories** (D&D model):\n- Wyrmling (youngest)\n- Young\n- Adult\n- Ancient\n- Great Wyrm (eldest, most powerful)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Examples**:\n- *Skyrim*: Dovahkiin (Dragonborn)\n- *D&D*: Dragonborn race\n- *Game of Thrones*: Targaryens (dragon blood)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Hydra**:\n- Multi-headed serpent\n- Regenerates two heads for each one cut off\n- Poisonous blood\n- Killed by Heracles (cauterized necks)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Pegasus**:\n- Winged horse\n- Born from Medusa's blood\n- Symbol of wisdom and poetry\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Hellhounds**:\n- Demonic dogs\n- Hunt in packs\n- Supernatural tracking\n- Fire or shadow-based\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Great Old Ones**:\n- Ancient, god-like beings\n- Incomprehensible to human mind\n- Sanity-destroying to perceive\n- Sleeping/imprisoned\n- Will return to rule Earth\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: - Amphibious fish-frog-human hybrids\n- Worship Cthulhu\n- Interbreed with humans (*The Shadow Over Innsmouth*)\n- Immortal\n- Build underwater cities\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: - Ancient race that created Shoggoths\n- Barrel-shaped, starfish-headed\n- Advanced technology/biology\n- Fled Antarctica (from Shoggoths and climate)\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ## Night World Threats\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Vampire Takeover**:\n- Vampires reveal existence\n- Humans as livestock\n- *Daybreakers*, *Blade Trinity*\n- Blood farms\n- Resistance movements\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Demon Invasion**:\n- Hell breaks loose (literally)\n- Portals to infernal realms\n- *DOOM*, *Supernatural* (apocalypse arc)\n- Armies of demons\n- Desperate exorcisms\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Night World Environments\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Silent Hill**:\n- Town shifts between reality and nightmare\n- Manifestations of guilt/trauma\n- Rust, blood, otherworldly\n- Sirens signal shift\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **The Rake**:\n- Pale humanoid creature\n- Creepypasta origin\n- Stalks bedrooms at night\n- Drives victims insane\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Chupacabra**:\n- \"Goat sucker\"\n- Drains blood from livestock\n- Reptilian or canine appearance\n- Latin American origin\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Roc**:\n- Giant bird of prey\n- Large enough to carry elephants\n- Arabian Nights\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Monster as Metaphor\n- **Zombies**: Mindless consumerism, conformity, pandemic\n- **Vampires**: Aristocracy, addiction, immortality's curse, sexual predation\n- **Werewolves**: Loss of control, dual nature, puberty, rage\n- **Demons**: Internal struggles, addiction, trauma\n- **Eldritch Horror**: Insignificance, incomprehensible universe\n\nGenerate vampire social_dynamics response.",
+      "output": "[vampire social_dynamics response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    }
+  ]
+}

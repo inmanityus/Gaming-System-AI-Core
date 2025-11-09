@@ -1,0 +1,26 @@
+# LoRA Adapter Training Dependencies
+# For QLoRA-based training of archetype adapters
+
+# Core ML libraries
+torch>=2.0.0
+transformers>=4.35.0
+accelerate>=0.24.0
+
+# LoRA/PEFT
+peft>=0.7.0
+
+# Quantization
+bitsandbytes>=0.41.0
+
+# Data handling
+datasets>=2.14.0
+
+# Training utilities
+scipy
+scikit-learn
+tqdm
+
+# Monitoring
+tensorboard
+wandb  # Optional: For experiment tracking
+

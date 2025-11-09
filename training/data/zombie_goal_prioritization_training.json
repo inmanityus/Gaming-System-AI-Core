@@ -1,0 +1,791 @@
+{
+  "archetype": "zombie",
+  "adapter_task": "goal_prioritization",
+  "total_examples": 98,
+  "examples": [
+    {
+      "input": "Context: This narrative package contains the complete world history for \"The Body Broker\" game universe, organized into the following sections:\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "00-OVERVIEW.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Werewolves (The Pack Nations)\n**Origins**: Result of early experimentation combining primal forces with human-like entities. The first transformation was accidental, but they embraced it.\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Characteristics**:\n- Organized into packs with alpha hierarchies\n- Territorial and honor-bound\n- Divided between urban packs and wild packs\n- Strong sense of family and loyalty\n- Various breeds: some more bestial, some more humanoid\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Major Packs**:\n- **The Iron Claw Pack**: Largest urban pack, controls several territories\n- **The Wild Hunt**: Nomadic pack, respects no boundaries\n- **The Steel Fangs**: Military-focused pack, sells mercenary services\n- **The Moon's Shadow**: Mystical pack, has ancient connections to lunar magic\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Story Teller Fill-In**: Pack territories, current alphas, pack conflicts, special abilities of each pack, relationships with other races\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Zombies and Ghouls (The Hungering Masses)\n**Origins**: Result of dark magic experiments gone wrong, plagues, curses, or deliberate creation\u2014depends on the strain. Multiple origins mean they're not a unified race.\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Characteristics**:\n- Most numerous but least organized\n- Various intelligence levels (mindless to nearly human)\n- Constant hunger that drives them\n- Some retain fragments of their former selves\n- Often used as cannon fodder or labor by other races\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Factions**:\n- **The Risen**: Intelligent zombies who retain some memory, organized and dangerous\n- **The Feral Swarms**: Mindless hordes that roam abandoned areas\n- **The Grave-Touched**: Created by necromancers, serve specific masters\n- **The Echo People**: Ghouls who retain full intelligence, considered a separate race\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Story Teller Fill-In**: Specific strains and their origins, territories controlled by intelligent undead, how they interact with living races, special abilities\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Characteristics**:\n- Each one is ancient and powerful\n- Hoard knowledge and magical artifacts\n- Live in isolated strongholds\n- Form occasional alliances but mostly work alone\n- Some have apprentices, some have legions of undead\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **The Bone Constructs**: Animated remains of fallen empires, created by ancient magic. Some are mindless guardians, some have achieved true sentience.\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### House Politics\nAll major races have house systems, though they work differently:\n- **Vampires**: Rigid hierarchies, bloodline obsessions, arranged marriages for power\n- **Werewolves**: Pack-based, alpha leadership, territorial claims\n- **Liches**: Independent but form temporary councils when needed\n- **Others**: Varies by race\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Inter-House Conflicts\n**Historical Examples** (Story Teller can create current conflicts):\n- **The Crimson-Obsidian War** (3,000 years ago): Lasted 200 years, reshaped vampire territories\n- **The Pack Schism** (1,500 years ago): Split werewolf packs into urban vs. wild factions\n- **The Lich Purge** (800 years ago): Houses united to destroy a lich who threatened all of them\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### The Necropolis Dominion\n**When**: 6,000-4,000 years ago\n**What**: Empire of liches and undead that controlled vast territories\n**Why Fell**: Internal conflict, eventually shattered by living races\n**What Remains**: Floating necropolises, cursed burial grounds, undead guardians\n**Lost Knowledge**: Advanced necromancy, soul manipulation, immortality techniques\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### The Eternal Feud (Vampires vs. Werewolves)\n**Origin**: Disputed\u2014some say territorial, some say a betrayal, some say bloodline purity\n**Duration**: Off and on for 10,000+ years\n**Current Status**: Cold war, occasional flare-ups, some houses/packs have truces\n**Story Teller Use**: Tension between these groups creates opportunities for players to choose sides or exploit the conflict\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### The Undead Question\n**Conflict**: Should zombies and ghouls have rights, or are they just tools?\n**Sides**: Liches and intelligent undead vs. most living races\n**Duration**: Ongoing philosophical/practical conflict\n**Current Status**: Unresolved, varies by region\n**Story Teller Use**: Can create moral dilemmas, quests about undead rights, conflicts over territory\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "01-DARK-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### The Class Wars (Periodic outbreaks)\n**Cause**: Oppression, inequality, desperation\n**Participants**: Lower classes vs. upper classes\n**Nature**: Riots, uprisings, sometimes revolutions\n**Current Status**: Constant tension, occasional flare-ups\n**Story Teller Use**: Players might participate, or exploit, or prevent, based on their choices\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "02-LIGHT-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Zombies/Ghouls**: Stories about the walking dead\n- **Reality**: Real, sometimes seen in remote areas or during major breaches\n- **Story Teller Use**: Players might see them, or find evidence, or use these myths for cover stories\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "02-LIGHT-WORLD-HISTORY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Core Premises**:\n- Light World and Dark World exist and are connected\n- Major races exist (vampires, werewolves, zombies, liches, etc.)\n- Organized crime is dominant in Light World\n- Class systems are rigid\n- History happened (you can't undo major historical events)\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "04-STORY-TELLER-GUIDE.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **2. Major Races and Houses**\n- All major races exist (Vampires, Werewolves, etc.)\n- Core characteristics are consistent\n- Major houses/factions exist (House Crimson, Iron Claw Pack, etc.)\n- If you create a new major house, it must be added to shared lore\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "04-STORY-TELLER-GUIDE.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **4. Major Bosses**\n- Leaders of major houses, packs, organizations\n- Same name, appearance, core personality across all worlds\n- Same power level and position\n- **BUT**: Their actions, current goals, and player relationships can differ\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "04-STORY-TELLER-GUIDE.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Major bosses are**:\n- Leaders of major houses (vampire house leaders)\n- Leaders of major packs (werewolf pack alphas)\n- Leaders of major organizations (guild masters, crime bosses)\n- Powerful independent entities (ancient liches, major players)\n- Cross-world significant figures\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "04-STORY-TELLER-GUIDE.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Vampires**:\n- **Allies**: Often align with Liches (mutual respect for age and power), some Merchant Guilds (trade relationships)\n- **Enemies**: Traditional conflict with Werewolves, some tension with Shadowkin\n- **Neutral**: Zombies/Ghouls (see them as tools), most Guilds (transactional)\n- **Complex**: Other Vampire Houses (allies and enemies depending on politics)\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "05-ENHANCEMENTS.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Werewolves**:\n- **Allies**: Some Fae-Touched (shared connection to nature), Hunters' Brotherhood (respect for combat)\n- **Enemies**: Vampires (traditional feud), some Liches (territorial disputes)\n- **Neutral**: Most Guilds, Zombies/Ghouls\n- **Complex**: Other Werewolf Packs (territorial conflicts, but also mutual aid)\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "05-ENHANCEMENTS.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Zombies/Ghouls (Intelligent Varieties)**:\n- **Allies**: Liches (some created by them), Necromancers\n- **Enemies**: Most living races (prejudice, fear)\n- **Neutral**: Organizations that need labor\n- **Complex**: Other undead (united by nature, divided by intelligence)\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "05-ENHANCEMENTS.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **The Moon's Heart** (Known location: Unknown, last seen 500 years ago)\n- What it is: Crystalline artifact that amplifies lunar magic\n- Who wants it: Werewolf packs, some mystics\n- Danger level: Unknown (no one knows where it is)\n- Story Teller Use: Mystery quest, discovery that it's been hidden, or that it never existed (legend)\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "05-ENHANCEMENTS.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: This document provides the missing elements identified in peer review. The main documents should be updated to incorporate these additions for a complete world history package.\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "05-ENHANCEMENTS.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### 2. Major Races and Their Characteristics\n**MANDATORY CONSISTENCY**\n- All major races exist in all worlds (Vampires, Werewolves, Liches, etc.)\n- Core characteristics of each race are consistent\n- Major houses/factions within races exist (House Crimson, The Iron Claw Pack, etc.)\n- Racial abilities, weaknesses, and cultural traits are consistent\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "06-CROSS-WORLD-CONSISTENCY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Example**: House Crimson exists in all worlds as the oldest vampire house. The Iron Claw Pack exists in all worlds as the largest urban werewolf pack.\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "06-CROSS-WORLD-CONSISTENCY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Story Teller Rule**: If you create a new house or pack, it must be added to the shared lore and appear in all worlds (though its status and actions can vary).\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "06-CROSS-WORLD-CONSISTENCY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Example**: The leader of House Crimson (specific name TBD by Story Teller, but once named, consistent across worlds), the Alpha of The Iron Claw Pack, the head of The Syndicate\u2014these are the same people in all worlds.\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "06-CROSS-WORLD-CONSISTENCY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Major bosses are**:\n- Leaders of major houses (Vampire house leaders)\n- Leaders of major packs (Werewolf pack alphas)\n- Leaders of major organizations (Guild masters, crime bosses)\n- Powerful independent entities (Ancient liches, major players)\n- Cross-world significant figures (Key political leaders, major power brokers)\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "06-CROSS-WORLD-CONSISTENCY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **2. Position Consistency**:\n- Same leadership role\n- Same organization/house/pack affiliation\n- Similar power and influence level\n- Similar relationship with other major bosses\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "06-CROSS-WORLD-CONSISTENCY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Template**:\n```\nBOSS NAME: [Name]\nROLE: [Leader of House/Pack/Organization]\nAPPEARANCE: [Core description]\nPERSONALITY: [Core traits]\nPOWER LEVEL: [Scale 1-10]\nRELATIONSHIPS: [Key relationships with other major bosses]\nBACKGROUND: [Key historical background]\nVARIABLE ELEMENTS: [What can differ between worlds]\n```\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "06-CROSS-WORLD-CONSISTENCY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Action**: Major boss \"Alpha Morgan\" (Iron Claw Pack) attacks player in World A\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "06-CROSS-WORLD-CONSISTENCY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Process**:\n1. Core traits remain consistent (same person, same power, same pack)\n2. Action is unique to World A (maybe player provoked attack)\n3. In World B, Alpha Morgan might help player (different situation)\n4. In World C, Alpha Morgan might be neutral (different context)\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "06-CROSS-WORLD-CONSISTENCY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: The world history package is complete and ready for use by the Story Teller system. All major elements have been created, peer-reviewed, and enhanced based on feedback. The documentation provides:\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "IMPLEMENTATION-STATUS.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **2025-01-29 (Initial)**: Complete world history package created and peer-reviewed\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "IMPLEMENTATION-STATUS.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Dark World History\n- Ancient epochs: First Darkness, Age of Divisions, Age of Consolidation\n- Major races: Vampires (4 houses), Werewolves (4 packs), Zombies/Ghouls, Liches, Fae-Touched, Shadowkin, Wraith Lords\n- Major houses with political structures\n- Guilds: Merchant Consortium, Assassins' Guild, Scholars' Circle, Hunters' Brotherhood, Alchemists' League\n- Magical traditions: Blood, Lunar, Necromancy, Shadow, Dimensional, Primal\n- Historical calamities: The Shattering, Blood Plague, Dimen...\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "REVIEW-SUMMARY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Art Style Options\n- **Dark Fantasy**: Gothic stone corridors, torch-lit ambiance, volumetric fog\n- **Ancient Ruins**: Weathered architecture, overgrown vegetation, mysterious glyphs\n- **Crystal Caverns**: Luminescent minerals, reflective surfaces, magical lighting\n- **Undead Crypts**: Bone-strewn halls, spectral effects, eerie greenish hues\n- **Dwarven Fortresses**: Metallic structures, forges, industrial aesthetics\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "01-DUNGEON-DIVING.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### 2. **Undead Crypt**\n- Skeleton and zombie enemies\n- Necrotic damage, life drain\n- Boss: Lich or Death Knight\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "01-DUNGEON-DIVING.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Storyteller Parameters\n```yaml\nDungeonDiving:\n  Frequency: High\n  MinPlayerLevel: 5\n  AccessType: Optional\n  DifficultyScaling: Dynamic\n  ThematicOptions:\n    - GoblinWarren\n    - UndeadCrypt\n    - DragonsLair\n    - AbandonedMine\n    - WizardsTower\n    - SewerSystem\n  GenerationAlgorithms:\n    - BSP\n    - CellularAutomata\n    - DrunkardsWalk\n    - WaveFunctionCollapse\n  RewardTiers:\n    - Common\n    - Uncommon\n    - Rare\n    - Legendary\n```\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "01-DUNGEON-DIVING.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Type B: Escape Challenge\n- Player trapped, must find exit\n- Puzzle-solving required\n- Increasing danger over time\n- Survival mechanics (hunger, sanity, etc.)\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "02-ALTERNATE-REALITY-PORTALS.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Gameplay Mechanics\n- **Energy Weapons**: Lasers, plasma rifles, railguns\n- **Tech Abilities**: Cloaking, shield generation, hacking\n- **Zero-G Movement**: Jetpack thrusters, magnetic boots\n- **AI Enemies**: Drones, robots, synthetic soldiers\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Zombie Outbreak**\n- City overrun by infected\n- Survival in urban setting\n- Resource scavenging in buildings\n- Escape via extraction point\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Cursed Desert**\n- Undead wanderers\n- Sandstorm ghosts\n- Ancient curse mechanics\n- Egyptian-themed ruins\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "04-15-ADDITIONAL-EXPERIENCE-TYPES.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Reward System:**\n```python\nclass RewardCalculator:\n    \"\"\"\n    Calculates balanced rewards for experiences.\n    \"\"\"\n    \n    def calculate_rewards(self, experience_data: dict) -> dict:\n        \"\"\"\n        Determine rewards based on experience completion.\n        \n        Args:\n            experience_data: {\n                \"type\": str,\n                \"difficulty\": str,\n                \"duration\": int (minutes),\n                \"performance_score\": float (0-1),\n                \"death_count\": i...\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "AUTOMATION-ARCHITECTURE.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **POST `/api/rewards/calculate`**\n```\nCalculate experience rewards.\nBody: {experience_data, performance_metrics}\nResponse: {reward_package}\n```\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "AUTOMATION-ARCHITECTURE.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### 3.1.3 Content Creation\n- [ ] **3.1.3.1** Goblin Warren theme (5 days)\n- [ ] **3.1.3.2** Undead Crypt theme (5 days)\n- [ ] **3.1.3.3** Dragon Lair theme (5 days)\n- [ ] **3.1.3.4** Abandoned Mine theme (5 days)\n- [ ] **3.1.3.5** Wizard Tower theme (5 days)\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "IMPLEMENTATION-TASKS.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Validation Method:**\n```\nFOR EACH MODEL:\n  1. Provide complete documentation package\n  2. Request independent analysis\n  3. Collect feedback on:\n     - Missing elements\n     - Technical concerns\n     - Improvement opportunities\n     - Alternative approaches\n  4. Document model-specific insights\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "PROJECT-SUMMARY.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ```python\ndef storyteller_experience_decision(player, world_state):\n    \"\"\"\n    Complete decision-making process.\n    \"\"\"\n    \n    # Context gathering\n    player_level = player.level\n    location = player.current_location\n    story_arc = player.story_progress\n    last_experience_time = player.last_experience_timestamp\n    player_preferences = player.learned_preferences\n    \n    # Decision point 1: Should we offer an experience?\n    if last_experience_time < 30_minutes_ago:\n        return None  #...\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "STORYTELLER-INTEGRATION-GUIDE.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Impacts**:\n- Food insecurity: Hunger, malnutrition, obesity (cheap food is unhealthy)\n- Housing instability: Evictions, unsafe conditions\n- Health: Unable to afford medical care, delayed treatment\n- Education: Poor schools, can't afford college\n- Stress: Constant worry, shortened lifespan\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "human-world-darkness.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Health Decline**:\n- Physical deterioration\n- Infections (IV drug use)\n- Malnutrition\n- Organ damage\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "human-world-darkness.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Abilities**:\n- **Raise Dead**: Animate corpses as zombies, skeletons, or other undead\n- **Speak with Dead**: Communicate with spirits of the deceased\n- **Life Drain**: Siphon life force from living beings\n- **Death Touch**: Kill with a touch\n- **Soul Manipulation**: Trap, bind, or destroy souls\n- **Plague/Disease**: Spread supernatural sickness\n- **Bone Shaping**: Create weapons and armor from bones\n- **Lichdom**: Transform into immortal undead mage\n- **Ghost Binding**: Command spirits\n- **Dea...\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Variations**:\n- *Benevolent Necromancy*: Laying spirits to rest, protecting from undead\n- *Combat Necromancy*: Using undead armies\n- *Ritualistic Necromancy*: Long ceremonies for powerful effects\n- *Quick Necromancy*: Fast battlefield animations\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Summoning Categories**:\n- Elemental summoning\n- Demon/devil summoning\n- Angel summoning\n- Animal summoning\n- Undead summoning\n- Construct creation\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Materials**:\n- Salt circles (*Supernatural*)\n- Iron (anti-fey)\n- Silver (anti-werewolf/undead)\n- Holy water/symbols\n- Rowan wood\n- Cold iron\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: 1. **Abjuration**: Protection, wards, counterspells\n2. **Conjuration**: Summoning, creation, teleportation\n3. **Divination**: Knowledge, prophecy, detection\n4. **Enchantment**: Mind control, charm, enhancement\n5. **Evocation**: Direct energy, blasting, elemental\n6. **Illusion**: Deception, phantasms, invisibility\n7. **Necromancy**: Death, undead, life drain\n8. **Transmutation**: Transformation, alteration, polymorph\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "magic-systems-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### 2. [Supernatural Creatures & Monsters Compendium](supernatural-creatures-compendium.md)\n**Exhaustive catalog of creatures, monsters, undead, spirits, and supernatural entities**\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "README.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Contents**:\n- Monster taxonomy framework (by origin, type, behavior, horror element)\n- Undead (zombies, vampires, liches, mummies, wraiths, death knights)\n- Spirits & ghosts (residual haunts, intelligent ghosts, poltergeists, vengeful spirits)\n- Demons & infernal entities (demon hierarchy, cultural variations, possession)\n- Angels & celestial beings (angel hierarchy, fallen angels, nephilim)\n- Shapeshifters & lycanthropes (werewolves, kitsune, selkies, skinwalkers, doppelg\u00e4ngers)\n- Vampires (c...\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "README.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Creatures & Monsters**: 200+ detailed entries\n- Undead, spirits, demons, angels\n- Shapeshifters, vampires, fey, dragons\n- Mythological creatures across cultures\n- Horror and eldritch entities\n- Environmental and urban monsters\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "README.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Purpose**: Comprehensive catalog of creatures, monsters, undead, spirits, and supernatural entities for storyteller AI.\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ## Table of Contents\n1. [Monster Taxonomy Framework](#monster-taxonomy-framework)\n2. [Undead](#undead)\n3. [Spirits & Ghosts](#spirits--ghosts)\n4. [Demons & Infernal Entities](#demons--infernal-entities)\n5. [Angels & Celestial Beings](#angels--celestial-beings)\n6. [Shapeshifters & Lycanthropes](#shapeshifters--lycanthropes)\n7. [Vampires](#vampires)\n8. [Fey & Fairies](#fey--fairies)\n9. [Dragons & Dragonkin](#dragons--dragonkin)\n10. [Mythological Creatures](#mythological-creatures)\n11. [Horror Crea...\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Swarm/Horde**\n- Overwhelming numbers\n- Individual weakness, collective strength\n- Mindless or hive-minded\n- **Examples**: Zombie hordes, Tyranids, insect swarms\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Mindless/Instinctive**\n- Acts on simple programming\n- Predictable patterns\n- Environmental hazard more than character\n- **Examples**: Gelatinous Cube, mindless zombies, oozes\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ## Undead\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### General Undead Characteristics\n- Once living, now animated by magic or curse\n- Often vulnerable to holy power\n- May be mindless or retain intelligence\n- Often tied to necromancy\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Zombies\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Classic Zombie** (Romero-style)\n- **Origin**: Recent dead reanimated\n- **Behavior**: Slow, mindless, hungry for flesh/brains\n- **Transmission**: Bite/scratch infection\n- **Weaknesses**: Head destruction, fire\n- **Swarm Nature**: Dangerous in numbers\n- **Examples**: *Night of the Living Dead*, *The Walking Dead*\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Fast Zombie** (Rage Virus)\n- **Origin**: Viral infection while living\n- **Behavior**: Aggressive, fast, feral\n- **Transmission**: Bloodborne pathogen\n- **Weaknesses**: Still mortal, bleed out\n- **Examples**: *28 Days Later*, *World War Z* (movie)\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Undead Horde Variations**:\n- **Draugr** (Norse): Intelligent, super-strong, guard tombs\n- **Revenants**: Return for specific purpose (usually revenge)\n- **Wights**: Corporeal undead with some intelligence, often armed\n- **Ghouls**: Flesh-eaters, often living in graveyards\n- **Skeletons**: Animated bones, no flesh, immune to pierce/slash\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Definition**: Undead spellcasters who achieved immortality through dark magic\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Creation Process**:\n- Powerful wizard performs dark ritual\n- Transfers soul into phylactery (soul jar)\n- Body becomes undead while retaining full intelligence\n- Nearly impossible to kill permanently (must destroy phylactery)\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Definition**: Incorporeal undead spirits\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Shade**:\n- Weakest form of shadow undead\n- Echo of person who died\n- Limited intelligence\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Definition**: Undead warriors, often paladins who fell from grace\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Characteristics**:\n- Retain combat prowess from life\n- Dark paladin abilities\n- Command undead\n- Mounted on undead steeds\n- Often bound to necromancer or lich\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Other Undead Types\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Draugr**:\n- Norse undead\n- Guard burial mounds\n- Super strength\n- Can increase in size\n- *Skyrim*: Common enemy\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Lesser Demons**\n- **Imps**: Small, mischievous, shape-shifters\n- **Lemures**: Mindless blob-like demons\n- **Quasits**: Tiny demons, often familiars\n- **Characteristics**: Weak individually, numerous\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: #### **Demon Lords**\n- **Orcus**: Demon Prince of Undead\n- **Demogorgon**: Prince of Demons, two-headed\n- **Baphomet**: Minotaur demon lord\n- **Characteristics**: Demi-god level, rule layers of Abyss/Hell\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Werewolf Abilities**:\n- Enhanced strength, speed, senses (even in human form)\n- Rapid healing (except silver wounds)\n- Pack telepathy (in some traditions)\n- Extended lifespan\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Pack Dynamics**:\n- Alpha, beta, omega hierarchy\n- Pack bonds and loyalty\n- Territorial\n- Enhanced when fighting together\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Examples**:\n- *Underworld*: Lycans vs Vampires\n- *Teen Wolf*: Pack dynamics\n- *The Howling*, *An American Werewolf in London*\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Viral Vampires**:\n- *Blade*, *I Am Legend*: Scientific/viral origin\n- More zombie-like, less intelligent\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Banshee**:\n- (Also listed in undead, as classification varies)\n- Wails to predict death\n- Attached to families\n- Irish tradition\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Clickers** (*The Last of Us*):\n- Fungal infection (Cordyceps)\n- Echolocation via clicking sounds\n- Blind but extremely dangerous\n- Eventual progression to bloaters\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Rage Zombies** (*28 Days Later*):\n- Viral infection causes extreme aggression\n- Fast, relentless\n- Still technically alive\n- Starve to death eventually\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ## Swarm & Horde Creatures\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Undead Hordes\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Zombie Apocalypse**:\n- Overwhelming numbers\n- Relentless advancement\n- Noise attracts more\n- Society collapse\n- **Scenarios**: *Walking Dead*, *World War Z*, *Left 4 Dead*\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Pack Hunters\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Velociraptors** (*Jurassic Park*):\n- Intelligent pack tactics\n- Alpha directs attacks\n- Coordinate flanking\n- Problem-solving ability\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Hellhounds**:\n- Demonic dogs\n- Hunt in packs\n- Supernatural tracking\n- Fire or shadow-based\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Zombie Apocalypse**:\n- Society collapses\n- Infrastructure fails\n- Survival horror\n- Human nature exposed\n- Resource scarcity\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Werewolf Packs Hunting**:\n- Organized werewolf packs terrorize cities\n- Full moon massacres\n- Pack coordination\n- *Underworld*, *Dog Soldiers*\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: **Wendigo**:\n- Gaunt, antlered humanoid\n- Created by cannibalizing humans\n- Algonquian legend\n- Eternal hunger\n- Associated with winter and famine\n- Can possess humans\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    },
+    {
+      "input": "Context: ### Monster as Metaphor\n- **Zombies**: Mindless consumerism, conformity, pandemic\n- **Vampires**: Aristocracy, addiction, immortality's curse, sexual predation\n- **Werewolves**: Loss of control, dual nature, puberty, rage\n- **Demons**: Internal struggles, addiction, trauma\n- **Eldritch Horror**: Insignificance, incomprehensible universe\n\nGenerate zombie goal_prioritization response.",
+      "output": "[zombie goal_prioritization response]",
+      "metadata": {
+        "source_file": "supernatural-creatures-compendium.md",
+        "extraction_method": "keyword_matching"
+      }
+    }
+  ]
+}
