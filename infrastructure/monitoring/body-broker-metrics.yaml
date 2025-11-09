@@ -1,0 +1,39 @@
+# Body Broker Metrics for CloudWatch
+
+metrics:
+  - name: HarvestQualityRate
+    namespace: BodyBroker/Harvesting
+    statistic: Average
+    period: 300
+    
+  - name: NegotiationSuccessRate
+    namespace: BodyBroker/Negotiation
+    statistic: Average
+    period: 300
+    
+  - name: ClientReputationAverage
+    namespace: BodyBroker/Clients
+    statistic: Average
+    period: 300
+    
+  - name: DrugEconomyVolume
+    namespace: BodyBroker/Economy
+    statistic: Sum
+    period: 3600
+    
+  - name: MoralityPathDistribution
+    namespace: BodyBroker/Morality
+    statistic: SampleCount
+    period: 3600
+
+alarms:
+  - name: HighFailureRate
+    metric: NegotiationSuccessRate
+    threshold: 50
+    comparison: LessThanThreshold
+    
+  - name: LowQualityHarvests
+    metric: HarvestQualityRate
+    threshold: 0.6
+    comparison: LessThanThreshold
+
