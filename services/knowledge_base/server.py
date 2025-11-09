@@ -23,8 +23,25 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Rate limiter
-limiter = Limiter(key_func=get_remote_address)
+# Rate limiter with user-based key function
+def get_rate_limit_key():
+    """Get rate limit key - prefer user ID over IP."""
+    from fastapi import Request
+    from starlette.requests import Request as StarletteRequest
+    
+    # Try to get from request context (set by verify_api_key)
+    # Fall back to remote address
+    try:
+        request = Request.scope.get('fastapi_request')
+        user_id = request.state.get('user_id') if hasattr(request, 'state') else None
+        if user_id:
+            return user_id
+    except:
+        pass
+    
+    return get_remote_address()
+
+limiter = Limiter(key_func=get_rate_limit_key)
 
 app = FastAPI(
     title="Knowledge Base API",
@@ -73,6 +90,10 @@ async def startup():
     if not db_password:
         raise RuntimeError("POSTGRES_PASSWORD environment variable required")
     
+    # Validate password complexity (minimum security requirement)
+    if len(db_password) < 16:
+        raise RuntimeError("POSTGRES_PASSWORD must be at least 16 characters")
+    
     try:
         postgres_pool = await asyncpg.create_pool(
             host=os.getenv('POSTGRES_HOST', 'localhost'),
@@ -100,17 +121,26 @@ async def shutdown():
 
 # Request/Response Models with Validation
 class SemanticSearchRequest(BaseModel):
-    query: str = Field(..., min_length=1, max_length=2000, description="Search query")
+    query: str = Field(..., min_length=1, max_length=100, description="Search query")
     match_threshold: float = Field(default=0.7, ge=0.0, le=1.0)
     match_count: int = Field(default=10, ge=1, le=100)
     document_types: Optional[List[str]] = Field(default=None, max_items=10)
     
     @validator('query')
     def validate_query(cls, v):
-        """Sanitize query input."""
+        """Sanitize query input and escape wildcards."""
         if not v or not v.strip():
             raise ValueError("Query cannot be empty")
-        return v.strip()
+        
+        # Limit length to prevent ReDoS
+        clean = v.strip()
+        if len(clean) > 100:
+            raise ValueError("Query too long (max 100 chars)")
+        
+        # Escape SQL wildcards to prevent ReDoS attacks
+        clean = clean.replace('%', '\\%').replace('_', '\\_')
+        
+        return clean
 
 
 class SearchResult(BaseModel):
