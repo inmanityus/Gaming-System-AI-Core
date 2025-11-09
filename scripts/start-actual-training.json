@@ -1,0 +1,13 @@
+{
+  "commands": [
+    "cd /home/ubuntu/training",
+    "export PYTHONPATH=/home/ubuntu:$PYTHONPATH",
+    "echo 'Starting vampire personality adapter training...'",
+    "python3 train_lora_adapter.py --archetype vampire --task personality > ../vampire-personality.log 2>&1 &",
+    "sleep 5",
+    "echo 'Training started in background'",
+    "jobs",
+    "ps aux | grep train_lora"
+  ]
+}
+
