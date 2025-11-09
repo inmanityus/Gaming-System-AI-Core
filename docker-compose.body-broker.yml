@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  body-broker-integration:
+    build:
+      context: .
+      dockerfile: services/body_broker_integration/Dockerfile
+    ports:
+      - "4100:4100"
+    environment:
+      - REDIS_HOST=redis
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - VLLM_BASE_URL=http://vllm:8000
+    depends_on:
+      - redis
+      - postgres
+  
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+  
+  postgres:
+    image: postgres:15
+    ports:
+      - "5443:5432"
+    environment:
+      POSTGRES_DB: gaming_system_ai_core
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
