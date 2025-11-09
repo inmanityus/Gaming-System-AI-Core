@@ -1,0 +1,13 @@
+{
+  "commands": [
+    "cd /home/ubuntu",
+    "sudo apt-get update",
+    "sudo apt-get install -y nvidia-cuda-toolkit",
+    "pip3 install --upgrade pip",
+    "pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118",
+    "pip3 install vllm transformers peft bitsandbytes datasets accelerate",
+    "nvidia-smi",
+    "echo 'GPU setup complete'"
+  ]
+}
+

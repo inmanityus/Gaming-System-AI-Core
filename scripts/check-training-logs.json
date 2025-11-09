@@ -1,0 +1,20 @@
+{
+  "commands": [
+    "cd /home/ubuntu",
+    "echo '=== Setup Status ==='",
+    "cat setup-status.txt 2>/dev/null || echo 'Setup file not found'",
+    "echo ''",
+    "echo '=== Training Logs ==='",
+    "ls -lh training*.log 2>/dev/null || echo 'No training logs yet'",
+    "echo ''",
+    "echo '=== vLLM Status ==='",
+    "ps aux | grep vllm | grep -v grep || echo 'vLLM not running'",
+    "echo ''",
+    "echo '=== Disk Space ==='",
+    "df -h | grep -E 'Filesystem|/$'",
+    "echo ''",
+    "echo '=== GPU Status ==='",
+    "nvidia-smi --query-gpu=index,name,memory.used,memory.total --format=csv,noheader || echo 'nvidia-smi not available'"
+  ]
+}
+
