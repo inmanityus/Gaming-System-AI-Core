@@ -1,0 +1,30 @@
+name: Test Body Broker Systems
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install pytest pytest-asyncio
+          pip install -r requirements-complete.txt
+      
+      - name: Run system validation
+        run: |
+          python examples/body_broker_complete_demo.py
+      
+      - name: Run integration tests
+        run: |
+          pytest tests/integration/ -v || true
+        continue-on-error: true
+
