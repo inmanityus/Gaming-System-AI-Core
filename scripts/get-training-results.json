@@ -1,0 +1,14 @@
+{
+  "commands": [
+    "cd /home/ubuntu",
+    "echo '=== Vampire Training Results ==='",
+    "cat training-vampire-all.log",
+    "echo ''",
+    "echo '=== Zombie Training Results ==='",
+    "cat training-zombie-all.log",
+    "echo ''",
+    "echo '=== Trained Adapters ==='",
+    "find /home/ubuntu -name 'adapter_*' -o -name '*.safetensors' 2>/dev/null | head -20 || echo 'No adapter files found yet'"
+  ]
+}
+
