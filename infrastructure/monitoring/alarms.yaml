@@ -1,0 +1,373 @@
+# CloudWatch Alarms - Production Monitoring
+# All alarms for gaming system infrastructure
+# Deploy with: deploy-monitoring.ps1
+
+---
+alarms:
+  # ==========================================
+  # SERVICE HEALTH ALARMS
+  # ==========================================
+  
+  - name: EventBus-ServiceDown
+    description: Event Bus service has 0 running tasks
+    namespace: ECS/ContainerInsights
+    metric: RunningTaskCount
+    dimensions:
+      ServiceName: event-bus
+      ClusterName: gaming-system-cluster
+    statistic: Maximum
+    period: 60
+    evaluation_periods: 2
+    threshold: 1
+    comparison: LessThanThreshold
+    treat_missing_data: breaching
+    severity: CRITICAL
+    actions:
+      - alert
+  
+  - name: KnowledgeBase-ServiceDown
+    description: Knowledge Base service has 0 running tasks
+    namespace: ECS/ContainerInsights
+    metric: RunningTaskCount
+    dimensions:
+      ServiceName: knowledge-base
+      ClusterName: gaming-system-cluster
+    statistic: Maximum
+    period: 60
+    evaluation_periods: 2
+    threshold: 1
+    comparison: LessThanThreshold
+    treat_missing_data: breaching
+    severity: CRITICAL
+    actions:
+      - alert
+  
+  - name: Orchestration-ServiceDown
+    description: Orchestration service has 0 running tasks
+    namespace: ECS/ContainerInsights
+    metric: RunningTaskCount
+    dimensions:
+      ServiceName: orchestration
+      ClusterName: gaming-system-cluster
+    statistic: Maximum
+    period: 60
+    evaluation_periods: 2
+    threshold: 1
+    comparison: LessThanThreshold
+    treat_missing_data: breaching
+    severity: CRITICAL
+    actions:
+      - alert
+  
+  - name: Services-HighCPU
+    description: One or more services using >85% CPU for 5 minutes
+    namespace: AWS/ECS
+    metric: CPUUtilization
+    dimensions:
+      ClusterName: gaming-system-cluster
+    statistic: Average
+    period: 60
+    evaluation_periods: 5
+    threshold: 85
+    comparison: GreaterThanThreshold
+    treat_missing_data: notBreaching
+    severity: WARNING
+    actions:
+      - alert
+  
+  - name: Services-HighMemory
+    description: One or more services using >85% memory for 5 minutes
+    namespace: AWS/ECS
+    metric: MemoryUtilization
+    dimensions:
+      ClusterName: gaming-system-cluster
+    statistic: Average
+    period: 60
+    evaluation_periods: 5
+    threshold: 85
+    comparison: GreaterThanThreshold
+    treat_missing_data: notBreaching
+    severity: WARNING
+    actions:
+      - alert
+  
+  # ==========================================
+  # GPU HEALTH ALARMS
+  # ==========================================
+  
+  - name: GPU-Gold-HeartbeatMissing
+    description: Gold GPU heartbeat missing for 3 minutes
+    namespace: AI-Gaming/GPU
+    metric: Heartbeat
+    dimensions:
+      Tier: gold
+    statistic: Sum
+    period: 60
+    evaluation_periods: 3
+    threshold: 1
+    comparison: LessThanThreshold
+    treat_missing_data: breaching
+    severity: CRITICAL
+    actions:
+      - alert
+  
+  - name: GPU-Silver-HeartbeatMissing
+    description: Silver GPU heartbeat missing for 3 minutes
+    namespace: AI-Gaming/GPU
+    metric: Heartbeat
+    dimensions:
+      Tier: silver
+    statistic: Sum
+    period: 60
+    evaluation_periods: 3
+    threshold: 1
+    comparison: LessThanThreshold
+    treat_missing_data: breaching
+    severity: CRITICAL
+    actions:
+      - alert
+  
+  - name: GPU-Gold-HighUtilization
+    description: Gold GPU utilization >95% for 10 minutes
+    namespace: AI-Gaming/GPU
+    metric: GPUUtilization
+    dimensions:
+      Tier: gold
+    statistic: Average
+    period: 60
+    evaluation_periods: 10
+    threshold: 95
+    comparison: GreaterThanThreshold
+    treat_missing_data: notBreaching
+    severity: WARNING
+    actions:
+      - alert
+  
+  - name: GPU-Silver-HighUtilization
+    description: Silver GPU utilization >95% for 10 minutes
+    namespace: AI-Gaming/GPU
+    metric: GPUUtilization
+    dimensions:
+      Tier: silver
+    statistic: Average
+    period: 60
+    evaluation_periods: 10
+    threshold: 95
+    comparison: GreaterThanThreshold
+    treat_missing_data: notBreaching
+    severity: WARNING
+    actions:
+      - alert
+  
+  - name: GPU-Gold-HighMemory
+    description: Gold GPU memory >90% for 5 minutes
+    namespace: AI-Gaming/GPU
+    metric: GPUMemoryUtilization
+    dimensions:
+      Tier: gold
+    statistic: Maximum
+    period: 60
+    evaluation_periods: 5
+    threshold: 90
+    comparison: GreaterThanThreshold
+    treat_missing_data: notBreaching
+    severity: WARNING
+    actions:
+      - alert
+  
+  - name: GPU-Silver-HighMemory
+    description: Silver GPU memory >90% for 5 minutes
+    namespace: AI-Gaming/GPU
+    metric: GPUMemoryUtilization
+    dimensions:
+      Tier: silver
+    statistic: Maximum
+    period: 60
+    evaluation_periods: 5
+    threshold: 90
+    comparison: GreaterThanThreshold
+    treat_missing_data: notBreaching
+    severity: WARNING
+    actions:
+      - alert
+  
+  - name: GPU-Gold-HighTemperature
+    description: Gold GPU temperature >85°C
+    namespace: AI-Gaming/GPU
+    metric: GPUTemperature
+    dimensions:
+      Tier: gold
+    statistic: Maximum
+    period: 60
+    evaluation_periods: 2
+    threshold: 85
+    comparison: GreaterThanThreshold
+    treat_missing_data: notBreaching
+    severity: WARNING
+    actions:
+      - alert
+  
+  - name: GPU-Silver-HighTemperature
+    description: Silver GPU temperature >85°C
+    namespace: AI-Gaming/GPU
+    metric: GPUTemperature
+    dimensions:
+      Tier: silver
+    statistic: Maximum
+    period: 60
+    evaluation_periods: 2
+    threshold: 85
+    comparison: GreaterThanThreshold
+    treat_missing_data: notBreaching
+    severity: WARNING
+    actions:
+      - alert
+  
+  # ==========================================
+  # AUTO-SCALING ALARMS
+  # ==========================================
+  
+  - name: ASG-Gold-CapacityGap
+    description: Gold ASG InService < Desired for >5 minutes
+    namespace: AWS/AutoScaling
+    metric_math:
+      - id: gap
+        expression: "MAX(m1) - MAX(m2)"
+        label: "Capacity Gap"
+      - id: m1
+        metric:
+          namespace: AWS/AutoScaling
+          metric: GroupDesiredCapacity
+          dimensions:
+            AutoScalingGroupName: AI-Gaming-Gold-Tier-ASG
+          stat: Maximum
+          period: 60
+      - id: m2
+        metric:
+          namespace: AWS/AutoScaling
+          metric: GroupInServiceInstances
+          dimensions:
+            AutoScalingGroupName: AI-Gaming-Gold-Tier-ASG
+          stat: Maximum
+          period: 60
+    evaluation_periods: 5
+    threshold: 0
+    comparison: GreaterThanThreshold
+    treat_missing_data: notBreaching
+    severity: CRITICAL
+    actions:
+      - alert
+  
+  - name: ASG-Silver-CapacityGap
+    description: Silver ASG InService < Desired for >5 minutes
+    namespace: AWS/AutoScaling
+    metric_math:
+      - id: gap
+        expression: "MAX(m1) - MAX(m2)"
+        label: "Capacity Gap"
+      - id: m1
+        metric:
+          namespace: AWS/AutoScaling
+          metric: GroupDesiredCapacity
+          dimensions:
+            AutoScalingGroupName: AI-Gaming-Silver-Tier-ASG
+          stat: Maximum
+          period: 60
+      - id: m2
+        metric:
+          namespace: AWS/AutoScaling
+          metric: GroupInServiceInstances
+          dimensions:
+            AutoScalingGroupName: AI-Gaming-Silver-Tier-ASG
+          stat: Maximum
+          period: 60
+    evaluation_periods: 5
+    threshold: 0
+    comparison: GreaterThanThreshold
+    treat_missing_data: notBreaching
+    severity: CRITICAL
+    actions:
+      - alert
+  
+  - name: EC2-Gold-StatusCheckFailed
+    description: Gold GPU instance status check failed
+    namespace: AWS/EC2
+    metric: StatusCheckFailed
+    dimensions:
+      AutoScalingGroupName: AI-Gaming-Gold-Tier-ASG
+    statistic: Maximum
+    period: 60
+    evaluation_periods: 2
+    threshold: 0
+    comparison: GreaterThanThreshold
+    treat_missing_data: notBreaching
+    severity: CRITICAL
+    actions:
+      - alert
+  
+  - name: EC2-Silver-StatusCheckFailed
+    description: Silver GPU instance status check failed
+    namespace: AWS/EC2
+    metric: StatusCheckFailed
+    dimensions:
+      AutoScalingGroupName: AI-Gaming-Silver-Tier-ASG
+    statistic: Maximum
+    period: 60
+    evaluation_periods: 2
+    threshold: 0
+    comparison: GreaterThanThreshold
+    treat_missing_data: notBreaching
+    severity: CRITICAL
+    actions:
+      - alert
+  
+  # ==========================================
+  # COST ALARMS
+  # ==========================================
+  
+  - name: Cost-DailySpendHigh
+    description: Daily spend exceeds $200
+    namespace: AWS/Billing
+    metric: EstimatedCharges
+    dimensions:
+      Currency: USD
+    statistic: Maximum
+    period: 21600
+    evaluation_periods: 1
+    threshold: 200
+    comparison: GreaterThanThreshold
+    treat_missing_data: notBreaching
+    severity: WARNING
+    actions:
+      - alert
+  
+  - name: Cost-MonthlyProjectionCritical
+    description: Monthly projected spend exceeds $6,000
+    namespace: AWS/Billing
+    metric: EstimatedCharges
+    dimensions:
+      Currency: USD
+    statistic: Maximum
+    period: 86400
+    evaluation_periods: 1
+    threshold: 6000
+    comparison: GreaterThanThreshold
+    treat_missing_data: notBreaching
+    severity: CRITICAL
+    actions:
+      - alert
+
+# Alarm Actions Configuration
+actions:
+  alert:
+    type: SNS
+    topic_name: AI-Gaming-Alerts
+    email: devops@example.com  # UPDATE THIS
+    slack_webhook: null  # Optional: Add Slack webhook URL
+
+# Notes:
+# - All alarms use treat_missing_data appropriately
+# - Heartbeat alarms use "breaching" for missing data (critical if no heartbeat)
+# - Performance alarms use "notBreaching" (missing data = no issue)
+# - Severity levels: CRITICAL (page immediately), WARNING (investigate during business hours)
+

@@ -1,0 +1,257 @@
+{
+  "start": "-PT3H",
+  "periodOverride": "inherit",
+  "widgets": [
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 0,
+      "width": 24,
+      "height": 1,
+      "properties": {
+        "markdown": "# 🎮 GPU Metrics Dashboard\n\n**Gold Tier** (g5.xlarge A10G) | **Silver Tier** (g5.2xlarge A10G) | **Namespace**: AI-Gaming/GPU"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 1,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AI-Gaming/GPU", "GPUUtilization", { "Tier": "gold", "stat": "Average" } ],
+          [ "...", { "Tier": "silver", "stat": "Average" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "GPU Utilization by Tier",
+        "period": 60,
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "max": 100,
+            "label": "Utilization %"
+          }
+        },
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "Target (70%)",
+              "value": 70,
+              "color": "#2ca02c"
+            },
+            {
+              "label": "High (95%)",
+              "value": 95,
+              "fill": "above",
+              "color": "#d62728"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 1,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AI-Gaming/GPU", "GPUMemoryUtilization", { "Tier": "gold", "stat": "Average" } ],
+          [ "...", { "Tier": "silver", "stat": "Average" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "GPU Memory Utilization by Tier",
+        "period": 60,
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "max": 100,
+            "label": "Memory %"
+          }
+        },
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "Critical (90%)",
+              "value": 90,
+              "fill": "above",
+              "color": "#d62728"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 7,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AI-Gaming/GPU", "GPUTemperature", { "Tier": "gold" } ],
+          [ "...", { "Tier": "silver" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "GPU Temperature",
+        "period": 60,
+        "yAxis": {
+          "left": {
+            "label": "Celsius"
+          }
+        },
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "Warning (80°C)",
+              "value": 80,
+              "color": "#ff7f0e"
+            },
+            {
+              "label": "Critical (85°C)",
+              "value": 85,
+              "fill": "above",
+              "color": "#d62728"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 8,
+      "y": 7,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AI-Gaming/GPU", "GPUPowerUsage", { "Tier": "gold" } ],
+          [ "...", { "Tier": "silver" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "GPU Power Usage",
+        "period": 60,
+        "yAxis": {
+          "left": {
+            "label": "Watts"
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 16,
+      "y": 7,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AI-Gaming/GPU", "Heartbeat", { "Tier": "gold", "stat": "Sum" } ],
+          [ "...", { "Tier": "silver", "stat": "Sum" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Heartbeat (Liveness)",
+        "period": 60,
+        "yAxis": {
+          "left": {
+            "label": "Count"
+          }
+        },
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "Expected",
+              "value": 1,
+              "color": "#2ca02c"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 13,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AI-Gaming/GPU", "GPUUtilization", { "Tier": "gold", "DeviceIndex": "0" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Gold GPU - Detailed Utilization",
+        "period": 60,
+        "stat": "Average",
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "max": 100
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 13,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AI-Gaming/GPU", "GPUUtilization", { "Tier": "silver", "DeviceIndex": "0" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Silver GPU - Detailed Utilization",
+        "period": 60,
+        "stat": "Average",
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "max": 100
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 19,
+      "width": 24,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ { "expression": "SELECT AVG(GPUUtilization) FROM \"AI-Gaming/GPU\" GROUP BY Tier", "label": "Avg Utilization by Tier", "id": "q1" } ],
+          [ { "expression": "SELECT MAX(GPUMemoryUtilization) FROM \"AI-Gaming/GPU\" GROUP BY Tier", "label": "Max Memory by Tier", "id": "q2" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "GPU Metrics - Aggregated View",
+        "period": 300,
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "max": 100
+          }
+        }
+      }
+    }
+  ]
+}
+

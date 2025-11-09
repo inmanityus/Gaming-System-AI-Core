@@ -1,0 +1,223 @@
+{
+  "start": "-PT3H",
+  "periodOverride": "inherit",
+  "widgets": [
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 0,
+      "width": 24,
+      "height": 1,
+      "properties": {
+        "markdown": "# 📈 Auto-Scaling Dashboard\n\n**Gold ASG** (1-50 instances) | **Silver ASG** (1-30 instances) | **Spot**: 80% target"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 1,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/AutoScaling", "GroupDesiredCapacity", { "AutoScalingGroupName": "AI-Gaming-Gold-Tier-ASG" } ],
+          [ ".", "GroupInServiceInstances", { "." : "." } ],
+          [ ".", "GroupMinSize", { "." : "." } ],
+          [ ".", "GroupMaxSize", { "." : "." } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Gold ASG - Capacity Metrics",
+        "period": 60,
+        "yAxis": {
+          "left": {
+            "min": 0
+          }
+        },
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "Max Capacity",
+              "value": 50,
+              "color": "#d62728"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 1,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/AutoScaling", "GroupDesiredCapacity", { "AutoScalingGroupName": "AI-Gaming-Silver-Tier-ASG" } ],
+          [ ".", "GroupInServiceInstances", { "." : "." } ],
+          [ ".", "GroupMinSize", { "." : "." } ],
+          [ ".", "GroupMaxSize", { "." : "." } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Silver ASG - Capacity Metrics",
+        "period": 60,
+        "yAxis": {
+          "left": {
+            "min": 0
+          }
+        },
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "Max Capacity",
+              "value": 30,
+              "color": "#d62728"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 7,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/AutoScaling", "GroupTotalInstances", { "AutoScalingGroupName": "AI-Gaming-Gold-Tier-ASG" } ],
+          [ { "expression": "m1-m2", "label": "Spot Instances (Estimated)", "id": "e1" } ],
+          [ ".", "GroupDesiredCapacity", { "AutoScalingGroupName": "AI-Gaming-Gold-Tier-ASG", "id": "m1", "visible": false } ],
+          [ { "expression": "1", "label": "On-Demand Baseline", "id": "m2", "visible": false } ]
+        ],
+        "view": "timeSeries",
+        "stacked": true,
+        "region": "us-east-1",
+        "title": "Gold ASG - On-Demand vs Spot",
+        "period": 300
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 7,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/AutoScaling", "GroupTotalInstances", { "AutoScalingGroupName": "AI-Gaming-Silver-Tier-ASG" } ],
+          [ { "expression": "m1-m2", "label": "Spot Instances (Estimated)", "id": "e1" } ],
+          [ ".", "GroupDesiredCapacity", { "AutoScalingGroupName": "AI-Gaming-Silver-Tier-ASG", "id": "m1", "visible": false } ],
+          [ { "expression": "1", "label": "On-Demand Baseline", "id": "m2", "visible": false } ]
+        ],
+        "view": "timeSeries",
+        "stacked": true,
+        "region": "us-east-1",
+        "title": "Silver ASG - On-Demand vs Spot",
+        "period": 300
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 13,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/EC2", "StatusCheckFailed", { "AutoScalingGroupName": "AI-Gaming-Gold-Tier-ASG", "stat": "Sum" } ],
+          [ "...", { "AutoScalingGroupName": "AI-Gaming-Silver-Tier-ASG", "stat": "Sum" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Instance Health Checks",
+        "period": 300
+      }
+    },
+    {
+      "type": "metric",
+      "x": 8,
+      "y": 13,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AI-Gaming/GPU", "Heartbeat", { "Tier": "gold", "stat": "SampleCount" } ],
+          [ "...", { "Tier": "silver", "stat": "SampleCount" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Heartbeat Counts (Per Minute)",
+        "period": 60,
+        "yAxis": {
+          "left": {
+            "label": "Heartbeats"
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 16,
+      "y": 13,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ { "expression": "FILL(METRICS(), 0)", "label": "Gold GPU Count", "id": "e1" } ],
+          [ { "expression": "FILL(METRICS(), 0)", "label": "Silver GPU Count", "id": "e2" } ],
+          [ "AI-Gaming/GPU", "Heartbeat", { "Tier": "gold", "stat": "SampleCount", "id": "m1", "visible": false } ],
+          [ "...", { "Tier": "silver", "id": "m2", "visible": false } ]
+        ],
+        "view": "singleValue",
+        "region": "us-east-1",
+        "title": "Active GPU Instances",
+        "period": 300
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 19,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/AutoScaling", "GroupPendingInstances", { "AutoScalingGroupName": "AI-Gaming-Gold-Tier-ASG" } ],
+          [ ".", "GroupTerminatingInstances", { "." : "." } ],
+          [ ".", "GroupStandbyInstances", { "." : "." } ]
+        ],
+        "view": "timeSeries",
+        "stacked": true,
+        "region": "us-east-1",
+        "title": "Gold ASG - Instance State Transitions",
+        "period": 60
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 19,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/AutoScaling", "GroupPendingInstances", { "AutoScalingGroupName": "AI-Gaming-Silver-Tier-ASG" } ],
+          [ ".", "GroupTerminatingInstances", { "." : "." } ],
+          [ ".", "GroupStandbyInstances", { "." : "." } ]
+        ],
+        "view": "timeSeries",
+        "stacked": true,
+        "region": "us-east-1",
+        "title": "Silver ASG - Instance State Transitions",
+        "period": 60
+      }
+    }
+  ]
+}
+

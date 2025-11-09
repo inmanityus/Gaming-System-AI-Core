@@ -24,7 +24,22 @@ def ingest_documents():
     )
     cur = conn.cursor()
     
-    docs_dir = Path('../../docs/narrative')
+    # Get absolute path to docs/narrative (works regardless of CWD)
+    script_dir = Path(__file__).resolve().parent
+    project_root = script_dir.parent.parent
+    docs_dir = (project_root / 'docs' / 'narrative').resolve()
+    
+    logger.info(f"Looking for documents in: {docs_dir}")
+    logger.info(f"Script dir: {script_dir}, Project root: {project_root}")
+    
+    # Validate directory exists and is actually a directory
+    if not docs_dir.exists():
+        logger.error(f"Documentation directory not found: {docs_dir} (script_dir={script_dir}, project_root={project_root})")
+        raise FileNotFoundError(f"Documentation directory not found: {docs_dir}")
+    elif not docs_dir.is_dir():
+        logger.error(f"Path exists but is not a directory: {docs_dir}")
+        raise NotADirectoryError(f"Path exists but is not a directory: {docs_dir}")
+    
     stats = {'main': 0, 'guides': 0, 'experiences': 0, 'chunks': 0}
     
     try:

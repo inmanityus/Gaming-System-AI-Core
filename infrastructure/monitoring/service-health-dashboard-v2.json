@@ -1,0 +1,232 @@
+{
+  "start": "-PT3H",
+  "periodOverride": "inherit",
+  "widgets": [
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 0,
+      "width": 24,
+      "height": 1,
+      "properties": {
+        "markdown": "# 🎮 Service Health Dashboard\n\n**22 ECS Services** | **Cluster**: gaming-system-cluster | **Region**: us-east-1 | **Updated**: Every 60s"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 1,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ { "expression": "SEARCH('{AWS/ECS,ClusterName,ServiceName} ClusterName=\"gaming-system-cluster\" MetricName=\"CPUUtilization\"', 'Average', 60)", "label": "All Services CPU", "id": "e1" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "CPU Utilization - All Services",
+        "period": 60,
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "max": 100,
+            "label": "Percent"
+          }
+        },
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "Warning",
+              "value": 75,
+              "color": "#ff7f0e"
+            },
+            {
+              "label": "Critical",
+              "value": 85,
+              "fill": "above",
+              "color": "#d62728"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 1,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ { "expression": "SEARCH('{AWS/ECS,ClusterName,ServiceName} ClusterName=\"gaming-system-cluster\" MetricName=\"MemoryUtilization\"', 'Average', 60)", "label": "All Services Memory", "id": "e1" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Memory Utilization - All Services",
+        "period": 60,
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "max": 100,
+            "label": "Percent"
+          }
+        },
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "Warning",
+              "value": 75,
+              "color": "#ff7f0e"
+            },
+            {
+              "label": "Critical",
+              "value": 85,
+              "fill": "above",
+              "color": "#d62728"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 7,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ { "expression": "SUM(SEARCH('{ECS/ContainerInsights,ClusterName,ServiceName} ClusterName=\"gaming-system-cluster\" MetricName=\"RunningTaskCount\"', 'Maximum', 60))", "label": "Total Running Tasks", "id": "e1" } ]
+        ],
+        "view": "singleValue",
+        "region": "us-east-1",
+        "title": "Total Running Tasks (All Services)",
+        "period": 60
+      }
+    },
+    {
+      "type": "metric",
+      "x": 8,
+      "y": 7,
+      "width": 16,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "ECS/ContainerInsights", "RunningTaskCount", { "ServiceName": "event-bus", "ClusterName": "gaming-system-cluster" } ],
+          [ "...", "knowledge-base", "." ],
+          [ "...", "ai-integration", "." ],
+          [ "...", "story-teller", "." ],
+          [ "...", "state-manager", "." ],
+          [ "...", "orchestration", "." ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Running Tasks - Critical Services",
+        "period": 60,
+        "stat": "Maximum",
+        "yAxis": {
+          "left": {
+            "min": 0
+          }
+        },
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "Service Down",
+              "value": 0,
+              "color": "#d62728"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "log",
+      "x": 0,
+      "y": 13,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "query": "SOURCE '/ecs/gaming-system/event-bus'\n| SOURCE '/ecs/gaming-system/knowledge-base'\n| SOURCE '/ecs/gaming-system/ai-integration'\n| SOURCE '/ecs/gaming-system/orchestration'\n| fields @timestamp, @logStream, @message\n| filter @message like /ERROR|Exception|Traceback/\n| stats count() as errors by bin(1m), @logStream\n| sort errors desc",
+        "region": "us-east-1",
+        "title": "Error Rate - Critical Services (per minute)",
+        "view": "timeSeries"
+      }
+    },
+    {
+      "type": "log",
+      "x": 12,
+      "y": 13,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "query": "SOURCE '/ecs/gaming-system/event-bus'\n| SOURCE '/ecs/gaming-system/knowledge-base'\n| SOURCE '/ecs/gaming-system/ai-integration'\n| SOURCE '/ecs/gaming-system/orchestration'\n| fields @timestamp, @logStream, @message\n| filter @message like /ERROR|CRITICAL|Exception/\n| sort @timestamp desc\n| limit 20",
+        "region": "us-east-1",
+        "title": "Recent Errors - Last 20 Events",
+        "view": "table"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 19,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "ECS/ContainerInsights", "DesiredTaskCount", { "ServiceName": "event-bus", "ClusterName": "gaming-system-cluster" } ],
+          [ ".", "RunningTaskCount", { "." : ".", "." : "." } ],
+          [ ".", "PendingTaskCount", { "." : ".", "." : "." } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Event Bus - Deployment Health",
+        "period": 60,
+        "stat": "Maximum",
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "Deployment Issue (Pending > 0)",
+              "value": 0,
+              "color": "#ff7f0e"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 19,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "ECS/ContainerInsights", "DesiredTaskCount", { "ServiceName": "knowledge-base", "ClusterName": "gaming-system-cluster" } ],
+          [ ".", "RunningTaskCount", { "." : ".", "." : "." } ],
+          [ ".", "PendingTaskCount", { "." : ".", "." : "." } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Knowledge Base - Deployment Health",
+        "period": 60,
+        "stat": "Maximum",
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "Deployment Issue (Pending > 0)",
+              "value": 0,
+              "color": "#ff7f0e"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
+

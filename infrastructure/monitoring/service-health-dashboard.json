@@ -1,0 +1,224 @@
+{
+  "start": "-PT3H",
+  "periodOverride": "inherit",
+  "widgets": [
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 0,
+      "width": 24,
+      "height": 1,
+      "properties": {
+        "markdown": "# 🎮 Gaming System - Service Health Dashboard\n\n**All 22 ECS Services** | **Cluster**: gaming-system-cluster | **Region**: us-east-1"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 1,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/ECS", "CPUUtilization", { "stat": "Average", "label": "weather-manager" } ],
+          [ "...", { "stat": "Average", "label": "time-manager" } ],
+          [ "...", { "stat": "Average", "label": "capability-registry" } ],
+          [ "...", { "stat": "Average", "label": "event-bus" } ],
+          [ "...", { "stat": "Average", "label": "storyteller" } ],
+          [ "...", { "stat": "Average", "label": "ue-version-monitor" } ],
+          [ "...", { "stat": "Average", "label": "environmental-narrative" } ],
+          [ "...", { "stat": "Average", "label": "payment" } ],
+          [ "...", { "stat": "Average", "label": "quest-system" } ],
+          [ "...", { "stat": "Average", "label": "router" } ],
+          [ "...", { "stat": "Average", "label": "state-manager" } ],
+          [ "...", { "stat": "Average", "label": "ai-integration" } ],
+          [ "...", { "stat": "Average", "label": "story-teller" } ],
+          [ "...", { "stat": "Average", "label": "language-system" } ],
+          [ "...", { "stat": "Average", "label": "knowledge-base" } ],
+          [ "...", { "stat": "Average", "label": "ai-router" } ],
+          [ "...", { "stat": "Average", "label": "world-state" } ],
+          [ "...", { "stat": "Average", "label": "settings" } ],
+          [ "...", { "stat": "Average", "label": "model-management" } ],
+          [ "...", { "stat": "Average", "label": "npc-behavior" } ],
+          [ "...", { "stat": "Average", "label": "performance-mode" } ],
+          [ "...", { "stat": "Average", "label": "orchestration" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "CPU Utilization - All Services",
+        "period": 300,
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "max": 100
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 1,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/ECS", "MemoryUtilization", { "stat": "Average", "label": "weather-manager" } ],
+          [ "...", { "stat": "Average", "label": "time-manager" } ],
+          [ "...", { "stat": "Average", "label": "capability-registry" } ],
+          [ "...", { "stat": "Average", "label": "event-bus" } ],
+          [ "...", { "stat": "Average", "label": "storyteller" } ],
+          [ "...", { "stat": "Average", "label": "ue-version-monitor" } ],
+          [ "...", { "stat": "Average", "label": "environmental-narrative" } ],
+          [ "...", { "stat": "Average", "label": "payment" } ],
+          [ "...", { "stat": "Average", "label": "quest-system" } ],
+          [ "...", { "stat": "Average", "label": "router" } ],
+          [ "...", { "stat": "Average", "label": "state-manager" } ],
+          [ "...", { "stat": "Average", "label": "ai-integration" } ],
+          [ "...", { "stat": "Average", "label": "story-teller" } ],
+          [ "...", { "stat": "Average", "label": "language-system" } ],
+          [ "...", { "stat": "Average", "label": "knowledge-base" } ],
+          [ "...", { "stat": "Average", "label": "ai-router" } ],
+          [ "...", { "stat": "Average", "label": "world-state" } ],
+          [ "...", { "stat": "Average", "label": "settings" } ],
+          [ "...", { "stat": "Average", "label": "model-management" } ],
+          [ "...", { "stat": "Average", "label": "npc-behavior" } ],
+          [ "...", { "stat": "Average", "label": "performance-mode" } ],
+          [ "...", { "stat": "Average", "label": "orchestration" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Memory Utilization - All Services",
+        "period": 300,
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "max": 100
+          }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 7,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "ECS/ContainerInsights", "RunningTaskCount", { "ServiceName": "weather-manager", "ClusterName": "gaming-system-cluster" } ],
+          [ "...", "time-manager", "." ],
+          [ "...", "capability-registry", "." ],
+          [ "...", "event-bus", "." ],
+          [ "...", "storyteller", "." ],
+          [ "...", "ue-version-monitor", "." ],
+          [ "...", "environmental-narrative", "." ],
+          [ "...", "payment", "." ],
+          [ "...", "quest-system", "." ],
+          [ "...", "router", "." ],
+          [ "...", "state-manager", "." ],
+          [ "...", "ai-integration", "." ],
+          [ "...", "story-teller", "." ],
+          [ "...", "language-system", "." ],
+          [ "...", "knowledge-base", "." ]
+        ],
+        "view": "singleValue",
+        "region": "us-east-1",
+        "title": "Running Tasks - Core Services",
+        "period": 300
+      }
+    },
+    {
+      "type": "metric",
+      "x": 8,
+      "y": 7,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "ECS/ContainerInsights", "RunningTaskCount", { "ServiceName": "ai-router", "ClusterName": "gaming-system-cluster" } ],
+          [ "...", "world-state", "." ],
+          [ "...", "settings", "." ],
+          [ "...", "model-management", "." ],
+          [ "...", "npc-behavior", "." ],
+          [ "...", "performance-mode", "." ],
+          [ "...", "orchestration", "." ]
+        ],
+        "view": "singleValue",
+        "region": "us-east-1",
+        "title": "Running Tasks - AI Services",
+        "period": 300
+      }
+    },
+    {
+      "type": "metric",
+      "x": 16,
+      "y": 7,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/ECS", "CPUUtilization", { "ServiceName": "event-bus", "ClusterName": "gaming-system-cluster", "stat": "Average" } ],
+          [ ".", "MemoryUtilization", { ".", ".", ".", ".", "stat": "Average" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Event Bus - Critical Service",
+        "period": 60,
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "High Load",
+              "value": 80,
+              "fill": "above",
+              "color": "#d62728"
+            },
+            {
+              "label": "Normal",
+              "value": 50,
+              "color": "#2ca02c"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "log",
+      "x": 0,
+      "y": 13,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "query": "SOURCE '/ecs/gaming-system/event-bus'\n| fields @timestamp, @message\n| filter @message like /ERROR/\n| sort @timestamp desc\n| limit 20",
+        "region": "us-east-1",
+        "stacked": false,
+        "title": "Recent Errors - Event Bus",
+        "view": "table"
+      }
+    },
+    {
+      "type": "log",
+      "x": 12,
+      "y": 13,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "query": "SOURCE '/ecs/gaming-system/knowledge-base'\n| fields @timestamp, @message\n| filter @message like /ERROR/\n| sort @timestamp desc\n| limit 20",
+        "region": "us-east-1",
+        "stacked": false,
+        "title": "Recent Errors - Knowledge Base",
+        "view": "table"
+      }
+    }
+  ]
+}
+
