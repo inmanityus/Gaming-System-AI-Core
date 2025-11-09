@@ -253,9 +253,53 @@ class DarkDrugsSystem:
         
         Some combinations create new effects, some are deadly.
         """
-        # Placeholder for mixing logic
         logger.info(f"Mixing: {drug1.drug_type.value} + {drug2.drug_type.value}")
         
-        # TODO: Implement combination effects
-        return None
+        # Combination effects table
+        combinations = {
+            (DrugType.GRAVE_DUST, DrugType.MOON_WINE): {
+                'result_type': DrugType.GRAVE_DUST,  # Enhanced version
+                'effects_multiplier': 1.5,
+                'new_side_effects': [DrugEffect("extreme_aggression", 2.0, 30.0, False)]
+            },
+            (DrugType.VITAE, DrugType.LOGIC_SPORE): {
+                'result_type': DrugType.VITAE,
+                'effects_multiplier': 1.3,
+                'new_side_effects': [DrugEffect("cognitive_overload", 1.5, 60.0, False)]
+            },
+            # Deadly combo
+            (DrugType.STILL_BLOOD, DrugType.AETHER): {
+                'result_type': None,  # Deadly - no result
+                'effects_multiplier': 0.0,
+                'new_side_effects': [DrugEffect("cellular_disintegration", 10.0, 0.0, False)]
+            }
+        }
+        
+        # Check if combination exists (order doesn't matter)
+        combo_key = (drug1.drug_type, drug2.drug_type)
+        reverse_key = (drug2.drug_type, drug1.drug_type)
+        
+        combo = combinations.get(combo_key) or combinations.get(reverse_key)
+        
+        if not combo:
+            logger.warning("Unknown drug combination - unpredictable effects")
+            return None
+        
+        if combo['result_type'] is None:
+            logger.error("DEADLY COMBINATION - both drugs destroyed")
+            return None
+        
+        # Create mixed drug
+        mixed = DarkDrug(
+            drug_id=f"mixed_{drug1.drug_id}_{drug2.drug_id}",
+            drug_type=combo['result_type'],
+            quality=(drug1.quality + drug2.quality) / 2 * combo['effects_multiplier'],
+            quantity=min(drug1.quantity, drug2.quantity),
+            obtained_from=f"Mixed: {drug1.obtained_from} + {drug2.obtained_from}",
+            primary_effects=drug1.primary_effects.copy(),
+            side_effects=drug1.side_effects + combo['new_side_effects']
+        )
+        
+        logger.info(f"Mixed drug created: {mixed.drug_type.value} (quality {mixed.quality:.2f})")
+        return mixed
 
