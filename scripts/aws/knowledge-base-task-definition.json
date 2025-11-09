@@ -1,0 +1,37 @@
+{
+  "family": "knowledge-base",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "1024",
+  "memory": "2048",
+  "executionRoleArn": "arn:aws:iam::695353648052:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "knowledge-base",
+      "image": "695353648052.dkr.ecr.us-east-1.amazonaws.com/bodybroker-services:knowledge-base",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8090,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {"name": "POSTGRES_HOST", "value": "localhost"},
+        {"name": "POSTGRES_PORT", "value": "5443"},
+        {"name": "POSTGRES_USER", "value": "postgres"},
+        {"name": "POSTGRES_DB", "value": "gaming_system_ai_core"}
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/gaming-system/knowledge-base",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "true"
+        }
+      }
+    }
+  ]
+}
+
