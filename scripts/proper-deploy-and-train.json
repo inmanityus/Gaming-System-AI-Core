@@ -1,0 +1,18 @@
+{
+  "commands": [
+    "cd /home/ubuntu",
+    "echo 'Downloading code from S3...'",
+    "aws s3 cp s3://body-broker-training-9728/body-broker-code.tar.gz . --force",
+    "echo 'Extracting...'",
+    "tar -xzf body-broker-code.tar.gz",
+    "ls -la | head -20",
+    "echo ''",
+    "echo 'Verifying extraction...'",
+    "ls -R training/ | head -30",
+    "echo ''",
+    "echo 'Installing dependencies...'",
+    "pip3 install torch transformers peft bitsandbytes datasets accelerate --break-system-packages --quiet",
+    "echo 'Ready for training'"
+  ]
+}
+
