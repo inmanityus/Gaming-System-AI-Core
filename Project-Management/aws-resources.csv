@@ -1,5 +1,5 @@
 ResourceType,ResourceName,ResourceID,IP/Hostname,ConsoleLocation,Status,Purpose,CreatedDate,Cost,Notes
-ECS-Cluster,AI-Gaming-Cluster,gaming-system-cluster,N/A,ECS > Clusters,Active,Main container orchestration cluster,2025-11-07,$50/mo,Running 17 services
+ECS-Cluster,AI-Gaming-Cluster,gaming-system-cluster,N/A,ECS > Clusters,Active,Main container orchestration cluster,2025-11-07,$50/mo,Running 22 services
 Security-Group,AI-Gaming-Services-SG,sg-00419f4094a7d2101,N/A,EC2 > Security Groups,Active,Security group for all ECS services,2025-11-07,Free,Allows inter-service communication
 VPC,Default-VPC,vpc-045c9e283c23ae01e,172.31.0.0/16,VPC > Your VPCs,Active,Default VPC for all resources,Pre-existing,Free,Using default AWS VPC
 Subnet,Default-Subnet-1D,subnet-0f353054b8e31561d,172.31.16.0/20,VPC > Subnets,Active,Subnet in us-east-1d,Pre-existing,Free,Used by ECS services
@@ -12,23 +12,28 @@ IAM-Role,AI-Gaming-Time-Task,timeManagerTaskRole,N/A,IAM > Roles,Active,Task rol
 IAM-Role,AI-Gaming-Services-Task,gamingSystemServicesTaskRole,N/A,IAM > Roles,Active,Shared task role for services,2025-11-07,Free,Binary messaging permissions
 IAM-Policy,AI-Gaming-Messaging-Policy,GamingSystemDistributedMessaging,N/A,IAM > Policies,Active,SNS/SQS permissions policy,2025-11-07,Free,Attached to task roles
 EC2-Instance,AI-Gaming-UE5-Builder,i-0f27f842a79e1c59e,3.95.183.186,EC2 > Instances,Running,UE5 build server,2025-11-07,$326/mo,c5.4xlarge (16 vCPUs)
-ECS-Service,AI-Gaming-Weather,weather-manager,N/A,ECS > Clusters > gaming-system-cluster,Running,Weather state management,2025-11-07,$3/mo,Binary messaging publisher
-ECS-Service,AI-Gaming-Time,time-manager,N/A,ECS > Clusters > gaming-system-cluster,Running,Day/night time progression,2025-11-07,$3/mo,Publishing 102 events/min
-ECS-Service,AI-Gaming-Capability,capability-registry,N/A,ECS > Clusters > gaming-system-cluster,Running,UE5 capability database,2025-11-07,$3/mo,API service on port 8080
-ECS-Service,AI-Gaming-EventBus,event-bus,N/A,ECS > Clusters > gaming-system-cluster,Running,Central event routing,2025-11-07,$5/mo,Core messaging infrastructure
-ECS-Service,AI-Gaming-Storyteller,storyteller,N/A,ECS > Clusters > gaming-system-cluster,Running,Story integration service,2025-11-07,$3/mo,Integration layer
-ECS-Service,AI-Gaming-UE-Monitor,ue-version-monitor,N/A,ECS > Clusters > gaming-system-cluster,Running,UE5 version monitoring,2025-11-07,$3/mo,Tracks UE updates
-ECS-Service,AI-Gaming-EnvNarrative,environmental-narrative,N/A,ECS > Clusters > gaming-system-cluster,Running,Environmental storytelling,2025-11-07,$3/mo,Narrative integration
-ECS-Service,AI-Gaming-Payment,payment,N/A,ECS > Clusters > gaming-system-cluster,Running,Payment processing,2025-11-07,$3/mo,Stripe integration
-ECS-Service,AI-Gaming-Quests,quest-system,N/A,ECS > Clusters > gaming-system-cluster,Running,Quest generation,2025-11-07,$3/mo,Quest management
-ECS-Service,AI-Gaming-Router,router,N/A,ECS > Clusters > gaming-system-cluster,Running,Intelligent routing,2025-11-07,$3/mo,Request routing
-ECS-Service,AI-Gaming-StateManager,state-manager,N/A,ECS > Clusters > gaming-system-cluster,Running,State persistence,2025-11-07,$5/mo,PostgreSQL + Redis
-ECS-Service,AI-Gaming-AIIntegration,ai-integration,N/A,ECS > Clusters > gaming-system-cluster,Running,AI integration with refactored HTTP clients,2025-11-08,$5/mo,Refactored 2025-11-08
-ECS-Service,AI-Gaming-StoryTeller,story-teller,N/A,ECS > Clusters > gaming-system-cluster,Running,Story generation with direct DB connections,2025-11-08,$5/mo,Refactored 2025-11-08
-ECS-Service,AI-Gaming-LanguageSystem,language-system,N/A,ECS > Clusters > gaming-system-cluster,Running,Language system with flattened imports,2025-11-08,$5/mo,Refactored 2025-11-08
+EC2-Instance,AI-Gaming-Gold-GPU-1,i-02f620203b6ccd334,54.234.135.254,EC2 > Instances,Running,Gold tier AI inference Qwen2.5-3B,2025-11-07,$730/mo,g5.xlarge A10G 24GB 100GB disk
+EC2-Instance,AI-Gaming-Silver-GPU-1,i-089e3ab2b8830e3d2,18.208.225.146,EC2 > Instances,Running,Silver tier AI inference Qwen2.5-7B,2025-11-07,$870/mo,g5.2xlarge A10G 24GB 150GB disk
+Launch-Template,AI-Gaming-Gold-Tier-Template,lt-02625ef0413f7c763,N/A,EC2 > Launch Templates,Active,Gold tier g5.xlarge launch config,2025-11-08,Free,For Auto Scaling Group
+Launch-Template,AI-Gaming-Silver-Tier-Template,lt-0c7ff07746ca28cc8,N/A,EC2 > Launch Templates,Active,Silver tier g5.2xlarge launch config,2025-11-08,Free,For Auto Scaling Group
+ASG,AI-Gaming-Gold-Tier-ASG,arn:aws:autoscaling:us-east-1:695353648052:autoScalingGroup:*:autoScalingGroupName/AI-Gaming-Gold-Tier-ASG,N/A,EC2 > Auto Scaling Groups,Active,Gold GPU auto-scaling (min:1 max:50),2025-11-08,Variable,Currently 2 instances
+ASG,AI-Gaming-Silver-Tier-ASG,arn:aws:autoscaling:us-east-1:695353648052:autoScalingGroup:*:autoScalingGroupName/AI-Gaming-Silver-Tier-ASG,N/A,EC2 > Auto Scaling Groups,Active,Silver GPU auto-scaling (min:1 max:30),2025-11-08,Variable,Currently 2 instances
+ECS-Service,AI-Gaming-Weather,weather-manager,N/A,ECS > gaming-system-cluster,Running,Weather state management,2025-11-07,$3/mo,Binary messaging publisher
+ECS-Service,AI-Gaming-Time,time-manager,N/A,ECS > gaming-system-cluster,Running,Day/night time progression,2025-11-07,$3/mo,Publishing 102 events/min
+ECS-Service,AI-Gaming-Capability,capability-registry,N/A,ECS > gaming-system-cluster,Running,UE5 capability database,2025-11-07,$3/mo,API service on port 8080
+ECS-Service,AI-Gaming-EventBus,event-bus,N/A,ECS > gaming-system-cluster,Running,Central event routing,2025-11-07,$5/mo,Core messaging infrastructure
+ECS-Service,AI-Gaming-Storyteller,storyteller,N/A,ECS > gaming-system-cluster,Running,Story integration service,2025-11-07,$3/mo,Integration layer
+ECS-Service,AI-Gaming-UE-Monitor,ue-version-monitor,N/A,ECS > gaming-system-cluster,Running,UE5 version monitoring,2025-11-07,$3/mo,Tracks UE updates
+ECS-Service,AI-Gaming-EnvNarrative,environmental-narrative,N/A,ECS > gaming-system-cluster,Running,Environmental storytelling,2025-11-07,$3/mo,Narrative integration
+ECS-Service,AI-Gaming-Payment,payment,N/A,ECS > gaming-system-cluster,Running,Payment processing,2025-11-07,$3/mo,Stripe integration
+ECS-Service,AI-Gaming-Quests,quest-system,N/A,ECS > gaming-system-cluster,Running,Quest generation,2025-11-07,$3/mo,Quest management
+ECS-Service,AI-Gaming-Router,router,N/A,ECS > gaming-system-cluster,Running,Intelligent routing,2025-11-07,$3/mo,Request routing
+ECS-Service,AI-Gaming-StateManager,state-manager,N/A,ECS > gaming-system-cluster,Running,State persistence,2025-11-07,$5/mo,PostgreSQL + Redis
+ECS-Service,AI-Gaming-AIIntegration,ai-integration,N/A,ECS > gaming-system-cluster,Running,AI integration with HTTP clients,2025-11-08,$5/mo,Refactored 2025-11-08
+ECS-Service,AI-Gaming-StoryTeller,story-teller,N/A,ECS > gaming-system-cluster,Running,Story generation with DB connections,2025-11-08,$5/mo,Refactored 2025-11-08
+ECS-Service,AI-Gaming-LanguageSystem,language-system,N/A,ECS > gaming-system-cluster,Running,Language system flattened imports,2025-11-08,$5/mo,Refactored 2025-11-08
+ECS-Service,AI-Gaming-KnowledgeBase,knowledge-base,N/A,ECS > gaming-system-cluster,Running,Semantic search and storyteller memory,2025-11-08,$5/mo,Peer-reviewed + tested
 ECR-Repository,AI-Gaming-Services-Repo,bodybroker-services,695353648052.dkr.ecr.us-east-1.amazonaws.com/bodybroker-services,ECR > Repositories,Active,Container image repository,Pre-existing,$1/mo,Stores all service images
 CloudWatch-LogGroup,AI-Gaming-Weather-Logs,/ecs/gaming-system/weather-manager,N/A,CloudWatch > Log groups,Active,Weather manager logs,2025-11-07,$1/mo,Auto-created by ECS
 CloudWatch-LogGroup,AI-Gaming-Time-Logs,/ecs/gaming-system/time-manager,N/A,CloudWatch > Log groups,Active,Time manager logs,2025-11-07,$1/mo,Auto-created by ECS
-
-EC2-Instance,AI-Gaming-Gold-GPU-1,i-02f620203b6ccd334,54.234.135.254,EC2 > Instances,Running,Gold tier AI inference Qwen2.5-3B,2025-11-07,$730/mo,g5.xlarge A10G 24GB 100GB disk
-EC2-Instance,AI-Gaming-Silver-GPU-1,i-089e3ab2b8830e3d2,18.208.225.146,EC2 > Instances,Running,Silver tier AI inference Llama-3.1-8B,2025-11-07,$870/mo,g5.2xlarge A10G 24GB 150GB disk
+CloudWatch-LogGroup,AI-Gaming-KB-Logs,/ecs/gaming-system/knowledge-base,N/A,CloudWatch > Log groups,Active,Knowledge Base logs,2025-11-08,$1/mo,Auto-created by ECS
