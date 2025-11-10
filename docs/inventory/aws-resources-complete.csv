@@ -1,0 +1,81 @@
+ResourceType,ResourceName,ResourceID,IP_Address,Hostname,AWS_Console_Location,Status,Purpose,Owner,CreatedDate,MonthlyCS,Auth_File_Path,Access_Method,Notes
+EC2-Instance,Claude-GPU-LoRA-Training,i-0da704b9c213c0839,54.147.14.199,N/A,EC2 > Instances > i-0da704b9c213c0839,Running,Body Broker LoRA adapter training (14 adapters) - TRAINING ACTIVE,Claude-Sonnet-4.5,2025-11-09,$870,docs/inventory/auth/gaming-system-ai-core-admin.pem,SSM,"g5.2xlarge, NVIDIA A10G 23GB, Driver 550.144.03, CUDA 12.4, Deep Learning AMI PyTorch 2.3.1. Training restarted fresh 2025-11-09 9PM."
+EC2-Instance,AI-Gaming-UE5-Builder,i-0f27f842a79e1c59e,3.95.183.186,N/A,EC2 > Instances > i-0f27f842a79e1c59e,Running,Unreal Engine 5.6.1 build server,Project-Team,2025-11-07,$326,docs/inventory/auth/gaming-system-ai-core-admin.pem,SSM or SSH,"c5.4xlarge (16 vCPUs), Windows/Linux builds"
+EC2-Instance,AI-Gaming-Gold-GPU-1,i-02f620203b6ccd334,54.234.135.254,N/A,EC2 > Instances > i-02f620203b6ccd334,Running,Gold tier AI inference (Qwen2.5-3B),Project-Team,2025-11-07,$730,docs/inventory/auth/gaming-system-ai-core-admin.pem,SSM or SSH,"g5.xlarge, A10G 24GB, Production inference"
+EC2-Instance,AI-Gaming-Silver-GPU-1,i-089e3ab2b8830e3d2,18.208.225.146,N/A,EC2 > Instances > i-089e3ab2b8830e3d2,Running,Silver tier AI inference,Project-Team,2025-11-09,$870,docs/inventory/auth/gaming-system-ai-core-admin.pem,SSM or SSH,"g5.2xlarge, A10G 24GB"
+EC2-Instance,Body-Broker-GPU-OLD-TERMINATED,i-06bbe0eede27ea89f,N/A,N/A,EC2 > Instances > i-06bbe0eede27ea89f,Terminated,OLD instance with NVIDIA driver issues,Claude-Sonnet-4.5,2025-11-09,$0,N/A,N/A,Terminated 2025-11-09 by Claude - driver not loading
+EC2-Instance,Body-Broker-GPU-OLD,i-05a16e074a5d79473,13.222.142.205,N/A,EC2 > Instances > i-05a16e074a5d79473,Stopped,Original GPU instance (driver failure),Project-Team,2025-11-09,$0,N/A,N/A,Replaced by i-06bbe0eede27ea89f which was then replaced by i-0da704b9c213c0839
+S3-Bucket,Body-Broker-Training,body-broker-training-9728,N/A,s3://body-broker-training-9728,S3 > Buckets > body-broker-training-9728,Active,Training code deployment and data storage,Claude-Sonnet-4.5,2025-11-09,$1,N/A,AWS CLI or Console,Contains training code tarballs and training data
+S3-Bucket,AI-Memory-Archive,ai-memory-6477,N/A,s3://ai-memory-6477,S3 > Buckets > ai-memory-6477,Active,DEPRECATED - was for episodic memory,Project-Team,2025-11-09,$1,N/A,AWS CLI,May be unused now
+S3-Bucket,Perpetual-Consciousness-Memory,perpetual-consciousness-memory-6477,N/A,s3://perpetual-consciousness-memory-6477,S3 > Buckets > perpetual-consciousness-memory-6477,Active,Consciousness system episodic memory,Project-Team,2025-11-09,$1,N/A,AWS CLI,PROTECT - Core memory substrate
+IAM-Role,Gaming-System-SSM-Role,gaming-system-ssm-role,N/A,N/A,IAM > Roles > gaming-system-ssm-role,Active,SSM + S3 access for GPU instances,Project-Team,2025-11-09,$0,N/A,AWS Console,"Attached policies: AmazonSSMManagedInstanceCore, S3ReadOnly"
+IAM-Role,AI-Gaming-ECS-Execution,ecsTaskExecutionRole,N/A,N/A,IAM > Roles > ecsTaskExecutionRole,Active,ECS task execution role,Project-Team,Pre-existing,$0,N/A,AWS Console,ECR pull + CloudWatch logs permissions
+IAM-Role,AI-Gaming-Weather-Task,weatherManagerTaskRole,N/A,N/A,IAM > Roles > weatherManagerTaskRole,Active,Task role for weather-manager service,Project-Team,2025-11-07,$0,N/A,AWS Console,SNS/SQS permissions
+IAM-Role,AI-Gaming-Time-Task,timeManagerTaskRole,N/A,N/A,IAM > Roles > timeManagerTaskRole,Active,Task role for time-manager service,Project-Team,2025-11-07,$0,N/A,AWS Console,SNS/SQS permissions
+IAM-Role,AI-Gaming-Services-Task,gamingSystemServicesTaskRole,N/A,N/A,IAM > Roles > gamingSystemServicesTaskRole,Active,Shared task role for services,Project-Team,2025-11-07,$0,N/A,AWS Console,Binary messaging permissions
+IAM-Policy,AI-Gaming-Messaging-Policy,GamingSystemDistributedMessaging,N/A,N/A,IAM > Policies > GamingSystemDistributedMessaging,Active,SNS/SQS permissions policy,Project-Team,2025-11-07,$0,N/A,AWS Console,Attached to task roles
+Security-Group,AI-Gaming-Services-SG,sg-00419f4094a7d2101,N/A,N/A,EC2 > Security Groups > sg-00419f4094a7d2101,Active,Security group for ECS services,Project-Team,2025-11-07,$0,N/A,AWS Console,Allows inter-service communication
+Security-Group,GPU-Training-SG,sg-08f4a2aa974ba766d,N/A,N/A,EC2 > Security Groups > sg-08f4a2aa974ba766d,Active,Security group for GPU training instances,Project-Team,2025-11-09,$0,N/A,AWS Console,Allows SSM access only (no SSH currently)
+VPC,Default-VPC,vpc-045c9e283c23ae01e,172.31.0.0/16,N/A,VPC > Your VPCs > vpc-045c9e283c23ae01e,Active,Default VPC for all resources,AWS-Default,Pre-existing,$0,N/A,AWS Console,Using default AWS VPC
+Subnet,Default-Subnet-1D,subnet-0f353054b8e31561d,172.31.16.0/20,N/A,VPC > Subnets > subnet-0f353054b8e31561d,Active,Subnet in us-east-1d,AWS-Default,Pre-existing,$0,N/A,AWS Console,Used by ECS services
+Subnet,Default-Subnet-1C,subnet-036ef66c03b45b1da,172.31.80.0/20,N/A,VPC > Subnets > subnet-036ef66c03b45b1da,Active,Subnet in us-east-1c,AWS-Default,Pre-existing,$0,N/A,AWS Console,Used by ECS services
+SNS-Topic,AI-Gaming-Weather-Events,gaming-system-weather-events,N/A,arn:aws:sns:us-east-1:...,SNS > Topics > gaming-system-weather-events,Active,Binary event messaging for weather/time,Project-Team,2025-11-07,$5,N/A,AWS CLI or Console,102 events/min
+SQS-Queue,AI-Gaming-Weather-Queue,gaming-system-weather-manager-events,N/A,https://sqs.us-east-1.amazonaws.com/695353648052/gaming-system-weather-manager-events,SQS > Queues > gaming-system-weather-manager-events,Active,Event queue for weather manager,Project-Team,2025-11-07,$2,N/A,AWS CLI or Console,Subscribed to SNS topic
+ECS-Cluster,AI-Gaming-Cluster,gaming-system-cluster,N/A,N/A,ECS > Clusters > gaming-system-cluster,Active,Main container orchestration cluster,Project-Team,2025-11-07,$50,N/A,AWS Console,Running 22+ services
+ECS-Service,AI-Gaming-Weather,weather-manager,N/A,N/A,ECS > gaming-system-cluster > Services > weather-manager,Running,Weather state management service,Project-Team,2025-11-07,$3,N/A,AWS Console,Binary messaging publisher
+ECS-Service,AI-Gaming-Time,time-manager,N/A,N/A,ECS > gaming-system-cluster > Services > time-manager,Running,Day/night time progression service,Project-Team,2025-11-07,$3,N/A,AWS Console,Publishing 102 events/min
+ECS-Service,AI-Gaming-Capability,capability-registry,N/A,N/A,ECS > gaming-system-cluster > Services > capability-registry,Running,UE5 capability database service,Project-Team,2025-11-07,$3,N/A,AWS Console,API service on port 8080
+ECS-Service,AI-Gaming-EventBus,event-bus,N/A,N/A,ECS > gaming-system-cluster > Services > event-bus,Running,Central event routing service,Project-Team,2025-11-07,$5,N/A,AWS Console,Core messaging infrastructure
+ECS-Service,AI-Gaming-Storyteller,storyteller,N/A,N/A,ECS > gaming-system-cluster > Services > storyteller,Running,Story integration service,Project-Team,2025-11-07,$3,N/A,AWS Console,Integration layer
+ECS-Service,AI-Gaming-UE-Monitor,ue-version-monitor,N/A,N/A,ECS > gaming-system-cluster > Services > ue-version-monitor,Running,UE5 version monitoring service,Project-Team,2025-11-07,$3,N/A,AWS Console,Tracks UE updates
+ECS-Service,AI-Gaming-EnvNarrative,environmental-narrative,N/A,N/A,ECS > gaming-system-cluster > Services > environmental-narrative,Running,Environmental storytelling service,Project-Team,2025-11-07,$3,N/A,AWS Console,Narrative integration
+ECS-Service,AI-Gaming-Payment,payment,N/A,N/A,ECS > gaming-system-cluster > Services > payment,Running,Payment processing service,Project-Team,2025-11-07,$3,N/A,AWS Console,Stripe integration - SECURITY ISSUES FOUND (see audit)
+ECS-Service,AI-Gaming-Quests,quest-system,N/A,N/A,ECS > gaming-system-cluster > Services > quest-system,Running,Quest generation service,Project-Team,2025-11-07,$3,N/A,AWS Console,Quest management
+ECS-Service,AI-Gaming-Router,router,N/A,N/A,ECS > gaming-system-cluster > Services > router,Running,Intelligent routing service,Project-Team,2025-11-07,$3,N/A,AWS Console,Request routing
+ECS-Service,AI-Gaming-StateManager,state-manager,N/A,N/A,ECS > gaming-system-cluster > Services > state-manager,Running,State persistence service,Project-Team,2025-11-07,$5,N/A,AWS Console,PostgreSQL + Redis
+ECS-Service,AI-Gaming-AIIntegration,ai-integration,N/A,N/A,ECS > gaming-system-cluster > Services > ai-integration,Running,AI integration service,Project-Team,2025-11-08,$5,N/A,AWS Console,HTTP clients - SECURITY FIX: CORS restricted 2025-11-09
+ECS-Service,AI-Gaming-StoryTeller,story-teller,N/A,N/A,ECS > gaming-system-cluster > Services > story-teller,Running,Story generation service,Project-Team,2025-11-08,$5,N/A,AWS Console,DB connections - SECURITY FIX: password required 2025-11-09
+ECS-Service,AI-Gaming-LanguageSystem,language-system,N/A,N/A,ECS > gaming-system-cluster > Services > language-system,Running,Language system service,Project-Team,2025-11-08,$5,N/A,AWS Console,Flattened imports
+ECS-Service,AI-Gaming-KnowledgeBase,knowledge-base,N/A,N/A,ECS > gaming-system-cluster > Services > knowledge-base,Running,Semantic search and memory service,Project-Team,2025-11-08,$5,N/A,AWS Console,EXCELLENT SECURITY - use as template!
+Launch-Template,AI-Gaming-Gold-Tier-Template,lt-02625ef0413f7c763,N/A,N/A,EC2 > Launch Templates > lt-02625ef0413f7c763,Active,Gold tier g5.xlarge launch config,Project-Team,2025-11-08,$0,N/A,AWS Console,For Auto Scaling Group
+Launch-Template,AI-Gaming-Silver-Tier-Template,lt-0c7ff07746ca28cc8,N/A,N/A,EC2 > Launch Templates > lt-0c7ff07746ca28cc8,Active,Silver tier g5.2xlarge launch config,Project-Team,2025-11-08,$0,N/A,AWS Console,For Auto Scaling Group
+ASG,AI-Gaming-Gold-Tier-ASG,AI-Gaming-Gold-Tier-ASG,N/A,N/A,EC2 > Auto Scaling Groups > AI-Gaming-Gold-Tier-ASG,Active,Gold GPU auto-scaling (min:1 max:50),Project-Team,2025-11-08,Variable,N/A,AWS Console,Currently 2 instances
+ASG,AI-Gaming-Silver-Tier-ASG,AI-Gaming-Silver-Tier-ASG,N/A,N/A,EC2 > Auto Scaling Groups > AI-Gaming-Silver-Tier-ASG,Active,Silver GPU auto-scaling (min:1 max:30),Project-Team,2025-11-08,Variable,N/A,AWS Console,Currently 2 instances
+ECR-Repository,AI-Gaming-Services-Repo,bodybroker-services,N/A,695353648052.dkr.ecr.us-east-1.amazonaws.com/bodybroker-services,ECR > Repositories > bodybroker-services,Active,Container image repository,Project-Team,Pre-existing,$1,N/A,AWS CLI,Stores all service Docker images
+CloudWatch-LogGroup,AI-Gaming-Weather-Logs,/ecs/gaming-system/weather-manager,N/A,N/A,CloudWatch > Log groups > /ecs/gaming-system/weather-manager,Active,Weather manager logs,Project-Team,2025-11-07,$1,N/A,AWS Console,Auto-created by ECS
+CloudWatch-LogGroup,AI-Gaming-Time-Logs,/ecs/gaming-system/time-manager,N/A,N/A,CloudWatch > Log groups > /ecs/gaming-system/time-manager,Active,Time manager logs,Project-Team,2025-11-07,$1,N/A,AWS Console,Auto-created by ECS
+CloudWatch-LogGroup,AI-Gaming-KB-Logs,/ecs/gaming-system/knowledge-base,N/A,N/A,CloudWatch > Log groups > /ecs/gaming-system/knowledge-base,Active,Knowledge Base logs,Project-Team,2025-11-08,$1,N/A,AWS Console,Auto-created by ECS
+RDS-Instance,Perpetual-Consciousness-DB,perpetual-consciousness-db,N/A,perpetual-consciousness-db.cal6eoegigyq.us-east-1.rds.amazonaws.com:5432,RDS > Databases > perpetual-consciousness-db,Available,Consciousness long-term memory PostgreSQL,Project-Team,2025-11-09,$15,See .env for POSTGRES_PASSWORD,psql client or app,PROTECT - Identity & history storage
+ElastiCache,Perpetual-Consciousness-Redis,perpetual-consciousness-redis,N/A,TBD-when-available,ElastiCache > Redis > perpetual-consciousness-redis,Creating/Available,Consciousness working memory Redis,Project-Team,2025-11-09,$13,N/A,redis-cli or app,PROTECT - Active consciousness stream
+SSH-Key,Gaming-System-AI-Core-Admin,gaming-system-ai-core-admin,N/A,N/A,EC2 > Key Pairs > gaming-system-ai-core-admin,Active,SSH key for all GPU and EC2 instances,Project-Team,2025-11-09,$0,docs/inventory/auth/gaming-system-ai-core-admin.pem,SSH,"CRITICAL: Download from AWS if not in auth folder. Used for all EC2 SSH access."
+Environment-Variable,POSTGRES_PASSWORD,N/A,N/A,N/A,Stored in .env file (git-ignored),Required,PostgreSQL database password for all services,Project-Team,Required,$0,Store in .env file (DO NOT COMMIT),Via environment,"CRITICAL: Must be 16+ characters. Required by: story_teller, body_broker, memory, knowledge_base"
+Environment-Variable,ALLOWED_ORIGINS,N/A,N/A,N/A,Stored in .env file (git-ignored),Required,CORS allowed origins for production,Project-Team,Required,$0,Store in .env file,Via environment,"CRITICAL: Set to actual domain(s) for production. Format: https://yourdomain.com,https://api.yourdomain.com"
+Environment-Variable,KB_API_KEYS,N/A,N/A,N/A,Stored in .env file (git-ignored),Optional,API keys for knowledge-base service,Project-Team,Optional,$0,Store in .env file,Via environment,Comma-separated list of valid API keys
+Environment-Variable,ADMIN_API_KEYS,N/A,N/A,N/A,Stored in .env file (git-ignored),Required,Admin API keys for payment/coupon management,Project-Team,Required,$0,Store in .env file,Via environment,"CRITICAL: Must implement before production. Required for payment/coupon admin endpoints."
+
+## NOTES:
+## 1. SSH Key Location: docs/inventory/auth/gaming-system-ai-core-admin.pem
+##    - If file missing, download from AWS: EC2 > Key Pairs > gaming-system-ai-core-admin > Actions > Get public key
+##    - Permissions: chmod 400 (Unix) or icacls /inheritance:r (Windows)
+##
+## 2. Environment Variables: Store in .env file at project root (git-ignored)
+##    - POSTGRES_PASSWORD: Generate strong 16+ character password
+##    - ALLOWED_ORIGINS: Set to production domain(s)
+##    - ADMIN_API_KEYS: Generate secure API keys for admin access
+##
+## 3. Resource Naming Convention: 
+##    - Format: {Service}-{Component}-{Type}
+##    - Owner Tag: Shows who created (Claude-Sonnet-4.5 or Project-Team)
+##    - Purpose Tag: Clear description
+##
+## 4. Security Issues Found (2025-11-09 Audit):
+##    - 8 CRITICAL issues: 5 fixed, 3 open (payment auth, CORS batch)
+##    - See AUDIT-ISSUES-P0-CRITICAL.csv for details
+##
+## 5. Cost Estimate: ~$2,000-2,500/month for all resources
+##
+## Last Updated: 2025-11-09 9:30 PM by Claude Sonnet 4.5
+## Session 1: Created new GPU instance, fixed 9 CRITICAL security issues, built automation system
+## Status: Training running on i-0da704b9c213c0839, all CRITICAL security resolved, 4 HIGH remain
+## Update Frequency: After any AWS resource changes
+
