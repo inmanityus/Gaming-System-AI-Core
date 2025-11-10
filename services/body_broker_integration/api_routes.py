@@ -14,11 +14,17 @@ async def get_db():
     """Get database connection."""
     global db_pool
     if not db_pool:
+        # SECURITY FIX: Require password from environment
+        password = os.getenv("POSTGRES_PASSWORD")
+        if not password:
+            raise ValueError("POSTGRES_PASSWORD environment variable required")
+        
         db_pool = await asyncpg.create_pool(
-            host="localhost",
-            port=5443,
-            database="gaming_system_ai_core",
-            user="postgres"
+            host=os.getenv("POSTGRES_HOST", "localhost"),
+            port=int(os.getenv("POSTGRES_PORT", "5443")),
+            database=os.getenv("POSTGRES_DB", "gaming_system_ai_core"),
+            user=os.getenv("POSTGRES_USER", "postgres"),
+            password=password
         )
     return db_pool
 
@@ -106,19 +112,24 @@ async def get_drug_info(drug_id: str):
 
 
 @router.post("/kill")
-async def record_kill(target_id: str, target_type: str, justification: str = None):
-    """Record a kill for morality tracking."""
+async def record_kill(player_id: str, target_id: str, target_type: str, justification: str = None):
+    """Record a kill for morality tracking. Requires player_id parameter."""
     from services.morality.surgeon_butcher_system import TargetType
-    await orchestrator.morality.record_kill(target_id, TargetType(target_type), justification)
     
-    pool = await get_db()
-    async with pool.acquire() as conn:
-        await conn.execute(
-            "INSERT INTO kill_records (player_id, target_id, target_type, justification) VALUES ($1, $2, $3, $4)",
-            "player_001", target_id, target_type, justification
-        )
+    try:
+        await orchestrator.morality.record_kill(target_id, TargetType(target_type), justification)
+        
+        pool = await get_db()
+        async with pool.acquire() as conn:
+            await conn.execute(
+                "INSERT INTO kill_records (player_id, target_id, target_type, justification) VALUES ($1, $2, $3, $4)",
+                player_id, target_id, target_type, justification
+            )
+        
+        return {"status": "recorded", "path": orchestrator.morality.state.path.value}
     
-    return {"status": "recorded", "path": orchestrator.morality.state.path.value}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to record kill: {str(e)}")
 
 
 @router.get("/morality")
@@ -130,18 +141,22 @@ async def get_morality_status():
 @router.post("/death")
 async def trigger_death(location: List[float], world: str, gear_items: List[str], killed_by: str = None):
     """Trigger death and create corpse."""
-    corpse_id = await orchestrator.death_system.trigger_death(
-        tuple(location), world, gear_items, killed_by
-    )
-    
-    pool = await get_db()
-    async with pool.acquire() as conn:
-        await conn.execute(
-            "INSERT INTO death_records (player_id, corpse_id, death_location, world, gear_items, killed_by, veil_fray_level) VALUES ($1, $2, point($3,$4), $5, $6, $7, $8)",
-            "player_001", corpse_id, location[0], location[1], world, gear_items, killed_by, orchestrator.death_system.veil_fray.level
+    try:
+        corpse_id = await orchestrator.death_system.trigger_death(
+            tuple(location), world, gear_items, killed_by
         )
+        
+        pool = await get_db()
+        async with pool.acquire() as conn:
+            await conn.execute(
+                "INSERT INTO death_records (player_id, corpse_id, death_location, world, gear_items, killed_by, veil_fray_level) VALUES ($1, $2, point($3,$4), $5, $6, $7, $8)",
+                "player_001", corpse_id, location[0], location[1], world, gear_items, killed_by, orchestrator.death_system.veil_fray.level
+            )
+        
+        return {"corpse_id": corpse_id, "veil_fray_level": orchestrator.death_system.veil_fray.level}
     
-    return {"corpse_id": corpse_id, "veil_fray_level": orchestrator.death_system.veil_fray.level}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to trigger death: {str(e)}")
 
 
 @router.post("/book/witness")

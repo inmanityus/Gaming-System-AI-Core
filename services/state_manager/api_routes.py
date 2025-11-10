@@ -2,10 +2,11 @@
 API Routes - RESTful endpoints for State Management Service.
 """
 
+import os
 from typing import List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Header, Depends
 from pydantic import BaseModel, Field
 
 from schemas.validation import GameStateCreate, GameStateResponse, GameStateUpdate
@@ -13,6 +14,25 @@ from .state_operations import ConflictResolutionError, StateOperations
 
 router = APIRouter(prefix="/api/v1/state", tags=["state"])
 state_ops = StateOperations()
+
+# SECURITY: Admin API Keys for game state operations
+STATE_ADMIN_KEYS = set(os.getenv('STATE_ADMIN_KEYS', '').split(',')) if os.getenv('STATE_ADMIN_KEYS') else set()
+
+async def verify_state_admin(x_api_key: str = Header(None)):
+    """
+    SECURITY: Verify admin API key for game state operations.
+    
+    Required for: state CRUD operations (prevents cheating and data corruption).
+    Without auth, players can modify ANY game state, enabling infinite cheating.
+    """
+    if not STATE_ADMIN_KEYS:
+        raise HTTPException(
+            status_code=503,
+            detail="State operations disabled: STATE_ADMIN_KEYS not configured"
+        )
+    if not x_api_key or x_api_key not in STATE_ADMIN_KEYS:
+        raise HTTPException(status_code=401, detail="Unauthorized: State admin access required")
+    return True
 
 
 class GameStateCreateRequest(GameStateCreate):
@@ -34,9 +54,12 @@ class ConflictErrorResponse(BaseModel):
 
 
 @router.post("/game-states", response_model=GameStateResponse, status_code=status.HTTP_201_CREATED)
-async def create_game_state(request: GameStateCreateRequest):
+async def create_game_state(
+    request: GameStateCreateRequest,
+    _admin: bool = Depends(verify_state_admin)  # SECURITY: Admin only
+):
     """
-    Create a new game state.
+    Create a new game state. REQUIRES ADMIN API KEY (prevents cheating).
     
     Returns:
         Created game state with 201 status code
@@ -100,9 +123,14 @@ async def get_game_state_by_player(player_id: UUID, active_only: bool = True):
 
 
 @router.put("/game-states/{state_id}", response_model=GameStateResponse)
-async def update_game_state(state_id: UUID, request: GameStateUpdateRequest, expected_version: int):
+async def update_game_state(
+    state_id: UUID, 
+    request: GameStateUpdateRequest, 
+    expected_version: int,
+    _admin: bool = Depends(verify_state_admin)  # SECURITY: Admin only - CHEATING PREVENTION
+):
     """
-    Update game state with optimistic locking.
+    Update game state with optimistic locking. REQUIRES ADMIN API KEY (prevents cheating).
     
     Args:
         state_id: Game state UUID
@@ -140,9 +168,12 @@ async def update_game_state(state_id: UUID, request: GameStateUpdateRequest, exp
 
 
 @router.delete("/game-states/{state_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_game_state(state_id: UUID):
+async def delete_game_state(
+    state_id: UUID,
+    _admin: bool = Depends(verify_state_admin)  # SECURITY: Admin only
+):
     """
-    Delete game state (soft delete).
+    Delete game state (soft delete). REQUIRES ADMIN API KEY (prevents data corruption).
     
     Args:
         state_id: Game state UUID

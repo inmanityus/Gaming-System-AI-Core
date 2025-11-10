@@ -1,8 +1,13 @@
 """
 PM-002/PM-003: Payment Service API Routes
 FastAPI routes for checkout and coupon management.
+
+SECURITY FIXES (2025-11-09):
+- Added admin authentication for coupon create/delete
+- Environment variable for ADMIN_API_KEYS
 """
 
+import os
 from typing import Optional, Dict, Any, List
 from fastapi import APIRouter, HTTPException, Depends, Header, Request
 from pydantic import BaseModel
@@ -10,6 +15,24 @@ from pydantic import BaseModel
 from . import PaymentService, CouponService
 
 router = APIRouter(prefix="/api/v1/payment", tags=["Payment"])
+
+# SECURITY: Admin API keys for coupon management
+ADMIN_API_KEYS = set(os.getenv('ADMIN_API_KEYS', '').split(',')) if os.getenv('ADMIN_API_KEYS') else set()
+
+async def verify_admin_access(x_api_key: str = Header(None, alias="X-Admin-API-Key")):
+    """Verify admin API key for coupon management endpoints."""
+    if not ADMIN_API_KEYS:
+        raise HTTPException(
+            status_code=500,
+            detail="Admin API keys not configured. Set ADMIN_API_KEYS environment variable."
+        )
+    
+    if not x_api_key or x_api_key not in ADMIN_API_KEYS:
+        raise HTTPException(
+            status_code=403,
+            detail="Admin access required. Provide valid X-Admin-API-Key header."
+        )
+    return True
 
 # Pydantic models
 class CheckoutRequest(BaseModel):
@@ -71,9 +94,10 @@ def get_coupon_service() -> CouponService:
 @router.post("/checkout", response_model=CheckoutResponse)
 async def create_checkout_session(
     request: CheckoutRequest,
-    payment_service: PaymentService = Depends(get_payment_service)
+    payment_service: PaymentService = Depends(get_payment_service),
+    _admin: bool = Depends(verify_admin_access)
 ):
-    """PM-002: Create Stripe checkout session."""
+    """PM-002: Create Stripe checkout session. REQUIRES ADMIN API KEY."""
     try:
         result = payment_service.create_checkout_session(
             user_id=request.user_id,
@@ -107,12 +131,12 @@ async def handle_webhook(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/coupons", response_model=CouponResponse)
+@router.post("/coupons", response_model=CouponResponse, dependencies=[Depends(verify_admin_access)])
 async def create_coupon(
     request: CreateCouponRequest,
     coupon_service: CouponService = Depends(get_coupon_service)
 ):
-    """PM-003: Create coupon (ambassador or promotional)."""
+    """PM-003: Create coupon (ambassador or promotional). REQUIRES ADMIN AUTH."""
     try:
         if request.ambassador_id:
             # Create ambassador coupon
@@ -164,12 +188,12 @@ async def list_coupons(
     return [CouponResponse(**coupon) for coupon in coupons]
 
 
-@router.delete("/coupons/{coupon_id}")
+@router.delete("/coupons/{coupon_id}", dependencies=[Depends(verify_admin_access)])
 async def delete_coupon(
     coupon_id: str,
     coupon_service: CouponService = Depends(get_coupon_service)
 ):
-    """PM-003: Delete coupon."""
+    """PM-003: Delete coupon. REQUIRES ADMIN AUTH."""
     success = coupon_service.delete_coupon(coupon_id)
     if not success:
         raise HTTPException(status_code=404, detail=f"Coupon {coupon_id} not found")

@@ -15,9 +15,11 @@ from ..feedback_collector import FeedbackCollector, FeedbackCategory, FeedbackTy
 app = FastAPI(title="Feedback System API", version="1.0.0")
 
 # CORS middleware
+import os
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,  # SECURITY FIX 2025-11-09
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

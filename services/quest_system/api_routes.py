@@ -2,10 +2,11 @@
 Quest System Service - API Routes.
 """
 
+import os
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, Header
 from pydantic import BaseModel
 
 from .quest_generator import QuestGenerationEngine
@@ -15,6 +16,24 @@ from .reward_manager import RewardManager
 
 
 router = APIRouter(prefix="/quests", tags=["quests"])
+
+# SECURITY: Admin API Keys for sensitive quest operations
+QUEST_ADMIN_KEYS = set(os.getenv('QUEST_ADMIN_KEYS', '').split(',')) if os.getenv('QUEST_ADMIN_KEYS') else set()
+
+async def verify_quest_admin(x_api_key: str = Header(None)):
+    """
+    SECURITY: Verify admin API key for sensitive quest operations.
+    
+    Required for: reward distribution (prevents economy exploits).
+    """
+    if not QUEST_ADMIN_KEYS:
+        raise HTTPException(
+            status_code=503,
+            detail="Quest admin operations disabled: QUEST_ADMIN_KEYS not configured"
+        )
+    if not x_api_key or x_api_key not in QUEST_ADMIN_KEYS:
+        raise HTTPException(status_code=401, detail="Unauthorized: Quest admin access required")
+    return True
 
 
 # Pydantic models for request/response
@@ -290,10 +309,14 @@ async def complete_quest_rewards(
     quest_id: str,
     request: RewardCompleteRequest,
     reward_manager: RewardManager = Depends(get_reward_manager),
-    quest_manager: QuestManager = Depends(get_quest_manager)
+    quest_manager: QuestManager = Depends(get_quest_manager),
+    _admin: bool = Depends(verify_quest_admin)  # SECURITY: Admin only - ECONOMY PROTECTION
 ) -> Dict[str, Any]:
     """
-    Calculate and distribute quest completion rewards.
+    Calculate and distribute quest completion rewards. REQUIRES ADMIN API KEY (prevents reward theft).
+    
+    SECURITY: This endpoint distributes game currency/items. Without authentication, 
+    players could claim rewards without completing quests, breaking the economy.
     """
     try:
         # Get quest to find player_id

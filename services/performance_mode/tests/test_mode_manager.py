@@ -165,3 +165,4 @@ class TestModeManager:
         assert status["target_fps"] == 90.0
 
 
+

@@ -3,16 +3,28 @@ API Routes - FastAPI routes for World State Service.
 Handles world state management, events, factions, and economy.
 """
 
+import os
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Header
 from pydantic import BaseModel
 
 from world_state_manager import WorldStateManager
 from event_system import EventSystem
 from faction_manager import FactionManager
 from economic_manager import EconomicManager
+
+# SECURITY: Admin API Keys for world state operations
+WORLD_STATE_ADMIN_KEYS = set(os.getenv('WORLD_STATE_ADMIN_KEYS', '').split(',')) if os.getenv('WORLD_STATE_ADMIN_KEYS') else set()
+
+async def verify_world_state_admin(x_api_key: str = Header(None)):
+    """SECURITY: Verify admin API key for world state modification."""
+    if not WORLD_STATE_ADMIN_KEYS:
+        raise HTTPException(503, "World state admin ops disabled: WORLD_STATE_ADMIN_KEYS not configured")
+    if not x_api_key or x_api_key not in WORLD_STATE_ADMIN_KEYS:
+        raise HTTPException(401, "Unauthorized: World state admin access required")
+    return True
 
 
 # Pydantic models
@@ -88,6 +100,7 @@ async def get_current_world_state(
 async def update_world_state(
     updates: WorldStateUpdate,
     world_manager: WorldStateManager = Depends(get_world_state_manager),
+    _admin: bool = Depends(verify_world_state_admin)
 ):
     """Update world state."""
     try:
@@ -128,6 +141,7 @@ async def get_world_state_metrics(
 async def generate_event(
     request: EventGenerationRequest,
     event_system: EventSystem = Depends(get_event_system),
+    _admin: bool = Depends(verify_world_state_admin)
 ):
     """Generate a new event."""
     try:
@@ -184,6 +198,7 @@ async def get_event_statistics(
 async def complete_event(
     event_id: str,
     event_system: EventSystem = Depends(get_event_system),
+    _admin: bool = Depends(verify_world_state_admin)
 ):
     """Mark event as completed."""
     try:
@@ -211,6 +226,7 @@ async def get_faction_power(
 async def update_faction_power(
     faction_id: str,
     request: FactionPowerUpdate,
+    _admin: bool = Depends(verify_world_state_admin),
     faction_manager: FactionManager = Depends(get_faction_manager),
 ):
     """Update faction power."""
@@ -238,6 +254,7 @@ async def get_faction_territory(
 async def update_territory_control(
     faction_id: str,
     request: TerritoryControlUpdate,
+    _admin: bool = Depends(verify_world_state_admin),
     faction_manager: FactionManager = Depends(get_faction_manager),
 ):
     """Update territory control."""
@@ -303,6 +320,7 @@ async def get_market_state(
 @router.post("/economy/simulate")
 async def simulate_market_dynamics(
     economic_manager: EconomicManager = Depends(get_economic_manager),
+    _admin: bool = Depends(verify_world_state_admin)
 ):
     """Simulate market dynamics."""
     try:
@@ -370,6 +388,7 @@ async def get_economic_indicators(
 async def generate_economic_event(
     request: EconomicEventRequest,
     economic_manager: EconomicManager = Depends(get_economic_manager),
+    _admin: bool = Depends(verify_world_state_admin)
 ):
     """Generate economic event."""
     try:

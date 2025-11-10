@@ -3,16 +3,28 @@ API Routes - FastAPI routes for AI Integration Service.
 Handles AI generation requests and service coordination.
 """
 
+import os
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Header
 from pydantic import BaseModel
 
 from llm_client import LLMClient
 from context_manager import ContextManager
 from service_coordinator import ServiceCoordinator
 from response_optimizer import ResponseOptimizer
+
+# SECURITY: Admin API Keys for AI operations
+AI_ADMIN_KEYS = set(os.getenv('AI_ADMIN_KEYS', '').split(',')) if os.getenv('AI_ADMIN_KEYS') else set()
+
+async def verify_ai_admin(x_api_key: str = Header(None)):
+    """SECURITY: Verify admin API key for AI operations."""
+    if not AI_ADMIN_KEYS:
+        raise HTTPException(503, "AI admin ops disabled: AI_ADMIN_KEYS not configured")
+    if not x_api_key or x_api_key not in AI_ADMIN_KEYS:
+        raise HTTPException(401, "Unauthorized: AI admin access required")
+    return True
 
 
 # Pydantic models
@@ -193,8 +205,9 @@ async def get_service_status(
 async def reset_circuit_breaker(
     service_name: str,
     llm_client: LLMClient = Depends(get_llm_client),
+    _admin: bool = Depends(verify_ai_admin)
 ):
-    """Reset circuit breaker for a specific LLM service."""
+    """Reset circuit breaker for a specific LLM service. REQUIRES ADMIN API KEY."""
     try:
         success = await llm_client.reset_circuit_breaker(service_name)
         if success:
@@ -209,8 +222,9 @@ async def reset_circuit_breaker(
 async def clear_cache(
     layer: Optional[str] = None,
     response_optimizer: ResponseOptimizer = Depends(get_response_optimizer),
+    _admin: bool = Depends(verify_ai_admin)
 ):
-    """Clear response cache."""
+    """Clear response cache. REQUIRES ADMIN API KEY."""
     try:
         await response_optimizer.clear_cache(layer)
         return {"success": True, "message": f"Cache cleared for {layer or 'all layers'}"}

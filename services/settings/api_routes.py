@@ -4,7 +4,7 @@ API Routes - RESTful endpoints for Settings Service.
 
 """
 
-
+import os
 
 from typing import Any, Dict, Optional
 
@@ -12,7 +12,7 @@ from uuid import UUID
 
 
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Header, Depends
 
 from pydantic import BaseModel, Field
 
@@ -29,6 +29,28 @@ from tier_manager import TierManager
 
 
 router = APIRouter(prefix="/api/v1/settings", tags=["settings"])
+
+
+
+# SECURITY: Admin API Keys for protected admin operations
+ADMIN_API_KEYS = set(os.getenv('SETTINGS_ADMIN_KEYS', '').split(',')) if os.getenv('SETTINGS_ADMIN_KEYS') else set()
+
+async def verify_admin_access(x_api_key: str = Header(None)):
+    """
+    SECURITY: Verify admin API key for sensitive operations.
+    
+    Required for: tier changes, config changes, feature flag updates.
+    These operations can cause revenue theft or system compromise.
+    """
+    if not ADMIN_API_KEYS:
+        raise HTTPException(
+            status_code=503,
+            detail="Admin operations disabled: SETTINGS_ADMIN_KEYS not configured"
+        )
+    
+    if not x_api_key or x_api_key not in ADMIN_API_KEYS:
+        raise HTTPException(status_code=401, detail="Unauthorized: Admin access required")
+    return True
 
 
 
@@ -114,9 +136,14 @@ async def get_config(category: str, key: str):
 
 @router.put("/config/{category}/{key}", status_code=status.HTTP_204_NO_CONTENT)
 
-async def set_config(category: str, key: str, request: SettingRequest):
+async def set_config(
+    category: str, 
+    key: str, 
+    request: SettingRequest,
+    _admin: bool = Depends(verify_admin_access)  # SECURITY: Admin only
+):
 
-    """Set a configuration setting (triggers hot-reload)."""
+    """Set a configuration setting (triggers hot-reload). REQUIRES ADMIN API KEY."""
 
     try:
 
@@ -274,9 +301,13 @@ async def check_feature_enabled(name: str, user_tier: str = "free", user_id: Opt
 
 @router.put("/feature-flags/{name}", status_code=status.HTTP_204_NO_CONTENT)
 
-async def update_feature_flag(name: str, request: FeatureFlagRequest):
+async def update_feature_flag(
+    name: str, 
+    request: FeatureFlagRequest,
+    _admin: bool = Depends(verify_admin_access)  # SECURITY: Admin only
+):
 
-    """Update a feature flag (triggers hot-reload)."""
+    """Update a feature flag (triggers hot-reload). REQUIRES ADMIN API KEY."""
 
     try:
 
@@ -332,9 +363,13 @@ async def get_player_tier(player_id: UUID):
 
 @router.put("/tiers/{player_id}/{tier}", status_code=status.HTTP_204_NO_CONTENT)
 
-async def set_player_tier(player_id: UUID, tier: str):
+async def set_player_tier(
+    player_id: UUID, 
+    tier: str,
+    _admin: bool = Depends(verify_admin_access)  # SECURITY: Admin only - REVENUE PROTECTION
+):
 
-    """Set a player's tier."""
+    """Set a player's tier. REQUIRES ADMIN API KEY (prevents revenue theft)."""
 
     try:
 

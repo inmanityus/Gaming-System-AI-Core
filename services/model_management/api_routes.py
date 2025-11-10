@@ -2,8 +2,9 @@
 Model Management API Routes - FastAPI routes for model management.
 """
 
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+import os
+from fastapi import APIRouter, HTTPException, Header, Depends
+from pydantic import BaseModel, validator
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
@@ -13,6 +14,25 @@ from services.model_management.self_hosted_scanner import SelfHostedScanner
 from services.model_management.fine_tuning_pipeline import FineTuningPipeline
 
 router = APIRouter(prefix="/api/v1/model-management", tags=["model-management"])
+
+# SECURITY: Admin API Keys for model management operations
+MODEL_ADMIN_KEYS = set(os.getenv('MODEL_ADMIN_KEYS', '').split(',')) if os.getenv('MODEL_ADMIN_KEYS') else set()
+
+async def verify_model_admin(x_api_key: str = Header(None)):
+    """
+    SECURITY: Verify admin API key for model management operations.
+    
+    Required for: model registration, model switching, fine-tuning.
+    These operations can cause security breaches and cost attacks.
+    """
+    if not MODEL_ADMIN_KEYS:
+        raise HTTPException(
+            status_code=503,
+            detail="Model management disabled: MODEL_ADMIN_KEYS not configured"
+        )
+    if not x_api_key or x_api_key not in MODEL_ADMIN_KEYS:
+        raise HTTPException(status_code=401, detail="Unauthorized: Model admin access required")
+    return True
 
 # Initialize components
 registry = ModelRegistry()
@@ -31,6 +51,17 @@ class ModelRegisterRequest(BaseModel):
     configuration: Dict[str, Any] = {}
     performance_metrics: Dict[str, Any] = {}
     resource_requirements: Dict[str, Any] = {}
+    
+    @validator('model_path')
+    def validate_model_path(cls, v):
+        """SECURITY: Validate model_path to prevent path traversal."""
+        if v is None:
+            return v
+        if '..' in v or v.startswith('/') or v.startswith('\\'):
+            raise ValueError("Invalid model_path: path traversal detected")
+        if len(v) > 500:
+            raise ValueError("model_path too long (max 500 characters)")
+        return v
 
 
 class FineTuneRequest(BaseModel):
@@ -41,8 +72,11 @@ class FineTuneRequest(BaseModel):
 
 
 @router.post("/register")
-async def register_model(request: ModelRegisterRequest):
-    """Register a new model in the registry."""
+async def register_model(
+    request: ModelRegisterRequest,
+    _admin: bool = Depends(verify_model_admin)  # SECURITY: Admin only
+):
+    """Register a new model in the registry. REQUIRES ADMIN API KEY."""
     try:
         model_id = await registry.register_model(
             model_name=request.model_name,
@@ -119,9 +153,10 @@ async def check_better_paid_model(use_case: str, current_model_id: str):
 async def switch_paid_model(
     use_case: str,
     new_model_id: str,
-    current_model_id: str
+    current_model_id: str,
+    _admin: bool = Depends(verify_model_admin)  # SECURITY: Admin only - COST PROTECTION
 ):
-    """Switch to a new paid model."""
+    """Switch to a new paid model. REQUIRES ADMIN API KEY (prevents cost attacks)."""
     try:
         success = await paid_manager.auto_switch_model(
             use_case=use_case,
@@ -138,8 +173,11 @@ async def switch_paid_model(
 
 
 @router.post("/fine-tune")
-async def fine_tune_model(request: FineTuneRequest):
-    """Fine-tune a model using historical logs."""
+async def fine_tune_model(
+    request: FineTuneRequest,
+    _admin: bool = Depends(verify_model_admin)  # SECURITY: Admin only
+):
+    """Fine-tune a model using historical logs. REQUIRES ADMIN API KEY."""
     try:
         result = await fine_tuning_pipeline.fine_tune_model(
             base_model_id=UUID(request.base_model_id),
@@ -170,6 +208,7 @@ async def get_model(model_id: str):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
 

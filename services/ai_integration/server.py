@@ -66,11 +66,19 @@ app = FastAPI(
 )
 
 # Add CORS middleware
+# SECURITY FIX: Restrict origins for production
+import os
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "").split(",")
+if not allowed_origins or allowed_origins == [""]:
+    # Development mode - restrict to localhost
+    allowed_origins = ["http://localhost:3000", "http://localhost:5000"]
+    logger.warning("⚠️ ALLOWED_ORIGINS not set, using localhost defaults")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
+    allow_origins=allowed_origins,  # Restricted to specific domains
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],  # Explicit methods only
     allow_headers=["*"],
 )
 

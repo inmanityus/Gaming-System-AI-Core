@@ -76,7 +76,10 @@ class PostgreSQLPool:
 
         self.user = user or os.getenv("DB_USER", "postgres")
 
-        self.password = password or os.getenv("DB_PASSWORD", os.getenv("PGPASSWORD", "Inn0vat1on!"))
+        # SECURITY FIX 2025-11-09: NO hardcoded password fallback
+        self.password = password or os.getenv("DB_PASSWORD") or os.getenv("PGPASSWORD")
+        if not self.password:
+            raise ValueError("Database password required: set DB_PASSWORD or PGPASSWORD environment variable")
 
         self.min_size = min_size
 

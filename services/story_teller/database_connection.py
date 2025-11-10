@@ -22,11 +22,19 @@ class DatabaseConnection:
     async def get_postgres_pool(self) -> asyncpg.Pool:
         """Get or create PostgreSQL connection pool."""
         if self.postgres_pool is None:
+            # SECURITY FIX: NO hardcoded password - must come from environment
+            password = os.getenv("POSTGRES_PASSWORD")
+            if not password:
+                raise ValueError(
+                    "POSTGRES_PASSWORD environment variable is required. "
+                    "Set it in .env file or environment. NEVER hardcode passwords!"
+                )
+            
             self.postgres_pool = await asyncpg.create_pool(
                 host=os.getenv("POSTGRES_HOST", "localhost"),
                 port=int(os.getenv("POSTGRES_PORT", "5443")),
                 user=os.getenv("POSTGRES_USER", "postgres"),
-                password=os.getenv("POSTGRES_PASSWORD", "Inn0vat1on!"),
+                password=password,
                 database=os.getenv("POSTGRES_DB", "gaming_system_ai_core"),
                 min_size=2,
                 max_size=20
@@ -57,15 +65,21 @@ class DatabaseConnection:
             logger.info("Redis client closed")
 
 
-# Singleton instance
+# Singleton instance with thread safety
 _db_connection: Optional[DatabaseConnection] = None
+_db_connection_lock = asyncio.Lock()
 
 
 async def get_database_connection() -> DatabaseConnection:
-    """Get singleton DatabaseConnection instance."""
+    """Get singleton DatabaseConnection instance (thread-safe)."""
     global _db_connection
+    
+    # Double-check locking pattern for thread safety
     if _db_connection is None:
-        _db_connection = DatabaseConnection()
+        async with _db_connection_lock:
+            if _db_connection is None:
+                _db_connection = DatabaseConnection()
+    
     return _db_connection
 
 

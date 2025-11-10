@@ -73,16 +73,24 @@ class PostgresMemoryArchiver:
         if not asyncpg:
             raise RuntimeError("asyncpg not available")
         
+        # SECURITY FIX: Require password from environment
+        import os
+        password = os.getenv("POSTGRES_PASSWORD")
+        if not password:
+            raise ValueError("POSTGRES_PASSWORD environment variable required")
+        
         self.pool = await asyncpg.create_pool(
             host=self.db_host,
             port=self.db_port,
             database=self.db_name,
-            user="postgres",
+            user=os.getenv("POSTGRES_USER", "postgres"),
+            password=password,
             min_size=2,
             max_size=10
         )
         
         self.write_queue = asyncio.Queue(maxsize=10000)
+        self._queue_high_water = 8000  # 80% capacity - start backpressure
         self._running = True
         self._writer_task = asyncio.create_task(self._background_writer())
         
@@ -170,11 +178,26 @@ class PostgresMemoryArchiver:
             queued_at=datetime.now()
         )
         
-        try:
-            self.write_queue.put_nowait(event)
-            self._total_queued += 1
-        except asyncio.QueueFull:
-            logger.error("Write queue full")
+        # Backpressure handling: wait if queue near capacity
+        queue_size = self.write_queue.qsize()
+        if queue_size >= self._queue_high_water:
+            logger.warning(f"Queue high water mark reached: {queue_size}/{self.write_queue.maxsize} - applying backpressure")
+            try:
+                # Use put() with timeout instead of put_nowait()
+                await asyncio.wait_for(
+                    self.write_queue.put(event),
+                    timeout=5.0  # Wait up to 5s for space
+                )
+                self._total_queued += 1
+            except asyncio.TimeoutError:
+                logger.error("Write queue backpressure timeout - dropping event")
+        else:
+            # Normal operation: non-blocking
+            try:
+                self.write_queue.put_nowait(event)
+                self._total_queued += 1
+            except asyncio.QueueFull:
+                logger.error("Write queue full - should not happen with backpressure")
     
     async def close(self) -> None:
         """Close archiver."""
