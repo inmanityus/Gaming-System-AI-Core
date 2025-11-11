@@ -3,11 +3,23 @@ API Routes - FastAPI routes for Router Service.
 Handles request routing and tier management.
 """
 
+import os
 from typing import Any, Dict
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Header, Depends
 from pydantic import BaseModel, Field
 
 from intelligent_router import IntelligentRouter
+
+# SECURITY: Admin API Keys for router operations
+ROUTER_ADMIN_KEYS = set(os.getenv('ROUTER_ADMIN_KEYS', '').split(',')) if os.getenv('ROUTER_ADMIN_KEYS') else set()
+
+async def verify_router_admin(x_api_key: str = Header(None)):
+    """SECURITY: Verify admin API key for router operations."""
+    if not ROUTER_ADMIN_KEYS:
+        raise HTTPException(503, "Router admin ops disabled: ROUTER_ADMIN_KEYS not configured")
+    if not x_api_key or x_api_key not in ROUTER_ADMIN_KEYS:
+        raise HTTPException(401, "Unauthorized: Router admin access required")
+    return True
 
 
 # Pydantic models
@@ -35,9 +47,12 @@ router = APIRouter(prefix="/v1", tags=["Router"])
 
 # Routes
 @router.post("/route", response_model=RoutingResponse)
-async def route_request(request: RoutingRequest) -> RoutingResponse:
+async def route_request(
+    request: RoutingRequest,
+    _admin: bool = Depends(verify_router_admin)
+) -> RoutingResponse:
     """
-    Route request to appropriate tier.
+    Route request to appropriate tier. REQUIRES ADMIN API KEY (prevents routing manipulation/DOS).
     
     Args:
         request: Routing request with prompt, SLA, etc.

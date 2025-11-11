@@ -87,8 +87,9 @@ async def generate_text(
     llm_client: LLMClient = Depends(get_llm_client),
     context_manager: ContextManager = Depends(get_context_manager),
     response_optimizer: ResponseOptimizer = Depends(get_response_optimizer),
+    _admin: bool = Depends(verify_ai_admin)
 ):
-    """Generate text using AI with context management and optimization."""
+    """Generate text using AI with context management and optimization. REQUIRES ADMIN API KEY (prevents DOS/cost attacks)."""
     try:
         # Get context for the player
         context = await context_manager.get_optimized_context(

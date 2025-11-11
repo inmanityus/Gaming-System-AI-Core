@@ -2,10 +2,11 @@
 API Routes - FastAPI routes for NPC Behavior Service.
 """
 
+import os
 from typing import Any, Dict, List
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Header
 from pydantic import BaseModel
 
 from behavior_engine import BehaviorEngine
@@ -13,6 +14,17 @@ from personality_system import PersonalitySystem
 from goal_manager import GoalManager
 from interaction_router import InteractionRouter
 from services.ai_integration.llm_client import LLMClient
+
+# SECURITY: Admin API Keys for NPC operations
+NPC_ADMIN_KEYS = set(os.getenv('NPC_ADMIN_KEYS', '').split(',')) if os.getenv('NPC_ADMIN_KEYS') else set()
+
+async def verify_npc_admin(x_api_key: str = Header(None)):
+    """SECURITY: Verify admin API key for NPC behavior operations."""
+    if not NPC_ADMIN_KEYS:
+        raise HTTPException(503, "NPC admin ops disabled: NPC_ADMIN_KEYS not configured")
+    if not x_api_key or x_api_key not in NPC_ADMIN_KEYS:
+        raise HTTPException(401, "Unauthorized: NPC admin access required")
+    return True
 
 
 # Pydantic models
@@ -66,8 +78,9 @@ async def update_npc(
     frame_time_ms: float = 3.33,
     game_state: Dict[str, Any] = None,
     engine: BehaviorEngine = Depends(get_behavior_engine),
+    _admin: bool = Depends(verify_npc_admin)
 ):
-    """Update NPC behavior using Behavioral Proxy architecture."""
+    """Update NPC behavior using Behavioral Proxy architecture. REQUIRES ADMIN API KEY (prevents griefing)."""
     try:
         result = await engine.update_npc(npc_id, frame_time_ms, game_state)
         return result
@@ -80,8 +93,9 @@ async def batch_update_npcs(
     npc_ids: List[UUID],
     max_concurrent: int = 10,
     engine: BehaviorEngine = Depends(get_behavior_engine),
+    _admin: bool = Depends(verify_npc_admin)
 ):
-    """Batch update multiple NPCs."""
+    """Batch update multiple NPCs. REQUIRES ADMIN API KEY (prevents griefing)."""
     try:
         results = await engine.batch_update_npcs(npc_ids, max_concurrent)
         return results

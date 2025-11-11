@@ -2,16 +2,28 @@
 API Routes - RESTful endpoints for Story Teller Service.
 """
 
+import os
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Header, Depends
 from pydantic import BaseModel, Field
 
 from story_manager import StoryManager, StoryNode
 from narrative_generator import NarrativeGenerator
 from choice_processor import ChoiceProcessor, ChoiceValidationError
 from story_branching import StoryBranching, StoryBranch
+
+# SECURITY: Admin API Keys for story operations
+STORY_ADMIN_KEYS = set(os.getenv('STORY_ADMIN_KEYS', '').split(',')) if os.getenv('STORY_ADMIN_KEYS') else set()
+
+async def verify_story_admin(x_api_key: str = Header(None)):
+    """SECURITY: Verify admin API key for story operations."""
+    if not STORY_ADMIN_KEYS:
+        raise HTTPException(503, "Story admin ops disabled: STORY_ADMIN_KEYS not configured")
+    if not x_api_key or x_api_key not in STORY_ADMIN_KEYS:
+        raise HTTPException(401, "Unauthorized: Story admin access required")
+    return True
 
 
 # Request/Response Models
@@ -72,8 +84,9 @@ router = APIRouter(prefix="/story", tags=["story"])
 async def create_story_node(
     player_id: UUID,
     request: StoryNodeCreate,
+    _admin: bool = Depends(verify_story_admin)
 ) -> Dict[str, Any]:
-    """Create a new story node."""
+    """Create a new story node. REQUIRES ADMIN API KEY (prevents story pollution/griefing)."""
     try:
         node = await story_manager.create_story_node(
             player_id=player_id,
@@ -216,8 +229,9 @@ async def delete_story_node(node_id: UUID) -> Dict[str, Any]:
 async def generate_narrative(
     player_id: UUID,
     request: NarrativeGenerateRequest,
+    _admin: bool = Depends(verify_story_admin)
 ) -> Dict[str, Any]:
-    """Generate narrative content for a story node."""
+    """Generate narrative content for a story node. REQUIRES ADMIN API KEY (prevents DOS/cost attacks)."""
     try:
         content = await narrative_generator.generate_narrative(
             player_id=player_id,

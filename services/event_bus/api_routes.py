@@ -2,16 +2,28 @@
 Event Bus API Routes - FastAPI endpoints for event bus.
 """
 
+import os
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Header
 from pydantic import BaseModel
 
 from event_bus import GameEventBus, GameEvent, EventType
 
 
 router = APIRouter(prefix="/events", tags=["events"])
+
+# SECURITY: Admin API Keys for event bus operations
+EVENT_BUS_ADMIN_KEYS = set(os.getenv('EVENT_BUS_ADMIN_KEYS', '').split(',')) if os.getenv('EVENT_BUS_ADMIN_KEYS') else set()
+
+async def verify_event_bus_admin(x_api_key: str = Header(None)):
+    """SECURITY: Verify admin API key for event bus operations."""
+    if not EVENT_BUS_ADMIN_KEYS:
+        raise HTTPException(503, "Event bus admin ops disabled: EVENT_BUS_ADMIN_KEYS not configured")
+    if not x_api_key or x_api_key not in EVENT_BUS_ADMIN_KEYS:
+        raise HTTPException(401, "Unauthorized: Event bus admin access required")
+    return True
 
 
 # Global event bus instance (singleton)
@@ -43,10 +55,12 @@ class SubscribeRequest(BaseModel):
 @router.post("/publish")
 async def publish_event(
     request: PublishEventRequest,
-    event_bus: GameEventBus = Depends(get_event_bus)
+    event_bus: GameEventBus = Depends(get_event_bus),
+    _admin: bool = Depends(verify_event_bus_admin)
 ) -> Dict[str, Any]:
     """
     Publish an event to the event bus - REAL IMPLEMENTATION.
+    REQUIRES ADMIN API KEY (prevents fake events/DOS).
     
     Events are broadcast to all subscribers immediately.
     """

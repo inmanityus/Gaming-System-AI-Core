@@ -88,10 +88,11 @@ def get_reward_manager() -> RewardManager:
 @router.post("/generate", response_model=Dict[str, Any])
 async def generate_quest(
     request: QuestGenerationRequest,
-    generator: QuestGenerationEngine = Depends(get_quest_generator)
+    generator: QuestGenerationEngine = Depends(get_quest_generator),
+    _admin: bool = Depends(verify_quest_admin)
 ) -> Dict[str, Any]:
     """
-    Generate a new quest using AI.
+    Generate a new quest using AI. REQUIRES ADMIN API KEY (prevents DOS/cost attacks).
     """
     try:
         quest = await generator.generate_quest(
@@ -112,10 +113,11 @@ async def generate_quest(
 @router.post("/create", response_model=Dict[str, Any])
 async def create_quest(
     request: QuestCreateRequest,
-    manager: QuestManager = Depends(get_quest_manager)
+    manager: QuestManager = Depends(get_quest_manager),
+    _admin: bool = Depends(verify_quest_admin)
 ) -> Dict[str, Any]:
     """
-    Create a quest in the database.
+    Create a quest in the database. REQUIRES ADMIN API KEY (prevents database spam).
     """
     try:
         quest = await manager.create_quest(request.quest_data)
