@@ -1,0 +1,17 @@
+{
+  "commands": [
+    "cd /home/ubuntu",
+    "export PYTHONPATH=/home/ubuntu:$PYTHONPATH",
+    "echo === Starting Vampire LoRA Adapter Training ===",
+    "echo Start Time: $(date)",
+    "echo Training 7 adapters: personality, dialogue_style, action_policy, emotional_response, world_knowledge, social_dynamics, goal_prioritization",
+    "echo Estimated time: 8-14 hours total",
+    "echo ===",
+    "for task in personality dialogue_style action_policy emotional_response world_knowledge social_dynamics goal_prioritization; do echo Training vampire_${task}...; python3 training/train_lora_adapter.py --archetype vampire --task $task 2>&1 | tee -a training-vampire-all.log; echo Completed vampire_${task}; done",
+    "echo ===",
+    "echo All Vampire adapters training complete at $(date)",
+    "echo Checking adapter files...",
+    "ls -lh training/adapters/vampire/"
+  ]
+}
+

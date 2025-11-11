@@ -32,7 +32,7 @@ class BODYBROKER_API AHarvestingMinigame : public AActor
     GENERATED_BODY()
 
 public:
-    AHarvestingMinigame();
+    AHarvestingMinigame(const FObjectInitializer& ObjectInitializer);
     
     UFUNCTION(BlueprintCallable, Category = "Harvesting")
     void StartExtraction(FString TargetID, EExtractionMethod Method, EToolQuality ToolQuality);

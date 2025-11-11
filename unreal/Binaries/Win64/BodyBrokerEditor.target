@@ -7644,6 +7644,18 @@
 		{
 			"Path": "$(ProjectDir)/Binaries/Win64/UnrealEditor.modules",
 			"Type": "RequiredResource"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/VocalSynthesis/Binaries/Win64/UnrealEditor-VocalSynthesis.dll",
+			"Type": "DynamicLibrary"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/VocalSynthesis/Binaries/Win64/UnrealEditor-VocalSynthesis.pdb",
+			"Type": "SymbolFile"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/VocalSynthesis/Binaries/Win64/UnrealEditor.modules",
+			"Type": "RequiredResource"
 		}
 	],
 	"RuntimeDependencies": [
@@ -32170,6 +32182,10 @@
 		{
 			"Path": "$(ProjectDir)/BodyBroker.uproject",
 			"Type": "UFS"
+		},
+		{
+			"Path": "$(ProjectDir)/Plugins/VocalSynthesis/VocalSynthesis.uplugin",
+			"Type": "UFS"
 		}
 	],
 	"BuildPlugins": [
@@ -32371,6 +32387,7 @@
 		"VariantManagerContent",
 		"VisualStudioCodeSourceCodeAccess",
 		"VisualStudioSourceCodeAccess",
+		"VocalSynthesis",
 		"WaveTable",
 		"WebMMedia",
 		"WebMMoviePlayer",

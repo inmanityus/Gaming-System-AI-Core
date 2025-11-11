@@ -1,0 +1,13 @@
+{
+  "commands": [
+    "echo === Kernel Modules ===",
+    "lsmod | grep nvidia || echo No NVIDIA modules",
+    "echo === nvidia-smi location ===",
+    "find /usr -name nvidia-smi 2>/dev/null || echo Not found",
+    "echo === Trying nvidia-smi with full path ===",
+    "/usr/bin/nvidia-smi 2>&1 || /usr/local/bin/nvidia-smi 2>&1 || echo nvidia-smi not accessible",
+    "echo === PyTorch Test ===",
+    "python3 -c 'import torch; print(\"PyTorch:\", torch.__version__); print(\"CUDA:\", torch.cuda.is_available())' 2>&1 || echo PyTorch test failed"
+  ]
+}
+

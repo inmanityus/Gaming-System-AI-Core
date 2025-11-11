@@ -1,0 +1,10 @@
+{
+  "commands": [
+    "echo === GPU Verification ===",
+    "nvidia-smi",
+    "echo === Python & PyTorch ===",
+    "python3 --version",
+    "python3 -c 'import torch; print(\"PyTorch:\", torch.__version__); print(\"CUDA:\", torch.cuda.is_available()); print(\"GPU:\", torch.cuda.get_device_name(0) if torch.cuda.is_available() else \"None\")'"
+  ]
+}
+

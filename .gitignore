@@ -1,205 +1,116 @@
-# Global repository junctions (link to C:\Users\kento\.cursor\global-cursor-repo\)
-# These are NOT part of the project - they are Windows junctions to shared global repo
-Global-Reasoning/
-Global-History/
-Global-Scripts/
-Global-Workflows/
-Global-Docs/
-Global-Utils/
-Global-Testing-Framework/
+# The Body Broker - Gaming System AI Core
+# Git Ignore Configuration
 
-# AI Session Memory (auto-created by startup.ps1)
-# These files are session-specific and should not be committed
-.cursor/memory/
-.cursor/session-start.txt
-.cursor/health-metrics.jsonl
-.cursor/last-cleanup.json
-.cursor/ai-logs/
-.cursor/monitor/
-.cursor/startup-complete.marker
-.cursor/timer-service.running
-.cursor/.globals_linked
-
-# Python cache files
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-
-# Milestone and session tracking files (handoff docs are committed)
-MILESTONE-*.md
-PROGRESS-*.md
-SESSION-*.md
-!docs/SESSION-HANDOFF-*.md
-
-# Documentation organization - ignore temporary/output docs
-docs/updates/
-docs/success-output/
-docs/temp/
-docs/logs/
-Project-Management/Documentation/Success/
-Project-Management/Documentation/Status/
-
-# BUT track important documentation (old docs/ structure - being phased out)
-!docs/Requirements/
-!docs/Solutions/
-!docs/Tasks/
-!docs/Architecture/
-!docs/API/
-!docs/Development/
-!docs/Deployment/
-!docs/User-Guides/
-!docs/Troubleshooting/
-!docs/Changelog/
-
-# Track important Project-Management documentation
-!Project-Management/Documentation/Requirements/
-!Project-Management/Documentation/Solutions/
-!Project-Management/Documentation/Tasks/
-!Project-Management/Documentation/Milestones/
-!Project-Management/Documentation/Sessions/
-!Project-Management/Documentation/Testing/
-!Project-Management/Documentation/Deployment/
-!Project-Management/Documentation/Reviews/
-
-# Global junctions - should not be committed
-Global-Rules/
-Global-Reasoning/
-Global-History/
-Global-Scripts/
-Global-Workflows/
-Global-Docs/
-Global-Utils/
-Global-Testing-Framework/
+# Node modules
+node_modules/
+.pnp/
+.pnp.js
 
 # Dependencies
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
+/.pnp
+.pnp.js
 
-# Next.js
-.next/
-out/
-build/
-dist/
+# Testing
+/coverage
+*.log
 
-# Environment variables
+# Production
+/build
+/dist
+
+# Environment
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+.env.security
+.env.production
 
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage directory used by tools like istanbul
-coverage/
-*.lcov
-
-# nyc test coverage
-.nyc_output
-
-# Dependency directories
-jspm_packages/
-
-# TypeScript cache
-*.tsbuildinfo
-
-# Optional npm cache directory
-.npm
-
-# Optional eslint cache
-.eslintcache
-
-# Optional stylelint cache
-.stylelintcache
-
-# Microbundle cache
-.rpt2_cache/
-.rts2_cache_cjs/
-.rts2_cache_es/
-.rts2_cache_umd/
-
-# Optional REPL history
-.node_repl_history
-
-# Output of 'npm pack'
-*.tgz
-
-# Yarn Integrity file
-.yarn-integrity
-
-# parcel-bundler cache (https://parceljs.org/)
-.cache
-.parcel-cache
-
-# Next.js build output
-.next
-
-# Nuxt.js build / generate output
-.nuxt
-dist
-
-# Storybook build outputs
-.out
-.storybook-out
-storybook-static
-
-# Temporary folders
-tmp/
-temp/
-
-# Editor directories and files
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# OS generated files
+# OS
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
 
-# Playwright
-test-results/
-playwright-report/
-playwright/.cache/
+# Documentation organization - ignore temporary/output docs
+Project-Management/Documentation/Success/
+Project-Management/Documentation/Status/
+.logs/
 
-# Docker
-.dockerignore
+# Track important documentation
+!Project-Management/Documentation/Requirements/
+!Project-Management/Documentation/Solutions/
+!Project-Management/Documentation/Testing/
+!Project-Management/Documentation/Deployment/
+!Project-Management/Documentation/Sessions/
+!Project-Management/Documentation/Milestones/
+!docs/
 
-# Database
-*.db
-*.sqlite
-*.sqlite3
+# Cursor
+.cursor/
 
-# Backup files
-*.bak
-*.backup
-*.old
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+env/
 
-# Test files
-coverage/
-.nyc_output/
-test-results/
-playwright-report/
+# C++
+*.o
+*.obj
+*.exe
+*.out
+*.app
+build/
+CMakeCache.txt
+CMakeFiles/
+
+# Unreal Engine
+unreal/Binaries/
+unreal/Build/
+unreal/DerivedDataCache/
+unreal/Intermediate/
+unreal/Saved/
+unreal/.vs/
+unreal/*.sln
+unreal/*.suo
+unreal/*.opensdf
+unreal/*.sdf
+unreal/*.VC.db
+unreal/*.VC.opendb
+unreal/**/*.pdb
+unreal/**/*.exe
+unreal/**/*.dll
+unreal/Plugins/**/ThirdParty/
+unreal/Plugins/**/Binaries/
+
+# Terraform
+infrastructure/terraform/**/.terraform/
+**/*.exe
+*.pdb
+
+# vcpkg
+vocal-chord-research/vcpkg/buildtrees/
+vocal-chord-research/vcpkg/packages/
+vocal-chord-research/vcpkg/downloads/
+vocal-chord-research/vcpkg/installed/
+
+# AWS
+*.pem
+*.key
+
+# Secrets
+*secret*
+*SECRET*
+*credentials*
+*CREDENTIALS*

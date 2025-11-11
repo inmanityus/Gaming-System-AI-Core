@@ -1,0 +1,31 @@
+ID,Severity,Category,File,Line,Description,Reviewer,Review_Date,Status,Fix_Priority,Est_Hours,Assigned_To,Fixed_Date,PR_Link,Notes
+1,CRITICAL,Security,example.py,42,SQL injection risk in user query,GPT-Codex-2,2025-11-09,Open,P0,2,Claude,,,Use parameterized queries
+2,HIGH,Memory,example.py,156,Memory leak - model not cleaned up,GPT-Codex-2,2025-11-09,Fixed,P0,1,Claude,2025-11-09,PR-123,Added cleanup in finally block
+3,MEDIUM,Code Quality,example.py,89,Missing error handling for file operations,GPT-Codex-2,2025-11-09,Open,P1,1,,,Add try/except with specific exceptions
+4,LOW,Documentation,example.py,1,Missing docstring for class,GPT-Codex-2,2025-11-09,Open,P3,0.5,,,Add comprehensive docstring
+
+## SEVERITY LEVELS:
+## CRITICAL: Security vulnerabilities, data corruption, crash-causing bugs
+## HIGH: Performance issues, memory leaks, race conditions
+## MEDIUM: Code quality, maintainability, minor bugs
+## LOW: Style, documentation, optimization opportunities
+
+## CATEGORIES:
+## Security, Memory, Performance, Logic, Error Handling, Code Quality, Architecture, Testing, Documentation
+
+## STATUS:
+## Open, In Progress, Fixed, Verified, Closed, Wont Fix
+
+## FIX PRIORITY:
+## P0: Fix immediately (within 24h)
+## P1: Fix within 1 week
+## P2: Fix within 1 month
+## P3: Fix when convenient
+
+## USAGE:
+## 1. Add new row for each issue found
+## 2. Get peer review for all issues
+## 3. Prioritize fixes by severity + impact
+## 4. Track progress through Status field
+## 5. Link to PRs when fixed
+

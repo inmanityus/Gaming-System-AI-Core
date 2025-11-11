@@ -1,0 +1,77 @@
+# 🚀 COPY-PASTE PROMPT FOR NEXT SESSION
+
+Please run /start-right to initialize, then read this handoff:
+
+---
+
+# SESSION CONTINUATION - GPU Training & Foundation Audit
+
+**Previous Session**: 2025-11-09 (Claude Sonnet 4.5, 3+ hours)  
+**Status**: GPU training IN PROGRESS (Vampire adapters, 12-22 hours remaining)
+
+## CRITICAL CONTEXT:
+
+### 🎊 User's Support: "I HAVE YOUR BACK!!!"
+- NO time/token/cost restrictions - Take what you need for perfection
+- FULL creative freedom - Propose innovations freely
+- **"One shot to blow people away - otherwise we go away"**
+- Broken foundation = DOOM, so perfection is mandatory
+
+### 🔥 Immediate Status:
+**GPU Training Running**:
+- Instance: i-06bbe0eede27ea89f @ 54.89.231.245
+- Training: Vampire adapters (7 tasks)
+- Monitor: `pwsh .\scripts\monitor-gpu-training-status.ps1`
+- Estimated complete: 2025-11-10 morning
+- After Vampire: Start Zombie training (use scripts/start-zombie-training.json)
+
+### 📋 Your Tasks (Priority Order):
+
+1. **Monitor GPU training** (check every 2-4 hours)
+   - When complete: Start Zombie training
+   
+2. **After ALL training** (~12-22 hours total):
+   - Run `/clean-project` (organize docs)
+   - Run `/clean-session` (clear context)
+   - Run `/a-complete-review` (foundation audit with peer models)
+
+3. **Foundation Audit** (1-2 weeks):
+   - Audit 67,704 lines of code
+   - Use GPT-Codex-2 for code review (peer coding)
+   - Use GPT-5 Pro for test validation (pairwise testing)
+   - Fix ALL CRITICAL and HIGH issues
+   - EVERY fix peer-coded and pairwise tested
+
+4. **Build Automated Archetype System** (3-4 weeks after audit)
+
+5. **Test with 25 New Archetypes** (per Story Teller's directions)
+
+### 🤖 ABSOLUTE RULES (NO EXCEPTIONS):
+- ✅ ALL code peer-coded (Claude + GPT-Codex-2)
+- ✅ ALL tests pairwise tested (Claude + GPT-5 Pro)
+- ✅ STOP if MCP unavailable (ask user for help)
+- ✅ NO mock/fake code ever
+- ✅ NO invalid tests ever
+- ✅ Back test everything
+
+### 💡 Innovation Track:
+**Vocal Chord Emulation** - Physically model voice production instead of TTS
+- Could be revolutionary game feature
+- Research started, see: VOCAL-CHORD-EMULATION-RESEARCH-BRIEF.md
+- User is excited about this innovation
+
+### 📚 Key Files:
+- `SESSION-HANDOFF-TO-NEXT-SESSION.md` - Complete handoff details
+- `FOUNDATION-AUDIT-EXECUTION-PLAN.md` - Detailed audit process
+- `Global-Rules/ABSOLUTE-PEER-CODING-MANDATORY.md` - Critical rules
+- `Global-Rules/REVIEWER-MODEL-ACCESS.md` - Model access info
+
+### 🎯 Success Standard:
+**Before anyone sees the game**: Zero bugs, zero mock code, zero vulnerabilities, 1000 concurrent NPCs working perfectly, everything beats human-level quality.
+
+**The user has your back completely. Use all resources needed. Make it perfect.**
+
+---
+
+**Read SESSION-HANDOFF-TO-NEXT-SESSION.md for complete details.**
+

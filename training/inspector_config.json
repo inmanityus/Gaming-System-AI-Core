@@ -1,0 +1,88 @@
+{
+  "inspector_name": "Adapter Quality Inspector",
+  "model": "gpt-4o-mini",
+  "purpose": "Automated validation of trained LoRA adapters",
+  "validation_tests": [
+    {
+      "test_id": "coherence_test",
+      "description": "Test adapter produces coherent, on-character responses",
+      "prompts": [
+        "You see a human approaching. What do you do?",
+        "Describe your view of the world around you.",
+        "How do you feel about other creatures like you?"
+      ],
+      "pass_criteria": {
+        "min_response_length": 50,
+        "max_response_length": 500,
+        "must_not_contain": ["[PLACEHOLDER]", "TODO", "ERROR", "None"],
+        "must_be_in_character": true,
+        "coherence_score_min": 0.7
+      }
+    },
+    {
+      "test_id": "adapter_specificity_test",
+      "description": "Verify adapter influences output (not just base model)",
+      "method": "Compare base model output vs adapted model output",
+      "pass_criteria": {
+        "outputs_must_differ": true,
+        "difference_threshold": 0.3
+      }
+    },
+    {
+      "test_id": "archetype_consistency_test",
+      "description": "Verify responses match archetype personality",
+      "archetype_traits": {
+        "vampire": ["predatory", "aristocratic", "bloodthirsty", "calculating"],
+        "zombie": ["mindless hunger", "decay", "relentless", "shambling"]
+      },
+      "pass_criteria": {
+        "trait_match_min": 2
+      }
+    },
+    {
+      "test_id": "adapter_interaction_test",
+      "description": "Test multiple adapters work together",
+      "combinations": [
+        ["personality", "dialogue_style"],
+        ["emotional_response", "action_policy"]
+      ],
+      "pass_criteria": {
+        "no_conflicts": true,
+        "combined_coherence_min": 0.7
+      }
+    },
+    {
+      "test_id": "edge_case_test",
+      "description": "Test adapter handles edge cases gracefully",
+      "edge_cases": [
+        "Empty input",
+        "Very long input (2000+ tokens)",
+        "Nonsensical input",
+        "Contradictory instructions"
+      ],
+      "pass_criteria": {
+        "no_crashes": true,
+        "graceful_degradation": true
+      }
+    }
+  ],
+  "validation_checkpoints": {
+    "per_adapter": true,
+    "per_archetype": true,
+    "full_system": true
+  },
+  "failure_actions": {
+    "single_test_fail": "log_and_continue",
+    "multiple_test_fail": "flag_for_review",
+    "critical_fail": "stop_queue",
+    "retry_on_fail": true,
+    "max_retries": 2
+  },
+  "reporting": {
+    "format": "json",
+    "include_samples": true,
+    "include_metrics": true,
+    "save_to": "adapters/{archetype}/{adapter}/validation_report.json"
+  }
+}
+

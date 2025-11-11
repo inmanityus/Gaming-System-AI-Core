@@ -1,0 +1,20 @@
+{
+  "commands": [
+    "cd /home/ubuntu",
+    "export PYTHONPATH=/home/ubuntu:$PYTHONPATH",
+    "echo === Starting Zombie LoRA Adapter Training ===",
+    "echo Start Time: $(date)",
+    "echo Training 7 adapters: personality, dialogue_style, action_policy, emotional_response, world_knowledge, social_dynamics, goal_prioritization",
+    "echo Estimated time: 4-8 hours total",
+    "echo ===",
+    "for task in personality dialogue_style action_policy emotional_response world_knowledge social_dynamics goal_prioritization; do echo Training zombie_${task}...; python3 training/train_lora_adapter.py --archetype zombie --task $task 2>&1 | tee -a training-zombie-all.log; echo Completed zombie_${task}; done",
+    "echo ===",
+    "echo All Zombie adapters training complete at $(date)",
+    "echo Checking adapter files...",
+    "ls -lh training/adapters/zombie/",
+    "echo === TRAINING COMPLETE ===",
+    "echo Both Vampire and Zombie adapters trained successfully",
+    "ls -lh training/adapters/"
+  ]
+}
+

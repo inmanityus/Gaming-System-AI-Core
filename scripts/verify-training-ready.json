@@ -1,0 +1,17 @@
+{
+  "commands": [
+    "cd /home/ubuntu",
+    "echo === Directories ===",
+    "ls -ld training services models examples",
+    "echo === Training Script ===",
+    "ls -lh training/train_lora_adapter.py",
+    "echo === Training Data ===",
+    "ls training/data/*.json | wc -l",
+    "echo === PyTorch CUDA ===",
+    "python3 -c 'import torch; print(\"PyTorch:\", torch.__version__); print(\"CUDA:\", torch.cuda.is_available()); print(\"GPU:\", torch.cuda.get_device_name(0))'",
+    "echo === Dependencies ===",
+    "python3 -c 'import transformers, peft, bitsandbytes, datasets, accelerate; print(\"All deps installed\")'",
+    "echo === Ready to train ==="
+  ]
+}
+

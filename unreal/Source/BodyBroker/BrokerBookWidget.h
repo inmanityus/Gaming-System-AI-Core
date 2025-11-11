@@ -6,6 +6,8 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Http.h"
+#include "Interfaces/IHttpRequest.h"
+#include "Interfaces/IHttpResponse.h"
 #include "BrokerBookWidget.generated.h"
 
 UCLASS()
@@ -30,8 +32,7 @@ public:
     void GetClientInfo(FString ClientID);
     
     // API communication
-    UFUNCTION()
-    void OnDrugPriceResponse(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful);
+    void OnDrugPriceResponse(TSharedPtr<IHttpRequest> Request, TSharedPtr<IHttpResponse> Response, bool bWasSuccessful);
     
 private:
     FString APIBaseURL = TEXT("http://localhost:4100/body-broker");

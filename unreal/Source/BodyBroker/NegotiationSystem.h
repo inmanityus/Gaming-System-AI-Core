@@ -23,6 +23,8 @@ class BODYBROKER_API ANegotiationSystem : public AActor
     GENERATED_BODY()
 
 public:
+    ANegotiationSystem(const FObjectInitializer& ObjectInitializer);
+    
     UFUNCTION(BlueprintCallable, Category = "Negotiation")
     void StartNegotiation(FString ClientID, float BasePrice, FString ItemQuality);
     

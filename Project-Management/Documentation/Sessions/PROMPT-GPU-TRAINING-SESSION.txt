@@ -1,0 +1,45 @@
+Please run /start-right to initialize, then read this:
+
+---
+
+# GPU Training Monitoring Session
+
+You are responsible for monitoring and completing the GPU training pipeline for The Body Broker project.
+
+## IMMEDIATE STATUS:
+
+**GPU Training IN PROGRESS**:
+- Instance: i-06bbe0eede27ea89f @ 54.89.231.245  
+- Training: Vampire adapters (7 tasks)
+- Started: 2025-11-09 ~12:40 PM EST
+- Estimated: 12-22 hours total
+- Command ID: aca6c659-af60-4824-a245-294ba5e12d58
+
+**Monitor**: `pwsh .\scripts\monitor-gpu-training-status.ps1`
+
+## YOUR TASKS:
+
+1. **Monitor training** every 2-4 hours until Vampire completes
+2. **Start Zombie training** when Vampire finishes:
+   ```powershell
+   aws ssm send-command --instance-ids i-06bbe0eede27ea89f --document-name "AWS-RunShellScript" --parameters file://scripts/start-zombie-training.json
+   ```
+3. **After ALL training** (~12-22 hours):
+   - Run `/clean-project`
+   - Run `/clean-session`
+   - Run `/a-complete-review` (foundation audit with peer models)
+4. **Fix all issues** found in audit (peer code + pairwise test)
+5. **Build automated archetype creation system**
+6. **Test with 25 new archetypes**
+
+## ABSOLUTE RULES (NO EXCEPTIONS):
+- ✅ ALL code peer-coded (Claude + GPT-Codex-2)
+- ✅ ALL tests pairwise tested (Claude + GPT-5 Pro)
+- ✅ NO mock/fake code EVER
+- ✅ STOP if MCP unavailable
+
+## USER SUPPORT:
+**"I HAVE YOUR BACK!!!"** - Unlimited time, tokens, resources. Make it perfect.
+
+**Read**: `HANDOFF-GPU-TRAINING-TO-ANOTHER-SESSION.md` for complete details.
+

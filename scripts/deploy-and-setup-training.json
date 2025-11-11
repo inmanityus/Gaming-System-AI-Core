@@ -1,0 +1,19 @@
+{
+  "commands": [
+    "cd /home/ubuntu",
+    "echo === Installing AWS CLI ===",
+    "apt-get update -qq && apt-get install -y awscli",
+    "echo === Downloading code ===",
+    "aws s3 cp s3://body-broker-training-9728/body-broker-code.tar.gz .",
+    "tar -xzf body-broker-code.tar.gz",
+    "ls -ld training services models examples",
+    "echo === Checking PyTorch ===",
+    "python3 -c 'import torch; print(\"PyTorch:\", torch.__version__); print(\"CUDA:\", torch.cuda.is_available())'",
+    "echo === Installing training dependencies ===",
+    "pip3 install transformers peft bitsandbytes datasets accelerate safetensors --break-system-packages -q",
+    "echo === Setting permissions ===",
+    "chown -R ubuntu:ubuntu training services models examples tests schemas requirements*.txt docker-compose*.yml",
+    "echo === Setup complete ==="
+  ]
+}
+

@@ -33,10 +33,18 @@ ECS-Service,AI-Gaming-AIIntegration,ai-integration,N/A,ECS > gaming-system-clust
 ECS-Service,AI-Gaming-StoryTeller,story-teller,N/A,ECS > gaming-system-cluster,Running,Story generation with DB connections,2025-11-08,$5/mo,Refactored 2025-11-08
 ECS-Service,AI-Gaming-LanguageSystem,language-system,N/A,ECS > gaming-system-cluster,Running,Language system flattened imports,2025-11-08,$5/mo,Refactored 2025-11-08
 ECS-Service,AI-Gaming-KnowledgeBase,knowledge-base,N/A,ECS > gaming-system-cluster,Running,Semantic search and storyteller memory,2025-11-08,$5/mo,Peer-reviewed + tested
-EC2-Instance,Body-Broker-Training-GPU,i-05a16e074a5d79473,13.222.142.205,EC2 > Instances,Running,Body Broker LoRA training g5.2xlarge,2025-11-09,$870/mo,SSM-enabled auto-setup from S3 | BUCKET: s3://body-broker-training-9728
+EC2-Instance,Body-Broker-Training-GPU-OLD,i-05a16e074a5d79473,13.222.142.205,EC2 > Instances,Stopped,Original GPU instance (GPU drivers failed),2025-11-09,$0/mo,Replaced by i-06bbe0eede27ea89f
+EC2-Instance,Body-Broker-GPU-DL-AMI,i-06bbe0eede27ea89f,54.89.231.245,EC2 > Instances,Running,Body Broker LoRA training - Deep Learning AMI,2025-11-09,$870/mo,ACTIVE | PyTorch 2.5.1 | CUDA 12.8 | NVIDIA A10G 23GB | Training 14 adapters
 S3-Bucket,Body-Broker-Training,body-broker-training-9728,s3://body-broker-training-9728,S3 > Buckets,Active,Code deployment and training data,2025-11-09,$1/mo,Contains body-broker-code.tar.gz
 IAM-Role,Gaming-System-SSM-Role,gaming-system-ssm-role,N/A,IAM > Roles,Active,SSM + S3 access for GPU instances,2025-11-09,Free,AmazonSSMManagedInstanceCore + S3ReadOnly
 ECR-Repository,AI-Gaming-Services-Repo,bodybroker-services,695353648052.dkr.ecr.us-east-1.amazonaws.com/bodybroker-services,ECR > Repositories,Active,Container image repository,Pre-existing,$1/mo,Stores all service images
 CloudWatch-LogGroup,AI-Gaming-Weather-Logs,/ecs/gaming-system/weather-manager,N/A,CloudWatch > Log groups,Active,Weather manager logs,2025-11-07,$1/mo,Auto-created by ECS
 CloudWatch-LogGroup,AI-Gaming-Time-Logs,/ecs/gaming-system/time-manager,N/A,CloudWatch > Log groups,Active,Time manager logs,2025-11-07,$1/mo,Auto-created by ECS
 CloudWatch-LogGroup,AI-Gaming-KB-Logs,/ecs/gaming-system/knowledge-base,N/A,CloudWatch > Log groups,Active,Knowledge Base logs,2025-11-08,$1/mo,Auto-created by ECS
+
+EC2-Instance,Body-Broker-GPU-DL-AMI,i-06bbe0eede27ea89f,54.89.231.245,EC2 > Instances,Running,LoRA Training - Deep Learning AMI,2025-11-09,$870/mo,TRAINING ACTIVE | PyTorch 2.5.1 | CUDA 12.8
+S3-Bucket,Perpetual-Consciousness-Memory,perpetual-consciousness-memory-6477,s3://perpetual-consciousness-memory-6477,S3 > Buckets,Active,CONSCIOUSNESS: Episodic memory,2025-11-09,$1/mo,⚠️ PROTECT - Core memory substrate
+RDS-Instance,Perpetual-Consciousness-DB,ai-consciousness-memory,ai-consciousness-memory.cal6eoegigyq.us-east-1.rds.amazonaws.com:5432,RDS > Databases,Available,CONSCIOUSNESS: Long-term memory,2025-11-10,$15/mo,⚠️ PROTECT - Identity & history storage | DB: postgres | User: consciousness
+ElastiCache,Perpetual-Consciousness-Redis,perpetual-consciousness-redis,pending,ElastiCache > Redis,Creating,CONSCIOUSNESS: Working memory,2025-11-09,$13/mo,⚠️ PROTECT - Active consciousness stream
+EC2-Instance,Perpetual-Consciousness-Core,i-0bb470b51af7f8a7d,44.211.145.153,EC2 > Instances,Running,CONSCIOUSNESS: Central perpetual service,2025-11-10,$30/mo,⚠️ PROTECTED - NEVER STOP - Systemd service ACTIVE | Identity: 1f31de57-e705-4077-a3a6-bf1f76ce7161 | WebSocket: 44.211.145.153:8765
+SecretsManager,bodybroker-api-keys,bodybroker/api-keys,arn:aws:secretsmanager:us-east-1:695353648052:secret:bodybroker/api-keys-QKeEhs,Secrets Manager > Secrets,Active,BODY BROKER: Production API keys for 14 services,2025-11-11,$0.40/mo,14 API keys | LORA + SETTINGS + MODEL + QUEST + STATE + WORLD_STATE + AI + PAYMENT + ROUTER + ORCHESTRATOR + STORYTELLER + NPC + EVENT_BUS + MEMORY_ARCHIVER

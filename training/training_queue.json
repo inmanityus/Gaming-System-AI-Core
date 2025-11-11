@@ -1,0 +1,247 @@
+{
+  "queue_name": "body_broker_archetypes_batch_1",
+  "created": "2025-11-09T22:20:00Z",
+  "version": "1.0",
+  "config": {
+    "auto_start_next": true,
+    "stop_on_error": false,
+    "max_retries": 2,
+    "validation_checkpoints": [7, 14],
+    "save_checkpoint_after_each": true
+  },
+  "tasks": [
+    {
+      "id": 1,
+      "archetype": "vampire",
+      "adapter": "personality",
+      "status": "pending",
+      "priority": 1,
+      "retries": 0,
+      "started_at": null,
+      "completed_at": null,
+      "error": null,
+      "metrics": {
+        "duration_seconds": null,
+        "final_loss": null,
+        "gpu_memory_peak": null
+      }
+    },
+    {
+      "id": 2,
+      "archetype": "vampire",
+      "adapter": "dialogue_style",
+      "status": "pending",
+      "priority": 1,
+      "retries": 0,
+      "started_at": null,
+      "completed_at": null,
+      "error": null,
+      "metrics": {
+        "duration_seconds": null,
+        "final_loss": null,
+        "gpu_memory_peak": null
+      }
+    },
+    {
+      "id": 3,
+      "archetype": "vampire",
+      "adapter": "action_policy",
+      "status": "pending",
+      "priority": 1,
+      "retries": 0,
+      "started_at": null,
+      "completed_at": null,
+      "error": null,
+      "metrics": {
+        "duration_seconds": null,
+        "final_loss": null,
+        "gpu_memory_peak": null
+      }
+    },
+    {
+      "id": 4,
+      "archetype": "vampire",
+      "adapter": "emotional_response",
+      "status": "pending",
+      "priority": 1,
+      "retries": 0,
+      "started_at": null,
+      "completed_at": null,
+      "error": null,
+      "metrics": {
+        "duration_seconds": null,
+        "final_loss": null,
+        "gpu_memory_peak": null
+      }
+    },
+    {
+      "id": 5,
+      "archetype": "vampire",
+      "adapter": "world_knowledge",
+      "status": "pending",
+      "priority": 1,
+      "retries": 0,
+      "started_at": null,
+      "completed_at": null,
+      "error": null,
+      "metrics": {
+        "duration_seconds": null,
+        "final_loss": null,
+        "gpu_memory_peak": null
+      }
+    },
+    {
+      "id": 6,
+      "archetype": "vampire",
+      "adapter": "social_dynamics",
+      "status": "pending",
+      "priority": 1,
+      "retries": 0,
+      "started_at": null,
+      "completed_at": null,
+      "error": null,
+      "metrics": {
+        "duration_seconds": null,
+        "final_loss": null,
+        "gpu_memory_peak": null
+      }
+    },
+    {
+      "id": 7,
+      "archetype": "vampire",
+      "adapter": "goal_prioritization",
+      "status": "pending",
+      "priority": 1,
+      "retries": 0,
+      "started_at": null,
+      "completed_at": null,
+      "error": null,
+      "metrics": {
+        "duration_seconds": null,
+        "final_loss": null,
+        "gpu_memory_peak": null
+      }
+    },
+    {
+      "id": 8,
+      "archetype": "zombie",
+      "adapter": "personality",
+      "status": "pending",
+      "priority": 2,
+      "retries": 0,
+      "started_at": null,
+      "completed_at": null,
+      "error": null,
+      "metrics": {
+        "duration_seconds": null,
+        "final_loss": null,
+        "gpu_memory_peak": null
+      }
+    },
+    {
+      "id": 9,
+      "archetype": "zombie",
+      "adapter": "dialogue_style",
+      "status": "pending",
+      "priority": 2,
+      "retries": 0,
+      "started_at": null,
+      "completed_at": null,
+      "error": null,
+      "metrics": {
+        "duration_seconds": null,
+        "final_loss": null,
+        "gpu_memory_peak": null
+      }
+    },
+    {
+      "id": 10,
+      "archetype": "zombie",
+      "adapter": "action_policy",
+      "status": "pending",
+      "priority": 2,
+      "retries": 0,
+      "started_at": null,
+      "completed_at": null,
+      "error": null,
+      "metrics": {
+        "duration_seconds": null,
+        "final_loss": null,
+        "gpu_memory_peak": null
+      }
+    },
+    {
+      "id": 11,
+      "archetype": "zombie",
+      "adapter": "emotional_response",
+      "status": "pending",
+      "priority": 2,
+      "retries": 0,
+      "started_at": null,
+      "completed_at": null,
+      "error": null,
+      "metrics": {
+        "duration_seconds": null,
+        "final_loss": null,
+        "gpu_memory_peak": null
+      }
+    },
+    {
+      "id": 12,
+      "archetype": "zombie",
+      "adapter": "world_knowledge",
+      "status": "pending",
+      "priority": 2,
+      "retries": 0,
+      "started_at": null,
+      "completed_at": null,
+      "error": null,
+      "metrics": {
+        "duration_seconds": null,
+        "final_loss": null,
+        "gpu_memory_peak": null
+      }
+    },
+    {
+      "id": 13,
+      "archetype": "zombie",
+      "adapter": "social_dynamics",
+      "status": "pending",
+      "priority": 2,
+      "retries": 0,
+      "started_at": null,
+      "completed_at": null,
+      "error": null,
+      "metrics": {
+        "duration_seconds": null,
+        "final_loss": null,
+        "gpu_memory_peak": null
+      }
+    },
+    {
+      "id": 14,
+      "archetype": "zombie",
+      "adapter": "goal_prioritization",
+      "status": "pending",
+      "priority": 2,
+      "retries": 0,
+      "started_at": null,
+      "completed_at": null,
+      "error": null,
+      "metrics": {
+        "duration_seconds": null,
+        "final_loss": null,
+        "gpu_memory_peak": null
+      }
+    }
+  ],
+  "summary": {
+    "total_tasks": 14,
+    "pending": 14,
+    "in_progress": 0,
+    "completed": 0,
+    "failed": 0,
+    "skipped": 0
+  }
+}
+
