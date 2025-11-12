@@ -20,7 +20,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from services.state_manager.connection_pool import RedisPool
+    from state_manager.connection_pool import RedisPool
 else:
     RedisPool = Any
 
@@ -147,7 +147,7 @@ class GameEventBus:
         if self.redis is None:
             try:
                 # Try to get Redis from connection pool
-                from services.state_manager.connection_pool import get_redis_pool
+                from state_manager.connection_pool import get_redis_pool
                 self.redis = await get_redis_pool()
             except (ImportError, AttributeError, Exception) as e:
                 print(f"[EVENT BUS] Redis unavailable, using in-memory: {e}")

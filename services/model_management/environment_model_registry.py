@@ -7,7 +7,6 @@ import json
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
-from services.model_management.model_registry import ModelRegistry
 
 
 class EnvironmentModelRegistry(ModelRegistry):

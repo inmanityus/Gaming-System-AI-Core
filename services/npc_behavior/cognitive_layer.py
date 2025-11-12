@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Cognitive Layer - Async AI inference for strategic decisions.
 
@@ -25,8 +26,6 @@ import threading
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from services.npc_behavior.behavioral_proxy import ProxyDirective, ProxyStrategy, ProxyManager
-from services.ai_integration.llm_client import LLMClient
 
 _logger = logging.getLogger(__name__)
 

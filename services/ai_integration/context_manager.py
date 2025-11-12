@@ -4,17 +4,13 @@ Aggregates context from multiple sources and optimizes for AI consumption.
 """
 
 import json
+import os
 import time
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-
 # Direct database connection (shared pattern)
 import asyncpg
-import os
 
 
 class ContextManager:

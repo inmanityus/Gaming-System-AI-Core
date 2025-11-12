@@ -1555,3 +1555,4 @@ Effect: Awe and terror
 **Philosophy**: "The storyteller's greatest power is emotional resonance. Use it wisely. Use it well. Use it to illuminate the human experience in all its complexity."
 
 
+

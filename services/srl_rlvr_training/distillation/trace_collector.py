@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Trace Collector - Collects Bronze tier model outputs for distillation.
 Stores expert traces from Bronze tier models to distill to Silver and Gold tiers.
@@ -18,8 +19,7 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
-from services.model_management.model_registry import ModelRegistry
-from services.model_management.historical_log_processor import HistoricalLogProcessor
+from model_registry import ModelRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -271,6 +271,7 @@ class TraceCollector:
                 "s3_bucket": self.s3_bucket,
                 "error": str(e)
             }
+
 
 
 

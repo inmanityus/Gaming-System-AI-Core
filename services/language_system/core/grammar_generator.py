@@ -11,7 +11,7 @@ import logging
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass
 
-from .language_definition import GrammarRules, LanguageDefinition, LanguageType
+from language_system.core.language_definition import GrammarRules, LanguageDefinition, LanguageType
 
 logger = logging.getLogger(__name__)
 

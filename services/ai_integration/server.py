@@ -10,13 +10,13 @@ from typing import AsyncGenerator
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api_routes import router
-from lora_routes import router as lora_router  # AI-003: LoRA adapter routes
-from multi_tier_routes import router as multi_tier_router  # AI-004: Multi-tier model serving routes
-from llm_client import LLMClient
-from context_manager import ContextManager
-from service_coordinator import ServiceCoordinator
-from response_optimizer import ResponseOptimizer
+from .api_routes import router
+from .lora_routes import router as lora_router  # AI-003: LoRA adapter routes
+from .multi_tier_routes import router as multi_tier_router  # AI-004: Multi-tier model serving routes
+from .llm_client import LLMClient
+from .context_manager import ContextManager
+from .service_coordinator import ServiceCoordinator
+from .response_optimizer import ResponseOptimizer
 
 
 # Global instances

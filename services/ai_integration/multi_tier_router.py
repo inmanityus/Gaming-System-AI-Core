@@ -10,8 +10,9 @@ from dataclasses import dataclass
 import time
 import asyncio
 
-from vllm_client import VLLMClient
-from lora_manager import LoRAManager
+from .vllm_client import VLLMClient
+from .lora_manager import LoRAManager
+
 
 
 class ModelTier(Enum):

@@ -4,7 +4,7 @@ Performance Mode Service Server.
 
 import logging
 from fastapi import FastAPI
-from services.performance_mode import api_routes
+from performance_mode import api_routes
 
 _logger = logging.getLogger(__name__)
 

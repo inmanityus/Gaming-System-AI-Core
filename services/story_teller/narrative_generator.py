@@ -12,14 +12,13 @@ from uuid import UUID
 
 logger = logging.getLogger(__name__)
 
-from database_connection import get_postgres
 import asyncpg
 
 # Add parent directory to path for model_management imports
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-from narrative_loader import NarrativeLoader
-from feature_awareness import FeatureAwareness
-from cross_world_consistency import CrossWorldConsistency
+from .narrative_loader import NarrativeLoader
+from .feature_awareness import FeatureAwareness
+from .cross_world_consistency import CrossWorldConsistency
 
 # HTTP clients for cross-service communication
 import aiohttp
@@ -234,7 +233,7 @@ class NarrativeGenerator:
             context = await self._get_player_context(player_id)
             
             # Prepare prompt for AI generation
-            prompt = self._build_narrative_prompt(
+            prompt = await self._build_narrative_prompt(
                 node_type=node_type,
                 title=title,
                 description=description,
@@ -299,7 +298,7 @@ class NarrativeGenerator:
             # Fallback to default content
             return self._generate_fallback_content_dict(node_type, title, description)
     
-    def _build_narrative_prompt(
+    async def _build_narrative_prompt(
         self,
         node_type: str,
         title: str,

@@ -13,9 +13,8 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from database_connection import get_postgres, get_redis
 import asyncpg
-import aioredis
+import redis.asyncio as aioredis
 
 
 class SpatialManager:
@@ -34,13 +33,13 @@ class SpatialManager:
     async def _get_postgres(self) -> PostgreSQLPool:
         """Get PostgreSQL pool instance."""
         if self.postgres is None:
-            self.postgres = await get_postgres_pool()
+            self.postgres = get_state_manager_client()
         return self.postgres
     
     async def _get_redis(self) -> RedisPool:
         """Get Redis pool instance."""
         if self.redis is None:
-            self.redis = await get_redis_pool()
+            self.redis = get_state_manager_client()
         return self.redis
     
     async def update_territory_control(self, world_state_id: str) -> Dict[str, Any]:

@@ -16,15 +16,11 @@ from fastapi import APIRouter, HTTPException, status, Header, Depends
 
 from pydantic import BaseModel, Field
 
+from .config_manager import ConfigManager
+from .feature_flags import FeatureFlagManager
+from .preference_handler import PreferenceHandler
+from .tier_manager import TierManager
 
-
-from config_manager import ConfigManager, ConfigValidationError
-
-from feature_flags import FeatureFlagManager
-
-from preference_handler import PreferenceHandler
-
-from tier_manager import TierManager
 
 
 
@@ -74,7 +70,7 @@ class SettingRequest(BaseModel):
 
     key: str = Field(..., min_length=1, max_length=100)
 
-    value: Any(..., description="Setting value (must be JSON-serializable)")
+    value: Any = Field(..., description="Setting value (must be JSON-serializable)")
 
 
 
@@ -88,7 +84,7 @@ class PreferenceRequest(BaseModel):
 
     key: str = Field(..., min_length=1, max_length=100)
 
-    value: Any(..., description="Preference value (must be JSON-serializable)")
+    value: Any = Field(..., description="Preference value (must be JSON-serializable)")
 
 
 

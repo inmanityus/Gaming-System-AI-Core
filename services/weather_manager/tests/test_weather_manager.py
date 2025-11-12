@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Tests for Weather Manager - REAL implementations only.
 """
@@ -154,6 +155,7 @@ async def test_weather_manager_event_publishing():
     
     await manager.stop()
     print("[RESULT] Test: PASSED")
+
 
 
 

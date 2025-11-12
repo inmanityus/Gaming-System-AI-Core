@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Translation Module
 ==================
@@ -13,8 +14,6 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from services.language_system.core.language_definition import LanguageDefinition, LanguageRegistry
-from services.language_system.generation.ai_language_generator import AILanguageGenerator, LanguageRequest
 
 logger = logging.getLogger(__name__)
 

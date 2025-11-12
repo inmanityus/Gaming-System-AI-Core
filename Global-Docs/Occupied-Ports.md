@@ -58,6 +58,19 @@
 
 **Reserved Range**: 3001-3002, 6379, 8000 (Docker infrastructure)
 
+### AI Testing System (Body Broker QA)
+
+**Project Location**: `E:\Vibe Code\Gaming System\AI Core\ai-testing-system`
+
+- **8010**: Body Broker QA Orchestrator (FastAPI - validation reports)
+
+**Reserved Range**: 8010 (QA Orchestrator API)
+
+**Port Selection Rationale**:
+- Port 8010 is 10 ports away from Docker (8000) - meets minimum spacing rule
+- No conflicts with Windows system services
+- No conflicts with other projects
+
 ### Email Services
 
 - **1025**: MailHog SMTP (mailhog)

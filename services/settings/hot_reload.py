@@ -6,7 +6,10 @@ import asyncio
 from datetime import datetime
 from typing import Callable, Dict, Optional
 
-from services.state_manager.connection_pool import get_postgres_pool, get_redis_pool, PostgreSQLPool, RedisPool
+# REFACTORING: Direct database imports replaced with on-demand connections
+import asyncpg
+import redis.asyncio as redis
+from typing import Any as PostgreSQLPool, Any as RedisPool
 
 
 class HotReloadManager:

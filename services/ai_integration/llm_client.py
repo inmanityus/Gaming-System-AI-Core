@@ -16,13 +16,13 @@ import aiohttp
 from aiohttp import ClientSession, ClientTimeout
 
 # Import HTTP clients for cross-service communication
-from model_management_client import ModelManagementClient, get_model_management_client
+from .model_management_client import ModelManagementClient, get_model_management_client
 
 # AI-002/AI-003: Import vLLM and LoRA managers
-from vllm_client import VLLMClient
-from lora_manager import LoRAManager
+from .vllm_client import VLLMClient
+from .lora_manager import LoRAManager
 # AI-004: Import multi-tier router
-from multi_tier_router import MultiTierModelRouter, ModelTier
+from .multi_tier_router import MultiTierModelRouter
 
 
 class CircuitBreakerError(Exception):

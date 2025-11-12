@@ -13,9 +13,8 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from database_connection import get_postgres, get_redis
 import asyncpg
-import aioredis
+import redis.asyncio as aioredis
 from temporal_orchestrator import TemporalOrchestrator
 from faction_simulator import FactionSimulator
 from npc_behavior_system import NPCBehaviorSystem
@@ -58,13 +57,13 @@ class WorldSimulationEngine:
     async def _get_postgres(self) -> PostgreSQLPool:
         """Get PostgreSQL pool instance."""
         if self.postgres is None:
-            self.postgres = await get_postgres_pool()
+            self.postgres = get_state_manager_client()
         return self.postgres
     
     async def _get_redis(self) -> RedisPool:
         """Get Redis pool instance."""
         if self.redis is None:
-            self.redis = await get_redis_pool()
+            self.redis = get_state_manager_client()
         return self.redis
     
     async def start_simulation(self, world_state_id: UUID) -> Dict[str, Any]:

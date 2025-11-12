@@ -1,16 +1,4 @@
-FROM python:3.11-slim
+FROM 695353648052.dkr.ecr.us-east-1.amazonaws.com/bodybroker-services:base-latest
 
-WORKDIR /app
-
-# Copy requirements and install
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy service code
-COPY . .
-
-# Expose port
-EXPOSE 8000
-
-CMD ["python", "-m", "uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8000"]
-
+# Service-specific CMD
+CMD ["python", "-m", "uvicorn", "environmental_narrative.server:app", "--host", "0.0.0.0", "--port", "8000"]

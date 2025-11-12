@@ -1242,3 +1242,4 @@
 **Philosophy**: "In the darkest times, the smallest light becomes a star. In storytelling, balance is not equal parts dark and light, but rather light that justifies enduring the dark."
 
 
+

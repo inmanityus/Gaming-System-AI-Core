@@ -1,7 +1,0 @@
-{
-  "Status": "expired",
-  "Label": "milestone",
-  "DurationSeconds": 900,
-  "SessionID": null,
-  "StartTime": null
-}

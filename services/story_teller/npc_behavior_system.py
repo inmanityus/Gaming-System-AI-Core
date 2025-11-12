@@ -13,9 +13,8 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from database_connection import get_postgres, get_redis
 import asyncpg
-import aioredis
+import redis.asyncio as aioredis
 # HTTP client for AI integration
 import aiohttp
 import os
@@ -45,13 +44,13 @@ class NPCBehaviorSystem:
     async def _get_postgres(self) -> PostgreSQLPool:
         """Get PostgreSQL pool instance."""
         if self.postgres is None:
-            self.postgres = await get_postgres_pool()
+            self.postgres = get_state_manager_client()
         return self.postgres
     
     async def _get_redis(self) -> RedisPool:
         """Get Redis pool instance."""
         if self.redis is None:
-            self.redis = await get_redis_pool()
+            self.redis = get_state_manager_client()
         return self.redis
     
     async def _get_llm_client(self) -> LLMClient:

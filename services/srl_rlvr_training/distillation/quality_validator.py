@@ -19,7 +19,7 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
-from services.model_management.model_registry import ModelRegistry
+from model_registry import ModelRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -397,6 +397,7 @@ class QualityValidator:
         key = parts[1] if len(parts) > 1 else ""
         
         return bucket, key
+
 
 
 

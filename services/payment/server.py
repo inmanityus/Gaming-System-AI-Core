@@ -6,7 +6,7 @@ Main server for payment and coupon management.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .api_routes import router
+from payment.api_routes import router
 
 app = FastAPI(
     title="Payment Service",

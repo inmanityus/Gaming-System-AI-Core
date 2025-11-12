@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 API routes for Environmental Narrative Service.
 """
@@ -6,7 +7,6 @@ from fastapi import APIRouter, HTTPException, Depends
 from typing import Dict, Any, List, Optional
 from uuid import UUID
 from pydantic import BaseModel, Field, validator
-from services.environmental_narrative.narrative_service import (
     EnvironmentalNarrativeService,
     SceneType,
     StoryScene,
@@ -182,8 +182,8 @@ async def get_environmental_history(
     location_x: Optional[float] = None,
     location_y: Optional[float] = None,
     location_z: Optional[float] = None,
-    radius: float = Field(50.0, ge=0.0, le=1000.0, description="Search radius"),
-    limit: int = Field(100, ge=1, le=1000, description="Maximum records"),
+    radius: float = 50.0,
+    limit: int = 100,
     service: EnvironmentalNarrativeService = Depends(get_narrative_service)
 ) -> List[Dict[str, Any]]:
     """

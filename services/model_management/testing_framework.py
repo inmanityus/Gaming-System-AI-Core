@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Testing Framework - Tests models to ensure similar/better behavior.
 Compares candidate models with current models until threshold met.
@@ -12,7 +13,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from uuid import UUID
 from datetime import datetime
 
-from services.state_manager.connection_pool import PostgreSQLPool
+from state_manager.connection_pool import PostgreSQLPool
 
 
 class TestResults:
@@ -220,7 +221,7 @@ class TestingFramework:
         Loads model from registry and calls actual generation API.
         """
         try:
-            from services.model_management.model_registry import ModelRegistry
+            from model_registry import ModelRegistry
             from services.model_management.model_loader import ModelLoader
             
             registry = ModelRegistry()
@@ -695,7 +696,7 @@ Return ONLY a number between 0.0 and 1.0."""
         Validates performance for specific use cases like NPC dialogue, story generation, etc.
         """
         try:
-            from services.model_management.model_registry import ModelRegistry
+            from model_registry import ModelRegistry
             from services.model_management.model_loader import ModelLoader
             
             registry = ModelRegistry()

@@ -8,43 +8,21 @@ from typing import Dict, Any
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 
-from api_routes import router
-from database_connection import get_postgres, get_redis
+from .api_routes import router
+
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
     Lifespan context manager for startup and shutdown.
-    Initializes connection pools on startup.
     """
     # Startup
-    print("Initializing Story Teller Service...")
-    
-    try:
-        # Initialize PostgreSQL connection pool
-        postgres = await get_postgres_pool()
-        await postgres.ping()
-        print("✓ PostgreSQL connection pool initialized")
-    except Exception as e:
-        print(f"✗ Failed to initialize PostgreSQL: {e}")
-        raise
-    
-    try:
-        # Initialize Redis connection pool
-        redis = await get_redis_pool()
-        await redis.ping()
-        print("✓ Redis connection pool initialized")
-    except Exception as e:
-        print(f"✗ Failed to initialize Redis: {e}")
-        raise
-    
     print("✓ Story Teller Service initialized successfully")
     
     yield
     
     # Shutdown
-    print("Shutting down Story Teller Service...")
     print("✓ Story Teller Service shutdown complete")
 
 
@@ -94,7 +72,7 @@ async def health_check() -> Dict[str, Any]:
     """Comprehensive health check endpoint."""
     try:
         # Check PostgreSQL connection
-        postgres = await get_postgres_pool()
+        postgres = get_state_manager_client()
         await postgres.ping()
         postgres_healthy = True
     except Exception:
@@ -102,7 +80,7 @@ async def health_check() -> Dict[str, Any]:
     
     try:
         # Check Redis connection
-        redis = await get_redis_pool()
+        redis = get_state_manager_client()
         await redis.ping()
         redis_healthy = True
     except Exception:

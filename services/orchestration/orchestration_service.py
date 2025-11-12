@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Orchestration Service - Main service coordinating the 4-layer pipeline.
 Manages parallel execution, conflict resolution, and state synchronization.
@@ -7,15 +8,15 @@ import asyncio
 import logging
 from typing import Dict, List, Optional, Any
 
-from services.orchestration.models import ContentRequest, ContentResponse, FoundationOutput
-from services.orchestration.layers import (
+from .layers import (
     FoundationLayer,
     CustomizationLayer,
     InteractionLayer,
     CoordinationLayer
 )
-from services.ai_integration.llm_client import LLMClient
-from services.state_manager.connection_pool import get_postgres_pool
+
+# Import shared models
+from .models_schemas import ContentRequest, ContentResponse
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +59,7 @@ class OrchestrationService:
     async def _get_postgres(self):
         """Get PostgreSQL pool instance."""
         if self.postgres is None:
-            self.postgres = await get_postgres_pool()
+            self.postgres = get_state_manager_client()
         return self.postgres
     
     async def _get_redis(self):

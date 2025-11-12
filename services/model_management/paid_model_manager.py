@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Paid Model Manager - Manages paid models with auto-switching.
 Always checks for better models and switches when found.
@@ -11,10 +12,6 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from services.model_management.model_registry import ModelRegistry
-from services.model_management.paid_model_scanner import PaidModelScanner
-from services.model_management.model_ranker import ModelRanker
-from services.model_management.historical_log_processor import HistoricalLogProcessor
 
 # Lazy import to avoid circular dependency
 # LLMClient imported inside methods when needed

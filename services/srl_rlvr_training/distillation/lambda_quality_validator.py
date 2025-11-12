@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Lambda function for validating distilled adapter quality.
 """
@@ -92,6 +93,7 @@ def _parse_s3_uri(s3_uri: str) -> tuple[str, str]:
     key = parts[1] if len(parts) > 1 else ""
     
     return bucket, key
+
 
 
 

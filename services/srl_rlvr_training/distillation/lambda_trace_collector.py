@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Lambda function for collecting Bronze tier traces for distillation.
 """
@@ -61,6 +62,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'statusCode': 500,
             'error': str(e)
         }
+
 
 
 

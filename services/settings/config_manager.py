@@ -10,7 +10,9 @@ from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, ValidationError
 
-from services.state_manager.connection_pool import get_postgres_pool, PostgreSQLPool
+# REFACTORING: Direct database imports replaced with on-demand connections
+import asyncpg
+from typing import Any as PostgreSQLPool
 
 
 class ConfigValidationError(Exception):
@@ -119,9 +121,9 @@ class ConfigManager:
         
         await postgres.execute(query, category, key, json_value)
         
-        # Invalidate cache for hot-reload
-        from services.state_manager.connection_pool import get_redis_pool
-        redis = await get_redis_pool()
+        # Invalidate cache for hot-reload (requires state-manager HTTP client)
+        # TODO: Use state-manager HTTP client for cache invalidation
+        # redis = await get_redis_pool()
         cache_key = f"setting:{category}:{key}"
         await redis.delete(cache_key)
         
@@ -183,10 +185,10 @@ class ConfigManager:
         query = "DELETE FROM settings WHERE category = $1 AND key = $2"
         result = await postgres.execute(query, category, key)
         
-        # Invalidate cache
-        from services.state_manager.connection_pool import get_redis_pool
-        redis = await get_redis_pool()
-        await redis.delete(f"setting:{category}:{key}")
+        # Invalidate cache (requires state-manager HTTP client)
+        # TODO: Use state-manager HTTP client for cache invalidation
+        # redis = await get_redis_pool()
+        # await redis.delete(f"setting:{category}:{key}")
         
         return True
 

@@ -1,0 +1,25 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "Game Observer",
+	"Description": "AI-driven game testing system with screenshot capture, telemetry export, and state monitoring for The Body Broker",
+	"Category": "Testing",
+	"CreatedBy": "Gaming System AI Core",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "GameObserver",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
+

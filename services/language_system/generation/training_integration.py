@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Training Integration Module
 ============================
@@ -9,17 +10,22 @@ import logging
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+# REFACTORING: Cross-service imports temporarily disabled for microservices independence
+# Training integration will be refactored to use HTTP API calls
+# from services.srl_rlvr_training.collaboration.collaboration_orchestrator import (
+#     CollaborationOrchestrator,
+#     CollaborationResult
+# )
+# from services.srl_rlvr_training.srl.srl_trainer import SRLTrainer
+# from services.srl_rlvr_training.rlvr.rlvr_trainer import RLVRTrainer
 
-from services.srl_rlvr_training.collaboration.collaboration_orchestrator import (
-    CollaborationOrchestrator,
-    CollaborationResult
-)
-from services.srl_rlvr_training.srl.srl_trainer import SRLTrainer
-from services.srl_rlvr_training.rlvr.rlvr_trainer import RLVRTrainer
-from services.language_system.core.language_definition import LanguageDefinition
+# Placeholder types
+from typing import Any
+CollaborationOrchestrator = Any
+CollaborationResult = Any
+SRLTrainer = Any
+RLVRTrainer = Any
+LanguageDefinition = Any
 
 logger = logging.getLogger(__name__)
 

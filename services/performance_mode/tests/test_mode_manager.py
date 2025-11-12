@@ -1,10 +1,10 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Tests for ModeManager.
 """
 
 import pytest
 import time
-from services.performance_mode.mode_manager import (
     ModeManager,
     PerformanceMode,
     ModePreset,
@@ -163,6 +163,7 @@ class TestModeManager:
         assert "config" in status
         assert status["mode"] == "immersive"
         assert status["target_fps"] == 90.0
+
 
 
 

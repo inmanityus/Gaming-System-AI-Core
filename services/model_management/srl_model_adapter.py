@@ -17,7 +17,6 @@ from botocore.exceptions import ClientError
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from services.model_management.model_registry import ModelRegistry
 
 
 class SRLModelAdapter:

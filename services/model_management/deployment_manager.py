@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Deployment Manager - Manages model deployment with rollback.
 Blue-green deployment, canary releases, automatic rollback.
@@ -10,8 +11,7 @@ from datetime import datetime
 from typing import Any, Dict, Optional
 from uuid import UUID, uuid4
 
-from services.state_manager.connection_pool import PostgreSQLPool
-from services.model_management.rollback_manager import RollbackManager
+from state_manager.connection_pool import PostgreSQLPool
 
 
 class DeploymentManager:
@@ -374,7 +374,7 @@ class DeploymentManager:
         
         # Update model registry as source of truth
         try:
-            from services.model_management.model_registry import ModelRegistry
+            from model_registry import ModelRegistry
             registry = ModelRegistry()
             
             # Update model configuration with traffic percentage

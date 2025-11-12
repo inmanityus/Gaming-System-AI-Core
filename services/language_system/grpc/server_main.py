@@ -6,7 +6,7 @@ import asyncio
 import logging
 import signal
 import sys
-from .grpc_server import LanguageSystemGRPCServer
+from language_system.grpc.grpc_server import LanguageSystemGRPCServer
 
 logging.basicConfig(
     level=logging.INFO,

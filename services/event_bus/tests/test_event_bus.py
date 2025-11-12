@@ -1,10 +1,10 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Tests for Event Bus - REAL implementations only.
 """
 
 import pytest
 import asyncio
-from services.event_bus.event_bus import GameEventBus, GameEvent, EventType
 
 
 @pytest.mark.asyncio
@@ -108,6 +108,7 @@ async def test_event_bus_stats():
     assert stats["events_published"] == 1
     assert stats["events_delivered"] == 1
     assert stats["subscriptions"] == 1
+
 
 
 

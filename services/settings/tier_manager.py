@@ -6,7 +6,9 @@ Supports Free, Premium, and Whale tiers.
 from typing import Dict, Optional
 from uuid import UUID
 
-from services.state_manager.connection_pool import get_postgres_pool, PostgreSQLPool
+# REFACTORING: Direct database imports replaced with on-demand connections
+import asyncpg
+from typing import Any as PostgreSQLPool
 
 
 class TierCapabilities:

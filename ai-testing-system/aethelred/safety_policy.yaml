@@ -1,0 +1,177 @@
+# Safety Policy for Autonomous AI Development
+# Defines which code surfaces AI agents can modify
+
+version: 1.0.0
+updated_at: "2025-11-11"
+
+# Write Surface Whitelist (AI CAN modify these)
+allowed_paths:
+  # Content - Safe Zone (Phase 1)
+  content_safe:
+    - "Content/Maps/Goreforge/**"
+    - "Content/Maps/Clients/**"
+    - "Content/Blueprints/Harvesting/**"
+    - "Content/Blueprints/Negotiation/**"
+    - "Content/Blueprints/DeathSystem/**"
+    - "Content/UI/**"
+    - "Content/Materials/PostProcess/**"
+    - "Docs/**"
+  
+  # Gameplay - Medium Risk (Phase 2)
+  gameplay_medium:
+    - "Source/BodyBroker/Gameplay/**"
+    - "Source/BodyBroker/AI/NPCs/**"
+    - "Content/Blueprints/Combat/**"
+    - "Content/Blueprints/VeilSight/**"
+    - "Plugins/VocalSynthesis/Content/**"
+  
+  # Tests - Always Allowed
+  tests:
+    - "Source/BodyBroker/Tests/**"
+    - "ai-testing-system/**/*.py"  # Test system itself
+
+# Forbidden Paths (AI CANNOT modify these)
+forbidden_paths:
+  # Engine Core - High Risk
+  engine:
+    - "Source/BodyBroker/Core/**"
+    - "Source/BodyBroker/Engine/**"
+  
+  # Physics - High Risk
+  physics:
+    - "Source/BodyBroker/Physics/**"
+  
+  # Network - High Risk
+  network:
+    - "Source/BodyBroker/Network/**"
+    - "Source/BodyBroker/Multiplayer/**"
+  
+  # Build System - Critical
+  build:
+    - "*.uproject"
+    - "*.uplugin"
+    - "*.Target.cs"
+    - "*.Build.cs"
+    - "Build/**"
+    - "scripts/build-*.ps1"
+  
+  # Deployment - Critical
+  deployment:
+    - ".github/workflows/**"
+    - "docker-compose.yml"
+    - "Dockerfile"
+    - "ecs-task-definition.json"
+    - "scripts/*deploy*.ps1"
+  
+  # Security - Critical
+  security:
+    - ".env*"
+    - "secrets/**"
+    - "*.pem"
+    - "*.key"
+
+# Phase-Based Access (Expand over time)
+phases:
+  phase_1:  # Months 1-2
+    enabled: ["content_safe", "tests"]
+    max_files_per_arp: 5
+    requires_janus: false  # Simple changes, no Janus yet
+  
+  phase_2:  # Months 3-4
+    enabled: ["content_safe", "gameplay_medium", "tests"]
+    max_files_per_arp: 10
+    requires_janus: true  # Complex changes need expert oversight
+  
+  phase_3:  # Months 5-6+
+    enabled: ["content_safe", "gameplay_medium", "tests"]
+    max_files_per_arp: 20
+    requires_janus: true
+    # Note: engine, physics, network remain forbidden
+
+# Validation Rules
+validation:
+  # File size limits
+  max_file_size_mb: 10
+  max_total_change_mb: 50
+  
+  # Change complexity limits
+  max_lines_added_per_file: 500
+  max_lines_deleted_per_file: 300
+  
+  # Safety checks
+  require_tests_for_code_changes: true
+  min_test_coverage_percent: 80
+  
+  # Peer review requirements
+  min_reviewer_models: 3
+  require_diverse_model_families: true  # GPT, Claude, Gemini, DeepSeek
+  
+  # Regression requirements
+  regression_tests_required: true
+  performance_budget_enforced: true
+
+# 8 Dark World Clients (Phase 2 - Perfect for Autonomous)
+dark_world_clients:
+  carrion_kin:
+    path: "Content/Blueprints/Clients/CarrionKin/**"
+    phase: 2
+    independence: high  # Can modify without affecting other clients
+  
+  chatter_swarm:
+    path: "Content/Blueprints/Clients/ChatterSwarm/**"
+    phase: 2
+    independence: high
+  
+  stitch_guild:
+    path: "Content/Blueprints/Clients/StitchGuild/**"
+    phase: 2
+    independence: high
+  
+  moon_clans:
+    path: "Content/Blueprints/Clients/MoonClans/**"
+    phase: 2
+    independence: high
+  
+  vampiric_houses:
+    path: "Content/Blueprints/Clients/VampiricHouses/**"
+    phase: 2
+    independence: high
+  
+  obsidian_synod:
+    path: "Content/Blueprints/Clients/ObsidianSynod/**"
+    phase: 2
+    independence: high
+  
+  silent_court:
+    path: "Content/Blueprints/Clients/SilentCourt/**"
+    phase: 2
+    independence: high
+  
+  leviathan_conclave:
+    path: "Content/Blueprints/Clients/LeviathanConclave/**"
+    phase: 2
+    independence: high
+
+# Alert Configuration
+alerts:
+  # Critical alerts (immediate attention)
+  critical:
+    - "Forbidden path modification attempted"
+    - "Phase access violation"
+    - "Authentication failure"
+    - "Data corruption detected"
+  
+  # Warning alerts (monitor)
+  warning:
+    - "Approaching file size limit"
+    - "High change complexity"
+    - "Test coverage below threshold"
+    - "Performance budget exceeded"
+
+# Enforcement
+enforcement:
+  mode: "strict"  # "strict" or "permissive"
+  on_violation: "reject_arp"  # "reject_arp", "alert", or "allow_with_review"
+  log_all_checks: true
+  audit_trail_required: true
+

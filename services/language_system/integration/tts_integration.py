@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 TTS Integration Module
 ======================
@@ -15,7 +16,6 @@ from dataclasses import dataclass, field
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from services.language_system.core.language_definition import LanguageDefinition, LanguageType
 
 # Cloud TTS imports
 try:

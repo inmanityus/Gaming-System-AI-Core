@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 End-to-End Tests for Complete Training Workflow - Created by Tester and Reviewed by Reviewer.
 Tests the complete SRL→RLVR training pipeline from start to finish.
@@ -17,7 +18,7 @@ from services.srl_rlvr_training.collaboration.teacher_planner import TeacherPlan
 from services.srl_rlvr_training.collaboration.verifier import Verifier
 from services.srl_rlvr_training.srl.srl_trainer import SRLTrainer
 from services.srl_rlvr_training.rlvr.rlvr_trainer import RLVRTrainer
-from services.model_management.model_registry import ModelRegistry
+from model_registry import ModelRegistry
 
 
 class TestE2ETrainingWorkflow:

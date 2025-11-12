@@ -1,13 +1,4 @@
-FROM python:3.11-slim
+FROM 695353648052.dkr.ecr.us-east-1.amazonaws.com/bodybroker-services:base-latest
 
-WORKDIR /app
-
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . .
-
-EXPOSE 8000
-
-CMD ["python", "-m", "uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8000"]
-
+# Service-specific CMD
+CMD ["python", "-m", "uvicorn", "performance_mode.server:app", "--host", "0.0.0.0", "--port", "8000"]

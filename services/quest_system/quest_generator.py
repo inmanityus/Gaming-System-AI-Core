@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Quest Generation Engine - AI-driven quest creation.
 Generates dynamic, contextually relevant quests using AI integration.
@@ -11,8 +12,11 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from services.ai_integration.llm_client import LLMClient
-from services.state_manager.connection_pool import get_postgres_pool, get_redis_pool, PostgreSQLPool, RedisPool
+# REFACTORING: Direct database imports replaced with on-demand connections
+# from state_manager.connection_pool import get_postgres_pool, get_redis_pool, PostgreSQLPool, RedisPool
+import asyncpg
+import redis.asyncio as redis
+from typing import Optional, Any as PostgreSQLPool, Any as RedisPool, Any as LLMClient
 
 
 class QuestGenerationEngine:
@@ -29,13 +33,13 @@ class QuestGenerationEngine:
     async def _get_postgres(self) -> PostgreSQLPool:
         """Get PostgreSQL pool instance."""
         if self.postgres is None:
-            self.postgres = await get_postgres_pool()
+            self.postgres = get_state_manager_client()
         return self.postgres
     
     async def _get_redis(self) -> RedisPool:
         """Get Redis pool instance."""
         if self.redis is None:
-            self.redis = await get_redis_pool()
+            self.redis = get_state_manager_client()
         return self.redis
     
     async def _get_llm_client(self) -> LLMClient:

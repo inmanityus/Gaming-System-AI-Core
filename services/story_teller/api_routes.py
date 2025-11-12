@@ -9,10 +9,10 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, status, Header, Depends
 from pydantic import BaseModel, Field
 
-from story_manager import StoryManager, StoryNode
-from narrative_generator import NarrativeGenerator
-from choice_processor import ChoiceProcessor, ChoiceValidationError
-from story_branching import StoryBranching, StoryBranch
+from .story_manager import StoryManager, StoryNode
+from .narrative_generator import NarrativeGenerator
+from .choice_processor import ChoiceProcessor, ChoiceValidationError
+from .story_branching import StoryBranching, StoryBranch
 
 # SECURITY: Admin API Keys for story operations
 STORY_ADMIN_KEYS = set(os.getenv('STORY_ADMIN_KEYS', '').split(',')) if os.getenv('STORY_ADMIN_KEYS') else set()

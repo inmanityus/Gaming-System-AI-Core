@@ -36,7 +36,7 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
-from services.model_management.model_registry import ModelRegistry
+from model_registry import ModelRegistry
 from .trace_collector import TraceCollector
 
 logger = logging.getLogger(__name__)

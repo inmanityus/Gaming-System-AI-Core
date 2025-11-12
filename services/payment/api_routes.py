@@ -12,7 +12,7 @@ from typing import Optional, Dict, Any, List
 from fastapi import APIRouter, HTTPException, Depends, Header, Request
 from pydantic import BaseModel
 
-from . import PaymentService, CouponService
+from payment import PaymentService, CouponService
 
 router = APIRouter(prefix="/api/v1/payment", tags=["Payment"])
 

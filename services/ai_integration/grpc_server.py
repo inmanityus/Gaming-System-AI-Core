@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 GE-004: gRPC Server Implementation
 Backend gRPC server for AI inference service.
@@ -11,8 +12,6 @@ from typing import AsyncIterator
 import bodybroker_pb2
 import bodybroker_pb2_grpc
 
-from services.ai_integration.multi_tier_router import MultiTierModelRouter, ModelTier
-from services.ai_integration.vllm_client import VLLMClient
 
 
 class AIInferenceServiceServicer(bodybroker_pb2_grpc.AIInferenceServiceServicer):

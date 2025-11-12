@@ -10,10 +10,10 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, Depends, Header
 from pydantic import BaseModel
 
-from llm_client import LLMClient
-from context_manager import ContextManager
-from service_coordinator import ServiceCoordinator
-from response_optimizer import ResponseOptimizer
+from .llm_client import LLMClient
+from .context_manager import ContextManager
+from .service_coordinator import ServiceCoordinator
+from .response_optimizer import ResponseOptimizer
 
 # SECURITY: Admin API Keys for AI operations
 AI_ADMIN_KEYS = set(os.getenv('AI_ADMIN_KEYS', '').split(',')) if os.getenv('AI_ADMIN_KEYS') else set()

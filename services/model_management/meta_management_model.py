@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Meta-Management Model - Orchestrates all model management.
 Does NOT directly participate in player worlds.
@@ -7,11 +8,7 @@ import asyncio
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
-from services.state_manager.connection_pool import PostgreSQLPool
-from services.model_management.model_registry import ModelRegistry
-from services.model_management.deployment_manager import DeploymentManager
-from services.model_management.rollback_manager import RollbackManager
-from services.model_management.guardrails_monitor import GuardrailsMonitor
+from state_manager.connection_pool import PostgreSQLPool
 
 
 class OptimizationDecision:
@@ -117,7 +114,7 @@ class MetaManagementModel:
                 # REAL IMPLEMENTATION - Check for better models
                 try:
                     from services.model_management.paid_model_manager import PaidModelManager
-                    from services.model_management.model_registry import ModelRegistry
+                    from model_registry import ModelRegistry
                     
                     paid_manager = PaidModelManager()
                     registry = ModelRegistry()
@@ -381,7 +378,7 @@ class MetaManagementModel:
                             fine_tuning = FineTuningPipeline()
                             
                             # Get model from registry
-                            from services.model_management.model_registry import ModelRegistry
+                            from model_registry import ModelRegistry
                             registry = ModelRegistry()
                             model = await registry.get_model(decision.target_model_id)
                             

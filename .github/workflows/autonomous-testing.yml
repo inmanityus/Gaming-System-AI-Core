@@ -1,0 +1,178 @@
+# Autonomous Testing Workflow
+# Triggered on every commit - runs regression tests automatically
+# Integrates with AADS (Autonomous AI Development System)
+
+name: Autonomous Testing & Deployment
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  AETHELRED_URL: http://98.90.203.43:8001
+  QA_ORCHESTRATOR_URL: http://54.174.89.122:8000
+
+jobs:
+  regression-tests:
+    name: Run Regression Tests
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup UE5 environment
+        run: |
+          Write-Host "UE5 5.6.1 test environment"
+          $UE5Path = "C:\Program Files\Epic Games\UE_5.6"
+          if (-not (Test-Path $UE5Path)) {
+            Write-Error "UE5 5.6.1 not found"
+            exit 1
+          }
+      
+      - name: Extract Jira ticket from commit
+        id: extract-ticket
+        run: |
+          $CommitMessage = git log -1 --pretty=%B
+          if ($CommitMessage -match '\[([A-Z]+-\d+)\]') {
+            $JiraTicket = $matches[1]
+            Write-Host "Found Jira ticket: $JiraTicket"
+            echo "ticket=$JiraTicket" >> $env:GITHUB_OUTPUT
+          } else {
+            Write-Host "No Jira ticket in commit message"
+            echo "ticket=" >> $env:GITHUB_OUTPUT
+          }
+      
+      - name: Query Aethelred for affected tests
+        if: steps.extract-ticket.outputs.ticket != ''
+        id: affected-tests
+        run: |
+          $Ticket = "${{ steps.extract-ticket.outputs.ticket }}"
+          
+          # Query Aethelred: Which ARP corresponds to this ticket?
+          $Response = Invoke-RestMethod -Uri "$env:AETHELRED_URL/arp?jira_ticket=$Ticket" -Headers @{"X-API-Key"=$env.AETHELRED_API_KEY}
+          
+          if ($Response.total -gt 0) {
+            $ARP = $Response.arps[0]
+            $TestFilter = $ARP.affected_systems -join ","
+            Write-Host "ARP: $($ARP.arp_id) - Running tests: $TestFilter"
+            echo "filter=$TestFilter" >> $env:GITHUB_OUTPUT
+            echo "arp_id=$($ARP.arp_id)" >> $env:GITHUB_OUTPUT
+          } else {
+            Write-Host "No ARP found for ticket $Ticket - running all tests"
+            echo "filter=BodyBroker" >> $env:GITHUB_OUTPUT
+            echo "arp_id=" >> $env:GITHUB_OUTPUT
+          }
+        env:
+          AETHELRED_API_KEY: ${{ secrets.AETHELRED_API_KEY }}
+      
+      - name: Run UE5 Regression Tests
+        id: run-tests
+        run: |
+          $Filter = "${{ steps.affected-tests.outputs.filter }}"
+          if (-not $Filter) { $Filter = "BodyBroker" }
+          
+          Write-Host "Running tests: $Filter"
+          
+          & "C:\Program Files\Epic Games\UE_5.6\Engine\Binaries\Win64\UnrealEditor.exe" `
+            "${{ github.workspace }}\unreal\BodyBroker.uproject" `
+            -ExecCmds="Automation RunTests Now $Filter" `
+            -unattended -nopause -nullrhi `
+            -ReportOutputPath="${{ github.workspace }}\test-results"
+          
+          # Parse results
+          $ResultFiles = Get-ChildItem "${{ github.workspace }}\test-results" -Filter "*.json" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          
+          if ($ResultFiles) {
+            $Results = Get-Content $ResultFiles[0].FullName | ConvertFrom-Json
+            $PassedTests = ($Results.tests | Where-Object { $_.state -eq "Success" }).Count
+            $FailedTests = ($Results.tests | Where-Object { $_.state -eq "Fail" }).Count
+            
+            Write-Host "Tests Passed: $PassedTests"
+            Write-Host "Tests Failed: $FailedTests"
+            
+            echo "passed=$PassedTests" >> $env:GITHUB_OUTPUT
+            echo "failed=$FailedTests" >> $env:GITHUB_OUTPUT
+            
+            if ($FailedTests -gt 0) {
+              Write-Error "Tests failed - blocking deployment"
+              exit 1
+            }
+          } else {
+            Write-Error "No test results found"
+            exit 1
+          }
+      
+      - name: Report results to Aethelred
+        if: always() && steps.affected-tests.outputs.arp_id != ''
+        run: |
+          $ARPId = "${{ steps.affected-tests.outputs.arp_id }}"
+          $Passed = "${{ steps.run-tests.outputs.passed }}"
+          $Failed = "${{ steps.run-tests.outputs.failed }}"
+          
+          $Body = @{
+            regression_tests = @{
+              total = [int]$Passed + [int]$Failed
+              passed = [int]$Passed
+              failed = [int]$Failed
+              git_commit = "${{ github.sha }}"
+              timestamp = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
+            }
+          } | ConvertTo-Json
+          
+          Invoke-RestMethod -Uri "$env:AETHELRED_URL/arp/$ARPId/regression-results" `
+            -Method POST -Body $Body -ContentType "application/json" `
+            -Headers @{"X-API-Key"=$env.AETHELRED_API_KEY}
+          
+          if ([int]$Failed -eq 0) {
+            # Update ARP status to REGRESSION_PASSED
+            Invoke-RestMethod -Uri "$env:AETHELRED_URL/arp/$ARPId/status" `
+              -Method PATCH -Body '{"status":"regression_passed"}' -ContentType "application/json" `
+              -Headers @{"X-API-Key"=$env.AETHELRED_API_KEY}
+          } else {
+            # Update status to REGRESSION_FAILED
+            Invoke-RestMethod -Uri "$env:AETHELRED_URL/arp/$ARPId/status" `
+              -Method PATCH -Body '{"status":"regression_failed"}' -ContentType "application/json" `
+              -Headers @{"X-API-Key"=$env.AETHELRED_API_KEY}
+          }
+        env:
+          AETHELRED_API_KEY: ${{ secrets.AETHELRED_API_KEY }}
+      
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results/
+
+  deploy-canary:
+    name: Deploy to Canary Ring
+    runs-on: ubuntu-latest
+    needs: regression-tests
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Deploy to canary (5% instances)
+        run: |
+          echo "Deploying to canary ring..."
+          # TODO: Implement canary deployment logic
+          # - Deploy to 5% of instances
+          # - Monitor for 30 minutes
+          # - Automatic rollback if SLOs breached
+      
+      - name: Monitor SLOs
+        run: |
+          echo "Monitoring SLOs for 30 minutes..."
+          # TODO: Monitor:
+          # - Crash rate <= baseline + 0.1%
+          # - P95 frame time <= 16.6ms
+          # - Memory <= budget
+          # - No new errors in logs
+      
+      - name: Progressive rollout
+        run: |
+          echo "SLOs passed - progressive rollout"
+          # TODO: 25% -> 50% -> 100%
+

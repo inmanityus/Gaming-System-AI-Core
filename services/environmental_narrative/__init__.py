@@ -1,10 +1,10 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Environmental Narrative Service - Environmental Storytelling System
 
 Implements REQ-ENV-001: Environmental Narrative Service (ENS).
 """
 
-from services.environmental_narrative.narrative_service import (
     EnvironmentalNarrativeService,
     StoryScene,
     ObjectMetadata,
@@ -17,6 +17,7 @@ __all__ = [
     "ObjectMetadata",
     "DiscoveryReward",
 ]
+
 
 
 

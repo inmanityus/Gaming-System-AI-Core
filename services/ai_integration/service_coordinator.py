@@ -14,9 +14,8 @@ from uuid import UUID
 import aiohttp
 from aiohttp import ClientSession, ClientTimeout
 
-# Add parent directory to path for model_management imports
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-from model_management_client import ModelManagementClient, get_model_management_client
+# Import HTTP clients for cross-service communication
+from .model_management_client import ModelManagementClient, get_model_management_client
 
 
 class ServiceCoordinator:

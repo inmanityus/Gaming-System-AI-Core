@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Fine-Tuning Pipeline - Fine-tunes models using historical logs + initial training data.
 Supports LoRA and full fine-tuning. Creates use-case specific models.
@@ -12,8 +13,7 @@ from uuid import UUID
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from services.state_manager.connection_pool import get_postgres_pool, PostgreSQLPool
-from services.model_management.historical_log_processor import HistoricalLogProcessor
+from state_manager.connection_pool import get_postgres_pool, PostgreSQLPool
 
 
 class FineTuningPipeline:
@@ -30,7 +30,7 @@ class FineTuningPipeline:
     async def _get_postgres(self) -> PostgreSQLPool:
         """Get PostgreSQL pool instance."""
         if self.postgres is None:
-            self.postgres = await get_postgres_pool()
+            self.postgres = get_state_manager_client()
         return self.postgres
     
     async def fine_tune_model(
@@ -119,7 +119,7 @@ class FineTuningPipeline:
     
     async def _get_model_info(self, model_id: UUID) -> Dict[str, Any]:
         """Get model information from registry."""
-        from services.model_management.model_registry import ModelRegistry
+        from model_registry import ModelRegistry
         
         registry = ModelRegistry()
         model = await registry.get_model(model_id)
@@ -807,7 +807,7 @@ class FineTuningPipeline:
         """Store training job metadata in database."""
         # Store in model registry if available
         try:
-            from services.model_management.model_registry import ModelRegistry
+            from model_registry import ModelRegistry
             registry = ModelRegistry()
             # Store as pending model until training completes
             await registry.register_model(model_info)

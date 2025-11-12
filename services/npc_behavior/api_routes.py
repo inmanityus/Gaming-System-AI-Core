@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 API Routes - FastAPI routes for NPC Behavior Service.
 """
@@ -8,12 +9,15 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Header
 from pydantic import BaseModel
+from typing import Any
 
-from behavior_engine import BehaviorEngine
-from personality_system import PersonalitySystem
-from goal_manager import GoalManager
-from interaction_router import InteractionRouter
-from services.ai_integration.llm_client import LLMClient
+from .behavior_engine import BehaviorEngine
+from .personality_system import PersonalitySystem
+from .goal_manager import GoalManager
+from .interaction_router import InteractionRouter
+
+# Type placeholder for refactoring
+LLMClient = Any
 
 # SECURITY: Admin API Keys for NPC operations
 NPC_ADMIN_KEYS = set(os.getenv('NPC_ADMIN_KEYS', '').split(',')) if os.getenv('NPC_ADMIN_KEYS') else set()

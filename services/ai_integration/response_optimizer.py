@@ -10,12 +10,9 @@ import time
 from typing import Any, Dict, List, Optional, Tuple
 from uuid import UUID
 
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-
+# Import HTTP clients for cross-service communication
 from state_manager_client import StateManagerClient, get_state_manager_client
-from llm_client import LLMClient
+
 
 
 class ResponseCache:

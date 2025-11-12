@@ -1,0 +1,12 @@
+{
+  "watch_directory": "../../../unreal/GameObserver/Captures",
+  "s3_bucket": "body-broker-qa-captures",
+  "sqs_queue_url": "https://sqs.us-east-1.amazonaws.com/695353648052/body-broker-qa-analysis-jobs",
+  "orchestrator_url": "http://54.174.89.122:8000",
+  "upload_batch_size": 10,
+  "upload_interval_seconds": 30,
+  "aws_region": "us-east-1",
+  "agent_id": "local-dev-machine",
+  "log_level": "INFO"
+}
+

@@ -8,10 +8,6 @@ This service handles:
 - Real-time AI response optimization
 """
 
-from llm_client import LLMClient
-from context_manager import ContextManager
-from service_coordinator import ServiceCoordinator
-from response_optimizer import ResponseOptimizer
 
 __all__ = [
     "LLMClient",

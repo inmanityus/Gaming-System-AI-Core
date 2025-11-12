@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Language Definitions Data
 ==========================
@@ -5,7 +6,6 @@ Language Definitions Data
 Pre-defined language definitions for all game languages.
 """
 
-from services.language_system.core.language_definition import (
     LanguageDefinition,
     LanguageType,
     PhonemeInventory,

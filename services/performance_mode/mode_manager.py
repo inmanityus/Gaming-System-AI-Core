@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Mode Manager - Core implementation for Dual-Mode Performance Architecture.
 

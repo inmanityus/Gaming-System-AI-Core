@@ -1,10 +1,11 @@
+import asyncio
 """
 Database Connection Module for Story Teller service.
 Provides direct PostgreSQL and Redis connections without cross-service imports.
 """
 
 import asyncpg
-import aioredis
+import redis.asyncio as aioredis
 import os
 from typing import Optional
 import logging

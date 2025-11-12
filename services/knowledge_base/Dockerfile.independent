@@ -1,0 +1,18 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Copy shared HTTP clients
+COPY shared/ ./shared/
+
+# Copy only this service
+COPY knowledge_base/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY knowledge_base/ ./knowledge_base/
+
+WORKDIR /app
+
+EXPOSE 8000
+
+CMD ["python", "-m", "uvicorn", "knowledge_base.server:app", "--host", "0.0.0.0", "--port", "8000"]

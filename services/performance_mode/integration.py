@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Integration with Budget Monitor for mode-aware budget enforcement.
 """
@@ -5,7 +6,6 @@ Integration with Budget Monitor for mode-aware budget enforcement.
 import logging
 import asyncio
 from typing import Optional, Dict, Any
-from services.performance_mode.mode_manager import ModeManager, PerformanceMode
 try:
     from services.performance_budget.budget_monitor import BudgetMonitor, PerformanceMode as BudgetMode
 except ImportError:

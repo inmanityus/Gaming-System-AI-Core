@@ -9,11 +9,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 from uuid import UUID, uuid4
 
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-
-from services.state_manager.connection_pool import get_postgres_pool, PostgreSQLPool
+# Database connection handled by service initialization
 
 
 class ModelRegistry:
@@ -22,18 +18,19 @@ class ModelRegistry:
     Tracks model metadata, status, versions, and configurations.
     """
     
-    def __init__(self, db_pool: Optional[PostgreSQLPool] = None):
-        self.postgres: Optional[PostgreSQLPool] = db_pool
+    def __init__(self, db_pool: Optional[Any] = None):
+        self.postgres: Optional[Any] = db_pool
         self._model_cache: Dict[str, Dict[str, Any]] = {}
         self._cache_ttl = 300  # 5 minutes
     
-    async def _get_postgres(self) -> PostgreSQLPool:
+    async def _get_postgres(self) -> Any:
         """Get PostgreSQL pool instance."""
         if self.postgres is None:
-            self.postgres = await get_postgres_pool()
+            # Database pool injected at service initialization
+            raise RuntimeError("Database pool not initialized")
         return self.postgres
     
-    async def get_postgres_pool(self) -> PostgreSQLPool:
+    async def get_postgres_pool(self) -> Any:
         """Get PostgreSQL pool (public interface)."""
         return await self._get_postgres()
     

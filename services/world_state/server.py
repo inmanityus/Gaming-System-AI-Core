@@ -10,11 +10,11 @@ from typing import AsyncGenerator
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api_routes import router
-from world_state_manager import WorldStateManager
-from event_system import EventSystem
-from faction_manager import FactionManager
-from economic_manager import EconomicManager
+from .world_state_manager import WorldStateManager
+from .event_system import EventSystem
+from .faction_manager import FactionManager
+from .economic_manager import EconomicManager
+from .api_routes import router
 
 
 # Global instances

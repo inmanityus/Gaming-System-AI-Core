@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Performance Tests for SRL→RLVR Training System - Created by Tester and Reviewed by Reviewer.
 Tests performance metrics and validation.

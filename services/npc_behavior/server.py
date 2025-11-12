@@ -8,8 +8,8 @@ from typing import AsyncGenerator
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api_routes import router
-from behavior_engine import BehaviorEngine
+from .behavior_engine import BehaviorEngine
+from .api_routes import router
 
 
 # Global instances

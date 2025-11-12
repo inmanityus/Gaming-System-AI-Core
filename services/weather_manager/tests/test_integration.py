@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Integration tests for Weather Manager with Event Bus and Time Manager.
 REAL IMPLEMENTATION - Real integration tests.
@@ -6,7 +7,6 @@ REAL IMPLEMENTATION - Real integration tests.
 import pytest
 import asyncio
 from services.weather_manager.weather_manager import WeatherManager, WeatherState, Season
-from services.event_bus.event_bus import GameEventBus, GameEvent, EventType
 from services.time_manager.time_manager import TimeOfDayManager
 
 
@@ -94,6 +94,7 @@ async def test_weather_manager_seasonal_variations():
         print(f"[RESULT] {season.value} season validated")
     
     print("[RESULT] Test: PASSED")
+
 
 
 

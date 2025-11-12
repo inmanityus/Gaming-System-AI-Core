@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 FastAPI server for Orchestration Service.
 """
@@ -6,17 +7,17 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
 import logging
+import os
 
-from services.orchestration.orchestration_service import OrchestrationService
-from services.orchestration.models import ContentRequest, ContentResponse
-from services.orchestration.api_routes import router
+from .api_routes import router
+from .orchestration_service import OrchestrationService
+from .models_schemas import ContentRequest, ContentResponse
 
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Orchestration Service", version="1.0.0")
 
 # CORS middleware
-import os
 allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
 app.add_middleware(
     CORSMiddleware,

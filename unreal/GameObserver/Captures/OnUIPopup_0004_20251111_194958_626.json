@@ -1,0 +1,46 @@
+{
+  "world_data": {
+    "game_name": "Marvel Rivals",
+    "zone_name": "Marvel Rivals Scene 4",
+    "current_objective_id": "OBJ_Validation_Test"
+  },
+  "capture_trigger": {
+    "game_name": "Marvel Rivals",
+    "source": "ExternalCapture",
+    "capture_method": "Windows Screen Capture",
+    "event_type": "OnUIPopup"
+  },
+  "player_data": {
+    "is_in_combat": false,
+    "health": 94,
+    "location": {
+      "x": 1816,
+      "y": 7584,
+      "z": 265
+    },
+    "rotation": {
+      "roll": 0,
+      "yaw": 335,
+      "pitch": -2
+    },
+    "velocity": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  "event_type": "OnUIPopup",
+  "test_metadata": {
+    "is_external_game": true,
+    "game_name": "Marvel Rivals",
+    "total_captures": 10,
+    "capture_sequence": 4
+  },
+  "rendering_data": {
+    "current_fps": 68,
+    "resolution": "4096x1152",
+    "camera_fov": 90
+  },
+  "screenshot_filename": "OnUIPopup_0004_20251111_194958_626.png",
+  "timestamp": "2025-11-12T02:49:58.915Z"
+}

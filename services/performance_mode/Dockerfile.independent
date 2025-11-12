@@ -1,0 +1,18 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Copy shared HTTP clients
+COPY shared/ ./shared/
+
+# Copy only this service
+COPY performance_mode/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY performance_mode/ ./performance_mode/
+
+WORKDIR /app
+
+EXPOSE 8000
+
+CMD ["python", "-m", "uvicorn", "performance_mode.server:app", "--host", "0.0.0.0", "--port", "8000"]

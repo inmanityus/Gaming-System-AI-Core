@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Model Management API Routes - FastAPI routes for model management.
 """
@@ -8,10 +9,11 @@ from pydantic import BaseModel, validator
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
-from services.model_management.model_registry import ModelRegistry
-from services.model_management.paid_model_manager import PaidModelManager
-from services.model_management.self_hosted_scanner import SelfHostedScanner
-from services.model_management.fine_tuning_pipeline import FineTuningPipeline
+from model_registry import ModelRegistry
+from paid_model_manager import PaidModelManager
+from self_hosted_scanner import SelfHostedScanner
+from fine_tuning_pipeline import FineTuningPipeline
+
 
 router = APIRouter(prefix="/api/v1/model-management", tags=["model-management"])
 

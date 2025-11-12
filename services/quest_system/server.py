@@ -4,47 +4,27 @@ Quest System Service - FastAPI server for dynamic quest generation and managemen
 
 from contextlib import asynccontextmanager
 from typing import Dict, Any
+import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import asyncpg
+import redis.asyncio as redis
 
-from .api_routes import router
-from services.state_manager.connection_pool import get_postgres_pool, get_redis_pool
+from quest_system.api_routes import router
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
     Lifespan context manager for startup and shutdown.
-    Initializes connection pools on startup.
     """
     # Startup
-    print("Initializing Quest System Service...")
-    
-    try:
-        # Initialize PostgreSQL connection pool
-        postgres = await get_postgres_pool()
-        await postgres.ping()
-        print("✓ PostgreSQL connection pool initialized")
-    except Exception as e:
-        print(f"✗ Failed to initialize PostgreSQL: {e}")
-        raise
-    
-    try:
-        # Initialize Redis connection pool
-        redis = await get_redis_pool()
-        await redis.ping()
-        print("✓ Redis connection pool initialized")
-    except Exception as e:
-        print(f"✗ Failed to initialize Redis: {e}")
-        raise
-    
     print("✓ Quest System Service initialized successfully")
     
     yield
     
     # Shutdown
-    print("Shutting down Quest System Service...")
     print("✓ Quest System Service shutdown complete")
 
 
@@ -99,7 +79,7 @@ async def health_check() -> Dict[str, Any]:
     """Comprehensive health check endpoint."""
     try:
         # Check PostgreSQL connection
-        postgres = await get_postgres_pool()
+        postgres = get_state_manager_client()
         await postgres.ping()
         postgres_healthy = True
     except Exception:
@@ -107,7 +87,7 @@ async def health_check() -> Dict[str, Any]:
     
     try:
         # Check Redis connection
-        redis = await get_redis_pool()
+        redis = get_state_manager_client()
         await redis.ping()
         redis_healthy = True
     except Exception:

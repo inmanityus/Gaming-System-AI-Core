@@ -11,7 +11,7 @@ from uuid import UUID, uuid4
 from datetime import datetime
 from pathlib import Path
 
-from services.state_manager.connection_pool import PostgreSQLPool
+from state_manager.connection_pool import PostgreSQLPool
 
 
 class RollbackManager:
@@ -394,7 +394,7 @@ class RollbackManager:
                     return False
             
             # Restore model configuration in registry
-            from services.model_management.model_registry import ModelRegistry
+            from model_registry import ModelRegistry
             registry = ModelRegistry()
             
             if metadata.get("configuration"):

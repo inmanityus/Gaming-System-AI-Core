@@ -4,7 +4,7 @@ Environmental Narrative Service Server.
 
 import logging
 from fastapi import FastAPI
-from services.environmental_narrative import api_routes
+from environmental_narrative import api_routes
 
 _logger = logging.getLogger(__name__)
 

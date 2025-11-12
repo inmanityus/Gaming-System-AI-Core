@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Integration Tests for SRL→RLVR Full Pipeline.
 Tests the complete training workflow from collaboration to model serving.
@@ -17,7 +18,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 from services.srl_rlvr_training.collaboration.collaboration_orchestrator import CollaborationOrchestrator
 from services.srl_rlvr_training.srl.srl_trainer import SRLTrainer
 from services.srl_rlvr_training.rlvr.rlvr_trainer import RLVRTrainer
-from services.model_management.model_registry import ModelRegistry
+from model_registry import ModelRegistry
 
 
 class TestIntegrationPipeline:

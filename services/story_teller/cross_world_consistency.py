@@ -8,8 +8,10 @@ import hashlib
 from typing import Any, Dict, List, Optional, Tuple
 from uuid import UUID, uuid4
 
-from database_connection import get_postgres
 import asyncpg
+
+# Type aliases for database connections
+PostgreSQLPool = Any
 
 
 class AssetTemplate:
@@ -73,7 +75,7 @@ class CrossWorldConsistency:
     async def _get_postgres(self) -> PostgreSQLPool:
         """Get PostgreSQL pool instance."""
         if self.postgres is None:
-            self.postgres = await get_postgres_pool()
+            self.postgres = get_state_manager_client()
         return self.postgres
     
     async def create_canonical_template(

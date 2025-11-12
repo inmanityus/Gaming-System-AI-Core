@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Language Learner Module
 =======================
@@ -13,7 +14,6 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from services.language_system.core.language_definition import LanguageDefinition
 
 logger = logging.getLogger(__name__)
 

@@ -1,0 +1,39 @@
+# Aethelred - AI Management System
+# Python Dependencies
+
+# Web framework
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+pydantic==2.5.3
+
+# Database
+psycopg2-binary==2.9.9
+sqlalchemy==2.0.25
+
+# AWS SDK
+boto3==1.34.26
+
+# HTTP client
+httpx==0.26.0
+requests==2.31.0
+
+# Async support
+asyncio==3.4.3
+
+# Logging
+python-json-logger==2.0.7
+
+# Redis (async)
+redis==5.0.1
+
+# Testing
+pytest==7.4.4
+pytest-asyncio==0.23.3
+
+# Development
+black==24.1.1
+mypy==1.8.0
+
+# Secret scanning
+trufflehog==3.63.5
+

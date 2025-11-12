@@ -1,4 +1,0 @@
-"""
-Quest System Service Tests
-"""
-

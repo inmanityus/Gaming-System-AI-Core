@@ -10,7 +10,7 @@ import logging
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 
-from core.language_definition import LanguageDefinition, GrammarRules, Lexicon
+from language_system.core.language_definition import LanguageDefinition, GrammarRules, Lexicon
 
 logger = logging.getLogger(__name__)
 

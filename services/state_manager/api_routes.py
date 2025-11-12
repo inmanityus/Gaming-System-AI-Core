@@ -9,8 +9,27 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, status, Header, Depends
 from pydantic import BaseModel, Field
 
-from schemas.validation import GameStateCreate, GameStateResponse, GameStateUpdate
 from .state_operations import ConflictResolutionError, StateOperations
+
+# Pydantic models for game state
+class GameStateCreate(BaseModel):
+    """Schema for creating game state."""
+    entity_id: str
+    state_type: str
+    state_data: dict
+
+class GameStateUpdate(BaseModel):
+    """Schema for updating game state."""
+    state_data: dict
+    version: Optional[int] = None
+
+class GameStateResponse(BaseModel):
+    """Schema for game state response."""
+    id: UUID
+    entity_id: str
+    state_type: str
+    state_data: dict
+    version: int
 
 router = APIRouter(prefix="/api/v1/state", tags=["state"])
 state_ops = StateOperations()

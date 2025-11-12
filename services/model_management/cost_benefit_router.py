@@ -14,7 +14,6 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from services.model_management.model_registry import ModelRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -473,6 +472,7 @@ class CostBenefitRouter:
         # TODO: Update model metrics in registry based on performance data
         logger.info(f"Updating metrics for model {model_id}")
         return True
+
 
 
 

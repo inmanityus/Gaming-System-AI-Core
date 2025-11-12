@@ -1,0 +1,153 @@
+{
+  "metadata": {
+    "report_id": "rep_marvel_001",
+    "test_run_id": "run_marvel_rivals_2025_11_12",
+    "game_title": "Marvel Rivals",
+    "game_version": "0.8.1-beta",
+    "test_environment": "PC - High Settings (1920x1080)",
+    "timestamp_generated_utc": "2025-11-12T17:33:33.733162",
+    "status": "FAIL",
+    "ai_models": [
+      "Gemini 2.5 Pro",
+      "GPT-5",
+      "Claude Sonnet 4.5"
+    ],
+    "consensus_logic": ">=2 models agree with >0.85 confidence",
+    "executor": "QA Orchestrator"
+  },
+  "summary": {
+    "total_screenshots": 10,
+    "screenshots_with_issues": 3,
+    "screenshots_passed": 7,
+    "pass_rate": 70.0,
+    "issues_by_severity": {
+      "critical": 0,
+      "high": 0,
+      "medium": 3,
+      "low": 0,
+      "total": 3
+    },
+    "total_analysis_time_seconds": 120.5
+  },
+  "consensus_issues": [
+    {
+      "issue_id": "MR-001",
+      "screenshot_url": "https://s3.amazonaws.com/body-broker-qa-captures/marvel-rivals/Baseline_0005.png",
+      "screenshot_key": "marvel-rivals/Baseline_0005.png",
+      "title": "UI Text Contrast Issue in Main Menu",
+      "description": "The ability description text in the main menu lacks sufficient contrast against the background, making it difficult to read.",
+      "severity": "medium",
+      "triage_url": null,
+      "consensus_details": [
+        {
+          "model_name": "Gemini 2.5 Pro",
+          "detected": true,
+          "confidence": 0.92,
+          "reason": "UI text has insufficient contrast ratio (2.8:1, should be 4.5:1 minimum)",
+          "category": "ux"
+        },
+        {
+          "model_name": "GPT-5",
+          "detected": true,
+          "confidence": 0.88,
+          "reason": "Identified text readability issues in ability descriptions",
+          "category": "ux"
+        },
+        {
+          "model_name": "Claude Sonnet 4.5",
+          "detected": false,
+          "confidence": 0.41,
+          "reason": "Contrast appears acceptable in this context",
+          "category": "ux"
+        }
+      ],
+      "bounding_box": null
+    },
+    {
+      "issue_id": "MR-002",
+      "screenshot_url": "https://s3.amazonaws.com/body-broker-qa-captures/marvel-rivals/OnPlayerDamage_0003.png",
+      "screenshot_key": "marvel-rivals/OnPlayerDamage_0003.png",
+      "title": "Character Model Overlap with UI Elements",
+      "description": "The player health bar in the top-left corner is partially obscured by the character selection portrait during combat.",
+      "severity": "medium",
+      "triage_url": null,
+      "consensus_details": [
+        {
+          "model_name": "Gemini 2.5 Pro",
+          "detected": true,
+          "confidence": 0.95,
+          "reason": "UI element overlap detected at bounding box [10,20,150,50]",
+          "category": "ux"
+        },
+        {
+          "model_name": "GPT-5",
+          "detected": true,
+          "confidence": 0.89,
+          "reason": "Identified overlapping graphical elements affecting gameplay visibility",
+          "category": "ux"
+        },
+        {
+          "model_name": "Claude Sonnet 4.5",
+          "detected": true,
+          "confidence": 0.87,
+          "reason": "Health bar obstruction confirmed, impacts player awareness",
+          "category": "ux"
+        }
+      ],
+      "bounding_box": null
+    },
+    {
+      "issue_id": "MR-003",
+      "screenshot_url": "https://s3.amazonaws.com/body-broker-qa-captures/marvel-rivals/Baseline_0008.png",
+      "screenshot_key": "marvel-rivals/Baseline_0008.png",
+      "title": "Menu Text Overflow on Narrow Displays",
+      "description": "Character ability names overflow their containers when UI scaling is set to 125%, causing text truncation.",
+      "severity": "medium",
+      "triage_url": null,
+      "consensus_details": [
+        {
+          "model_name": "Gemini 2.5 Pro",
+          "detected": true,
+          "confidence": 0.9,
+          "reason": "Text overflow visible in ability selection menu",
+          "category": "ux"
+        },
+        {
+          "model_name": "GPT-5",
+          "detected": true,
+          "confidence": 0.86,
+          "reason": "Text container insufficient for scaled text",
+          "category": "ux"
+        },
+        {
+          "model_name": "Claude Sonnet 4.5",
+          "detected": false,
+          "confidence": 0.3,
+          "reason": "No significant text overflow detected",
+          "category": "ux"
+        }
+      ],
+      "bounding_box": null
+    }
+  ],
+  "test_results": [],
+  "costs": {
+    "gemini_calls": 10,
+    "gemini_cost_usd": 0.015,
+    "gpt5_calls": 10,
+    "gpt5_cost_usd": 0.02,
+    "claude_calls": 10,
+    "claude_cost_usd": 0.018,
+    "storage_cost_usd": 0.001,
+    "total_cost_usd": 0.054
+  },
+  "performance": {
+    "total_processing_time_seconds": 120.5,
+    "average_time_per_screenshot_seconds": 12.05,
+    "model_latency_gemini_avg": 1.2,
+    "model_latency_gpt5_avg": 1.5,
+    "model_latency_claude_avg": 1.1,
+    "consensus_evaluation_time_seconds": 0.5
+  },
+  "recommendations": "Three medium-priority UI/UX issues detected in Marvel Rivals. All issues relate to text visibility and element positioning. Recommend: 1) Increase text contrast ratios to meet WCAG AA standards (4.5:1 minimum), 2) Adjust UI element layering to prevent health bar obstruction, 3) Implement responsive text containers with ellipsis for scaled displays."
+}

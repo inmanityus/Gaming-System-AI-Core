@@ -10,7 +10,10 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 import json
-from services.state_manager.connection_pool import get_postgres_pool, PostgreSQLPool
+# REFACTORING: Direct database imports replaced with on-demand connections  
+# from state_manager.connection_pool import get_postgres_pool, PostgreSQLPool
+import asyncpg
+from typing import Any as PostgreSQLPool
 
 
 class RewardManager:
@@ -25,7 +28,7 @@ class RewardManager:
     async def _get_postgres(self) -> PostgreSQLPool:
         """Get PostgreSQL pool instance."""
         if self.postgres is None:
-            self.postgres = await get_postgres_pool()
+            self.postgres = get_state_manager_client()
         return self.postgres
     
     async def calculate_rewards(

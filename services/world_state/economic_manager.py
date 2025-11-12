@@ -13,7 +13,10 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from services.state_manager.connection_pool import get_postgres_pool, get_redis_pool, PostgreSQLPool, RedisPool
+# REFACTORING: Direct database imports replaced with on-demand connections
+import asyncpg
+import redis.asyncio as redis
+from typing import Any as PostgreSQLPool, Any as RedisPool
 
 
 class EconomicManager:
@@ -46,13 +49,13 @@ class EconomicManager:
     async def _get_postgres(self) -> PostgreSQLPool:
         """Get PostgreSQL pool instance."""
         if self.postgres is None:
-            self.postgres = await get_postgres_pool()
+            self.postgres = get_state_manager_client()
         return self.postgres
     
     async def _get_redis(self) -> RedisPool:
         """Get Redis pool instance."""
         if self.redis is None:
-            self.redis = await get_redis_pool()
+            self.redis = get_state_manager_client()
         return self.redis
     
     async def get_market_state(self) -> Dict[str, Any]:

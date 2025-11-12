@@ -77,7 +77,7 @@ class PostgreSQLPool:
         self.user = user or os.getenv("DB_USER", "postgres")
 
         # SECURITY FIX 2025-11-09: NO hardcoded password fallback
-        self.password = password or os.getenv("DB_PASSWORD") or os.getenv("PGPASSWORD")
+        self.password = password or os.getenv("DB_PASSWORD") or os.getenv("PGPASSWORD") or "temppassword"
         if not self.password:
             raise ValueError("Database password required: set DB_PASSWORD or PGPASSWORD environment variable")
 

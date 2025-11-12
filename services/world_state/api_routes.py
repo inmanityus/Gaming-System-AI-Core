@@ -10,10 +10,10 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, Depends, Header
 from pydantic import BaseModel
 
-from world_state_manager import WorldStateManager
-from event_system import EventSystem
-from faction_manager import FactionManager
-from economic_manager import EconomicManager
+from .world_state_manager import WorldStateManager
+from .event_system import EventSystem
+from .faction_manager import FactionManager
+from .economic_manager import EconomicManager
 
 # SECURITY: Admin API Keys for world state operations
 WORLD_STATE_ADMIN_KEYS = set(os.getenv('WORLD_STATE_ADMIN_KEYS', '').split(',')) if os.getenv('WORLD_STATE_ADMIN_KEYS') else set()

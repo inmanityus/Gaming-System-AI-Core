@@ -14,7 +14,9 @@ from uuid import UUID
 
 
 
-from services.state_manager.connection_pool import get_postgres_pool, PostgreSQLPool
+# REFACTORING: Direct database imports replaced with on-demand connections
+import asyncpg
+from typing import Any as PostgreSQLPool
 
 
 
@@ -432,11 +434,9 @@ class FeatureFlagManager:
 
         
 
-        # Invalidate cache
-
-        from services.state_manager.connection_pool import get_redis_pool
-
-        redis = await get_redis_pool()
+        # Invalidate cache (requires state-manager HTTP client)
+        # TODO: Use state-manager HTTP client for cache invalidation
+        # redis = await get_redis_pool()
 
         await redis.delete(f"feature_flag:{name}")
 

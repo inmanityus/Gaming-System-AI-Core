@@ -14,7 +14,9 @@ from uuid import UUID
 
 
 
-from services.state_manager.connection_pool import get_postgres_pool, PostgreSQLPool
+# REFACTORING: Direct database imports replaced with on-demand connections
+import asyncpg
+from typing import Any as PostgreSQLPool
 
 
 
@@ -237,9 +239,6 @@ class PreferenceHandler:
             key = row["key"]
 
             value = json.loads(row["value"]) if isinstance(row["value"], str) else row["value"]
-
- vel
-
             
 
             if cat not in preferences:

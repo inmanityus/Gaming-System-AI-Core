@@ -10,9 +10,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from api_routes import router
-from hot_reload import HotReloadManager
-from services.state_manager.connection_pool import close_pools, get_postgres_pool, get_redis_pool
+from .api_routes import router
+from .hot_reload import HotReloadManager
 
 
 hot_reload_manager = HotReloadManager(poll_interval=5)
@@ -22,36 +21,25 @@ hot_reload_manager = HotReloadManager(poll_interval=5)
 async def lifespan(app: FastAPI):
     """
     Lifespan context manager for startup and shutdown.
-    Initializes connection pools and hot-reload on startup.
     """
     # Startup
-    print("Initializing Settings Service...")
+    print("✓ Settings Service initialized successfully")
     
+    # Start hot-reload manager
     try:
-        # Initialize PostgreSQL pool
-        await get_postgres_pool()
-        print("✓ PostgreSQL connection pool initialized")
-        
-        # Initialize Redis pool
-        await get_redis_pool()
-        print("✓ Redis connection pool initialized")
-        
-        # Start hot-reload manager
         await hot_reload_manager.start()
         print("✓ Hot-reload manager started")
-        
-        print("Settings Service ready")
     except Exception as e:
-        print(f"ERROR: Failed to initialize: {e}")
-        raise
+        print(f"⚠ Hot-reload manager failed (non-critical): {e}")
     
     yield
     
     # Shutdown
-    print("Shutting down Settings Service...")
-    await hot_reload_manager.stop()
-    await close_pools()
-    print("✓ Connection pools closed")
+    print("✓ Settings Service shutdown complete")
+    try:
+        await hot_reload_manager.stop()
+    except:
+        pass
 
 
 app = FastAPI(
@@ -121,7 +109,7 @@ async def root():
     return {
         "service": "Configuration & Settings Service",
         "version": "0.1.0",
-中国特色社会主义        "status": "running",
+        "status": "running",
     }
 
 

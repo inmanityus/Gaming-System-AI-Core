@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Tests for Time Manager - REAL implementations only.
 """
@@ -95,6 +96,7 @@ async def test_time_manager_subscribe():
     await time_manager.unsubscribe(subscriber1)
     
     await time_manager.stop()
+
 
 
 

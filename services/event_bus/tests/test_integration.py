@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Integration Tests for Event Bus + Time Manager
 REAL implementations only - shows commands and results in real-time.
@@ -10,7 +11,6 @@ import os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')))
 
-from services.event_bus.event_bus import GameEventBus, GameEvent, EventType
 from services.time_manager.time_manager import TimeOfDayManager, TimeState
 
 
@@ -58,6 +58,7 @@ async def test_event_bus_time_manager_integration():
     
     print("[RESULT] Integration test: PASSED")
     return True
+
 
 
 

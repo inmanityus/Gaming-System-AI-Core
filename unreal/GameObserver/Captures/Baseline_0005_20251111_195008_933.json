@@ -1,0 +1,46 @@
+{
+  "world_data": {
+    "game_name": "Marvel Rivals",
+    "zone_name": "Marvel Rivals Scene 5",
+    "current_objective_id": "OBJ_Validation_Test"
+  },
+  "capture_trigger": {
+    "game_name": "Marvel Rivals",
+    "source": "ExternalCapture",
+    "capture_method": "Windows Screen Capture",
+    "event_type": "Baseline"
+  },
+  "player_data": {
+    "is_in_combat": false,
+    "health": 99,
+    "location": {
+      "x": 1751,
+      "y": 7715,
+      "z": 340
+    },
+    "rotation": {
+      "roll": 0,
+      "yaw": 294,
+      "pitch": -23
+    },
+    "velocity": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  "event_type": "Baseline",
+  "test_metadata": {
+    "is_external_game": true,
+    "game_name": "Marvel Rivals",
+    "total_captures": 10,
+    "capture_sequence": 5
+  },
+  "rendering_data": {
+    "current_fps": 96,
+    "resolution": "4096x1152",
+    "camera_fov": 90
+  },
+  "screenshot_filename": "Baseline_0005_20251111_195008_933.png",
+  "timestamp": "2025-11-12T02:50:09.232Z"
+}

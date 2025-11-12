@@ -1,14 +1,21 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 API routes for Orchestration Service.
 """
 
 import os
 from fastapi import APIRouter, HTTPException, Depends, Header
-from typing import Optional
+from typing import Optional, Any, Dict
 
-from services.orchestration.orchestration_service import OrchestrationService
-from services.orchestration.models import ContentRequest, ContentResponse
-from services.orchestration.server import get_orchestration_service
+# Import shared models
+from .models_schemas import ContentRequest, ContentResponse
+
+# Import orchestration service
+from .orchestration_service import OrchestrationService
+
+# Placeholder function
+def get_orchestration_service():
+    return OrchestrationService()
 
 router = APIRouter(prefix="/api/v1", tags=["orchestration"])
 

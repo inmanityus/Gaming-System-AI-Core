@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Objective Manager - Quest objective tracking and completion.
 """
@@ -9,7 +10,6 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from services.quest_system.quest_manager import QuestManager
 
 
 class ObjectiveManager:

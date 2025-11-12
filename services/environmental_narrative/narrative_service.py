@@ -19,7 +19,7 @@ _logger = logging.getLogger(__name__)
 
 # Import database connection pool
 try:
-    from services.state_manager.connection_pool import get_postgres_pool, PostgreSQLPool
+    from state_manager.connection_pool import get_postgres_pool, PostgreSQLPool
 except ImportError:
     PostgreSQLPool = None
     get_postgres_pool = None
@@ -171,7 +171,7 @@ class EnvironmentalNarrativeService:
     async def _get_postgres(self) -> PostgreSQLPool:
         """Get PostgreSQL pool instance."""
         if self.postgres is None and get_postgres_pool:
-            self.postgres = await get_postgres_pool()
+            self.postgres = get_state_manager_client()
         return self.postgres
     
     def _initialize_scene_templates(self) -> Dict[SceneType, Dict[str, Any]]:

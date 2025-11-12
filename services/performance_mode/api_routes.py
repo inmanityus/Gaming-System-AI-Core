@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 API routes for Performance Mode Service.
 """
@@ -5,7 +6,6 @@ API routes for Performance Mode Service.
 from fastapi import APIRouter, HTTPException, Depends
 from typing import Dict, Any, Literal
 from pydantic import BaseModel, Field
-from services.performance_mode.mode_manager import (
     ModeManager,
     PerformanceMode,
     ModePreset,

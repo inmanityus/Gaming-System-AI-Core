@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Pairwise Tests for Failure Handler - Created by Tester and Reviewed by Reviewer.
 Tests failure handling and recovery functionality.
@@ -107,6 +108,7 @@ class TestFailureHandler:
         """Test S3 URI parsing with invalid URI."""
         with pytest.raises(ValueError, match="Invalid S3 URI"):
             failure_handler._parse_s3_uri("invalid-uri")
+
 
 
 

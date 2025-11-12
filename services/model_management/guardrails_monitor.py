@@ -1,3 +1,4 @@
+# CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Guardrails Monitor - Monitors all model outputs for safety.
 Ensures immersive/addictive but NOT harmful.
@@ -8,7 +9,7 @@ import logging
 from typing import Any, Dict, List, Optional
 from uuid import UUID, uuid4
 
-from services.state_manager.connection_pool import PostgreSQLPool
+from state_manager.connection_pool import PostgreSQLPool
 
 logger = logging.getLogger(__name__)
 
@@ -484,7 +485,7 @@ class GuardrailsMonitor:
                 rollback_mgr = RollbackManager()
                 
                 # Get current model to rollback from
-                from services.model_management.model_registry import ModelRegistry
+                from model_registry import ModelRegistry
                 registry = ModelRegistry()
                 current_model = await registry.get_model(UUID(model_id) if isinstance(model_id, str) else model_id)
                 
@@ -504,7 +505,7 @@ class GuardrailsMonitor:
         elif max_severity == 'high':
             # High violations: Block outputs and flag for review
             try:
-                from services.model_management.model_registry import ModelRegistry
+                from model_registry import ModelRegistry
                 registry = ModelRegistry()
                 
                 # Mark model as needing review

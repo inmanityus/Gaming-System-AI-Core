@@ -12,7 +12,7 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from services.state_manager.connection_pool import get_postgres_pool, PostgreSQLPool
+from state_manager.connection_pool import get_postgres_pool, PostgreSQLPool
 
 
 class HistoricalLogProcessor:
@@ -26,7 +26,7 @@ class HistoricalLogProcessor:
     async def _get_postgres(self) -> PostgreSQLPool:
         """Get PostgreSQL pool instance."""
         if self.postgres is None:
-            self.postgres = await get_postgres_pool()
+            self.postgres = get_state_manager_client()
         return self.postgres
     
     async def get_historical_logs(

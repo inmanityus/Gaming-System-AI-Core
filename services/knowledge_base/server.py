@@ -317,7 +317,7 @@ class CreateConceptRequest(BaseModel):
     name: str = Field(..., min_length=1, max_length=255)
     concept_type: str = Field(..., min_length=1, max_length=50)
     description: str = Field(..., min_length=1, max_length=5000)
-    scope: str = Field(default='global', regex='^(global|day_world|dark_world|experience)$')
+    scope: str = Field(default='global', pattern='^(global|day_world|dark_world|experience)$')
     world_id: Optional[UUID] = None
 
 @app.post("/concepts/create")
