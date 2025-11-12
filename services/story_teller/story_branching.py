@@ -9,6 +9,9 @@ from uuid import UUID
 
 import asyncpg
 
+# Type aliases for database connections
+PostgreSQLPool = Any
+
 
 class StoryBranch:
     """Represents a story branch with conditions and outcomes."""

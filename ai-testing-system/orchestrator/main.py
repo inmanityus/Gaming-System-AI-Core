@@ -46,13 +46,21 @@ app = FastAPI(
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# CORS middleware
+# CORS middleware (SEC-1: Strict CORS for 100/100 security)
+# Production: Replace with actual frontend URLs
+ALLOWED_ORIGINS = os.getenv(
+    "ALLOWED_ORIGINS",
+    "http://localhost:3000,http://localhost:8010,http://54.174.89.122:8000"
+).split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,  # Strict origin list (not wildcard)
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Explicit methods
+    allow_headers=["Content-Type", "Authorization", "X-Request-ID"],  # Explicit headers
+    expose_headers=["X-Request-ID", "X-RateLimit-Remaining"],
+    max_age=600  # Cache preflight for 10 minutes
 )
 
 # AWS clients with region configuration
@@ -450,7 +458,8 @@ reports_db = {}
 
 
 @app.post("/reports/generate", status_code=202)
-@limiter.limit("10/minute")  # P0-3 CRITICAL FIX: Rate limiting to prevent DoS
+@limiter.limit("10/minute")  # Global limit
+@limiter.limit("3/minute", key_func=lambda: f"generate:{request.client.host}")  # SEC-2: Endpoint-specific rate limiting for 100/100
 async def generate_report(
     request: Request,  # Required for rate limiter
     report_request: ReportGenerationRequest,

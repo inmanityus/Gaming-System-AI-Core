@@ -1,0 +1,4 @@
+# file: E:\Vibe Code\Gaming System\AI Core\ai-testing-system\orchestrator\models\report.py
+# hypothesis_version: 6.147.0
+
+[0.0, 100, 200, 500, 5000, 10000, 'Claude Sonnet 4.5', 'FAIL', 'GPT-5', 'Gemini 2.5 Pro', 'Marvel Rivals', 'QA Orchestrator', 'bounding_box', 'completed', 'critical', 'example', 'format', 'game_title', 'height', 'high', 'html', 'id', 'json', 'low', 'medium', 'metadata', 'pdf', 'rep_abc123', 'report_id', 'run_marvel_001', 'run_xyz789', 's3_key', 'status', 'test_run_id', 'width', 'x', 'y']

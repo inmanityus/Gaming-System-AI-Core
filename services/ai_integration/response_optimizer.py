@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from uuid import UUID
 
 # Import HTTP clients for cross-service communication
-from state_manager_client import StateManagerClient, get_state_manager_client
+from .state_manager_client import StateManagerClient, get_state_manager_client
 
 
 
