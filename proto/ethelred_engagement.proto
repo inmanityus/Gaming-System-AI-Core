@@ -1,0 +1,323 @@
+syntax = "proto3";
+
+package ethelred.engagement;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+
+// Canonical envelope for all Ethelred events (as per R-SYS-OBS-001)
+message CanonicalEnvelope {
+    string trace_id = 1;
+    string session_id = 2;
+    string player_id = 3;  // Optional, pseudonymized
+    string build_id = 4;
+    TimeRange timestamp_range = 5;
+    string domain = 6;  // Always "Engagement" for this domain
+    string issue_type = 7;
+    Severity severity = 8;
+    float confidence = 9;  // 0.0-1.0
+    repeated string evidence_refs = 10;
+    repeated string goal_tags = 11;  // e.g., ["G-IMMERSION", "G-LONGTERM"]
+}
+
+message TimeRange {
+    google.protobuf.Timestamp start = 1;
+    google.protobuf.Timestamp end = 2;
+}
+
+enum Severity {
+    SEVERITY_UNSPECIFIED = 0;
+    SEVERITY_INFO = 1;
+    SEVERITY_WARNING = 2;
+    SEVERITY_ERROR = 3;
+    SEVERITY_CRITICAL = 4;
+}
+
+// Actor types for telemetry
+enum ActorType {
+    ACTOR_TYPE_UNSPECIFIED = 0;
+    ACTOR_TYPE_REAL_PLAYER = 1;
+    ACTOR_TYPE_AI_PLAYER = 2;
+}
+
+// Interaction types for NPC interactions
+enum InteractionType {
+    INTERACTION_TYPE_UNSPECIFIED = 0;
+    INTERACTION_TYPE_DIALOGUE = 1;
+    INTERACTION_TYPE_GIFT = 2;
+    INTERACTION_TYPE_ASSIST = 3;
+    INTERACTION_TYPE_HARM = 4;
+    INTERACTION_TYPE_IGNORE = 5;
+}
+
+// Help/harm flags for interactions
+enum HelpHarmFlag {
+    HELP_HARM_UNSPECIFIED = 0;
+    HELP_HARM_HELPFUL = 1;
+    HELP_HARM_HARMFUL = 2;
+    HELP_HARM_NEUTRAL = 3;
+}
+
+// Moral choice option tags
+enum OptionTag {
+    OPTION_TAG_UNSPECIFIED = 0;
+    OPTION_TAG_SAFE = 1;
+    OPTION_TAG_MODERATE = 2;
+    OPTION_TAG_EXTREME = 3;
+    OPTION_TAG_EVIL = 4;
+    OPTION_TAG_GOOD = 5;
+    OPTION_TAG_NEUTRAL = 6;
+}
+
+// Telemetry: NPC Interaction Event (R-EMO-DATA-001)
+message NPCInteractionEvent {
+    // Metadata
+    string session_id = 1;
+    string player_id = 2;  // Optional, pseudonymized
+    ActorType actor_type = 3;
+    
+    // Interaction details
+    string npc_id = 4;
+    InteractionType interaction_type = 5;
+    string choice_id = 6;  // Optional, for dialogue choices
+    string choice_label = 7;
+    HelpHarmFlag help_harm_flag = 8;
+    
+    // Context
+    google.protobuf.Timestamp timestamp = 9;
+    string location_id = 10;
+    string arc_id = 11;  // Optional
+    string experience_id = 12;  // Optional
+    string build_id = 13;
+    
+    // Additional metadata
+    map<string, string> additional_context = 14;
+}
+
+// Choice option for moral choices
+message ChoiceOption {
+    string option_id = 1;
+    string option_label = 2;
+    repeated OptionTag tags = 3;
+}
+
+// Telemetry: Moral Choice Event (R-EMO-MET-002)
+message MoralChoiceEvent {
+    // Metadata
+    string session_id = 1;
+    string player_id = 2;  // Optional, pseudonymized
+    ActorType actor_type = 3;
+    
+    // Choice details
+    string choice_id = 4;
+    string arc_id = 5;
+    string scene_id = 6;
+    repeated ChoiceOption options = 7;
+    string selected_option_id = 8;
+    
+    // Decision metrics
+    int64 decision_latency_ms = 9;
+    int32 num_retries = 10;  // If allowed
+    bool reloaded_save = 11;  // If player reloaded to change choice
+    
+    // Context
+    google.protobuf.Timestamp timestamp = 12;
+    string build_id = 13;
+    
+    // Additional metadata
+    map<string, string> additional_context = 14;
+}
+
+// Time of day buckets for session analysis
+enum TimeOfDayBucket {
+    TIME_OF_DAY_UNSPECIFIED = 0;
+    TIME_OF_DAY_EARLY_MORNING = 1;  // 00:00-06:00
+    TIME_OF_DAY_MORNING = 2;        // 06:00-12:00
+    TIME_OF_DAY_AFTERNOON = 3;      // 12:00-18:00
+    TIME_OF_DAY_EVENING = 4;        // 18:00-22:00
+    TIME_OF_DAY_LATE_NIGHT = 5;     // 22:00-00:00
+}
+
+// Telemetry: Session Metrics Event (R-EMO-DATA-002)
+message SessionMetricsEvent {
+    // Metadata
+    string session_id = 1;
+    string player_id = 2;  // Optional, pseudonymized
+    ActorType actor_type = 3;
+    
+    // Session timing
+    google.protobuf.Timestamp session_start = 4;
+    google.protobuf.Timestamp session_end = 5;
+    int32 total_duration_minutes = 6;
+    
+    // Patterns
+    TimeOfDayBucket time_of_day_bucket = 7;
+    int32 day_of_week = 8;  // 0=Sunday, 6=Saturday
+    int32 num_sessions_last_7_days = 9;
+    int32 num_sessions_last_24_hours = 10;
+    
+    // Session behavior
+    bool is_return_session = 11;  // Returned after < 1 hour
+    google.protobuf.Duration time_since_last_session = 12;
+    
+    // Context
+    string build_id = 13;
+    string platform = 14;  // e.g., "PC", "Console"
+    string region = 15;    // e.g., "NA-East", "EU-West"
+    
+    // Additional metadata
+    map<string, string> additional_context = 16;
+}
+
+// AI Player personality profiles
+enum PersonalityProfile {
+    PERSONALITY_UNSPECIFIED = 0;
+    PERSONALITY_EMPATHETIC = 1;
+    PERSONALITY_RUTHLESS = 2;
+    PERSONALITY_EXPLORER = 3;
+    PERSONALITY_COMPLETIONIST = 4;
+    PERSONALITY_RISK_AVERSE = 5;
+    PERSONALITY_CHAOTIC = 6;
+}
+
+// Telemetry: AI Player Run Metadata (R-EMO-DATA-003)
+message AIPlayerRunEvent {
+    // Metadata
+    string ai_run_id = 1;
+    PersonalityProfile personality_profile = 2;
+    
+    // Run summary
+    int32 total_npcs_interacted = 3;
+    int32 moral_choices_made = 4;
+    float help_harm_ratio = 5;
+    float exploration_coverage = 6;  // 0.0-1.0
+    
+    // Timing
+    google.protobuf.Timestamp run_start = 7;
+    google.protobuf.Timestamp run_end = 8;
+    int32 total_duration_hours = 9;
+    
+    // Context
+    string build_id = 10;
+    string scenario_id = 11;  // Test scenario
+    
+    // Additional metadata
+    map<string, string> additional_context = 12;
+}
+
+// Aggregated NPC attachment metrics (R-EMO-MET-001)
+message NPCAttachmentMetrics {
+    string npc_id = 1;
+    float protection_harm_ratio = 2;
+    float attention_score = 3;  // Time + interaction count normalized
+    float abandonment_frequency = 4;  // 0.0-1.0
+    int32 total_interactions = 5;
+    int32 helpful_actions = 6;
+    int32 harmful_actions = 7;
+    int32 neutral_actions = 8;
+    google.protobuf.Duration total_proximity_time = 9;
+}
+
+// Aggregated moral tension metrics (R-EMO-MET-002)
+message MoralTensionMetrics {
+    string arc_id = 1;
+    string scene_id = 2;
+    float tension_index = 3;  // 0.0-1.0
+    float choice_distribution_entropy = 4;  // How evenly distributed choices are
+    float avg_decision_latency_seconds = 5;
+    int32 total_choices = 6;
+    int32 reload_count = 7;
+    map<string, int32> option_counts = 8;  // option_id -> count
+}
+
+// Engagement profile assignment (R-EMO-MET-003)
+message EngagementProfile {
+    string profile_id = 1;
+    string profile_name = 2;  // e.g., "lore-driven explorer", "combat-focused"
+    float confidence = 3;  // 0.0-1.0
+    repeated string characteristic_behaviors = 4;
+}
+
+// ENGAGEMENT.METRICS event
+message EngagementMetricsEvent {
+    CanonicalEnvelope envelope = 1;
+    
+    // Aggregation context
+    string cohort_id = 2;  // e.g., "NA-18-25-PC"
+    string aggregation_period = 3;  // e.g., "2025-11-14T00:00:00Z/P1D"
+    
+    // NPC attachment metrics
+    repeated NPCAttachmentMetrics npc_attachments = 4;
+    
+    // Moral tension metrics
+    repeated MoralTensionMetrics moral_tensions = 5;
+    
+    // Engagement profiles
+    map<string, int32> profile_distribution = 6;  // profile_name -> count
+    repeated EngagementProfile top_profiles = 7;
+    
+    // Summary stats
+    int32 total_sessions_analyzed = 8;
+    int32 total_players_analyzed = 9;  // Cohort size
+    float avg_session_duration_minutes = 10;
+    
+    // Metadata
+    google.protobuf.Timestamp computed_at = 11;
+}
+
+// Cohort identification for addiction metrics
+message CohortIdentifier {
+    string region = 1;
+    string age_band = 2;  // e.g., "18-25", "26-35"
+    string platform = 3;
+    int32 cohort_size = 4;
+}
+
+// Addiction risk level
+enum RiskLevel {
+    RISK_LEVEL_UNSPECIFIED = 0;
+    RISK_LEVEL_LOW = 1;
+    RISK_LEVEL_MEDIUM = 2;
+    RISK_LEVEL_HIGH = 3;
+    RISK_LEVEL_CRITICAL = 4;
+}
+
+// ENGAGEMENT.ADDICTION_RISK event (R-EMO-ADD-001, R-EMO-ADD-003)
+message AddictionRiskEvent {
+    CanonicalEnvelope envelope = 1;
+    
+    // Cohort identification (no player IDs)
+    CohortIdentifier cohort = 2;
+    string report_period = 3;  // e.g., "2025-11-14/P7D"
+    
+    // Risk indicators
+    float avg_daily_session_hours = 4;
+    float night_time_play_fraction = 5;  // 22:00-06:00 as fraction of total
+    float rapid_session_return_rate = 6;  // Sessions starting < 1hr after previous
+    float weekend_spike_ratio = 7;  // Weekend vs weekday hours
+    
+    // Pattern detection
+    repeated string high_risk_patterns = 8;  // e.g., ["3am_regular", "12hr_binge", "rapid_cycling"]
+    repeated string associated_systems = 9;  // Game systems correlated with risk
+    
+    // Risk assessment
+    RiskLevel overall_risk_level = 10;
+    string risk_summary = 11;  // Human-readable summary
+    repeated string recommendations = 12;  // Design recommendations
+    
+    // Metadata
+    google.protobuf.Timestamp computed_at = 13;
+    int32 confidence_percentage = 14;  // 0-100
+}
+
+// NATS Subjects:
+// Telemetry inputs:
+// - telemetry.raw.npc_interaction
+// - telemetry.raw.moral_choice
+// - telemetry.raw.session_metrics
+// - telemetry.raw.ai_run
+// - telemetry.emo.normalized.* (normalized versions)
+//
+// Analytics outputs:
+// - events.ethelred.emo.v1.engagement_metrics
+// - events.ethelred.emo.v1.addiction_risk
