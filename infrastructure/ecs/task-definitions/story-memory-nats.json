@@ -1,0 +1,55 @@
+{
+  "family": "story-memory-nats",
+  "networkMode": "bridge",
+  "requiresCompatibilities": ["EC2"],
+  "cpu": "256",
+  "memory": "512",
+  "taskRoleArn": "arn:aws:iam::695353648052:role/gaming-system-task-role",
+  "executionRoleArn": "arn:aws:iam::695353648052:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "story-memory-nats",
+      "image": "695353648052.dkr.ecr.us-east-1.amazonaws.com/story-memory-nats:latest",
+      "essential": true,
+      "memory": 512,
+      "environment": [
+        {"name": "SERVICE_NAME", "value": "story-memory"},
+        {"name": "NATS_URL", "value": "nats://nats.gaming-system.internal:4222"},
+        {"name": "DB_HOST", "value": "database.gaming-system.internal"},
+        {"name": "DB_NAME", "value": "gaming_system"},
+        {"name": "DB_USER", "value": "postgres"},
+        {"name": "REDIS_URL", "value": "redis://redis.gaming-system.internal:6379"},
+        {"name": "PYTHONUNBUFFERED", "value": "1"},
+        {"name": "LOG_LEVEL", "value": "INFO"}
+      ],
+      "secrets": [
+        {
+          "name": "DB_PASSWORD",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:695353648052:secret:gaming-system/rds-credentials:password::"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/gaming-system",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "story-memory-nats"
+        }
+      },
+      "portMappings": [
+        {
+          "containerPort": 8099,
+          "hostPort": 0,
+          "protocol": "tcp"
+        }
+      ],
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -f http://localhost:8099/health || exit 1"],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      }
+    }
+  ]
+}

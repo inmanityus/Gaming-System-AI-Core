@@ -1,0 +1,34 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy SDK first (if available)
+COPY sdk/ /app/sdk/
+
+# Copy requirements
+COPY services/story_memory/requirements.txt .
+COPY services/story_memory/requirements-nats.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements-nats.txt
+
+# Copy shared service dependencies
+COPY services/shared/ /app/services/shared/
+
+# Copy service code
+COPY services/story_memory/ /app/services/story_memory/
+
+# Set Python path
+ENV PYTHONPATH=/app
+
+# Expose health check port
+EXPOSE 8099
+
+# Run the NATS service
+CMD ["python", "-m", "services.story_memory.nats_server"]
