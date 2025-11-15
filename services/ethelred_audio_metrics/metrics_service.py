@@ -7,7 +7,7 @@ import json
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple, Any
 import asyncpg
 import nats
 from nats.js import JetStreamContext
@@ -22,6 +22,12 @@ from shared.database import get_postgres_pool
 
 # Import audio capture media storage for retrieval
 from services.ethelred_audio_capture.media_storage import MediaStorageHandler, MediaCache
+
+# Import real analyzers (Milestone 3)
+from services.ethelred_audio_metrics.intelligibility_analyzer import IntelligibilityAnalyzer
+from services.ethelred_audio_metrics.naturalness_analyzer import NaturalnessAnalyzer
+from services.ethelred_audio_metrics.archetype_analyzer import ArchetypeConformityAnalyzer
+from services.ethelred_audio_metrics.simulator_analyzer import SimulatorStabilityAnalyzer
 
 # Compile protobuf
 from services.ethelred_audio.compile_proto import compile_proto
@@ -42,114 +48,53 @@ class AudioMetricsAnalyzer:
     """Analyzes audio segments to produce quality metrics."""
     
     def __init__(self):
-        # Placeholder thresholds (will be replaced with real metrics in Milestone 3)
-        self.silence_threshold_db = -40.0
-        self.clipping_threshold = 0.99
+        # Initialize real analyzers (Milestone 3)
+        self.intelligibility_analyzer = IntelligibilityAnalyzer()
+        self.naturalness_analyzer = NaturalnessAnalyzer()
+        self.archetype_analyzer = ArchetypeConformityAnalyzer()
+        self.simulator_analyzer = SimulatorStabilityAnalyzer()
         
     async def analyze_intelligibility(self, 
                                     audio_data: np.ndarray, 
                                     sample_rate: int,
                                     language_code: str) -> Tuple[float, str]:
-        """Analyze speech intelligibility (stub implementation)."""
+        """Analyze speech intelligibility using real analyzer."""
         with analysis_duration.labels(metric_type='intelligibility').time():
-            # Stub: Use simple heuristics for now
-            
-            # Check if audio is too quiet
-            rms = np.sqrt(np.mean(audio_data ** 2))
-            if rms < 0.01:
-                return 0.3, "unacceptable"  # Too quiet
-            
-            # Check for clipping
-            clipping_ratio = np.sum(np.abs(audio_data) > self.clipping_threshold) / len(audio_data)
-            if clipping_ratio > 0.01:
-                return 0.6, "degraded"  # Clipping detected
-            
-            # Placeholder: Random score in acceptable range
-            score = 0.85 + np.random.uniform(-0.1, 0.1)
-            
-            # Determine band
-            if score >= 0.8:
-                band = "acceptable"
-            elif score >= 0.6:
-                band = "degraded"
-            else:
-                band = "unacceptable"
-            
-            return score, band
+            # Use real intelligibility analyzer
+            return self.intelligibility_analyzer.analyze(audio_data)
     
     async def analyze_naturalness(self,
                                 audio_data: np.ndarray,
                                 sample_rate: int) -> Tuple[float, str]:
-        """Analyze speech naturalness and prosody (stub)."""
+        """Analyze speech naturalness and prosody using real analyzer."""
         with analysis_duration.labels(metric_type='naturalness').time():
-            # Stub: Check for monotone patterns
-            
-            # Simple pitch variation check
-            # In real implementation, would extract F0 contour
-            score = 0.75 + np.random.uniform(-0.15, 0.15)
-            
-            if score >= 0.7:
-                band = "ok"
-            elif score >= 0.5:
-                band = "robotic"
-            else:
-                band = "monotone"
-            
-            return score, band
+            # Use real naturalness analyzer
+            return self.naturalness_analyzer.analyze(audio_data)
     
     async def analyze_archetype_conformity(self,
                                          audio_data: np.ndarray,
                                          sample_rate: int,
                                          archetype_id: Optional[str]) -> Tuple[float, str]:
-        """Analyze conformity to archetype voice profile (stub)."""
+        """Analyze conformity to archetype voice profile using real analyzer."""
         with analysis_duration.labels(metric_type='archetype').time():
             if not archetype_id:
                 return 1.0, "on_profile"  # No archetype to compare
             
-            # Stub: Different scores for different archetypes
-            if "vampire" in archetype_id:
-                score = 0.82 + np.random.uniform(-0.1, 0.1)
-            elif "zombie" in archetype_id:
-                score = 0.78 + np.random.uniform(-0.15, 0.1)
-            else:
-                score = 0.85 + np.random.uniform(-0.05, 0.1)
-            
-            # Determine band
-            if score >= 0.8:
-                band = "on_profile"
-            elif score >= 0.7:
-                band = "too_clean"
-            elif score >= 0.6:
-                band = "too_flat"
-            else:
-                band = "misaligned"
-            
-            return score, band
+            # Use real archetype conformity analyzer
+            return self.archetype_analyzer.analyze(audio_data, archetype_id)
     
     async def analyze_simulator_stability(self,
                                         audio_data: np.ndarray,
                                         sample_rate: int,
-                                        simulator_applied: bool) -> Tuple[float, str]:
-        """Analyze vocal simulator stability (stub)."""
+                                        simulator_applied: bool,
+                                        simulator_metadata: Optional[Dict] = None) -> Tuple[float, str]:
+        """Analyze vocal simulator stability using real analyzer."""
         with analysis_duration.labels(metric_type='simulator').time():
             if not simulator_applied:
                 return 1.0, "stable"  # No simulator to analyze
             
-            # Stub: Check for artifacts
-            # In real implementation, would check for clicks, pops, instability
-            
-            # Simple discontinuity check
-            diff = np.diff(audio_data)
-            max_diff = np.max(np.abs(diff))
-            
-            if max_diff > 0.5:
-                score = 0.7  # Large discontinuity
-            else:
-                score = 0.95 + np.random.uniform(-0.05, 0.05)
-            
-            band = "stable" if score >= 0.8 else "unstable"
-            
-            return score, band
+            # Use real simulator stability analyzer
+            return self.simulator_analyzer.analyze(audio_data, simulator_metadata)
     
     async def analyze_mix_quality(self,
                                 audio_data: np.ndarray,
