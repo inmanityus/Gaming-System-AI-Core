@@ -22,13 +22,13 @@ High-level view of each ETHELRED domain as of this session:
 |---------------------------------------------|--------------------------------------------|--------------------------------------|----------------------------|----------------|------------------------------------|
 | 4D Vision QA                                | ❌ None                                    | ❌ None                              | ✅ v2 reqs + v0.2 solutions | ✅ Tasks v0.1  | **Design-only**                    |
 | Audio Auth & Vocal Simulator QA             | 🔶 Milestones 1-2 complete                 | 🔶 Unit/integration tests            | ✅ v2 reqs + v0.2 solutions | ✅ Tasks v0.1  | **Partially implemented**          |
-| Engagement & Addiction Analytics            | ❌ None                                    | ❌ None                              | ✅ v2 reqs + v0.1 solutions | ✅ Tasks v0.1  | **Design-only**                    |
+| Engagement & Addiction Analytics            | 🔶 Milestones 1-2 complete                 | 🔶 Unit/integration tests            | ✅ v2 reqs + v0.1 solutions | ✅ Tasks v0.1  | **Partially implemented**          |
 | Content Governance & Content Levels         | ✅ Complete (All milestones)               | ✅ Comprehensive test coverage       | ✅ v2 reqs + v0.1 solutions | ✅ Tasks v0.1  | **Fully implemented**              |
 | Story Memory System                         | ✅ Complete (All milestones)               | ✅ Comprehensive test coverage       | ✅ v2 reqs + v0.1 solutions | ✅ Tasks v0.1  | **Fully implemented**              |
 | Multi-Language Experience                   | ❌ None                                    | ❌ None                              | ✅ v2 reqs + v0.1 solutions | ✅ Tasks v0.1  | **Design-only**                    |
 | Website / Social AI                         | ❌ None                                    | ❌ None                              | ✅ Placeholder v0.2         | ✅ Scope tasks | **Scoped, explicitly deferred**    |
 
-> **Interpretation**: ETHELRED is **architecturally specified** across all seven domains, with **Content Governance having Milestones 1–4 fully implemented**, **Story Memory System completely implemented (all milestones)**, and **Audio Authentication with Milestones 1-2 complete**. The other four domains remain design-only. The underlying game stack (NATS, core services, vocal synthesis, backend security) is production-grade per existing handoffs. ETHELRED is transitioning from **"well-designed but largely unbuilt"** to **"partially operational"** with three subsystems now ready for AWS deployment.
+> **Interpretation**: ETHELRED is **architecturally specified** across all seven domains, with **Content Governance fully implemented (all milestones)**, **Story Memory System fully implemented (all milestones)**, **Audio Authentication with Milestones 1-2 complete**, and **Engagement & Addiction Analytics with Milestones 1-2 complete**. The remaining three domains (4D Vision, Multi-Language, Website/Social) remain design-only. The underlying game stack (NATS, core services, vocal synthesis, backend security) is production-grade per existing handoffs. ETHELRED is transitioning from **"well-designed but largely unbuilt"** to **"significantly operational"** with four subsystems now ready for AWS deployment.
 
 ---
 
@@ -107,28 +107,36 @@ Each subsection answers:
 
 ### 2.3 Emotional Engagement & Addiction Analytics
 
-- **Implemented Today**
-  - No `svc.ethelred.emo.*` services exist; engagement or addiction metrics are not computed or stored anywhere in the codebase.
-  - Game telemetry exists at the NATS and service level, but there is **no canonical engagement_events schema** or dedicated analytics pipeline.
+- **Implemented Today (Milestones 1-2 Complete)** 🔶
+  - **Engagement telemetry foundation now exists:**
+    - Protobuf definitions in `proto/ethelred_engagement.proto` for all engagement event contracts (TEMO-01)
+    - Database schema (`015_engagement_analytics.sql`) with full event storage and analytics tables (TEMO-02)
+    - Telemetry ingester service with event validation and privacy protection (TEMO-03)
+    - Metric calculator for NPC attachment, moral tension, and engagement profiles (TEMO-04, TEMO-05, TEMO-06)
+    - Addiction detector with cohort-level risk assessment - strictly privacy-preserving (TEMO-07, TEMO-08)
+    - Comprehensive API endpoints for event ingestion and metric queries
+    - Full test coverage for all components
+    - **Non-predatory constraints enforced**: All analytics are cohort-level only (min 100 players), no individual tracking
 
-- **Designed & Planned**
-  - Requirements: `ETHELRED-COMPREHENSIVE-REQUIREMENTS.md` §4 defines NPC attachment, moral tension, engagement profiles, and cohort-level addiction risk, with strict non-predatory rules.
-  - Solutions: `ETHELRED-ENGAGEMENT-ADDICTION-SOLUTIONS.md` defines telemetry, analytics, addiction job, and design feedback services.
-  - Tasks: `docs/tasks/ETHELRED-ENGAGEMENT-TASKS.md` (TEMO-01…12) define:
-    - telemetry contracts and schemas,
-    - ingestion and analytics services,
-    - addiction risk job and reports,
-    - non-predatory usage enforcement, Coordinator/Red Alert integration, traceability.
+- **Designed & Awaiting Implementation (Milestones 3-5)**
+  - NATS integration for real-time event streaming (TEMO-09)
+  - Design feedback service integration (TEMO-10)
+  - Prometheus metrics and Grafana dashboards (TEMO-11)
+  - Complete end-to-end integration with Game Telemetry (TEMO-12)
 
 - **Key Gaps & Risks**
-  - **No telemetry normalization**: Engagement signals are not normalized or stored in a way that supports robust analytics.
-  - **No ethics validation yet**: Non-predatory constraints are well-specified but unenforced in code.
-  - **Risk of misuse** if analytics are wired incorrectly (e.g., per-player loops); this must be guarded by design, not policy alone.
+  - **AWS deployment pending**: Services built but not yet deployed to production
+  - **NATS integration incomplete**: Currently using HTTP ingestion, need NATS event consumers
+  - **Real-time processing**: Need to implement stream processing for live analytics
+  - **Dashboard visualization**: Metrics collected but not yet visualized in monitoring tools
 
 - **Next Steps (Phase 4+)**
-  - Implement telemetry ingestion + engagement_events schema (TEMO-01…03) and add high-level analytics for NPC attachment and moral tension (TEMO-04–05) before addiction indicators.
-  - Introduce engagement/addiction suites to `MASTER-TEST-REGISTRY.md` with adversarial test sets to validate non-predatory constraints.
-  - Use TEMO-10 as a hard gate: no usage of engagement/addiction metrics in per-player tuning until it passes a dedicated safety review.
+  - Deploy engagement analytics services to AWS ECS/Fargate
+  - Implement NATS consumers for real-time telemetry ingestion
+  - Create Prometheus exporters and Grafana dashboards
+  - Run integration tests with live game telemetry
+  - Add engagement/addiction test results to `MASTER-TEST-REGISTRY.md`
+  - Monitor cohort sizes to ensure privacy thresholds are maintained
 
 ---
 
@@ -307,11 +315,12 @@ The v2.0 requirements docs for ETHELRED and related systems are **highly impleme
 
 - ETHELRED is **architecturally complete on paper** (v2 requirements + Phase 3 solutions across all seven domains).  
 - Phase 4 task docs now provide **concrete, testable implementation plans** for each domain (`docs/tasks/ETHELRED-*.md`, `docs/tasks/WEBSITE-SOCIAL-AI-TASKS.md`).  
-- **Three ETHELRED domains now have implementations:**
+- **Four ETHELRED domains now have implementations:**
   - **Content Governance & Content Levels**: Full implementation (all milestones)
   - **Story Memory System**: Full implementation (all milestones) 
   - **Audio Authentication**: Partial implementation (Milestones 1-2 complete with capture/metrics pipeline)
-- All other ETHELRED domains (4D Vision, Engagement, Multi-Language, Website/Social) remain design-only.
+  - **Engagement & Addiction Analytics**: Partial implementation (Milestones 1-2 complete with privacy-preserving analytics)
+- Three ETHELRED domains (4D Vision, Multi-Language, Website/Social) remain design-only.
 
 Until at least one vertical slice (e.g., **Content Governance + 4D Vision + Audio QA + Story Memory for a small set of scenes**) is implemented and green in `/test-comprehensive`, ETHELRED should be treated as **pre-production design** rather than a live quality gate for The Body Broker.
 
