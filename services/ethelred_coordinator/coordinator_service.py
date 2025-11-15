@@ -88,9 +88,17 @@ class EthelredCoordinator:
             cb=lambda msg: self._handle_domain_signal(msg, QADomain.AUDIO)
         )
         
-        # Engagement Analytics (placeholder)
+        # Engagement Analytics
         await self.nc.subscribe(
-            "ethelred.engagement.anomaly_detected",
+            "events.ethelred.emo.v1.engagement_metrics",
+            cb=lambda msg: self._handle_domain_signal(msg, QADomain.ENGAGEMENT)
+        )
+        await self.nc.subscribe(
+            "events.ethelred.emo.v1.addiction_risk",
+            cb=lambda msg: self._handle_domain_signal(msg, QADomain.ENGAGEMENT)
+        )
+        await self.nc.subscribe(
+            "events.ethelred.emo.v1.severe_risk_alert",
             cb=lambda msg: self._handle_domain_signal(msg, QADomain.ENGAGEMENT)
         )
         
@@ -192,6 +200,82 @@ class EthelredCoordinator:
                     "description": data.get("description")
                 }
             )
+        
+        elif domain == QADomain.ENGAGEMENT:
+            # Engagement analytics events
+            issue_type = data.get("issue_type", "")
+            severity = data.get("severity", "INFO").lower()
+            
+            # Map INFO/WARNING/ERROR/CRITICAL to our scale
+            severity_map = {
+                "info": "low",
+                "warning": "medium", 
+                "error": "high",
+                "critical": "critical"
+            }
+            severity = severity_map.get(severity, "medium")
+            
+            # Handle different engagement event types
+            if "ADDICTION_RISK" in issue_type:
+                payload = data.get("payload", {})
+                risk_level = payload.get("risk_level", "healthy")
+                
+                # Map addiction risk levels to severity
+                if risk_level == "severe":
+                    severity = "critical"
+                elif risk_level == "concerning":
+                    severity = "high"
+                elif risk_level == "moderate":
+                    severity = "medium"
+                else:
+                    severity = "low"
+                
+                return DomainSignal(
+                    domain=domain,
+                    signal_type="addiction_risk",
+                    severity=severity,
+                    session_id=session_id,
+                    player_id=player_id,
+                    details={
+                        "risk_level": risk_level,
+                        "risk_factors": payload.get("risk_factors", []),
+                        "cohort": payload.get("cohort_identifier", {}),
+                        "sample_size": payload.get("sample_size", 0)
+                    }
+                )
+            
+            elif "ENGAGEMENT_METRICS" in issue_type:
+                payload = data.get("payload", {})
+                aggregate_type = payload.get("aggregate_type", "")
+                
+                # Check for concerning patterns
+                signal_type = "engagement_metric"
+                if aggregate_type == "npc_attachment" and payload.get("attachment_score", 1.0) < 0.2:
+                    signal_type = "low_engagement"
+                    severity = "medium"
+                elif aggregate_type == "moral_tension" and payload.get("tension_score", 0) > 0.8:
+                    signal_type = "high_tension"
+                    severity = "medium"
+                
+                return DomainSignal(
+                    domain=domain,
+                    signal_type=signal_type,
+                    severity=severity,
+                    session_id=session_id,
+                    player_id=player_id,
+                    details=payload
+                )
+            
+            else:
+                # Generic engagement signal
+                return DomainSignal(
+                    domain=domain,
+                    signal_type=issue_type.lower().replace(".", "_"),
+                    severity=severity,
+                    session_id=session_id,
+                    player_id=player_id,
+                    details=data.get("payload", {})
+                )
         
         else:
             # Generic mapping for other domains (placeholders)

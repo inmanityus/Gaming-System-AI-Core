@@ -1,0 +1,210 @@
+{
+  "dashboard": {
+    "id": "engagement-analytics",
+    "title": "Engagement & Addiction Analytics",
+    "description": "Monitor player engagement health and addiction risk indicators",
+    "refresh_interval": 60,
+    "time_range": "last_7_days",
+    "widgets": [
+      {
+        "id": "engagement-overview",
+        "type": "stat_panel",
+        "title": "Engagement Overview",
+        "position": { "x": 0, "y": 0, "w": 12, "h": 4 },
+        "queries": [
+          {
+            "metric": "engagement.cohorts_monitored",
+            "stat": "current"
+          },
+          {
+            "metric": "engagement.active_sessions",
+            "stat": "current"
+          },
+          {
+            "metric": "engagement.metrics_computed",
+            "stat": "sum_1h"
+          }
+        ]
+      },
+      {
+        "id": "addiction-risk-distribution",
+        "type": "pie_chart",
+        "title": "Addiction Risk Distribution",
+        "position": { "x": 12, "y": 0, "w": 12, "h": 4 },
+        "query": {
+          "metric": "addiction.risk_level_distribution",
+          "group_by": "risk_level",
+          "colors": {
+            "healthy": "#28a745",
+            "moderate": "#ffc107",
+            "concerning": "#fd7e14",
+            "severe": "#dc3545"
+          }
+        }
+      },
+      {
+        "id": "npc-attachment-heatmap",
+        "type": "heatmap",
+        "title": "NPC Attachment by Cohort",
+        "position": { "x": 0, "y": 4, "w": 12, "h": 6 },
+        "query": {
+          "metric": "engagement.npc_attachment_index",
+          "group_by": ["cohort_id", "npc_id"],
+          "aggregation": "avg",
+          "color_scale": "viridis"
+        }
+      },
+      {
+        "id": "moral-tension-timeline",
+        "type": "time_series",
+        "title": "Moral Tension Over Time",
+        "position": { "x": 12, "y": 4, "w": 12, "h": 6 },
+        "queries": [
+          {
+            "metric": "engagement.moral_tension_index",
+            "aggregation": "avg",
+            "group_by": "arc_id"
+          }
+        ]
+      },
+      {
+        "id": "addiction-indicators-table",
+        "type": "table",
+        "title": "High-Risk Cohort Indicators",
+        "position": { "x": 0, "y": 10, "w": 16, "h": 8 },
+        "query": {
+          "source": "addiction_risk_reports",
+          "filter": "risk_level IN ('concerning', 'severe')",
+          "columns": [
+            {
+              "field": "cohort_identifier",
+              "label": "Cohort",
+              "formatter": "json"
+            },
+            {
+              "field": "risk_level",
+              "label": "Risk Level",
+              "formatter": "badge"
+            },
+            {
+              "field": "night_time_fraction",
+              "label": "Night Play %",
+              "formatter": "percentage"
+            },
+            {
+              "field": "excessive_session_fraction",
+              "label": "Long Sessions %",
+              "formatter": "percentage"
+            },
+            {
+              "field": "one_more_run_loops",
+              "label": "Restart Loops",
+              "formatter": "number"
+            },
+            {
+              "field": "risk_factors",
+              "label": "Risk Factors",
+              "formatter": "tags"
+            }
+          ],
+          "sort_by": "risk_level",
+          "sort_order": "desc",
+          "limit": 20
+        }
+      },
+      {
+        "id": "engagement-profiles",
+        "type": "bar_chart",
+        "title": "Engagement Profile Distribution",
+        "position": { "x": 16, "y": 10, "w": 8, "h": 8 },
+        "query": {
+          "metric": "engagement.profile_distribution",
+          "group_by": "engagement_profile",
+          "aggregation": "count"
+        }
+      },
+      {
+        "id": "safety-violations",
+        "type": "alert_list",
+        "title": "Safety Constraint Violations",
+        "position": { "x": 0, "y": 18, "w": 12, "h": 6 },
+        "query": {
+          "source": "safety_violations",
+          "filter": "domain = 'engagement'",
+          "severity_colors": {
+            "player_targeting": "#dc3545",
+            "real_time_personalization": "#dc3545",
+            "reward_optimization": "#fd7e14"
+          }
+        }
+      },
+      {
+        "id": "multi-domain-correlations",
+        "type": "network_graph",
+        "title": "Cross-Domain Correlations",
+        "position": { "x": 12, "y": 18, "w": 12, "h": 6 },
+        "query": {
+          "source": "correlated_issues",
+          "filter": "domains_affected CONTAINS 'engagement'",
+          "node_size_by": "severity",
+          "edge_weight_by": "correlation_strength"
+        }
+      },
+      {
+        "id": "recommendations-panel",
+        "type": "text_panel",
+        "title": "Active Design Recommendations",
+        "position": { "x": 0, "y": 24, "w": 24, "h": 4 },
+        "query": {
+          "source": "addiction_risk_reports",
+          "field": "recommendations",
+          "filter": "created_at > NOW() - INTERVAL '24 hours'",
+          "format": "markdown"
+        }
+      }
+    ],
+    "alerts": [
+      {
+        "id": "severe-addiction-risk",
+        "condition": "addiction.severe_cohort_count > 0",
+        "severity": "critical",
+        "message": "Severe addiction risk detected in {{value}} cohorts",
+        "actions": ["page_ethics_team", "pause_risky_features"]
+      },
+      {
+        "id": "widespread-low-engagement",
+        "condition": "engagement.low_attachment_cohort_ratio > 0.3",
+        "severity": "warning",
+        "message": "Over 30% of cohorts showing low engagement",
+        "actions": ["notify_design_team"]
+      },
+      {
+        "id": "safety-constraint-violation",
+        "condition": "safety.violation_count_1h > 0",
+        "severity": "critical",
+        "message": "Safety constraint violated: {{violation_type}}",
+        "actions": ["block_request", "alert_security"]
+      }
+    ],
+    "filters": [
+      {
+        "id": "build_selector",
+        "type": "dropdown",
+        "label": "Build",
+        "options_query": "SELECT DISTINCT build_id FROM engagement_events ORDER BY build_id DESC"
+      },
+      {
+        "id": "region_filter",
+        "type": "multi_select",
+        "label": "Region",
+        "options": ["NA", "EU", "APAC", "SA"]
+      },
+      {
+        "id": "platform_filter",
+        "type": "multi_select",
+        "label": "Platform",
+        "options": ["PC", "Console", "Mobile", "VR"]
+      }
+    ]
+  }
+}

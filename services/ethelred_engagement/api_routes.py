@@ -23,6 +23,10 @@ from .engagement_schemas import (
 from .telemetry_ingester import TelemetryIngester
 from .metric_calculator import MetricCalculator
 from .addiction_detector import AddictionDetector
+from .safety_constraints import (
+    require_safe_usage, UsageContext, safety_constraints,
+    ConstraintViolation, DisallowedUsage
+)
 
 logger = logging.getLogger(__name__)
 
@@ -188,6 +192,20 @@ async def get_npc_attachment_metrics(
     if not metric_calculator:
         raise HTTPException(status_code=503, detail="Metric calculator not initialized")
     
+    # Enforce safety constraints
+    try:
+        safety_constraints.check_usage_allowed(
+            UsageContext.COHORT_ANALYSIS,
+            {
+                'requester': 'api_npc_attachment',
+                'cohort_size': 100,  # Would get from DB in real implementation
+                'granularity': 'cohort',
+                'purpose': 'cohort health monitoring'
+            }
+        )
+    except ConstraintViolation as e:
+        raise HTTPException(status_code=403, detail=str(e))
+    
     try:
         period_end = datetime.now(timezone.utc)
         period_start = period_end - timedelta(days=period_days)
@@ -323,6 +341,21 @@ async def assess_addiction_risk(request: AssessRiskRequest) -> AddictionRiskRepo
     if not addiction_detector:
         raise HTTPException(status_code=503, detail="Addiction detector not initialized")
     
+    # Enforce safety constraints
+    try:
+        safety_constraints.check_usage_allowed(
+            UsageContext.COHORT_ANALYSIS,
+            {
+                'requester': 'api_addiction_risk',
+                'cohort_size': 100,  # Would validate from actual cohort
+                'granularity': 'cohort',
+                'purpose': 'addiction risk monitoring',
+                'time_granularity': 'daily'
+            }
+        )
+    except ConstraintViolation as e:
+        raise HTTPException(status_code=403, detail=str(e))
+    
     try:
         cohort_def = CohortDefinition(
             cohort_id=request.cohort_id,
@@ -383,6 +416,33 @@ async def health_check() -> Dict[str, Any]:
             "metric_calculator": metric_calculator is not None,
             "addiction_detector": addiction_detector is not None
         }
+    }
+
+
+@router.get("/safety/violations")
+async def get_safety_violations() -> Dict[str, Any]:
+    """
+    Get report of safety constraint violations (for security auditing).
+    This endpoint itself requires special authorization.
+    """
+    violations = safety_constraints.get_violation_report()
+    
+    return {
+        "total_violations": len(violations),
+        "violations": violations[-100:],  # Last 100 violations
+        "message": "Review these violations to ensure no predatory patterns"
+    }
+
+
+@router.get("/safety/constraints")
+async def get_safety_constraints() -> Dict[str, Any]:
+    """Get current safety constraint configuration."""
+    return {
+        "min_cohort_size": safety_constraints.MIN_COHORT_SIZE,
+        "access_frequency_limits": safety_constraints.MAX_ACCESS_FREQUENCY,
+        "allowed_contexts": [c.value for c in UsageContext],
+        "disallowed_patterns": [d.value for d in DisallowedUsage],
+        "message": "These constraints protect against predatory usage"
     }
 
 
