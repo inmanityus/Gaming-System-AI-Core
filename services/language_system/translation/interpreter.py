@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Interpretation Module
@@ -7,13 +9,19 @@ Provides contextual interpretation of language, extracting meaning, intent, and 
 """
 
 import logging
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, TYPE_CHECKING
 from dataclasses import dataclass, field
 
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
+if TYPE_CHECKING:
+    from services.language_system.core.language_definition import LanguageRegistry, LanguageDefinition
+    from services.language_system.generation.ai_language_generator import AILanguageGenerator
+else:
+    from services.language_system.core.language_definition import LanguageRegistry, LanguageDefinition
+    from services.language_system.generation.ai_language_generator import AILanguageGenerator
 
 logger = logging.getLogger(__name__)
 
@@ -226,4 +234,5 @@ Cultural Context: {language.culture}
             confidence=0.7,  # Default confidence
             metadata={"parsing_method": "simple"}
         )
+
 

@@ -1,0 +1,8 @@
+{
+  "PrivateIP": "172.31.108.31",
+  "PublicIP": "34.206.83.55",
+  "Purpose": "NATS Load Testing",
+  "Created": "11/13/2025 5:06:24 PM",
+  "InstanceId": "i-06902bb2759a221ae",
+  "SSHCommand": "ssh -i C:\\Users\\kento\\.ssh\\gaming-system-ai-core-admin.pem ec2-user@34.206.83.55"
+}

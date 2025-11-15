@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package body_broker.v1;
+
+import "common.proto";
+
+// Body Broker Integration - Game-specific body part trading mechanics
+// Subjects:
+//   svc.broker.v1.harvest - Process body part harvest
+//   svc.broker.v1.negotiate - Negotiate with dark family
+//   svc.broker.v1.complete_deal - Complete a deal
+//   evt.broker.harvest.completed.v1 - Harvest completed event
+//   evt.broker.deal.completed.v1 - Deal completed event
+
+message HarvestRequest {
+  common.v1.Meta meta = 1;
+  string player_id = 2;
+  string target_id = 3;  // Target NPC/entity
+  repeated string body_parts = 4;  // Parts being harvested
+  string tool_used = 5;  // Harvesting tool
+  map<string, string> context = 6;  // Environmental context
+}
+
+message BodyPart {
+  string part_type = 1;  // heart, liver, eyes, etc.
+  string quality = 2;  // pristine, damaged, corrupted
+  double freshness = 3;  // 0.0-1.0
+  map<string, string> properties = 4;  // Special properties
+}
+
+message HarvestResponse {
+  common.v1.Meta meta = 1;
+  repeated BodyPart harvested_parts = 2;
+  double skill_xp_gained = 3;
+  string morality_impact = 4;  // surgeon/butcher path
+  common.v1.Error error = 5;
+}
+
+message NegotiateRequest {
+  common.v1.Meta meta = 1;
+  string player_id = 2;
+  string family_id = 3;  // Dark World family
+  repeated BodyPart offered_parts = 4;
+  string requested_drug = 5;  // Dark drug requested
+  int32 requested_quantity = 6;
+}
+
+message NegotiateResponse {
+  common.v1.Meta meta = 1;
+  bool accepted = 2;
+  string counter_offer_drug = 3;
+  int32 counter_offer_quantity = 4;
+  double relationship_change = 5;  // Impact on family relationship
+  repeated string dialogue_lines = 6;  // NPC dialogue
+  common.v1.Error error = 7;
+}
+
+message CompleteDealRequest {
+  common.v1.Meta meta = 1;
+  string player_id = 2;
+  string deal_id = 3;
+}
+
+message CompleteDealResponse {
+  common.v1.Meta meta = 1;
+  bool success = 2;
+  repeated string rewards = 3;  // Drugs received
+  map<string, int32> quantities = 4;
+  common.v1.Error error = 5;
+}
+

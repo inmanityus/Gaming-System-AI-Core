@@ -18,17 +18,17 @@ It does **not** introduce new implementation; it is an honest gap analysis and r
 
 High-level view of each ETHELRED domain as of this session:
 
-| Domain                                      | Code Implemented? | Tests Implemented? | Requirements & Solutions? | Phase 4 Tasks? | Readiness (ETHELRED-specific) |
-|---------------------------------------------|-------------------|--------------------|----------------------------|----------------|-------------------------------|
-| 4D Vision QA                                | ❌ None           | ❌ None            | ✅ v2 reqs + v0.2 solutions | ✅ Tasks v0.1  | **Design-only**               |
-| Audio Auth & Vocal Simulator QA             | ❌ None           | ❌ None            | ✅ v2 reqs + v0.2 solutions | ✅ Tasks v0.1  | **Design-only**               |
-| Engagement & Addiction Analytics            | ❌ None           | ❌ None            | ✅ v2 reqs + v0.1 solutions | ✅ Tasks v0.1  | **Design-only**               |
-| Content Governance & Content Levels         | ❌ None           | ❌ None            | ✅ v2 reqs + v0.1 solutions | ✅ Tasks v0.1  | **Design-only**               |
-| Story Memory System                         | ❌ None           | ❌ None            | ✅ v2 reqs + v0.1 solutions | ✅ Tasks v0.1  | **Design-only**               |
-| Multi-Language Experience                   | ❌ None           | ❌ None            | ✅ v2 reqs + v0.1 solutions | ✅ Tasks v0.1  | **Design-only**               |
-| Website / Social AI                         | ❌ None           | ❌ None            | ✅ Placeholder v0.2         | ✅ Scope tasks | **Scoped, explicitly deferred** |
+| Domain                                      | Code Implemented?                          | Tests Implemented?                    | Requirements & Solutions? | Phase 4 Tasks? | Readiness (ETHELRED-specific)      |
+|---------------------------------------------|--------------------------------------------|--------------------------------------|----------------------------|----------------|------------------------------------|
+| 4D Vision QA                                | ❌ None                                    | ❌ None                              | ✅ v2 reqs + v0.2 solutions | ✅ Tasks v0.1  | **Design-only**                    |
+| Audio Auth & Vocal Simulator QA             | ❌ None                                    | ❌ None                              | ✅ v2 reqs + v0.2 solutions | ✅ Tasks v0.1  | **Design-only**                    |
+| Engagement & Addiction Analytics            | ❌ None                                    | ❌ None                              | ✅ v2 reqs + v0.1 solutions | ✅ Tasks v0.1  | **Design-only**                    |
+| Content Governance & Content Levels         | ✅ Partial (Milestones 1–2 baseline slice) | ✅ Partial (unit/logic-level tests)  | ✅ v2 reqs + v0.1 solutions | ✅ Tasks v0.1  | **Partially implemented**         |
+| Story Memory System                         | ❌ None                                    | ❌ None                              | ✅ v2 reqs + v0.1 solutions | ✅ Tasks v0.1  | **Design-only**                    |
+| Multi-Language Experience                   | ❌ None                                    | ❌ None                              | ✅ v2 reqs + v0.1 solutions | ✅ Tasks v0.1  | **Design-only**                    |
+| Website / Social AI                         | ❌ None                                    | ❌ None                              | ✅ Placeholder v0.2         | ✅ Scope tasks | **Scoped, explicitly deferred**    |
 
-> **Interpretation**: ETHELRED is **architecturally specified** across all seven domains but **zero domain-specific services or tests are implemented yet**. The underlying game stack (NATS, core services, vocal synthesis, backend security) is production-grade per existing handoffs, but ETHELRED itself is still at **“well-designed but unbuilt”** status.
+> **Interpretation**: ETHELRED is **architecturally specified** across all seven domains, with **Content Governance now having a first partial implementation slice (Milestones 1–2 baseline code + tests)** while the other domains remain design-only. The underlying game stack (NATS, core services, vocal synthesis, backend security) is production-grade per existing handoffs, but most of ETHELRED is still at **“well-designed but largely unbuilt”** status.
 
 ---
 
@@ -127,8 +127,12 @@ Each subsection answers:
 ### 2.4 Content Governance & Content Levels
 
 - **Implemented Today**
-  - Guardrails Monitor and Settings service exist and handle global safety, but **have no fully realized Content Level Manager** or Ethelred Content Validator implementations.
-  - No `content_levels`, `player_content_profiles`, `session_content_policy`, or `content_violations` tables are present; no `CONTENT.VIOLATION` events exist in code.
+  - Guardrails Monitor and Settings service exist and handle global safety. In this session, **a first real slice of Content Governance was implemented**:
+    - Database schema and migrations for `content_levels`, `player_content_profiles`, `session_content_policy`, and `content_violations` (`011_content_governance.sql`).  
+    - `ContentLevelManager` module and HTTP APIs in the Settings service for managing content profiles, per-player policies, and computing per-session content policy snapshots.  
+    - Typed schemas in `services/settings/content_schemas.py` (`CategoryLevels`, `ContentProfile`, `PlayerContentPolicy`, `SessionContentPolicySnapshot`) aligned with the DB schema.  
+    - Ethelred Content Validator skeleton in `services/ethelred_content/` with `ContentObservation` / `ContentViolationEvent` models and the `ContentContextCrossChecker` + `ContentViolationEngine` implementing real comparison logic.  
+    - Unit/logic tests for content schemas and validator skeleton under `services/settings/tests/` and `services/ethelred_content/tests/`.
 
 - **Designed & Planned**
   - Requirements: `CONTENT-GOVERNANCE-REQUIREMENTS.md` v2.0 fully specifies categories, levels, DB schemas, APIs, messaging, and testing.
@@ -140,13 +144,15 @@ Each subsection answers:
     - observability, auditability, and traceability.
 
 - **Key Gaps & Risks**
-  - **No policy enforcement beyond global safety**: Player-specific content profiles and per-session policy snapshots do not exist.
-  - **No content-level validation**: Generated/visual/audio content is not checked against player policies; this is a major blocker for ratings compliance and player trust.
-  - **Audit/compliance**: Without `content_violations` and audit logs, it’s hard to prove compliance to ratings bodies or users.
+  - **Policy enforcement not yet wired into runtime**: Player-specific content profiles and per-session policy snapshots now exist, but Guardrails Monitor, Model Management, Story Teller, UE5, and other generators are not yet consuming them for real enforcement or filtering decisions.
+  - **Content-level validation is only skeletal**: The Content Validator has contracts and basic comparison logic but is not yet integrated with 4D Vision, Audio QA, or live NATS pipelines; no production `CONTENT.VIOLATION` writes to the `content_violations` table occur yet.
+  - **Audit/compliance paths unproven**: Although `content_violations` is defined, there is no end-to-end logging, export, or ESRB/PEGI-style reporting implemented; compliance still cannot be demonstrated from real data.
 
 - **Next Steps (Phase 4+)**
-  - Prioritize implementation of TCG-01…04 (Content Level Manager + session snapshot) and TCG-05…08 (Content Validator) before other ETHELRED domains.
-  - Add content governance suites (unit, integration, scenario/E2E) to `MASTER-TEST-REGISTRY.md` and tag them as **deployment-blocking** for public builds.
+  - Finish Milestones 1–2 for Content Governance by hardening and integrating the new code paths:
+    - Wire Settings → Guardrails Monitor → Model Management (TCG-09) so policies actively shape generation and filtering.  
+    - Connect Content Validator to upstream detectors (4D Vision, Audio Auth, Story/Text streams), persist violations into `content_violations`, and emit `events.ethelred.content.v1.violation` (TCG-05–08, TCG-10).  
+  - Add content governance suites (unit, integration, scenario/E2E) to `MASTER-TEST-REGISTRY.md` and tag them as **deployment-blocking** for public builds once stable.
   - Ensure Content Governance is integrated with Multi-Language and Story Memory before declaring ETHELRED “ready”.
 
 ---
@@ -282,8 +288,9 @@ The v2.0 requirements docs for ETHELRED and related systems are **highly impleme
 
 - ETHELRED is **architecturally complete on paper** (v2 requirements + Phase 3 solutions across all seven domains).  
 - Phase 4 task docs now provide **concrete, testable implementation plans** for each domain (`docs/tasks/ETHELRED-*.md`, `docs/tasks/WEBSITE-SOCIAL-AI-TASKS.md`).  
-- However, **no ETHELRED domain services or tests are implemented yet**; only underlying game and infrastructure components are production-ready.
+- **Content Governance & Content Levels now has a first partial implementation slice (Milestones 1–2 baseline)** – schemas/migrations, Content Level Manager + session snapshots in Settings, Content Validator skeleton, and unit/logic-level tests are in place – while all other ETHELRED domains remain design-only.
 
 Until at least one vertical slice (e.g., **Content Governance + 4D Vision + Audio QA + Story Memory for a small set of scenes**) is implemented and green in `/test-comprehensive`, ETHELRED should be treated as **pre-production design** rather than a live quality gate for The Body Broker.
+
 
 

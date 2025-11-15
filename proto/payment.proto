@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package payment.v1;
+
+import "common.proto";
+
+// Payment Service - Handles in-game currency and transactions
+// Subjects:
+//   svc.payment.v1.process - Process payment
+//   svc.payment.v1.validate - Validate payment
+//   svc.payment.v1.refund - Refund payment
+//   evt.payment.completed.v1 - Payment completed event
+
+message ProcessPaymentRequest {
+  common.v1.Meta meta = 1;
+  string player_id = 2;
+  string currency_type = 3;  // dark_drug, credits, etc.
+  int32 amount = 4;
+  string item_id = 5;  // What's being purchased
+  map<string, string> metadata = 6;
+}
+
+message ProcessPaymentResponse {
+  common.v1.Meta meta = 1;
+  string transaction_id = 2;
+  bool success = 3;
+  int32 new_balance = 4;
+  int64 timestamp_ms = 5;
+  common.v1.Error error = 6;
+}
+
+message ValidatePaymentRequest {
+  common.v1.Meta meta = 1;
+  string player_id = 2;
+  string currency_type = 3;
+  int32 amount = 4;
+}
+
+message ValidatePaymentResponse {
+  common.v1.Meta meta = 1;
+  bool is_valid = 2;
+  int32 current_balance = 3;
+  int32 required_amount = 4;
+  repeated string missing_currencies = 5;
+  common.v1.Error error = 6;
+}
+
+message RefundRequest {
+  common.v1.Meta meta = 1;
+  string transaction_id = 2;
+  string reason = 3;
+}
+
+message RefundResponse {
+  common.v1.Meta meta = 1;
+  bool success = 2;
+  int32 refunded_amount = 3;
+  int32 new_balance = 4;
+  common.v1.Error error = 5;
+}
+

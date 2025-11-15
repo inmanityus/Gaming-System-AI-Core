@@ -1,4 +1,4 @@
-# Context Window Monitor Background Process
+﻿# Context Window Monitor Background Process
 # This runs independently to monitor context size and trigger cleanup/handoff
 
 $monitorInterval = 300  # Check every 5 minutes

@@ -1,0 +1,36 @@
+ResourceType,ResourceName,ResourceID,IP/Hostname,ConsoleLocation,Status,Purpose,CreatedDate,Cost,Notes
+EC2-Instance,NATS-Node-1,i-nats-1,NATS-Private-IP-1,EC2 > Instances,Running,NATS cluster node 1,2025-11-13,$84/mo,t3.small JetStream enabled
+EC2-Instance,NATS-Node-2,i-nats-2,NATS-Private-IP-2,EC2 > Instances,Running,NATS cluster node 2,2025-11-13,$84/mo,t3.small JetStream enabled
+EC2-Instance,NATS-Node-3,i-nats-3,NATS-Private-IP-3,EC2 > Instances,Running,NATS cluster node 3,2025-11-13,$84/mo,t3.small JetStream enabled
+EC2-Instance,NATS-Node-4,i-nats-4,NATS-Private-IP-4,EC2 > Instances,Running,NATS cluster node 4,2025-11-13,$84/mo,t3.small JetStream enabled
+EC2-Instance,NATS-Node-5,i-nats-5,NATS-Private-IP-5,EC2 > Instances,Running,NATS cluster node 5,2025-11-13,$84/mo,t3.small JetStream enabled
+NLB,NATS-Production-NLB,nats-production-1dd94609d95c94d4,nats-production-1dd94609d95c94d4.elb.us-east-1.amazonaws.com,EC2 > Load Balancers,Active,NATS cluster load balancer,2025-11-13,$16/mo,Port 4222 internal VPC only
+ElastiCache,Redis-Gaming-System,gaming-system-redis,gaming-system-redis.*.cache.amazonaws.com,ElastiCache > Redis,Available,Redis cluster for caching,2025-11-13,$1288/mo,3 shards Multi-AZ
+ECS-Service,ai-integration-nats,ai-integration-nats,N/A,ECS > Services,Active,AI integration NATS service,2025-11-13,$24/mo,2 tasks Fargate 256/512
+ECS-Service,model-management-nats,model-management-nats,N/A,ECS > Services,Active,Model management NATS service,2025-11-13,$24/mo,2 tasks Fargate 256/512
+ECS-Service,state-manager-nats,state-manager-nats,N/A,ECS > Services,Active,State manager NATS service,2025-11-13,$24/mo,2 tasks Fargate 256/512
+ECS-Service,quest-system-nats,quest-system-nats,N/A,ECS > Services,Active,Quest system NATS service,2025-11-13,$24/mo,2 tasks Fargate 256/512
+ECS-Service,npc-behavior-nats,npc-behavior-nats,N/A,ECS > Services,Active,NPC behavior NATS service,2025-11-13,$24/mo,2 tasks Fargate 256/512
+ECS-Service,world-state-nats,world-state-nats,N/A,ECS > Services,Active,World state NATS service,2025-11-13,$24/mo,2 tasks Fargate 256/512
+ECS-Service,orchestration-nats,orchestration-nats,N/A,ECS > Services,Active,Orchestration NATS service,2025-11-13,$24/mo,2 tasks Fargate 256/512
+ECS-Service,router-nats,router-nats,N/A,ECS > Services,Active,Router NATS service,2025-11-13,$24/mo,2 tasks Fargate 256/512
+ECS-Service,event-bus-nats,event-bus-nats,N/A,ECS > Services,Active,Event bus NATS service,2025-11-13,$24/mo,2 tasks Fargate 256/512
+ECS-Service,weather-manager-nats,weather-manager-nats,N/A,ECS > Services,Active,Weather manager NATS service,2025-11-13,$24/mo,2 tasks Fargate 256/512
+ECS-Service,auth-nats,auth-nats,N/A,ECS > Services,Active,Auth NATS service,2025-11-13,$24/mo,2 tasks Fargate 256/512
+ECS-Service,settings-nats,settings-nats,N/A,ECS > Services,Active,Settings NATS service,2025-11-13,$24/mo,2 tasks Fargate 256/512
+ECS-Service,payment-nats,payment-nats,N/A,ECS > Services,Active,Payment NATS service,2025-11-13,$24/mo,2 tasks Fargate 256/512
+ECS-Service,performance-mode-nats,performance-mode-nats,N/A,ECS > Services,Active,Performance mode NATS service,2025-11-13,$24/mo,2 tasks Fargate 256/512
+ECS-Service,capability-registry-nats,capability-registry-nats,N/A,ECS > Services,Active,Capability registry NATS service,2025-11-13,$24/mo,2 tasks Fargate 256/512
+ECS-Service,ai-router-nats,ai-router-nats,N/A,ECS > Services,Active,AI router NATS service,2025-11-13,$24/mo,2 tasks Fargate 256/512
+ECS-Service,knowledge-base-nats,knowledge-base-nats,N/A,ECS > Services,Active,Knowledge base NATS service,2025-11-13,$24/mo,2 tasks Fargate 256/512
+ECS-Service,environmental-narrative-nats,environmental-narrative-nats,N/A,ECS > Services,Active,Environmental narrative NATS service,2025-11-13,$24/mo,2 tasks Fargate 256/512
+ECS-Service,story-teller-nats,story-teller-nats,N/A,ECS > Services,Active,Story teller NATS service,2025-11-13,$24/mo,2 tasks Fargate 256/512
+ECS-Service,body-broker-integration-nats,body-broker-integration-nats,N/A,ECS > Services,Active,Body broker integration NATS service,2025-11-13,$24/mo,2 tasks Fargate 256/512
+ECS-Service,http-nats-gateway,http-nats-gateway,N/A,ECS > Services,Active,HTTP to NATS gateway,2025-11-13,$24/mo,2 tasks Fargate 512/1024
+ECS-Service,time-manager-nats,time-manager-nats,N/A,ECS > Services,Disabled,Time manager NATS service (import issues),2025-11-13,$0/mo,0 tasks - needs services/shared refactor
+ECS-Service,language-system-nats,language-system-nats,N/A,ECS > Services,Disabled,Language system NATS service (circular deps),2025-11-13,$0/mo,0 tasks - needs dependency refactor
+ECR-Repository,bodybroker-services/ai-integration-nats,ai-integration-nats,695353648052.dkr.ecr.us-east-1.amazonaws.com,ECR > Repositories,Active,Docker images for ai-integration,2025-11-13,$1/mo,5 images
+ECR-Repository,bodybroker-services/model-management-nats,model-management-nats,695353648052.dkr.ecr.us-east-1.amazonaws.com,ECR > Repositories,Active,Docker images for model-management,2025-11-13,$1/mo,5 images
+ECR-Repository,bodybroker-services/http-nats-gateway,http-nats-gateway,695353648052.dkr.ecr.us-east-1.amazonaws.com,ECR > Repositories,Active,Docker images for HTTP gateway,2025-11-13,$1/mo,3 images
+CloudWatch-LogGroup,/ecs/gaming-system-nats,/ecs/gaming-system-nats,N/A,CloudWatch > Log Groups,Active,Logs for all NATS services,2025-11-13,$50/mo,50+ log streams
+

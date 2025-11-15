@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 Core Language System Components
 """
@@ -19,6 +21,7 @@ __all__ = [
     "Lexicon",
     "LanguageRegistry",
 ]
+
 
 
 

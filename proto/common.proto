@@ -1,0 +1,54 @@
+syntax = "proto3";
+package common.v1;
+
+import "google/protobuf/timestamp.proto";
+
+// Meta: Common metadata for all messages
+// Peer Reviewed: GPT-5 Pro (designed), Pending full review
+message Meta {
+  string request_id = 1;
+  string trace_id = 2;
+  string client_id = 3;
+  string user_id = 4;
+  string tenant_id = 5;
+  google.protobuf.Timestamp timestamp = 6;
+  string idempotency_key = 7;
+  map<string, string> labels = 8;
+}
+
+// Error: Standardized error structure
+message Error {
+  enum Code {
+    UNKNOWN = 0;
+    INVALID_ARGUMENT = 1;
+    NOT_FOUND = 2;
+    PERMISSION_DENIED = 3;
+    UNAUTHENTICATED = 4;
+    CONFLICT = 5;
+    RESOURCE_EXHAUSTED = 6;
+    FAILED_PRECONDITION = 7;
+    ABORTED = 8;
+    OUT_OF_RANGE = 9;
+    UNIMPLEMENTED = 10;
+    INTERNAL = 11;
+    UNAVAILABLE = 12;
+    DEADLINE_EXCEEDED = 13;
+  }
+  Code code = 1;
+  string message = 2;
+  map<string, string> details = 3;
+}
+
+// TokenUsage: LLM token usage tracking
+message TokenUsage {
+  uint32 prompt_tokens = 1;
+  uint32 completion_tokens = 2;
+  uint32 total_tokens = 3;
+}
+
+// Pagination: Standard pagination structure
+message Pagination {
+  uint32 page_size = 1;
+  string page_token = 2;
+}
+

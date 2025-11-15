@@ -11,7 +11,7 @@ from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
 from uuid import uuid4
 
-from binary_event_publisher import publish_binary_event as publish_weather_event
+from services.shared.binary_messaging.publisher import publish_binary_event as publish_weather_event
 
 
 class TimeState(Enum):

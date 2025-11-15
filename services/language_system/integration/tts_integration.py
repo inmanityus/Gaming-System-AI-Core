@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 TTS Integration Module
@@ -624,4 +626,5 @@ class TTSIntegration:
         if language_lower in self.voice_banks:
             return self.voice_banks[language_lower]["characteristics"]
         return []
+
 

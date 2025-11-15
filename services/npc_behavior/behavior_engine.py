@@ -44,15 +44,16 @@ class BehaviorEngine:
         self._processing = False
         
         # Behavioral Proxy architecture (REQ-PERF-003)
-        self.proxy_manager = ProxyManager()
+        # REFACTORING: Temporarily disabled for microservices independence
+        self.proxy_manager = None  # ProxyManager()
         self.cognitive_layer: Optional[CognitiveLayer] = None
-        if llm_client:
-            self.cognitive_layer = CognitiveLayer(
-                proxy_manager=self.proxy_manager,
-                llm_client=llm_client,
-                update_rate_hz=0.5  # 0.5 Hz = every 2 seconds
-            )
-            self.cognitive_layer.start()
+        # if llm_client:
+        #     self.cognitive_layer = CognitiveLayer(
+        #         proxy_manager=self.proxy_manager,
+        #         llm_client=llm_client,
+        #         update_rate_hz=0.5  # 0.5 Hz = every 2 seconds
+        #     )
+        #     self.cognitive_layer.start()
     
     async def _get_postgres(self) -> PostgreSQLPool:
         """Get PostgreSQL pool instance."""

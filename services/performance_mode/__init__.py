@@ -6,6 +6,7 @@ Implements REQ-PERF-001: Dual-Mode Performance Architecture.
 Manages Immersive Mode (60-120 FPS) and Competitive Mode (300+ FPS).
 """
 
+from .mode_manager import (
     PerformanceMode,
     ModeManager,
     RenderingConfig,

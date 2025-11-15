@@ -14,9 +14,19 @@ from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, status, Header, Depends
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 
-from .config_manager import ConfigManager
+from .config_manager import ConfigManager, ConfigValidationError
+from .content_level_manager import (
+    ContentLevelManager,
+    ContentPolicyError,
+    PlayerContentPolicyNotFound,
+    ContentProfileNotFound,
+)
+from .content_schemas import (
+    CategoryLevels,
+    ContentProfile as ContentProfileModel,
+)
 from .feature_flags import FeatureFlagManager
 from .preference_handler import PreferenceHandler
 from .tier_manager import TierManager
@@ -48,14 +58,10 @@ async def verify_admin_access(x_api_key: str = Header(None)):
         raise HTTPException(status_code=401, detail="Unauthorized: Admin access required")
     return True
 
-
-
 config_manager = ConfigManager()
-
+content_level_manager = ContentLevelManager()
 feature_flags = FeatureFlagManager()
-
 preferences = PreferenceHandler()
-
 tier_manager = TierManager()
 
 
@@ -382,4 +388,248 @@ async def set_player_tier(
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
+# ---------------------------------------------------------------------------
+# Content Governance – Content Levels & Policies
+# ---------------------------------------------------------------------------
+
+
+class ContentLevelRequest(BaseModel):
+
+    """Request payload for creating/updating a content level profile."""
+
+    name: str = Field(..., min_length=1, max_length=100)
+
+    description: Optional[str] = None
+
+    levels: CategoryLevels
+
+    is_system_default: bool = False
+
+    target_age_rating: Optional[str] = None
+
+    sensitive_themes_flags: Dict[str, bool] = Field(default_factory=dict)
+
+
+class PlayerContentPolicyRequest(BaseModel):
+
+    """Request payload for setting a player's content policy."""
+
+    base_profile_id: UUID
+
+    overrides: Optional[Dict[str, int]] = None
+
+    custom_rules: Optional[Dict[str, Any]] = None
+
+
+class SessionSnapshotRequest(BaseModel):
+
+    """Request payload for creating a session content policy snapshot."""
+
+    player_id: UUID
+
+
+@router.get("/content-levels")
+async def list_content_levels():
+
+    """
+    List all content level profiles.
+    """
+
+    try:
+
+        profiles_by_name = await content_level_manager.list_profiles()
+
+        return [p.model_dump() for p in profiles_by_name.values()]
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        )
+
+
+@router.post("/content-levels", status_code=status.HTTP_201_CREATED)
+async def create_content_level(
+    request: ContentLevelRequest,
+    _admin: bool = Depends(verify_admin_access),  # Admin-only – policy changes
+):
+
+    """
+    Create or update a content level profile.
+    """
+
+    try:
+
+        profile = ContentProfileModel(
+            name=request.name,
+            description=request.description,
+            levels=request.levels,
+            sensitive_themes_flags=request.sensitive_themes_flags,
+            is_system_default=request.is_system_default,
+            target_age_rating=request.target_age_rating,
+        )
+
+    except ValidationError as e:
+
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+
+    try:
+
+        created = await content_level_manager.create_profile(profile)
+
+        return created.model_dump()
+
+    except ContentPolicyError as e:
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        )
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        )
+
+
+@router.get("/content-levels/{level_id}")
+async def get_content_level(level_id: UUID):
+
+    """
+    Get a specific content level profile by ID.
+    """
+
+    try:
+
+        profile = await content_level_manager.get_profile_by_id(level_id)
+
+        return profile.model_dump()
+
+    except ContentProfileNotFound as e:
+
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        )
+
+
+@router.get("/players/{player_id}/content-policy")
+async def get_player_content_policy(player_id: UUID):
+
+    """
+    Get the effective content policy configuration for a player.
+    """
+
+    try:
+
+        policy = await content_level_manager.get_player_policy(player_id)
+
+        return policy.model_dump()
+
+    except PlayerContentPolicyNotFound as e:
+
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        )
+
+
+@router.put(
+    "/players/{player_id}/content-policy",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def set_player_content_policy(player_id: UUID, request: PlayerContentPolicyRequest):
+
+    """
+    Set or update the per-player content policy.
+    """
+
+    try:
+
+        await content_level_manager.upsert_player_policy(
+            player_id=player_id,
+            base_profile_id=request.base_profile_id,
+            overrides=request.overrides,
+            custom_rules=request.custom_rules,
+        )
+
+        return None
+
+    except ContentPolicyError as e:
+
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        )
+
+
+@router.post(
+    "/sessions/{session_id}/content-policy/snapshot",
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_session_content_policy_snapshot(
+    session_id: UUID,
+    request: SessionSnapshotRequest,
+):
+
+    """
+    Compute and persist a per-session content policy snapshot.
+    """
+
+    try:
+
+        snapshot = await content_level_manager.snapshot_session_policy(
+            session_id=session_id,
+            player_id=request.player_id,
+        )
+
+        return snapshot.model_dump()
+
+    except PlayerContentPolicyNotFound as e:
+
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
+
+    except ContentPolicyError as e:
+
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        )
 

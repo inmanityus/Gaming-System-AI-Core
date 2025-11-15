@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 Language Definition Module
 ==========================
@@ -166,6 +168,10 @@ class LanguageRegistry:
     def exists(self, name: str) -> bool:
         """Check if a language exists."""
         return name.lower() in self._languages
+
+
+
+
 
 
 

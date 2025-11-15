@@ -66,3 +66,6 @@ kubectl apply -f infrastructure/kubernetes/nlb/nlb-service.yaml
 
 
 
+
+
+

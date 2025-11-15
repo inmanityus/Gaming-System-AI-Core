@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Language Learner Module
@@ -194,4 +196,5 @@ class LanguageLearner:
     def get_all_progress(self) -> Dict[str, LearningProgress]:
         """Get all language learning progress."""
         return self.progress.copy()
+
 

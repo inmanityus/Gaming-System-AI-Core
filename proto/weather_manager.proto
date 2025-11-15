@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package weather_manager.v1;
+
+import "common.proto";
+
+// Weather Manager Service - Dynamic weather and environmental effects
+// Subjects:
+//   svc.weather.v1.get_weather - Get current weather
+//   svc.weather.v1.set_weather - Set weather (admin/scripted)
+//   svc.weather.v1.forecast - Get weather forecast
+//   evt.weather.changed.v1 - Weather changed event
+
+message GetWeatherRequest {
+  common.v1.Meta meta = 1;
+  string world_id = 2;
+  string zone_id = 3;  // Specific zone (empty = all)
+}
+
+message WeatherCondition {
+  string condition_type = 1;  // clear, cloudy, rain, storm, fog, snow
+  double intensity = 2;  // 0.0-1.0
+  double temperature_celsius = 3;
+  double wind_speed_kmh = 4;
+  double visibility_meters = 5;
+  int32 duration_minutes = 6;  // How long this will last
+  map<string, double> effects = 7;  // Gameplay effects
+}
+
+message GetWeatherResponse {
+  common.v1.Meta meta = 1;
+  WeatherCondition current_weather = 2;
+  int64 last_change_ms = 3;
+  int64 next_change_ms = 4;
+  common.v1.Error error = 5;
+}
+
+message SetWeatherRequest {
+  common.v1.Meta meta = 1;
+  string world_id = 2;
+  string zone_id = 3;
+  WeatherCondition target_weather = 4;
+  bool gradual_transition = 5;
+  int32 transition_seconds = 6;
+}
+
+message SetWeatherResponse {
+  common.v1.Meta meta = 1;
+  WeatherCondition applied_weather = 2;
+  common.v1.Error error = 3;
+}
+
+message ForecastRequest {
+  common.v1.Meta meta = 1;
+  string world_id = 2;
+  string zone_id = 3;
+  int32 hours_ahead = 4;  // How far into future
+}
+
+message WeatherForecast {
+  int64 forecast_time_ms = 1;
+  WeatherCondition predicted_weather = 2;
+  double confidence = 3;  // 0.0-1.0
+}
+
+message ForecastResponse {
+  common.v1.Meta meta = 1;
+  repeated WeatherForecast forecasts = 2;
+  common.v1.Error error = 3;
+}
+

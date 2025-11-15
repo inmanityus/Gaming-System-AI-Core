@@ -17,7 +17,7 @@ A broken foundation (bugs, vulnerabilities, mock code, invalid tests) WILL DOOM 
 
 1. **ALL code must be peer-coded**
    - Primary model (Claude) implements
-   - Reviewer model (GPT-5 Pro or Gemini 2.5 Pro) reviews
+   - Reviewer model (GPT-5.1 High, GPT-5.1 Codex High, or Gemini 2.5 Pro) reviews
    - Fix issues until approved
    - NO solo coding
 
@@ -45,10 +45,10 @@ A broken foundation (bugs, vulnerabilities, mock code, invalid tests) WILL DOOM 
 
 ### Access Methods:
 1. **OpenRouter MCP**: `mcp_openrouterai_chat_completion`
-   - Models: `openai/gpt-5-pro`, `google/gemini-2.5-pro`
+   - Models: `openai/gpt-5.1`, `openai/gpt-5.1-codex`, `google/gemini-2.5-pro`
    
 2. **Direct API Keys**:
-   - GPT-5 Pro: `OPENAI_API_KEY`
+   - GPT-5.1 / GPT-5.1 Codex: `OPENAI_API_KEY`
    - Gemini 2.5 Pro: `GEMINI_API_KEY`
 
 ### If MCP/API Unavailable:

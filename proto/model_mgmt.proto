@@ -1,0 +1,59 @@
+syntax = "proto3";
+package model_mgmt.v1;
+
+import "google/protobuf/timestamp.proto";
+import "common.proto";
+
+// ModelInfo: Information about an AI model
+message ModelInfo {
+  string model_id = 1;
+  string name = 2;
+  string provider = 3;
+  string family = 4;       // e.g., llama, gpt, mistral
+  string modality = 5;     // e.g., text, chat, vision
+  bool is_default = 6;
+  map<string, string> metadata = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+}
+
+// ListModelsRequest: Request to list available models
+message ListModelsRequest {
+  common.v1.Meta meta = 1;
+  string modality_filter = 2;
+  string provider_filter = 3;
+}
+
+// ListModelsResponse: Response with model list
+message ListModelsResponse {
+  common.v1.Meta meta = 1;
+  repeated ModelInfo models = 2;
+  common.v1.Error error = 3;
+}
+
+// GetModelRequest: Request to get specific model
+message GetModelRequest {
+  common.v1.Meta meta = 1;
+  string model_id = 2;
+}
+
+// GetModelResponse: Response with model info
+message GetModelResponse {
+  common.v1.Meta meta = 1;
+  ModelInfo model = 2;
+  common.v1.Error error = 3;
+}
+
+// SelectModelRequest: Request to select/activate a model
+message SelectModelRequest {
+  common.v1.Meta meta = 1;
+  string model_id = 2;
+}
+
+// SelectModelResponse: Response confirming selection
+message SelectModelResponse {
+  common.v1.Meta meta = 1;
+  bool ok = 2;
+  common.v1.Error error = 3;
+}
+

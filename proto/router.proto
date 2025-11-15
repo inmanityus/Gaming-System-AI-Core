@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package router.v1;
+
+import "common.proto";
+
+// Router Service - Main request routing and load balancing
+// Subjects:
+//   svc.router.v1.route - Route request to service
+//   svc.router.v1.health - Health check
+//   evt.router.route.completed.v1 - Route completed event
+
+message RouteRequest {
+  common.v1.Meta meta = 1;
+  string service_name = 2;  // Target service
+  string operation = 3;  // Operation to perform
+  bytes payload = 4;  // Request payload
+  map<string, string> routing_hints = 5;  // Hints for routing decisions
+}
+
+message RouteResponse {
+  common.v1.Meta meta = 1;
+  bytes response_payload = 2;
+  string routed_to = 3;  // Which instance handled request
+  int64 latency_ms = 4;
+  common.v1.Error error = 5;
+}
+
+message HealthRequest {
+  common.v1.Meta meta = 1;
+}
+
+message ServiceStatus {
+  string service_name = 1;
+  bool is_healthy = 2;
+  int32 active_instances = 3;
+  double avg_latency_ms = 4;
+  int32 error_rate_percent = 5;
+}
+
+message HealthResponse {
+  common.v1.Meta meta = 1;
+  repeated ServiceStatus services = 2;
+  bool overall_healthy = 3;
+  common.v1.Error error = 4;
+}
+

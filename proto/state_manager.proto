@@ -1,0 +1,63 @@
+syntax = "proto3";
+package state_manager.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+import "common.proto";
+
+// EntityState: State of a game entity
+message EntityState {
+  string entity_id = 1;
+  google.protobuf.Struct state = 2;
+  uint64 version = 3;
+}
+
+// PlayerState: State of a player
+message PlayerState {
+  string player_id = 1;
+  google.protobuf.Struct state = 2;
+  uint64 version = 3;
+}
+
+// GameStateUpdate: Request to update game state
+message GameStateUpdate {
+  common.v1.Meta meta = 1;
+  oneof target {
+    PlayerState player = 2;
+    EntityState entity = 3;
+  }
+  enum Operation {
+    OPERATION_UNSPECIFIED = 0;  // Must be rejected by server
+    UPSERT = 1;
+    DELETE = 2;
+  }
+  Operation op = 4;
+  google.protobuf.Timestamp event_time = 5;
+  uint64 expected_version = 6;  // Optimistic concurrency control (CAS)
+}
+
+// GameStateUpdateAck: Acknowledgment of state update
+message GameStateUpdateAck {
+  common.v1.Meta meta = 1;
+  bool ok = 2;
+  uint64 new_version = 3;
+  common.v1.Error error = 4;
+}
+
+// GetStateRequest: Request to retrieve state
+message GetStateRequest {
+  common.v1.Meta meta = 1;
+  oneof target {
+    string player_id = 2;
+    string entity_id = 3;
+  }
+}
+
+// GetStateResponse: Response with state data
+message GetStateResponse {
+  common.v1.Meta meta = 1;
+  google.protobuf.Struct state = 2;
+  uint64 version = 3;
+  common.v1.Error error = 4;
+}
+

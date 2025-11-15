@@ -1,0 +1,110 @@
+# NATS Alerting Rules for Prometheus
+# Based on GPT-5 Pro peer review recommendations
+
+groups:
+  - name: nats_critical
+    interval: 30s
+    rules:
+      # Server Health
+      - alert: NATSServerDown
+        expr: up{job="nats-servers"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "NATS server {{ $labels.instance }} is down"
+          description: "NATS server has been unreachable for 1 minute"
+      
+      # Memory Pressure
+      - alert: NATSMemoryHigh
+        expr: (nats_server_mem_bytes / nats_server_max_mem_bytes) > 0.85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "NATS server {{ $labels.instance }} memory usage >85%"
+          description: "Consider scaling up or reducing payload sizes"
+      
+      # Slow Consumer
+      - alert: NATSSlowConsumerEvents
+        expr: rate(nats_server_slow_consumers_total[5m]) > 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow consumer events detected on {{ $labels.instance }}"
+          description: "Services falling behind - check pending limits and consumer lag"
+      
+      # Connection Failures
+      - alert: NATSHighConnectionFailures
+        expr: rate(nats_server_total_connection_failures[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High connection failure rate on {{ $labels.instance }}"
+          description: "Check TLS config, AuthN, and network connectivity"
+      
+      # JetStream Leader Unavailable
+      - alert: JetStreamNoLeader
+        expr: nats_jetstream_streams_leader == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "JetStream stream has no leader"
+          description: "Check cluster health and Raft consensus"
+      
+      # JetStream Consumer Lag
+      - alert: JetStreamConsumerLagHigh
+        expr: nats_jetstream_consumer_num_pending > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "JetStream consumer lag >1000 messages"
+          description: "Consumer {{ $labels.consumer }} falling behind on stream {{ $labels.stream }}"
+      
+      # Disk Usage
+      - alert: JetStreamDiskUsageHigh
+        expr: (nats_jetstream_store_bytes / nats_jetstream_max_store_bytes) > 0.80
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "JetStream disk usage >80%"
+          description: "Consider increasing EBS volume size or cleaning old messages"
+      
+      # Request Timeout Rate
+      - alert: NATSRequestTimeoutRateHigh
+        expr: rate(nats_client_request_timeout_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Request timeout rate >5%"
+          description: "Check service health and increase timeouts if needed"
+
+  - name: nats_performance
+    interval: 30s
+    rules:
+      # Latency
+      - alert: NATSLatencyHigh
+        expr: histogram_quantile(0.95, rate(nats_client_request_duration_seconds_bucket[5m])) > 0.005
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "NATS p95 latency >5ms"
+          description: "Target <5ms not met, investigate network/service performance"
+      
+      # CPU High
+      - alert: NATSCPUHigh
+        expr: rate(nats_server_cpu_seconds_total[5m]) > 0.75
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "NATS server CPU >75%"
+          description: "Consider scaling up instance type"
+

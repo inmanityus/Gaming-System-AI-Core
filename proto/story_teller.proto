@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package story_teller.v1;
+
+import "common.proto";
+
+// Story Teller Service - Narrative generation and story management
+// Subjects:
+//   svc.story.v1.generate - Generate story content
+//   svc.story.v1.evaluate - Evaluate story branch
+//   svc.story.v1.continue - Continue story from checkpoint
+//   evt.story.generated.v1 - Story generated event
+
+message GenerateRequest {
+  common.v1.Meta meta = 1;
+  string story_type = 2;  // quest, dialogue, lore, cutscene
+  map<string, string> context = 3;  // Player state, world state, etc.
+  repeated string themes = 4;  // horror, betrayal, redemption, etc.
+  int32 min_length = 5;
+  int32 max_length = 6;
+  string tone = 7;  // dark, tense, mysterious, etc.
+}
+
+message StoryContent {
+  string content_id = 1;
+  string content_type = 2;
+  string content = 3;
+  repeated string dialogue_lines = 4;
+  repeated string choices = 5;  // Player choices if applicable
+  map<string, string> metadata = 6;
+  double quality_score = 7;  // 0.0-1.0
+}
+
+message GenerateResponse {
+  common.v1.Meta meta = 1;
+  StoryContent story = 2;
+  repeated StoryContent alternatives = 3;  // Alternative versions
+  common.v1.Error error = 4;
+}
+
+message EvaluateRequest {
+  common.v1.Meta meta = 1;
+  string story_branch_id = 2;
+  string player_choice = 3;
+  map<string, string> context = 4;
+}
+
+message BranchEvaluation {
+  string branch_id = 1;
+  double coherence_score = 2;  // How well it fits story
+  double impact_score = 3;  // How significant the choice
+  repeated string consequences = 4;  // What will happen
+  map<string, string> state_changes = 5;
+}
+
+message EvaluateResponse {
+  common.v1.Meta meta = 1;
+  BranchEvaluation evaluation = 2;
+  common.v1.Error error = 3;
+}
+
+message ContinueRequest {
+  common.v1.Meta meta = 1;
+  string checkpoint_id = 2;
+  map<string, string> context = 3;
+}
+
+message ContinueResponse {
+  common.v1.Meta meta = 1;
+  StoryContent continuation = 2;
+  common.v1.Error error = 3;
+}
+

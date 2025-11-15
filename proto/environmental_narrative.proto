@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package environmental_narrative.v1;
+
+import "common.proto";
+
+// Environmental Narrative - Generates environmental storytelling elements
+// Subjects:
+//   svc.narrative.v1.generate - Generate narrative elements
+//   svc.narrative.v1.update_context - Update narrative context
+//   evt.narrative.generated.v1 - Narrative generated event
+
+message GenerateRequest {
+  common.v1.Meta meta = 1;
+  string location_id = 2;
+  string scene_type = 3;  // ambient, discovery, transition
+  map<string, string> context = 4;  // Player state, world state, etc.
+  repeated string tags = 5;  // horror, tense, mysterious, etc.
+}
+
+message NarrativeElement {
+  string element_id = 1;
+  string element_type = 2;  // description, sound, visual, interaction
+  string content = 3;  // Generated content
+  double intensity = 4;  // 0.0-1.0
+  int32 duration_seconds = 5;  // How long element should last
+  map<string, string> triggers = 6;  // Conditions for activation
+}
+
+message GenerateResponse {
+  common.v1.Meta meta = 1;
+  repeated NarrativeElement elements = 2;
+  string atmosphere = 3;  // Overall atmosphere descriptor
+  repeated string recommended_sounds = 4;
+  common.v1.Error error = 5;
+}
+
+message UpdateContextRequest {
+  common.v1.Meta meta = 1;
+  string location_id = 2;
+  map<string, string> context_updates = 3;
+  repeated string active_events = 4;
+}
+
+message UpdateContextResponse {
+  common.v1.Meta meta = 1;
+  bool success = 2;
+  repeated string affected_elements = 3;  // Elements that changed
+  common.v1.Error error = 4;
+}
+

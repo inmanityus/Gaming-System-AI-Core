@@ -1,0 +1,35 @@
+{
+  "account": "gateway-account",
+  "description": "HTTP→NATS Gateway - can call all services, limited publishing",
+  "nkey": "ACCOUNT_NKEY_GATEWAY",
+  "exports": [],
+  "imports": [
+    {
+      "stream": {
+        "subject": "svc.>"
+      }
+    }
+  ],
+  "permissions": {
+    "publish": {
+      "allow": [
+        "svc.>"
+      ]
+    },
+    "subscribe": {
+      "allow": [
+        "_INBOX.>",
+        "_R_."
+      ]
+    }
+  },
+  "limits": {
+    "conn": 100,
+    "subs": 10000,
+    "payload": 1048576,
+    "data": -1,
+    "exports": -1,
+    "imports": -1
+  }
+}
+

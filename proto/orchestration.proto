@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package orchestration.v1;
+
+import "common.proto";
+
+// Orchestration Service - Coordinates complex multi-service workflows
+// Subjects:
+//   svc.orchestration.v1.execute_workflow - Execute workflow
+//   svc.orchestration.v1.get_status - Get workflow status
+//   svc.orchestration.v1.cancel - Cancel workflow
+//   evt.orchestration.workflow.started.v1 - Workflow started event
+//   evt.orchestration.workflow.completed.v1 - Workflow completed event
+
+message ExecuteWorkflowRequest {
+  common.v1.Meta meta = 1;
+  string workflow_id = 2;  // Workflow type to execute
+  map<string, string> parameters = 3;  // Workflow parameters
+  int32 timeout_seconds = 4;
+  repeated string required_services = 5;  // Services that must be available
+}
+
+message WorkflowStep {
+  string step_id = 1;
+  string service = 2;
+  string operation = 3;
+  string status = 4;  // pending, running, completed, failed
+  int64 started_at_ms = 5;
+  int64 completed_at_ms = 6;
+  bytes result = 7;  // Step result
+  string error_message = 8;
+}
+
+message ExecuteWorkflowResponse {
+  common.v1.Meta meta = 1;
+  string execution_id = 2;
+  repeated WorkflowStep steps = 3;
+  string status = 4;  // running, completed, failed
+  common.v1.Error error = 5;
+}
+
+message GetStatusRequest {
+  common.v1.Meta meta = 1;
+  string execution_id = 2;
+}
+
+message GetStatusResponse {
+  common.v1.Meta meta = 1;
+  string execution_id = 2;
+  string workflow_id = 3;
+  repeated WorkflowStep steps = 4;
+  string status = 5;
+  int32 progress_percentage = 6;
+  common.v1.Error error = 7;
+}
+
+message CancelRequest {
+  common.v1.Meta meta = 1;
+  string execution_id = 2;
+  string reason = 3;
+}
+
+message CancelResponse {
+  common.v1.Meta meta = 1;
+  bool success = 2;
+  string final_status = 3;
+  common.v1.Error error = 4;
+}
+

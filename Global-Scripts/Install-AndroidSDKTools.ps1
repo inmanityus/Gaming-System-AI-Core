@@ -95,8 +95,8 @@ if ((Test-Path $sdkmanager) -and (Test-Path $avdmanager)) {
         $yesString | & $sdkmanager --sdk_root=$AndroidSdkPath --licenses 2>&1 | Out-Null
         Write-Host "✅ Licenses accepted" -ForegroundColor Green
     } catch {
-        Write-Host "⚠️  License acceptance failed (may need manual acceptance)" -ForegroundColor Yellow
-        Write-Host "   Run manually: `& '$sdkmanager' --sdk_root='$AndroidSdkPath' --licenses`" -ForegroundColor Gray
+        Write-Host "License acceptance failed (may need manual acceptance)" -ForegroundColor Yellow
+        Write-Host "Run manually with: sdkmanager --licenses" -ForegroundColor Gray
     }
     
     Write-Host "`n🎯 Next Steps:" -ForegroundColor Cyan
@@ -104,7 +104,8 @@ if ((Test-Path $sdkmanager) -and (Test-Path $avdmanager)) {
     Write-Host "   2. Run Test-AndroidDevices.ps1 to verify setup" -ForegroundColor White
     
 } else {
-    Write-Host "`n❌ Installation verification failed" -ForegroundColor Red
+    Write-Host ""
+    Write-Host "Installation verification failed" -ForegroundColor Red
     exit 1
 }
 

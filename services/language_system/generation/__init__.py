@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 Language Generation Module
 ==========================
@@ -5,14 +7,14 @@ Language Generation Module
 Provides sentence generation capabilities using both procedural and AI-based methods.
 """
 
-from language_system.generation.sentence_generator import SentenceGenerator, SentenceRequest
-from language_system.generation.ai_language_generator import (
+from services.language_system.generation.sentence_generator import SentenceGenerator, SentenceRequest
+from services.language_system.generation.ai_language_generator import (
     AILanguageGenerator,
     LanguageGenerator,
     LanguageRequest,
     LanguageGenerationResult
 )
-from language_system.generation.training_integration import (
+from services.language_system.generation.training_integration import (
     LanguageTrainingPipeline,
     LanguageTrainingData
 )
@@ -27,3 +29,4 @@ __all__ = [
     "LanguageTrainingPipeline",
     "LanguageTrainingData",
 ]
+

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Language of Power Module
@@ -320,4 +322,5 @@ class LanguageOfPower:
             "skill_points": 0.05,
             "unlocked_abilities": [],
         }
+
 

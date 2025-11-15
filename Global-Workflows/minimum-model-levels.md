@@ -10,15 +10,15 @@ When switching to "other models," the system has been defaulting to older GPT-4 
 
 **Top Tier Models (Currently Best):**
 1. **Claude 4.5 Sonnet** - Best overall reasoning, code analysis, and problem-solving
-2. **GPT-Codex-2** - Best for coding tasks, specialized code generation and review
-3. **GPT-5** - Excellent general purpose, high-stakes accuracy
+2. **GPT-5.1 Codex High** - Best for coding tasks, specialized code generation and review (UPGRADED from GPT-Codex-2)
+3. **GPT-5.1 High** - Excellent general purpose, high-stakes accuracy (UPGRADED from GPT-5)
 4. **Gemini 2.5 Pro** - Best for reasoning, math, and scientific tasks
 
 **Direct Access Available:**
-- **GPT-Codex-2**: Direct access via OPEN_AI_KEY (NOT OpenRouter key) - `sk-proj-_kr_M010dSlMTovqc78xFGlYEKLeObWPGHuDEX5gJUFSBX0TSyLxqKu3tT0VcWFrw9BHLvmO3FT3BlbkFJsLiQ3kfjg_6Mmm-0imx6rRzOCkfOcXJYhrXYPJW9LidAh1NRkEckYhX5EFh1pihHj0h0myftk`
-- **Gemini 2.5 Pro**: Direct access available (similar to how Gemini 2.5 Pro is accessed)
+- **GPT-5.1 Codex High**: Direct access via OPEN_AI_KEY (NOT OpenRouter key) - UPGRADED from GPT-Codex-2
+- **GPT-5.1 High**: Direct access via OPEN_AI_KEY - UPGRADED from GPT-5
+- **Gemini 2.5 Pro**: Direct access available
 - **Claude 4.5**: Available via Cursor native or OpenRouter
-- **GPT-5**: Available via OpenRouter AI MCP
 
 **Note**: OPEN_AI_KEY should be added to the global list of available keys and used as another direct model access method, similar to how Gemini 2.5 Pro can be directly accessed.
 
@@ -40,31 +40,34 @@ When switching to "other models," the system has been defaulting to older GPT-4 
 - Claude 3.7 Sonnet ❌
 
 ### GPT (OpenAI)
-**Minimum:** 5, 5-Pro, 5-High, 4.1, Codex-2
+**Minimum:** 5.1, 5.1-High, 5.1-Codex-High (UPGRADED from 5/5-Pro/Codex-2)
 
 **Allowed Models:**
-- `openai/gpt-codex-2` ✅ (CURRENTLY BEST - Coding specialized, direct access via OPEN_AI_KEY)
-- `openai/gpt-5-pro` ✅ (Highest capability)
-- `openai/gpt-5` ✅ (Standard)
-- `openai/gpt-5-mini` ✅ (Lightweight)
-- `openai/gpt-5-nano` ✅ (Ultra-fast)
-- `openai/gpt-5-codex` ✅ (Coding specialized)
-- `openai/gpt-5-chat` ✅ (Conversational)
-- `openai/gpt-4.1` ✅ (Previous generation acceptable)
-- `openai/gpt-4.1-nano` ✅
-- `openai/gpt-4.1-mini` ✅
+- `openai/gpt-5.1-codex-high` ✅ (CURRENTLY BEST - Coding specialized, UPGRADED from gpt-codex-2)
+- `openai/gpt-5.1-high` ✅ (Highest capability, UPGRADED from gpt-5-pro)
+- `openai/gpt-5.1` ✅ (Standard)
+- `openai/gpt-5.1-mini` ✅ (Lightweight)
+- `openai/gpt-5.1-codex` ✅ (Coding specialized)
+- `openai/gpt-5-pro` ✅ (Previous 5.0 generation - still acceptable)
+- `openai/gpt-5` ✅ (Previous 5.0 generation - still acceptable)
+- `openai/gpt-5-codex` ✅ (Previous 5.0 generation - still acceptable)
 
 **Direct Access:**
-- **GPT-Codex-2**: Direct access via OPEN_AI_KEY (NOT OpenRouter key)
+- **GPT-5.1 Codex High**: Direct access via OPEN_AI_KEY (NOT OpenRouter key)
   - Key: Available in global keys list
   - Usage: Direct OpenAI API calls, not through OpenRouter
   - Best for: Coding tasks, code generation, code review
+  - UPGRADED from GPT-Codex-2
 
 **Forbidden Models:**
-- GPT-4.0 ❌
-- GPT-4o ❌
+- GPT-4.0 and older ❌ (BANNED - GPT-5.1 now available!)
+- GPT-4o ❌ (BANNED - GPT-5.1 available!)
 - GPT-4 Turbo ❌
+- GPT-4.1 and older ❌
 - Any GPT-3.x models ❌
+- GPT-4 variants ❌
+
+**CRITICAL ENFORCEMENT**: DO NOT use GPT-4o, GPT-4, or any model below GPT-5.1 when GPT-5.1-High/GPT-5.1-Codex-High are available. This is a global rule violation.
 
 ### Gemini (Google)
 **Minimum:** 2.5 Pro
@@ -201,8 +204,8 @@ When a specific model is unavailable, fall back in this order:
 ### Provider Selection
 When selecting which provider to use:
 1. **Claude 4.5 Sonnet:** Best for complex reasoning, agentic workflows, and extended autonomous tasks (CURRENTLY BEST)
-2. **GPT-Codex-2:** Best for coding tasks, specialized code generation and review (CURRENTLY BEST - Direct access via OPEN_AI_KEY)
-3. **GPT-5:** Best for general purpose, coding, and high-stakes accuracy
+2. **GPT-5.1 Codex High:** Best for coding tasks, specialized code generation and review (UPGRADED - Direct access via OPEN_AI_KEY)
+3. **GPT-5.1 High:** Best for general purpose, coding, and high-stakes accuracy (UPGRADED)
 4. **Gemini 2.5 Pro:** Best for reasoning, math, and scientific tasks (Direct access available)
 5. **Grok 4:** Best for real-time applications and multimodal tasks
 6. **DeepSeek V3+:** Best for reasoning and Chinese-language tasks (Minimum V3)
@@ -274,6 +277,13 @@ When user requests "other models" or "different AI models":
 - **Ad-hoc:** Update immediately when new generations released
 
 ### Version History
+- **2025-11-13:** MAJOR UPDATE - GPT-5.1 Release
+  - **UPGRADED**: GPT-5 → GPT-5.1
+  - **UPGRADED**: GPT-5 Pro → GPT-5.1 High
+  - **UPGRADED**: GPT-Codex-2 → GPT-5.1 Codex High
+  - All GPT models now require 5.1 minimum
+  - Previous 5.0 models still acceptable during transition
+
 - **2025-10-26:** Initial creation
   - Claude 4.5 Sonnet minimum
   - GPT-5 minimum
@@ -295,5 +305,5 @@ When user requests "other models" or "different AI models":
 **Status:** Active  
 **Priority:** High  
 **Enforcement:** Mandatory  
-**Last Updated:** 2025-10-26
+**Last Updated:** 2025-11-13 (MAJOR UPDATE: GPT-5.1 Release)
 

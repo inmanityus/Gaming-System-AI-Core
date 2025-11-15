@@ -7,7 +7,7 @@ from typing import Optional
 from uuid import UUID
 from fastapi import Header, HTTPException, Depends
 
-from session_manager import SessionManager, get_session_manager, UserSession
+from .session_manager import SessionManager, get_session_manager, UserSession
 
 async def verify_user_session(
     authorization: Optional[str] = Header(None),

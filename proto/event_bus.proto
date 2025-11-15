@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package event_bus.v1;
+
+import "common.proto";
+
+// Event Bus - Central event distribution and subscription management
+// Subjects:
+//   svc.events.v1.publish - Publish event
+//   svc.events.v1.subscribe - Subscribe to event types
+//   svc.events.v1.unsubscribe - Unsubscribe from events
+//   evt.*.*.*.v1 - All game events (wildcards)
+
+message PublishRequest {
+  common.v1.Meta meta = 1;
+  string event_type = 2;  // quest.completed, npc.died, etc.
+  string event_id = 3;  // Unique event ID
+  bytes payload = 4;  // Event-specific payload
+  map<string, string> metadata = 5;
+  int32 priority = 6;  // 0-10, higher = more important
+}
+
+message PublishResponse {
+  common.v1.Meta meta = 1;
+  bool success = 2;
+  string event_id = 3;
+  int32 subscriber_count = 4;  // Number of services notified
+  common.v1.Error error = 5;
+}
+
+message SubscribeRequest {
+  common.v1.Meta meta = 1;
+  string subscriber_id = 2;
+  repeated string event_patterns = 3;  // Patterns to subscribe to (wildcards allowed)
+  string callback_subject = 4;  // NATS subject to receive events
+  map<string, string> filters = 5;  // Additional filters
+}
+
+message SubscribeResponse {
+  common.v1.Meta meta = 1;
+  string subscription_id = 2;
+  repeated string active_patterns = 3;
+  common.v1.Error error = 4;
+}
+
+message UnsubscribeRequest {
+  common.v1.Meta meta = 1;
+  string subscription_id = 2;
+}
+
+message UnsubscribeResponse {
+  common.v1.Meta meta = 1;
+  bool success = 2;
+  common.v1.Error error = 3;
+}
+
+message GameEvent {
+  string event_id = 1;
+  string event_type = 2;
+  int64 timestamp_ms = 3;
+  bytes payload = 4;
+  map<string, string> metadata = 5;
+  int32 priority = 6;
+}
+

@@ -13,6 +13,13 @@ from uuid import UUID
 # Import HTTP clients for cross-service communication
 from .state_manager_client import StateManagerClient, get_state_manager_client
 
+# Forward declaration to avoid circular import
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .llm_client import LLMClient
+else:
+    LLMClient = Any
+
 
 
 class ResponseCache:

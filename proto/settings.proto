@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package settings.v1;
+
+import "common.proto";
+
+// Settings Service - Player settings and preferences
+// Subjects:
+//   svc.settings.v1.get - Get settings
+//   svc.settings.v1.update - Update settings
+//   svc.settings.v1.reset - Reset to defaults
+//   evt.settings.changed.v1 - Settings changed event
+
+message GetRequest {
+  common.v1.Meta meta = 1;
+  string player_id = 2;
+  repeated string setting_keys = 3;  // Specific keys (empty = all)
+}
+
+message Setting {
+  string key = 1;
+  string value_type = 2;  // string, int, bool, float
+  string value = 3;
+  bool is_default = 4;
+  int64 last_modified_ms = 5;
+}
+
+message GetResponse {
+  common.v1.Meta meta = 1;
+  repeated Setting settings = 2;
+  common.v1.Error error = 3;
+}
+
+message UpdateRequest {
+  common.v1.Meta meta = 1;
+  string player_id = 2;
+  repeated Setting settings = 3;
+  bool merge = 4;  // true = merge, false = replace all
+}
+
+message UpdateResponse {
+  common.v1.Meta meta = 1;
+  int32 updated_count = 2;
+  repeated string updated_keys = 3;
+  common.v1.Error error = 4;
+}
+
+message ResetRequest {
+  common.v1.Meta meta = 1;
+  string player_id = 2;
+  repeated string setting_keys = 3;  // Keys to reset (empty = all)
+}
+
+message ResetResponse {
+  common.v1.Meta meta = 1;
+  int32 reset_count = 2;
+  repeated string reset_keys = 3;
+  common.v1.Error error = 4;
+}
+

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 Phoneme Generator Module
 =======================
@@ -11,7 +13,7 @@ import logging
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 
-from language_system.core.language_definition import PhonemeInventory, LanguageDefinition, LanguageType
+from services.language_system.core.language_definition import PhonemeInventory, LanguageDefinition, LanguageType
 
 logger = logging.getLogger(__name__)
 
@@ -224,6 +226,7 @@ class PhonemeGenerator:
         # Select 1-2 patterns
         num_patterns = random.randint(1, 2)
         return random.sample(patterns, min(num_patterns, len(patterns)))
+
 
 
 

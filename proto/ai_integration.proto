@@ -1,0 +1,80 @@
+syntax = "proto3";
+package ai_integration.v1;
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/wrappers.proto";
+import "common.proto";
+
+// ChatMessage: Single message in a conversation
+message ChatMessage {
+  enum Role {
+    ROLE_UNSPECIFIED = 0;
+    SYSTEM = 1;
+    USER = 2;
+    ASSISTANT = 3;
+    TOOL = 4;
+  }
+  Role role = 1;
+  string content = 2;
+  string name = 3;
+}
+
+// ChatMessages: Multiple messages for chat-based inference
+message ChatMessages {
+  repeated ChatMessage messages = 1;
+}
+
+// GenerationParameters: LLM generation configuration
+// Uses wrappers for presence detection (distinguishes unset from zero)
+message GenerationParameters {
+  google.protobuf.DoubleValue temperature = 1;
+  google.protobuf.DoubleValue top_p = 2;
+  google.protobuf.UInt32Value max_tokens = 3;
+  google.protobuf.UInt32Value top_k = 4;
+  google.protobuf.DoubleValue presence_penalty = 5;
+  google.protobuf.DoubleValue frequency_penalty = 6;
+  repeated string stop = 7;
+  google.protobuf.BoolValue stream = 8;
+}
+
+// LLMInferenceRequest: Request for LLM inference
+message LLMInferenceRequest {
+  common.v1.Meta meta = 1;
+  string model_id = 2;
+  oneof input {
+    string prompt = 3;
+    ChatMessages chat_messages = 4;
+  }
+  GenerationParameters params = 5;
+  google.protobuf.Struct context = 6;
+}
+
+// LLMInferenceResponse: Response from LLM inference (non-streaming only)
+message LLMInferenceResponse {
+  common.v1.Meta meta = 1;
+  string generation_id = 2;
+  oneof output {
+    string output_text = 3;
+    ChatMessages chat_messages = 4;
+  }
+  string finish_reason = 5;
+  common.v1.TokenUsage usage = 6;
+  common.v1.Error error = 7;
+}
+
+// LLMStreamChunk: Streaming token chunk for LLM generation
+// Used when GenerationParameters.stream = true
+message LLMStreamChunk {
+  common.v1.Meta meta = 1;
+  string generation_id = 2;
+  uint32 index = 3;  // 0-based sequence number
+  bool is_final = 4;  // true on last chunk
+  oneof delta {
+    string output_text_delta = 5;  // Text delta
+    ChatMessage message_delta = 6;  // Chat message delta
+  }
+  string finish_reason = 7;  // Set only when is_final == true
+  common.v1.TokenUsage usage = 8;  // Set only when is_final == true
+  common.v1.Error error = 9;  // If set, is_final must be true
+}
+

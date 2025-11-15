@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package language_system.v1;
+
+import "common.proto";
+
+// Language System - Multi-language translation and localization
+// Subjects:
+//   svc.lang.v1.translate - Translate text
+//   svc.lang.v1.detect - Detect language
+//   svc.lang.v1.localize - Localize game content
+//   evt.lang.translation.completed.v1 - Translation completed event
+
+message TranslateRequest {
+  common.v1.Meta meta = 1;
+  string text = 2;
+  string source_language = 3;  // en, es, fr, etc. (empty = auto-detect)
+  string target_language = 4;
+  string domain = 5;  // game, ui, dialogue, lore
+  map<string, string> context = 6;  // Context for better translation
+}
+
+message TranslateResponse {
+  common.v1.Meta meta = 1;
+  string translated_text = 2;
+  string detected_source_language = 3;
+  double confidence = 4;  // 0.0-1.0
+  repeated string alternatives = 5;  // Alternative translations
+  common.v1.Error error = 6;
+}
+
+message DetectRequest {
+  common.v1.Meta meta = 1;
+  string text = 2;
+}
+
+message LanguageDetection {
+  string language_code = 1;
+  double confidence = 2;
+}
+
+message DetectResponse {
+  common.v1.Meta meta = 1;
+  repeated LanguageDetection detections = 2;
+  common.v1.Error error = 3;
+}
+
+message LocalizeRequest {
+  common.v1.Meta meta = 1;
+  string content_id = 2;  // ID of content to localize
+  string target_language = 3;
+  map<string, string> variables = 4;  // Template variables
+}
+
+message LocalizeResponse {
+  common.v1.Meta meta = 1;
+  string localized_content = 2;
+  bool from_cache = 3;
+  common.v1.Error error = 4;
+}
+

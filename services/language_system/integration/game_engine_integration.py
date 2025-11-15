@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 Game Engine Integration (UE5)
 ===============================
@@ -210,4 +212,5 @@ class UE5GameEngineIntegration:
         if self.http_client:
             self.http_client.close()
             self.http_client = None
+
 

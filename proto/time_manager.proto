@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package time_manager.v1;
+
+import "common.proto";
+
+// Time Manager Service - Game time, day/night cycles, scheduling
+// Subjects:
+//   svc.time.v1.get_time - Get current game time
+//   svc.time.v1.set_time - Set game time (admin/testing)
+//   svc.time.v1.schedule_event - Schedule future event
+//   evt.time.hour.changed.v1 - Hour changed event
+//   evt.time.day.changed.v1 - Day changed event
+
+message GetTimeRequest {
+  common.v1.Meta meta = 1;
+  string world_id = 2;  // World/zone ID
+}
+
+message GameTime {
+  int32 year = 1;
+  int32 month = 2;
+  int32 day = 3;
+  int32 hour = 4;
+  int32 minute = 5;
+  int32 second = 6;
+  string time_of_day = 7;  // dawn, morning, noon, afternoon, dusk, night, midnight
+  string moon_phase = 8;  // new, crescent, half, gibbous, full
+  string season = 9;  // spring, summer, fall, winter
+}
+
+message GetTimeResponse {
+  common.v1.Meta meta = 1;
+  GameTime game_time = 2;
+  int64 real_time_ms = 3;  // Corresponding real-world time
+  double time_scale = 4;  // How fast time passes (1.0 = real-time)
+  common.v1.Error error = 5;
+}
+
+message SetTimeRequest {
+  common.v1.Meta meta = 1;
+  string world_id = 2;
+  GameTime target_time = 3;
+  bool gradual = 4;  // Gradually change time or jump instantly
+}
+
+message SetTimeResponse {
+  common.v1.Meta meta = 1;
+  GameTime new_time = 2;
+  common.v1.Error error = 3;
+}
+
+message ScheduleEventRequest {
+  common.v1.Meta meta = 1;
+  string event_id = 2;
+  GameTime scheduled_time = 3;  // When to trigger
+  string callback_subject = 4;  // NATS subject to notify
+  bytes payload = 5;  // Event payload
+  bool recurring = 6;  // If true, repeats
+  int32 recurrence_hours = 7;  // Hours between recurrences
+}
+
+message ScheduleEventResponse {
+  common.v1.Meta meta = 1;
+  string schedule_id = 2;
+  int64 real_trigger_time_ms = 3;  // When it will actually fire
+  common.v1.Error error = 4;
+}
+

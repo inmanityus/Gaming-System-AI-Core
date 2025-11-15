@@ -18,3 +18,6 @@ output "eventbridge_rule_arn" {
 
 
 
+
+
+

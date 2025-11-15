@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package world_state.v1;
+
+import "common.proto";
+
+// World State Service - Manages persistent world state
+// Subjects:
+//   svc.world.v1.get_state - Get world state
+//   svc.world.v1.update_state - Update world state
+//   svc.world.v1.subscribe - Subscribe to state changes
+//   evt.world.state.changed.v1 - World state changed event
+//   evt.world.entity.updated.v1 - Entity updated event
+
+message GetStateRequest {
+  common.v1.Meta meta = 1;
+  string world_id = 2;
+  repeated string entity_ids = 3;  // Specific entities (empty = all)
+  repeated string tags = 4;  // Filter by tags
+}
+
+message Entity {
+  string entity_id = 1;
+  string entity_type = 2;  // npc, player, object, location
+  map<string, string> properties = 3;
+  repeated string tags = 4;
+  int64 last_updated_ms = 5;
+  bytes state_data = 6;  // Entity-specific state
+}
+
+message WorldState {
+  string world_id = 1;
+  int64 timestamp_ms = 2;
+  repeated Entity entities = 3;
+  map<string, string> global_flags = 4;
+  int32 total_entities = 5;
+}
+
+message GetStateResponse {
+  common.v1.Meta meta = 1;
+  WorldState world_state = 2;
+  common.v1.Error error = 3;
+}
+
+message UpdateStateRequest {
+  common.v1.Meta meta = 1;
+  string world_id = 2;
+  repeated Entity entities_to_update = 3;
+  map<string, string> global_flags_to_update = 4;
+  bool merge = 5;  // true = merge, false = replace
+}
+
+message UpdateStateResponse {
+  common.v1.Meta meta = 1;
+  int32 entities_updated = 2;
+  int32 flags_updated = 3;
+  int64 new_timestamp_ms = 4;
+  common.v1.Error error = 5;
+}
+
+message SubscribeRequest {
+  common.v1.Meta meta = 1;
+  string world_id = 2;
+  repeated string entity_types = 3;  // Types to watch
+  repeated string tags = 4;  // Tags to watch
+  string callback_subject = 5;  // Where to send updates
+}
+
+message SubscribeResponse {
+  common.v1.Meta meta = 1;
+  string subscription_id = 2;
+  int32 matched_entities = 3;  // Current entities matching filter
+  common.v1.Error error = 4;
+}
+

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 AI Language Generator Module
@@ -18,7 +20,7 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
-from language_system.generation.training_integration import LanguageTrainingPipeline, LanguageTrainingData, LanguageDefinition
+from services.language_system.generation.training_integration import LanguageTrainingPipeline, LanguageTrainingData, LanguageDefinition
 
 # Type placeholders for refactoring
 LLMClient = Any
@@ -368,7 +370,7 @@ class LanguageGenerator:
             ai_generator: AI language generator instance
             use_ai: Whether to use AI generation (True) or procedural only (False)
         """
-        from generation.sentence_generator import SentenceGenerator
+        from services.language_system.generation.sentence_generator import SentenceGenerator
         
         self.sentence_generator = SentenceGenerator()
         self.ai_generator = ai_generator or AILanguageGenerator()
@@ -415,7 +417,7 @@ class LanguageGenerator:
             return result.generated_text
         else:
             # Use procedural generation for simple sentences
-            from generation.sentence_generator import SentenceRequest
+            from services.language_system.generation.sentence_generator import SentenceRequest
             
             request = SentenceRequest(
                 language=language,
@@ -426,4 +428,5 @@ class LanguageGenerator:
             )
             
             return self.sentence_generator.generate(request)
+
 

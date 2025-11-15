@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 Grammar Generator Module
 ========================
@@ -11,7 +13,7 @@ import logging
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass
 
-from language_system.core.language_definition import GrammarRules, LanguageDefinition, LanguageType
+from services.language_system.core.language_definition import GrammarRules, LanguageDefinition, LanguageType
 
 logger = logging.getLogger(__name__)
 
@@ -161,6 +163,7 @@ class GrammarGenerator:
             grammatical_categories=grammatical_categories,
             agreement_rules=agreement_rules,
         )
+
 
 
 

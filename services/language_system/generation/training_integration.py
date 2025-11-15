@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Training Integration Module
@@ -318,4 +320,5 @@ class LanguageTrainingPipeline:
                 "language": language.name,
                 "metadata": getattr(trajectory, 'metadata', {}) if hasattr(trajectory, 'metadata') else {}
             }
+
 

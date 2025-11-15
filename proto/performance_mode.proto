@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package performance_mode.v1;
+
+import "common.proto";
+
+// Performance Mode Service - Adaptive quality and performance management
+// Subjects:
+//   svc.perf.v1.adjust_mode - Adjust performance mode
+//   svc.perf.v1.get_metrics - Get performance metrics
+//   svc.perf.v1.set_budget - Set performance budget
+//   evt.perf.mode.changed.v1 - Performance mode changed event
+
+message AdjustModeRequest {
+  common.v1.Meta meta = 1;
+  string player_id = 2;
+  string mode = 3;  // ultra, high, medium, low, auto
+  map<string, int32> custom_settings = 4;  // Custom overrides
+}
+
+message PerformanceSettings {
+  string mode = 1;
+  int32 target_fps = 2;
+  int32 ai_quality = 3;  // 0-100
+  int32 render_quality = 4;  // 0-100
+  bool enable_dynamic_scaling = 5;
+  map<string, int32> custom_settings = 6;
+}
+
+message AdjustModeResponse {
+  common.v1.Meta meta = 1;
+  PerformanceSettings applied_settings = 2;
+  common.v1.Error error = 3;
+}
+
+message GetMetricsRequest {
+  common.v1.Meta meta = 1;
+  string player_id = 2;
+  int32 duration_seconds = 3;  // Time window for metrics
+}
+
+message PerformanceMetrics {
+  double avg_fps = 1;
+  double min_fps = 2;
+  double max_fps = 3;
+  double avg_frame_time_ms = 4;
+  int32 frame_drops = 5;
+  double cpu_usage = 6;  // 0.0-1.0
+  double gpu_usage = 7;  // 0.0-1.0
+  int64 memory_mb = 8;
+  map<string, double> custom_metrics = 9;
+}
+
+message GetMetricsResponse {
+  common.v1.Meta meta = 1;
+  PerformanceMetrics metrics = 2;
+  string recommended_mode = 3;
+  common.v1.Error error = 4;
+}
+
+message SetBudgetRequest {
+  common.v1.Meta meta = 1;
+  string budget_type = 2;  // frame_time, memory, cpu, gpu
+  int32 budget_value = 3;
+  bool strict_enforcement = 4;
+}
+
+message SetBudgetResponse {
+  common.v1.Meta meta = 1;
+  bool success = 2;
+  int32 applied_budget = 3;
+  common.v1.Error error = 4;
+}
+

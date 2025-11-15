@@ -1,0 +1,114 @@
+# JetStream Stream Configurations for Gaming System
+# Deploy via nats CLI or management API
+# Replication: R=3 across AZs for durability
+
+streams:
+  # Core game events stream
+  - name: GAME_EVENTS
+    subjects:
+      - "evt.quest.>"
+      - "evt.npc.>"
+      - "evt.world.>"
+      - "evt.broker.>"
+      - "evt.payment.>"
+    storage: file
+    retention: limits
+    maxAge: 3600000000000  # 1 hour
+    maxMsgSize: 1048576  # 1MB
+    replicas: 3  # R=3 across AZs
+    maxConsumers: 100
+    discard: old
+    duplicateWindow: 120000000000  # 2 minutes dedupe
+    
+  # System events stream  
+  - name: SYSTEM_EVENTS
+    subjects:
+      - "evt.capability.>"
+      - "evt.settings.>"
+      - "evt.auth.>"
+      - "evt.perf.>"
+    storage: file
+    retention: limits
+    maxAge: 300000000000  # 5 minutes
+    maxMsgSize: 524288  # 512KB
+    replicas: 3
+    maxConsumers: 50
+    discard: old
+    duplicateWindow: 60000000000  # 1 minute
+  
+  # Narrative events stream (longer retention for replay)
+  - name: NARRATIVE_EVENTS
+    subjects:
+      - "evt.story.>"
+      - "evt.narrative.>"
+      - "evt.lang.>"
+    storage: file
+    retention: limits
+    maxAge: 7200000000000  # 2 hours
+    maxMsgSize: 2097152  # 2MB
+    replicas: 3
+    maxConsumers: 20
+    discard: old
+    duplicateWindow: 300000000000  # 5 minutes
+
+  # Orchestration workflow stream (work queue pattern)
+  - name: ORCHESTRATION_WORK
+    subjects:
+      - "evt.orchestration.>"
+    storage: file
+    retention: workqueue  # Remove after ack
+    maxAge: 86400000000000  # 24 hours max
+    maxMsgSize: 1048576
+    replicas: 3
+    maxConsumers: 10
+    maxDeliver: 5  # Max 5 redeliveries before DLQ
+    discard: old
+    duplicateWindow: 600000000000  # 10 minutes
+
+  # Dead letter queue for failed messages
+  - name: DLQ
+    subjects:
+      - "dlq.>"
+    storage: file
+    retention: limits
+    maxAge: 604800000000000  # 7 days
+    maxMsgSize: 4194304  # 4MB (store full context)
+    replicas: 3
+    maxConsumers: 5
+    discard: old
+
+consumers:
+  # Quest event consumer
+  - stream: GAME_EVENTS
+    name: quest_processor
+    filterSubject: "evt.quest.>"
+    deliverPolicy: all
+    ackPolicy: explicit
+    ackWait: 30000000000  # 30 seconds
+    maxDeliver: 3
+    replayPolicy: instant
+    durable: true
+    
+  # World state event consumer
+  - stream: GAME_EVENTS
+    name: world_state_sync
+    filterSubject: "evt.world.>"
+    deliverPolicy: all
+    ackPolicy: explicit
+    ackWait: 10000000000  # 10 seconds
+    maxDeliver: 5
+    replayPolicy: instant
+    durable: true
+
+# CLI commands to create streams:
+#
+# nats stream add GAME_EVENTS --subjects "evt.quest.>,evt.npc.>,evt.world.>,evt.broker.>,evt.payment.>" --storage file --retention limits --max-age 1h --replicas 3 --discard old --dupe-window 2m
+#
+# nats stream add SYSTEM_EVENTS --subjects "evt.capability.>,evt.settings.>,evt.auth.>,evt.perf.>" --storage file --retention limits --max-age 5m --replicas 3 --discard old --dupe-window 1m
+#
+# nats stream add NARRATIVE_EVENTS --subjects "evt.story.>,evt.narrative.>,evt.lang.>" --storage file --retention limits --max-age 2h --replicas 3 --discard old --dupe-window 5m
+#
+# nats stream add ORCHESTRATION_WORK --subjects "evt.orchestration.>" --storage file --retention workqueue --max-age 24h --replicas 3 --max-deliver 5 --discard old --dupe-window 10m
+#
+# nats stream add DLQ --subjects "dlq.>" --storage file --retention limits --max-age 7d --replicas 3 --discard old
+

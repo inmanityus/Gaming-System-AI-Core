@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # CROSS-SERVICE IMPORTS DISABLED IN DOCKER CONTAINER
 """
 Translation Module
@@ -7,13 +9,19 @@ Provides translation between languages with context awareness.
 """
 
 import logging
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, TYPE_CHECKING
 from dataclasses import dataclass, field
 
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
+if TYPE_CHECKING:
+    from services.language_system.core.language_definition import LanguageRegistry, LanguageDefinition
+    from services.language_system.generation.ai_language_generator import AILanguageGenerator
+else:
+    from services.language_system.core.language_definition import LanguageRegistry, LanguageDefinition
+    from services.language_system.generation.ai_language_generator import AILanguageGenerator
 
 logger = logging.getLogger(__name__)
 
@@ -308,7 +316,7 @@ Translated text ({to_lang.name}):"""
         from_lang: LanguageDefinition,
         to_lang: LanguageDefinition
     ) -> List[str]:
-        """Extract cultural notes from translation."""
+        """Extract cultural notes from services.language_system.translation."""
         notes = []
         
         # Check for cultural differences
@@ -327,5 +335,6 @@ Translated text ({to_lang.name}):"""
     def _get_cache_key(self, request: TranslationRequest) -> str:
         """Generate cache key for translation request."""
         return f"{request.from_language}:{request.to_language}:{request.text}:{request.player_skill_level}"
+
 
 

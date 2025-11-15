@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package auth.v1;
+
+import "common.proto";
+
+// Authentication Service - Session management, rate limiting, auth
+// Subjects:
+//   svc.auth.v1.validate_session - Validate session token
+//   svc.auth.v1.create_session - Create new session
+//   svc.auth.v1.revoke_session - Revoke session
+//   svc.auth.v1.check_rate_limit - Check rate limit
+
+message ValidateSessionRequest {
+  common.v1.Meta meta = 1;
+  string session_token = 2;
+}
+
+message ValidateSessionResponse {
+  common.v1.Meta meta = 1;
+  bool is_valid = 2;
+  string user_id = 3;
+  map<string, string> session_data = 4;
+  int64 expires_at_ms = 5;
+  common.v1.Error error = 6;
+}
+
+message CreateSessionRequest {
+  common.v1.Meta meta = 1;
+  string user_id = 2;
+  map<string, string> session_data = 3;
+  int32 ttl_seconds = 4;  // Time to live
+}
+
+message CreateSessionResponse {
+  common.v1.Meta meta = 1;
+  string session_token = 2;
+  int64 expires_at_ms = 3;
+  common.v1.Error error = 4;
+}
+
+message RevokeSessionRequest {
+  common.v1.Meta meta = 1;
+  string session_token = 2;
+}
+
+message RevokeSessionResponse {
+  common.v1.Meta meta = 1;
+  bool success = 2;
+  common.v1.Error error = 3;
+}
+
+message CheckRateLimitRequest {
+  common.v1.Meta meta = 1;
+  string user_id = 2;
+  string resource = 3;  // Resource being accessed
+  string action = 4;  // Action being performed
+}
+
+message CheckRateLimitResponse {
+  common.v1.Meta meta = 1;
+  bool allowed = 2;
+  int32 remaining = 3;  // Remaining requests in window
+  int32 limit = 4;  // Total limit
+  int64 reset_at_ms = 5;  // When limit resets
+  common.v1.Error error = 6;
+}
+

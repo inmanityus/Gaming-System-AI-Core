@@ -6,6 +6,7 @@ Language Definitions Data
 Pre-defined language definitions for all game languages.
 """
 
+from services.language_system.core.language_definition import (
     LanguageDefinition,
     LanguageType,
     PhonemeInventory,
@@ -342,4 +343,5 @@ def create_music_language() -> LanguageDefinition:
         seed_words=[],
         ai_model_hints="Phoneme-based generation for lyrics. No recognizable linguistic structure. Melodic patterns.",
     )
+
 

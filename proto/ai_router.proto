@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package ai_router.v1;
+
+import "common.proto";
+
+// AI Router Service - Routes AI requests to appropriate services based on capability and load
+// Subjects:
+//   svc.ai.router.v1.route - Route AI request to optimal service
+
+message RouteRequest {
+  common.v1.Meta meta = 1;
+  string request_type = 2;  // Type of AI request (inference, generation, etc.)
+  map<string, string> requirements = 3;  // Required capabilities
+  map<string, string> preferences = 4;  // Preferred attributes (latency, cost, quality)
+  bytes payload = 5;  // Original request payload
+}
+
+message RouteResponse {
+  common.v1.Meta meta = 1;
+  string target_service = 2;  // Service to route to
+  string target_subject = 3;  // NATS subject for target service
+  map<string, string> metadata = 4;  // Additional routing metadata
+  common.v1.Error error = 5;
+}
+
+message HealthCheckRequest {
+  common.v1.Meta meta = 1;
+  repeated string service_ids = 2;  // Services to check (empty = all)
+}
+
+message ServiceHealth {
+  string service_id = 1;
+  bool is_healthy = 2;
+  int32 current_load = 3;  // 0-100 percentage
+  double avg_latency_ms = 4;
+  int64 timestamp_ms = 5;
+}
+
+message HealthCheckResponse {
+  common.v1.Meta meta = 1;
+  repeated ServiceHealth services = 2;
+  common.v1.Error error = 3;
+}
+

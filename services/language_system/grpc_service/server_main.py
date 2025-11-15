@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 Main entry point for Language System gRPC server
 """
@@ -6,7 +8,7 @@ import asyncio
 import logging
 import signal
 import sys
-from language_system.grpc.grpc_server import LanguageSystemGRPCServer
+from services.language_system.grpc_service.grpc_server import LanguageSystemGRPCServer
 
 logging.basicConfig(
     level=logging.INFO,
@@ -42,4 +44,5 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 

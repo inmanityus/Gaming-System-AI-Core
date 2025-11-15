@@ -1,0 +1,13 @@
+FROM python:3.11-slim
+WORKDIR /app
+COPY sdk /app/sdk
+COPY generated /app/generated
+COPY services/quest_system /app/services/quest_system
+COPY services/quest_system/requirements.txt /app/service-requirements.txt
+RUN pip install --no-cache-dir -r /app/service-requirements.txt
+RUN pip install --no-cache-dir nats-py>=2.9.0 protobuf>=5.29.0 opentelemetry-api>=1.20.0 opentelemetry-sdk>=1.20.0 opentelemetry-exporter-otlp-proto-grpc>=1.20.0
+ENV PYTHONPATH=/app/sdk:/app/generated:/app
+ENV NATS_URL=nats://nats-production-1dd94609d95c94d4.elb.us-east-1.amazonaws.com:4222
+EXPOSE 8080
+WORKDIR /app
+CMD ["python", "-m", "services.quest_system.nats_server"]

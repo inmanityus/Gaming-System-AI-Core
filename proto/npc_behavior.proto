@@ -1,0 +1,28 @@
+syntax = "proto3";
+package npc_behavior.v1;
+
+import "google/protobuf/struct.proto";
+import "common.proto";
+
+// BehaviorRequest: Request for NPC behavior planning
+message BehaviorRequest {
+  common.v1.Meta meta = 1;
+  string npc_id = 2;
+  google.protobuf.Struct situation = 3;
+  google.protobuf.Struct world_state = 4;
+}
+
+// Action: Single action for NPC to take
+message Action {
+  string type = 1; // e.g., MOVE, SPEAK, INTERACT, ATTACK
+  map<string, string> params = 2;
+}
+
+// BehaviorResponse: Response with planned actions
+message BehaviorResponse {
+  common.v1.Meta meta = 1;
+  string plan_id = 2;
+  repeated Action actions = 3;
+  common.v1.Error error = 4;
+}
+

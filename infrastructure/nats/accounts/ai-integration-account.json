@@ -1,0 +1,43 @@
+{
+  "account": "ai-integration-account",
+  "description": "AI Integration Service - LLM inference provider",
+  "nkey": "ACCOUNT_NKEY_AI_INTEGRATION",
+  "exports": [
+    {
+      "service": {
+        "subject": "svc.ai.llm.v1.>"
+      }
+    }
+  ],
+  "imports": [
+    {
+      "stream": {
+        "subject": "evt.>"
+      }
+    }
+  ],
+  "permissions": {
+    "publish": {
+      "allow": [
+        "svc.ai.llm.v1.>",
+        "evt.ai.>"
+      ]
+    },
+    "subscribe": {
+      "allow": [
+        "svc.ai.llm.v1.>",
+        "_INBOX.>",
+        "_R_.>"
+      ]
+    }
+  },
+  "limits": {
+    "conn": 50,
+    "subs": 5000,
+    "payload": 1048576,
+    "data": -1,
+    "exports": 10,
+    "imports": 10
+  }
+}
+

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 gRPC Client for Language System
 Provides client interface for UE5 and other services to communicate with language system
@@ -249,4 +251,5 @@ class LanguageSystemClient:
     
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.client.disconnect()
+
 

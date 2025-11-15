@@ -1,0 +1,38 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Copy SDK and generated protos
+COPY sdk /app/sdk
+COPY generated /app/generated
+
+# Copy service
+COPY services/ai_integration /app/services/ai_integration
+
+# Copy and install service requirements
+COPY services/ai_integration/requirements.txt /app/service-requirements.txt
+RUN pip install --no-cache-dir -r /app/service-requirements.txt
+
+# Install SDK dependencies
+RUN pip install --no-cache-dir \
+    nats-py>=2.9.0 \
+    protobuf>=5.29.0 \
+    opentelemetry-api>=1.20.0 \
+    opentelemetry-sdk>=1.20.0 \
+    opentelemetry-exporter-otlp-proto-grpc>=1.20.0
+
+# Set Python path
+ENV PYTHONPATH=/app/sdk:/app/generated:/app
+
+# Environment variables
+ENV NATS_URL=nats://nats-production-1dd94609d95c94d4.elb.us-east-1.amazonaws.com:4222
+EXPOSE 8080
+ENV SERVICE_NAME=ai-integration-nats
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD ps aux | grep -q '[p]ython.*nats_server.py' || exit 1
+
+# Set working directory and run as module
+WORKDIR /app
+CMD ["python", "-m", "services.ai_integration.nats_server"]

@@ -321,26 +321,37 @@ $htmlReport = @"
         <div class="screenshot-grid">
 "@
 
-# Add Android screenshots to report
+# Helper function to convert image to base64 data URI
+function Get-ImageDataUri {
+    param([string]$ImagePath)
+    if (Test-Path $ImagePath) {
+        $bytes = [System.IO.File]::ReadAllBytes($ImagePath)
+        $base64 = [Convert]::ToBase64String($bytes)
+        return "data:image/png;base64,$base64"
+    }
+    return ""
+}
+
+# Add Android screenshots to report (embedded as base64)
 if ($androidScreenshots -gt 0) {
     Get-ChildItem -Path $androidOutputDir -Filter "*.png" -ErrorAction SilentlyContinue | ForEach-Object {
-        $relativePath = $_.FullName.Replace($OutputDir + "\", "").Replace("\", "/")
+        $dataUri = Get-ImageDataUri $_.FullName
         $htmlReport += @"
             <div class="screenshot">
-                <img src="../$relativePath" alt="$($_.Name)">
+                <img src="$dataUri" alt="$($_.Name)">
                 <div class="screenshot-label">$($_.Name)</div>
             </div>
 "@
     }
 }
 
-# Add remote screenshots to report
+# Add remote screenshots to report (embedded as base64)
 if ($remoteScreenshots -gt 0) {
     Get-ChildItem -Path $remoteOutputDir -Filter "*.png" -ErrorAction SilentlyContinue | ForEach-Object {
-        $relativePath = $_.FullName.Replace($OutputDir + "\", "").Replace("\", "/")
+        $dataUri = Get-ImageDataUri $_.FullName
         $htmlReport += @"
             <div class="screenshot">
-                <img src="../$relativePath" alt="$($_.Name)">
+                <img src="$dataUri" alt="$($_.Name)">
                 <div class="screenshot-label">$($_.Name)</div>
             </div>
 "@

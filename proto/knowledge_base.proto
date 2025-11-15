@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package knowledge_base.v1;
+
+import "common.proto";
+
+// Knowledge Base - RAG system for game lore and documentation
+// Subjects:
+//   svc.kb.v1.query - Query knowledge base
+//   svc.kb.v1.ingest - Ingest new documents
+//   svc.kb.v1.update - Update existing documents
+//   evt.kb.document.ingested.v1 - Document ingested event
+
+message QueryRequest {
+  common.v1.Meta meta = 1;
+  string query_text = 2;
+  repeated string collections = 3;  // lore, mechanics, npcs, etc.
+  int32 max_results = 4;
+  map<string, string> filters = 5;  // Metadata filters
+  double similarity_threshold = 6;  // Minimum similarity score
+}
+
+message Document {
+  string document_id = 1;
+  string collection = 2;
+  string content = 3;
+  map<string, string> metadata = 4;
+  double relevance_score = 5;  // Similarity score for query results
+  repeated string chunks = 6;  // Document chunks if chunked
+}
+
+message QueryResponse {
+  common.v1.Meta meta = 1;
+  repeated Document documents = 2;
+  string synthesized_answer = 3;  // LLM-generated answer
+  repeated string sources = 4;  // Source document IDs
+  common.v1.Error error = 5;
+}
+
+message IngestRequest {
+  common.v1.Meta meta = 1;
+  repeated Document documents = 2;
+  string collection = 3;
+  bool overwrite_existing = 4;
+  map<string, string> default_metadata = 5;
+}
+
+message IngestResponse {
+  common.v1.Meta meta = 1;
+  int32 documents_ingested = 2;
+  repeated string document_ids = 3;
+  int32 chunks_created = 4;
+  common.v1.Error error = 5;
+}
+
+message UpdateRequest {
+  common.v1.Meta meta = 1;
+  string document_id = 2;
+  string content = 3;  // New content (empty = delete)
+  map<string, string> metadata = 4;
+}
+
+message UpdateResponse {
+  common.v1.Meta meta = 1;
+  bool success = 2;
+  string document_id = 3;
+  common.v1.Error error = 4;
+}
+

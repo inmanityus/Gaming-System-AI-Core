@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 Sentence Generator Module
 =========================
@@ -10,7 +12,7 @@ import logging
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 
-from language_system.core.language_definition import LanguageDefinition, GrammarRules, Lexicon
+from services.language_system.core.language_definition import LanguageDefinition, GrammarRules, Lexicon
 
 logger = logging.getLogger(__name__)
 
@@ -186,6 +188,7 @@ class SentenceGenerator:
         # In a full implementation, this would adjust pronunciation
         # For now, just return the sentence as-is
         return sentence
+
 
 
 

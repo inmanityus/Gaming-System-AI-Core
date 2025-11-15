@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 Lexicon Generator Module
 ========================
@@ -11,7 +13,7 @@ import logging
 from typing import Dict, List, Optional, Set
 from dataclasses import dataclass
 
-from language_system.core.language_definition import Lexicon, LanguageDefinition, LanguageType
+from services.language_system.core.language_definition import Lexicon, LanguageDefinition, LanguageType
 
 logger = logging.getLogger(__name__)
 
@@ -287,6 +289,7 @@ class LexiconGenerator:
                     loanwords[loanword] = source
         
         return loanwords
+
 
 
 

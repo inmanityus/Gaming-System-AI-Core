@@ -1,0 +1,50 @@
+# Prometheus Configuration for NATS Monitoring
+# Scrapes NATS server metrics and exposes for Grafana
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'gaming-system-nats'
+    environment: 'production'
+
+scrape_configs:
+  # NATS Server Metrics
+  - job_name: 'nats-servers'
+    static_configs:
+      - targets:
+          # NATS instances - update with actual private IPs
+          - '172.31.108.125:8222'  # i-04789e0fb640aa4f1
+          - '172.31.XXX.XXX:8222'  # Add other 4 instances
+    metrics_path: '/varz'
+    params:
+      format: ['prometheus']
+  
+  # JetStream Metrics
+  - job_name: 'nats-jetstream'
+    static_configs:
+      - targets:
+          - '172.31.108.125:8222'
+    metrics_path: '/jsz'
+    params:
+      format: ['prometheus']
+  
+  # NATS Connections
+  - job_name: 'nats-connections'
+    static_configs:
+      - targets:
+          - '172.31.108.125:8222'
+    metrics_path: '/connz'
+    params:
+      format: ['prometheus']
+
+# Alerting Rules
+rule_files:
+  - 'nats_alerts.yml'
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - 'alertmanager:9093'
+

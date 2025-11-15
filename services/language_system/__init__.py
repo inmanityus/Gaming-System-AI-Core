@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 Multi-Language Speech System
 ============================
@@ -10,6 +12,10 @@ Provides comprehensive multi-language support for:
 """
 
 __version__ = "1.0.0"
+
+
+
+
 
 
 

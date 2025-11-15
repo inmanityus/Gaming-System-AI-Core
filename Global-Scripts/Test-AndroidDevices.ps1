@@ -121,12 +121,40 @@ function Test-Device {
         Write-Host "      Screen: $screenSize" -ForegroundColor White
         
         # Open Chrome and navigate to URL
-        Write-Host "`n   🌐 Opening URL in Chrome..." -ForegroundColor Cyan
+        Write-Host "`n   🌐 Opening Chrome and dismissing all setup screens..." -ForegroundColor Cyan
+        
+        # Step 1: Open Chrome
+        & $adb shell am start -n com.android.chrome/com.google.android.apps.chrome.Main 2>&1 | Out-Null
+        Start-Sleep -Seconds 5
+        
+        # Step 2: Dismiss Chrome welcome screens
+        & $adb shell input keyevent 66 2>&1 | Out-Null  # Enter (Accept terms)
+        Start-Sleep -Seconds 2
+        & $adb shell input keyevent 66 2>&1 | Out-Null  # Enter (Next)
+        Start-Sleep -Seconds 2
+        
+        # Step 3: Dismiss "Add Google Account" screen - Click "Continue without account"
+        # This is typically at the bottom of the screen - tap coordinates for "No thanks" or similar
+        Write-Host "   📱 Dismissing Google account prompt..." -ForegroundColor Cyan
+        & $adb shell input keyevent 61 2>&1 | Out-Null  # Tab to navigate
+        Start-Sleep -Seconds 1
+        & $adb shell input keyevent 61 2>&1 | Out-Null  # Tab again to "Continue without account"
+        Start-Sleep -Seconds 1
+        & $adb shell input keyevent 66 2>&1 | Out-Null  # Enter to select
+        Start-Sleep -Seconds 2
+        
+        # Step 4: Press Back to clear any remaining Chrome screens
+        & $adb shell input keyevent 4 2>&1 | Out-Null   # Back button
+        Start-Sleep -Seconds 1
+        
+        # Step 3: Now navigate to actual URL
+        Write-Host "   🌐 Navigating to URL..." -ForegroundColor Cyan
         & $adb shell am start -a android.intent.action.VIEW -d $TestUrl com.android.chrome 2>&1 | Out-Null
         
-        # Wait for page to load
-        Write-Host "   ⏳ Waiting ${WaitSeconds}s for page load..." -ForegroundColor Cyan
-        Start-Sleep -Seconds $WaitSeconds
+        # Step 4: Wait longer for page to fully load (25 seconds minimum)
+        $actualWaitTime = [Math]::Max($WaitSeconds, 25)
+        Write-Host "   ⏳ Waiting ${actualWaitTime}s for page to fully load..." -ForegroundColor Cyan
+        Start-Sleep -Seconds $actualWaitTime
         
         # Take screenshots
         Write-Host "`n   📸 Capturing screenshots..." -ForegroundColor Cyan

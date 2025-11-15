@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 Language System API Server
 ==========================
@@ -10,9 +12,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict, Any, Optional, List
 
-from language_system.core.language_definition import LanguageDefinition, LanguageRegistry
-from language_system.generation.sentence_generator import SentenceGenerator, SentenceRequest
-from language_system.grpc.grpc_server import LanguageSystemGRPCServer
+from services.language_system.core.language_definition import LanguageDefinition, LanguageRegistry
+from services.language_system.generation.sentence_generator import SentenceGenerator, SentenceRequest
+from services.language_system.grpc_service.grpc_server import LanguageSystemGRPCServer
 
 app = FastAPI(title="Language System API", version="1.0.0")
 
@@ -39,7 +41,7 @@ grpc_server = None
 async def register_languages():
     """Register all language definitions on startup."""
     try:
-        from data.language_definitions import (
+        from services.language_system.data.language_definitions import (
             create_vampire_language,
             create_werewolf_language,
             create_zombie_language,
@@ -147,5 +149,6 @@ async def root():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8003)
+
 
 
