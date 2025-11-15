@@ -769,9 +769,9 @@ class FineTuningPipeline:
         if '70b' in model_lower or '65b' in model_lower:
             return os.getenv('LORA_INSTANCE_TYPE', 'ml.p4d.24xlarge')
         elif '13b' in model_lower or '34b' in model_lower:
-            return os.getenv('LORA_INSTANCE_TYPE', 'ml.p3.8xlarge')
+            return os.getenv('LORA_INSTANCE_TYPE', 'ml.g6.8xlarge')  # Migrated from ml.p3.8xlarge
         elif '7b' in model_lower:
-            return os.getenv('LORA_INSTANCE_TYPE', 'ml.p3.2xlarge')
+            return os.getenv('LORA_INSTANCE_TYPE', 'ml.g6.2xlarge')  # Migrated from ml.p3.2xlarge
         else:
             return os.getenv('LORA_INSTANCE_TYPE', 'ml.g5.2xlarge')
     
