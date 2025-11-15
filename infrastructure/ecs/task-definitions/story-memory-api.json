@@ -1,0 +1,46 @@
+{
+  "family": "story-memory-api",
+  "networkMode": "awsvpc",
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::695353648052:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::695353648052:role/gaming-system-task-role",
+  "requiresCompatibilities": ["FARGATE"],
+  "containerDefinitions": [
+    {
+      "name": "story-memory-api",
+      "image": "695353648052.dkr.ecr.us-east-1.amazonaws.com/bodybroker-services/story-memory-api:latest",
+      "portMappings": [
+        {
+          "containerPort": 8099,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {"name": "SERVICE_NAME", "value": "story-memory-api"},
+        {"name": "PYTHONUNBUFFERED", "value": "1"},
+        {"name": "DB_USER", "value": "postgres"},
+        {"name": "NATS_URL", "value": "nats://nats.gaming-system.internal:4222"},
+        {"name": "DB_NAME", "value": "gaming_system"},
+        {"name": "DB_HOST", "value": "database.gaming-system.internal"},
+        {"name": "LOG_LEVEL", "value": "INFO"},
+        {"name": "REDIS_URL", "value": "redis://redis.gaming-system.internal:6379"}
+      ],
+      "secrets": [
+        {
+          "name": "DB_PASSWORD",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:695353648052:secret:gaming-system/bodybroker-db-credentials:password::"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/gaming-system",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "story-memory-api"
+        }
+      }
+    }
+  ]
+}
