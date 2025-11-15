@@ -1,0 +1,7 @@
+# 4D Vision Coverage Job Requirements
+asyncpg>=0.29.0
+nats-py>=2.7.2
+loguru>=0.7.2
+numpy>=1.24.0
+pydantic>=2.5.0
+python-dateutil>=2.8.2

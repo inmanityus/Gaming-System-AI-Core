@@ -1,0 +1,200 @@
+{
+  "dashboard": {
+    "title": "4D Vision Detector Performance",
+    "description": "Detailed metrics for individual 4D Vision detectors",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Animation Detector",
+        "type": "row",
+        "collapsed": false,
+        "panels": [
+          {
+            "title": "T-Pose Detection Rate",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(vision_issues_detected_total{detector_type=\"animation\",issue_type=\"t_pose\"}[5m])"
+              }
+            ]
+          },
+          {
+            "title": "Animation Confidence Scores",
+            "type": "heatmap",
+            "targets": [
+              {
+                "expr": "vision_detector_confidence{detector_type=\"animation\"}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Physics Detector",
+        "type": "row",
+        "collapsed": false,
+        "panels": [
+          {
+            "title": "Clipping Issues by Severity",
+            "type": "bargraph",
+            "targets": [
+              {
+                "expr": "sum(increase(vision_issues_detected_total{detector_type=\"physics\",issue_type=\"clipping\"}[1h])) by (severity_category)"
+              }
+            ]
+          },
+          {
+            "title": "Ragdoll Explosions",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "sum(increase(vision_issues_detected_total{detector_type=\"physics\",issue_type=\"ragdoll_explosion\"}[24h]))"
+              }
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 1, "color": "yellow"},
+                {"value": 5, "color": "red"}
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Rendering Detector",
+        "type": "row",
+        "collapsed": false,
+        "panels": [
+          {
+            "title": "Texture Issues Timeline",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(vision_issues_detected_total{detector_type=\"rendering\",issue_type=~\"texture.*\"}[5m])",
+                "legendFormat": "{{issue_type}}"
+              }
+            ]
+          },
+          {
+            "title": "Z-Fighting Occurrences",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "increase(vision_issues_detected_total{detector_type=\"rendering\",issue_type=\"z_fighting\"}[10m])"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Lighting Detector",
+        "type": "row",
+        "collapsed": false,
+        "panels": [
+          {
+            "title": "Horror Atmosphere Issues",
+            "type": "piechart",
+            "targets": [
+              {
+                "expr": "sum(increase(vision_issues_detected_total{detector_type=\"lighting\",issue_type=\"no_atmosphere\"}[24h])) by (severity_category)"
+              }
+            ]
+          },
+          {
+            "title": "Visibility Problems",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(vision_issues_detected_total{detector_type=\"lighting\",issue_type=~\"too_dark|too_bright\"}[5m])",
+                "legendFormat": "{{issue_type}}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Performance Detector",
+        "type": "row",
+        "collapsed": false,
+        "panels": [
+          {
+            "title": "FPS Drop Severity Distribution",
+            "type": "heatmap",
+            "targets": [
+              {
+                "expr": "sum(increase(vision_issues_detected_total{detector_type=\"performance\",issue_type=\"fps_drop\"}[1h])) by (severity_category)"
+              }
+            ]
+          },
+          {
+            "title": "Platform-Specific Issues",
+            "type": "table",
+            "targets": [
+              {
+                "expr": "topk(10, sum(increase(vision_issues_detected_total{detector_type=\"performance\"}[24h])) by (issue_type))",
+                "format": "table"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Flow Detector",
+        "type": "row",
+        "collapsed": false,
+        "panels": [
+          {
+            "title": "Soft Lock Detection",
+            "type": "timeseries",
+            "targets": [
+              {
+                "expr": "increase(vision_issues_detected_total{detector_type=\"flow\",issue_type=\"soft_lock\"}[10m])",
+                "legendFormat": "Soft Locks"
+              }
+            ],
+            "alert": {
+              "name": "High Soft Lock Rate",
+              "condition": "last() > 5",
+              "frequency": "5m",
+              "handler": 1,
+              "severity": "critical",
+              "message": "Multiple soft locks detected in recent builds"
+            }
+          },
+          {
+            "title": "Progress Blockers",
+            "type": "bargraph",
+            "targets": [
+              {
+                "expr": "sum(increase(vision_issues_detected_total{detector_type=\"flow\",issue_type=\"progress_blocked\"}[24h]))"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Detector Efficiency",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "avg(vision_analysis_duration_seconds) by (detector_type)",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "gridPos": {"x": 0, "y": 48, "w": 24, "h": 8}
+      }
+    ],
+    "refresh": "1m",
+    "time": {"from": "now-3h", "to": "now"},
+    "schemaVersion": 36
+  }
+}

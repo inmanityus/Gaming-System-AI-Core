@@ -1,0 +1,132 @@
+{
+  "dashboard": {
+    "title": "4D Vision QA Overview",
+    "description": "Overview of 4D Vision quality assurance system",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Segments Analyzed (24h)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(rate(vision_segments_analyzed_total[5m])) by (detector_type)",
+            "legendFormat": "{{detector_type}}"
+          }
+        ],
+        "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8}
+      },
+      {
+        "id": 2,
+        "title": "Issues Detected by Type",
+        "type": "piechart",
+        "targets": [
+          {
+            "expr": "sum(increase(vision_issues_detected_total[24h])) by (issue_type)"
+          }
+        ],
+        "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8}
+      },
+      {
+        "id": 3,
+        "title": "Analysis Latency (p95)",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(vision_analysis_duration_seconds_bucket[5m])) by (le))"
+          }
+        ],
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+            {"value": 0, "color": "green"},
+            {"value": 5, "color": "yellow"},
+            {"value": 10, "color": "red"}
+          ]
+        },
+        "gridPos": {"x": 0, "y": 8, "w": 6, "h": 8}
+      },
+      {
+        "id": 4,
+        "title": "Coverage Ratio by Build",
+        "type": "bargraph",
+        "targets": [
+          {
+            "expr": "vision_slo_coverage_ratio",
+            "legendFormat": "{{build_id}}"
+          }
+        ],
+        "gridPos": {"x": 6, "y": 8, "w": 18, "h": 8}
+      },
+      {
+        "id": 5,
+        "title": "Critical Issues (1h)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(increase(vision_issues_detected_total{severity_category=\"critical\"}[1h]))"
+          }
+        ],
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+            {"value": 0, "color": "green"},
+            {"value": 5, "color": "yellow"},
+            {"value": 10, "color": "red"}
+          ]
+        },
+        "gridPos": {"x": 0, "y": 16, "w": 6, "h": 4}
+      },
+      {
+        "id": 6,
+        "title": "Frame Processing Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "vision_frame_processing_rate_fps",
+            "legendFormat": "{{detector_type}}"
+          }
+        ],
+        "gridPos": {"x": 6, "y": 16, "w": 18, "h": 8}
+      },
+      {
+        "id": 7,
+        "title": "Goal Impacts",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "topk(10, sum(increase(vision_goal_impacts_total[24h])) by (goal, severity_category))",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "gridPos": {"x": 0, "y": 24, "w": 12, "h": 8}
+      },
+      {
+        "id": 8,
+        "title": "Service Health",
+        "type": "row",
+        "panels": [
+          {
+            "title": "Ingest Queue Size",
+            "type": "stat",
+            "targets": [{"expr": "vision_ingest_queue_size"}]
+          },
+          {
+            "title": "Active Analysis Tasks",
+            "type": "stat",
+            "targets": [{"expr": "sum(vision_active_analysis_tasks)"}]
+          },
+          {
+            "title": "Error Rate",
+            "type": "stat",
+            "targets": [{"expr": "sum(rate(vision_analysis_errors_total[5m]))"}]
+          }
+        ],
+        "gridPos": {"x": 12, "y": 24, "w": 12, "h": 8}
+      }
+    ],
+    "refresh": "30s",
+    "time": {"from": "now-6h", "to": "now"},
+    "schemaVersion": 36
+  }
+}

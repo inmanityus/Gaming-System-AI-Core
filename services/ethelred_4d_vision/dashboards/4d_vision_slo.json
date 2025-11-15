@@ -1,0 +1,195 @@
+{
+  "dashboard": {
+    "title": "4D Vision SLO Dashboard",
+    "description": "Service Level Objectives and SLA tracking for 4D Vision QA",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Analysis Latency SLO (95% < 5s)",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(vision_slo_analysis_latency_seconds_bucket[5m])) by (le))",
+            "legendFormat": "p95 Latency"
+          },
+          {
+            "expr": "5",
+            "legendFormat": "SLO Target"
+          }
+        ],
+        "thresholds": [
+          {"value": 5, "color": "red", "fill": true, "line": true, "op": "gt"}
+        ],
+        "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8}
+      },
+      {
+        "id": 2,
+        "title": "Coverage SLO (>80% scenes per build)",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "avg(vision_slo_coverage_ratio)"
+          }
+        ],
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+            {"value": 0, "color": "red"},
+            {"value": 0.8, "color": "green"}
+          ]
+        },
+        "min": 0,
+        "max": 1,
+        "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8}
+      },
+      {
+        "id": 3,
+        "title": "Ingest Success Rate SLO (>99.5%)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "sum(rate(vision_ingest_segments_total[5m])) / (sum(rate(vision_ingest_segments_total[5m])) + sum(rate(vision_ingest_errors_total[5m]))) * 100",
+            "legendFormat": "Success Rate %"
+          },
+          {
+            "expr": "99.5",
+            "legendFormat": "SLO Target"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 95,
+            "max": 100
+          }
+        },
+        "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8}
+      },
+      {
+        "id": 4,
+        "title": "Error Budget Remaining",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "(1 - (sum(increase(vision_analysis_errors_total[30d])) / sum(increase(vision_segments_analyzed_total[30d])))) * 100"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 50, "color": "yellow"},
+                {"value": 80, "color": "green"}
+              ]
+            }
+          }
+        },
+        "gridPos": {"x": 12, "y": 8, "w": 6, "h": 8}
+      },
+      {
+        "id": 5,
+        "title": "Build Analysis Completion Time",
+        "type": "histogram",
+        "targets": [
+          {
+            "expr": "vision_coverage_run_duration_seconds_bucket"
+          }
+        ],
+        "gridPos": {"x": 18, "y": 8, "w": 6, "h": 8}
+      },
+      {
+        "id": 6,
+        "title": "SLO Compliance Summary",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "100 * (histogram_quantile(0.95, sum(rate(vision_slo_analysis_latency_seconds_bucket{le=\"5\"}[24h])) by (le)) / histogram_quantile(0.95, sum(rate(vision_slo_analysis_latency_seconds_bucket[24h])) by (le)))",
+            "format": "table",
+            "instant": true,
+            "legendFormat": "Latency SLO"
+          },
+          {
+            "expr": "avg(vision_slo_coverage_ratio) * 100",
+            "format": "table",
+            "instant": true,
+            "legendFormat": "Coverage SLO"
+          },
+          {
+            "expr": "sum(rate(vision_ingest_segments_total[24h])) / (sum(rate(vision_ingest_segments_total[24h])) + sum(rate(vision_ingest_errors_total[24h]))) * 100",
+            "format": "table",
+            "instant": true,
+            "legendFormat": "Ingest SLO"
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {},
+              "indexByName": {},
+              "renameByName": {
+                "Value #A": "Latency Compliance %",
+                "Value #B": "Coverage Compliance %",
+                "Value #C": "Ingest Success %"
+              }
+            }
+          }
+        ],
+        "gridPos": {"x": 0, "y": 16, "w": 24, "h": 6}
+      },
+      {
+        "id": 7,
+        "title": "SLO Burn Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(rate(vision_analysis_errors_total[1h])) / sum(rate(vision_segments_analyzed_total[1h]))",
+            "legendFormat": "1h Error Rate"
+          },
+          {
+            "expr": "sum(rate(vision_analysis_errors_total[6h])) / sum(rate(vision_segments_analyzed_total[6h]))",
+            "legendFormat": "6h Error Rate"
+          }
+        ],
+        "alert": {
+          "name": "High Error Burn Rate",
+          "conditions": [
+            {
+              "evaluator": {"params": [0.05], "type": "gt"},
+              "query": {"model": "{\"expr\": \"sum(rate(vision_analysis_errors_total[1h])) / sum(rate(vision_segments_analyzed_total[1h]))\"}", "params": ["A", "5m", "now"]},
+              "reducer": {"params": [], "type": "last"},
+              "type": "query"
+            }
+          ],
+          "frequency": "60s",
+          "handler": 1,
+          "message": "Error rate exceeding 5% - SLO budget burn rate too high",
+          "name": "4D Vision High Error Rate"
+        },
+        "gridPos": {"x": 0, "y": 22, "w": 24, "h": 8}
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "time_window",
+          "type": "custom",
+          "current": {"text": "24h", "value": "24h"},
+          "options": [
+            {"text": "1h", "value": "1h"},
+            {"text": "6h", "value": "6h"},
+            {"text": "24h", "value": "24h"},
+            {"text": "7d", "value": "7d"},
+            {"text": "30d", "value": "30d"}
+          ]
+        }
+      ]
+    },
+    "refresh": "30s",
+    "time": {"from": "now-24h", "to": "now"},
+    "schemaVersion": 36
+  }
+}

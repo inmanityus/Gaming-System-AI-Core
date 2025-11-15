@@ -14,11 +14,14 @@ from uuid import UUID
 import asyncpg
 from nats.aio.client import Client as NATS
 from loguru import logger
+from prometheus_client import start_http_server
 
 from .detector_base import DetectorFinding, SegmentContext
 from .detectors import create_detector, DETECTOR_CLASSES
 from ..shared.nats_client import get_nats_client
 from ..shared.postgres import get_postgres_pool
+from .data_quality import DataQualityAnalyzer, handle_degraded_input
+from .metrics import AnalyzerMetricsCollector, track_analysis_metrics
 
 
 class VisionAnalyzerService:
@@ -35,6 +38,8 @@ class VisionAnalyzerService:
         self.postgres = postgres_pool
         self.nats = nats_client
         self.config = config or {}
+        self.metrics = AnalyzerMetricsCollector()
+        self.quality_analyzer = DataQualityAnalyzer(config)
         
         # Initialize detectors
         self.detectors = {}
@@ -106,6 +111,7 @@ class VisionAnalyzerService:
         if self.nats and self.nats.is_connected:
             await self.nats.drain()
     
+    @track_analysis_metrics("overall")
     async def analyze_segment(self, segment_id: str) -> Dict[str, Any]:
         """
         Analyze a 4D segment.
@@ -120,6 +126,27 @@ class VisionAnalyzerService:
                 logger.error(f"Segment {segment_id} not found")
                 return {"status": "error", "error": "Segment not found"}
             
+            # Assess data quality
+            quality_assessment = self.quality_analyzer.assess_segment_quality(segment_context)
+            logger.info(f"Segment {segment_id} data quality: {quality_assessment.overall_quality.value}")
+            
+            if not quality_assessment.can_analyze:
+                logger.warning(f"Segment {segment_id} data quality too poor to analyze")
+                # Create data quality finding
+                quality_finding = self.quality_analyzer.create_data_quality_finding(
+                    segment_context, quality_assessment
+                )
+                if quality_finding:
+                    await self._store_finding(segment_id, quality_finding)
+                    await self._publish_issue(segment_context, quality_finding)
+                
+                await self._update_segment_status(segment_id, "failed", "Data quality too poor")
+                return {
+                    "status": "error",
+                    "error": "Data quality too poor to analyze",
+                    "quality_assessment": quality_assessment
+                }
+            
             # Update status to analyzing
             await self._update_segment_status(segment_id, "analyzing")
             
@@ -132,17 +159,33 @@ class VisionAnalyzerService:
                     logger.debug(f"Running {detector_type} detector on segment {segment_id}")
                     
                     findings = await detector.analyze(segment_context)
-                    all_findings.extend(findings)
-                    detector_results[detector_type] = len(findings)
+                    
+                    # Adjust findings based on data quality
+                    adjusted_findings = handle_degraded_input(findings, quality_assessment)
+                    
+                    all_findings.extend(adjusted_findings)
+                    detector_results[detector_type] = len(adjusted_findings)
+                    
+                    # Record metrics
+                    self.metrics.record_findings(adjusted_findings, detector_type)
                     
                     # Store findings
-                    for finding in findings:
+                    for finding in adjusted_findings:
                         await self._store_finding(segment_id, finding)
                         await self._publish_issue(segment_context, finding)
                         
                 except Exception as e:
                     logger.error(f"Error in {detector_type} detector: {e}")
                     detector_results[detector_type] = "error"
+            
+            # Add data quality finding if needed
+            quality_finding = self.quality_analyzer.create_data_quality_finding(
+                segment_context, quality_assessment
+            )
+            if quality_finding:
+                all_findings.append(quality_finding)
+                await self._store_finding(segment_id, quality_finding)
+                await self._publish_issue(segment_context, quality_finding)
             
             # Generate scene summary
             summary = await self._generate_scene_summary(segment_context, all_findings)
@@ -161,7 +204,8 @@ class VisionAnalyzerService:
                 "segment_id": segment_id,
                 "findings_count": len(all_findings),
                 "detector_results": detector_results,
-                "summary": summary
+                "summary": summary,
+                "data_quality": quality_assessment.overall_quality.value
             }
             
         except Exception as e:
@@ -524,24 +568,62 @@ class VisionAnalyzerService:
                 # Check queue depth
                 queue_depth = await self._get_queue_depth()
                 
+                # Check detector health
+                detector_status = await self._check_detector_health()
+                
+                # Check worker health
+                active_workers = sum(1 for w in self._workers if not w.done())
+                
+                # Determine overall status
+                overall_status = "healthy"
+                if not db_healthy or not (self.nats and self.nats.is_connected):
+                    overall_status = "unhealthy"
+                elif any(s == "failed" for s in detector_status.values()):
+                    overall_status = "degraded"
+                elif queue_depth > 100:  # High backlog
+                    overall_status = "degraded"
+                elif active_workers < len(self._workers) * 0.5:  # Half workers down
+                    overall_status = "degraded"
+                
                 health = {
                     "service": "vision_analyzer",
-                    "status": "healthy" if db_healthy else "degraded",
+                    "status": overall_status,
                     "timestamp": datetime.utcnow().isoformat(),
                     "details": {
                         "database": "connected" if db_healthy else "disconnected",
                         "nats": "connected" if self.nats and self.nats.is_connected else "disconnected",
-                        "workers": len(self._workers),
+                        "workers": {
+                            "active": active_workers,
+                            "total": len(self._workers)
+                        },
                         "queue_depth": queue_depth,
-                        "detectors": list(self.detectors.keys())
+                        "detectors": detector_status,
+                        "uptime_seconds": self.metrics.get_uptime_seconds()
                     }
                 }
                 
+                # Publish to standard health topic
                 if self.nats:
                     await self.nats.publish(
                         self.health_subject,
                         json.dumps(health).encode()
                     )
+                    
+                    # Also publish to system health for Coordinator
+                    if overall_status in ["degraded", "unhealthy"]:
+                        system_event = {
+                            "domain": "4d_vision",
+                            "status": overall_status,
+                            "timestamp": datetime.utcnow().isoformat(),
+                            "details": {
+                                "service": "analyzer",
+                                "issues": self._get_health_issues(health)
+                            }
+                        }
+                        await self.nats.publish(
+                            "SYS.HEALTH.4D_VISION",
+                            json.dumps(system_event).encode()
+                        )
                 
                 await asyncio.sleep(30)
                 
@@ -569,10 +651,58 @@ class VisionAnalyzerService:
                 )
         except Exception:
             return -1
+    
+    async def _check_detector_health(self) -> Dict[str, str]:
+        """Check health of individual detectors."""
+        detector_status = {}
+        
+        for name, detector in self.detectors.items():
+            try:
+                # Simple health check - verify detector responds
+                caps = detector.get_capabilities()
+                if caps and isinstance(caps, dict):
+                    detector_status[name] = "operational"
+                else:
+                    detector_status[name] = "degraded"
+            except Exception as e:
+                logger.error(f"Detector {name} health check failed: {e}")
+                detector_status[name] = "failed"
+        
+        return detector_status
+    
+    def _get_health_issues(self, health: Dict[str, Any]) -> List[str]:
+        """Extract specific health issues from health data."""
+        issues = []
+        
+        if health["details"]["database"] != "connected":
+            issues.append("Database connection lost")
+        
+        if health["details"]["nats"] != "connected":
+            issues.append("NATS connection lost")
+        
+        workers = health["details"]["workers"]
+        if workers["active"] < workers["total"]:
+            issues.append(f"Only {workers['active']}/{workers['total']} workers active")
+        
+        if health["details"]["queue_depth"] > 100:
+            issues.append(f"High queue backlog: {health['details']['queue_depth']}")
+        
+        failed_detectors = [
+            name for name, status in health["details"]["detectors"].items() 
+            if status == "failed"
+        ]
+        if failed_detectors:
+            issues.append(f"Failed detectors: {', '.join(failed_detectors)}")
+        
+        return issues
 
 
 async def main():
     """Main entry point for the service."""
+    # Start metrics server
+    start_http_server(8092)
+    logger.info("Metrics server started on port 8092")
+    
     # Initialize resources
     postgres_pool = await get_postgres_pool()
     nats_client = await get_nats_client()

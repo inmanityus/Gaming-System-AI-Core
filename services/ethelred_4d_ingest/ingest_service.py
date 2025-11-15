@@ -15,10 +15,16 @@ from uuid import UUID, uuid4
 import asyncpg
 from nats.aio.client import Client as NATS
 from loguru import logger
+from prometheus_client import start_http_server
 
 from .segment_validator import SegmentValidator
 from ..shared.nats_client import get_nats_client
 from ..shared.postgres import get_postgres_pool
+from .metrics import (
+    IngestMetricsCollector, track_ingest_metrics, track_validation_metrics,
+    ingest_segments_total, segment_duration_summary, ingest_queue_size,
+    validation_failures_total
+)
 
 
 class VisionIngestService:
@@ -36,6 +42,7 @@ class VisionIngestService:
         self.nats = nats_client
         self.validator = SegmentValidator()
         self.config = config or {}
+        self.metrics = IngestMetricsCollector()
         
         # NATS subjects
         self.ingest_subject = "vision.ingest.segment"
@@ -44,6 +51,7 @@ class VisionIngestService:
         
         self._running = False
         self._health_task: Optional[asyncio.Task] = None
+        self._queue_size = 0
     
     async def start(self):
         """Start the ingest service."""
@@ -78,6 +86,7 @@ class VisionIngestService:
         if self.nats and self.nats.is_connected:
             await self.nats.drain()
     
+    @track_ingest_metrics
     async def ingest_segment(self, segment_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Ingest a 4D segment descriptor.
@@ -85,11 +94,17 @@ class VisionIngestService:
         Returns:
             Dict with segment_id and status
         """
+        # Update queue metrics
+        self._queue_size += 1
+        self.metrics.update_queue_size(self._queue_size)
+        
         # Validate segment
         is_valid, errors, normalized = self.validator.validate_segment(segment_data)
         
         if not is_valid:
             logger.error(f"Invalid segment: {errors}")
+            for error in errors:
+                validation_failures_total.labels(failure_reason=error).inc()
             return {
                 "status": "error",
                 "errors": errors
@@ -98,6 +113,9 @@ class VisionIngestService:
         # Generate segment ID
         segment_id = normalized.get("segment_id") or str(uuid4())
         normalized["segment_id"] = segment_id
+        
+        # Record segment metrics
+        self.metrics.record_segment_ingested(normalized)
         
         try:
             # Store in database
@@ -121,6 +139,10 @@ class VisionIngestService:
                 "status": "error",
                 "errors": [str(e)]
             }
+        finally:
+            # Update queue size
+            self._queue_size = max(0, self._queue_size - 1)
+            self.metrics.update_queue_size(self._queue_size)
     
     async def _handle_segment_ingest(self, msg):
         """Handle segment ingest from NATS."""
@@ -271,6 +293,10 @@ class VisionIngestService:
 
 async def main():
     """Main entry point for the service."""
+    # Start metrics server
+    start_http_server(8091)
+    logger.info("Metrics server started on port 8091")
+    
     # Initialize resources
     postgres_pool = await get_postgres_pool()
     nats_client = await get_nats_client()
