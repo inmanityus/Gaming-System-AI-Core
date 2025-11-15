@@ -14,9 +14,10 @@ from nats.aio.client import Client as NATS
 from .story_schemas import (
     StoryEvent, ArcBeatReachedEvent, QuestCompletedEvent,
     ExperienceCompletedEvent, RelationshipChangedEvent,
-    ArcRole, ProgressState
+    ArcRole, ProgressState, StoryDecision, DriftType
 )
 from .story_state_manager import StoryStateManager
+from .story_config import EVENT_TYPE_HANDLERS, story_config
 
 
 class EventIngestor:
@@ -35,15 +36,16 @@ class EventIngestor:
         
     async def start(self):
         """Start listening for story events."""
-        # Subscribe to story event subjects
-        await self.nc.subscribe("story.events.arc_beat_reached", self._handle_arc_beat)
-        await self.nc.subscribe("story.events.quest_completed", self._handle_quest_completed)
-        await self.nc.subscribe("story.events.experience_completed", self._handle_experience_completed)
-        await self.nc.subscribe("story.events.relationship_changed", self._handle_relationship_changed)
-        await self.nc.subscribe("story.events.decision_made", self._handle_decision_made)
-        await self.nc.subscribe("story.events.world_state_changed", self._handle_world_state_changed)
+        # Subscribe to all configured event types
+        for event_type, handler_name in EVENT_TYPE_HANDLERS.items():
+            subject = f"story.events.{event_type}"
+            await self.nc.subscribe(subject, self._handle_generic_event)
+            logger.debug(f"Subscribed to {subject}")
         
-        logger.info("Story event ingestor started")
+        # Also subscribe to generic story events
+        await self.nc.subscribe("story.events.>", self._handle_generic_event)
+        
+        logger.info("Story event ingestor started and subscribed to all event types")
     
     async def _handle_arc_beat(self, msg):
         """Handle arc beat reached events."""
@@ -159,7 +161,6 @@ class EventIngestor:
             data = json.loads(msg.data.decode())
             
             # Extract decision data and create StoryDecision
-            from .story_schemas import StoryDecision
             
             decision = StoryDecision(
                 decision_id=data['decision_id'],
@@ -265,12 +266,259 @@ class EventIngestor:
         # Used by drift detector to identify off-theme content
         pass
     
+    async def _handle_generic_event(self, msg):
+        """Generic event handler that routes to specific handlers."""
+        try:
+            # Extract event type from subject
+            parts = msg.subject.split('.')
+            if len(parts) >= 3:
+                event_type = '.'.join(parts[2:])
+            else:
+                logger.warning(f"Invalid event subject: {msg.subject}")
+                return
+            
+            # Route to appropriate handler
+            handler_name = EVENT_TYPE_HANDLERS.get(event_type)
+            if handler_name and hasattr(self, f"_{handler_name}"):
+                handler = getattr(self, f"_{handler_name}")
+                await handler(msg)
+            else:
+                # Store as generic event
+                data = json.loads(msg.data.decode())
+                if 'player_id' in data:
+                    event = StoryEvent(
+                        player_id=UUID(data['player_id']),
+                        session_id=UUID(data['session_id']) if data.get('session_id') else None,
+                        event_type=event_type,
+                        event_data=data
+                    )
+                    await self._store_event(event)
+                    logger.debug(f"Stored generic event: {event_type}")
+        
+        except Exception as e:
+            logger.error(f"Error handling generic event: {e}")
+    
+    async def _handle_arc_started(self, msg):
+        """Handle arc started events."""
+        try:
+            data = json.loads(msg.data.decode())
+            
+            await self.story_manager.update_arc_progress(
+                player_id=UUID(data['player_id']),
+                arc_id=data['arc_id'],
+                arc_role=ArcRole(data.get('arc_role', 'main_arc')),
+                progress_state=ProgressState.EARLY,
+                last_beat_id=data.get('start_beat_id')
+            )
+            
+            # Initialize arc tracking
+            await self._initialize_arc_tracking(
+                UUID(data['player_id']), 
+                data['arc_id']
+            )
+            
+        except Exception as e:
+            logger.error(f"Error processing arc started: {e}")
+    
+    async def _handle_arc_completed(self, msg):
+        """Handle arc completed events."""
+        try:
+            data = json.loads(msg.data.decode())
+            
+            await self.story_manager.update_arc_progress(
+                player_id=UUID(data['player_id']),
+                arc_id=data['arc_id'],
+                arc_role=ArcRole(data.get('arc_role', 'main_arc')),
+                progress_state=ProgressState.COMPLETED,
+                last_beat_id=data.get('final_beat_id')
+            )
+            
+            # Check for narrative implications
+            await self._check_arc_completion_effects(
+                UUID(data['player_id']),
+                data['arc_id']
+            )
+            
+        except Exception as e:
+            logger.error(f"Error processing arc completed: {e}")
+    
+    async def _handle_moral_choice(self, msg):
+        """Handle moral choice events."""
+        try:
+            data = json.loads(msg.data.decode())
+            
+            # Update surgeon-butcher score
+            moral_weight = data.get('moral_weight', 0.0)
+            if moral_weight != 0:
+                await self._update_moral_alignment(
+                    UUID(data['player_id']),
+                    moral_weight
+                )
+            
+            # Store as decision
+            decision = StoryDecision(
+                decision_id=data['decision_id'],
+                arc_id=data.get('arc_id'),
+                choice=data['choice'],
+                moral_weight=moral_weight,
+                consequences=data.get('consequences', {})
+            )
+            
+            await self.story_manager.record_decision(
+                player_id=UUID(data['player_id']),
+                session_id=UUID(data['session_id']) if data.get('session_id') else None,
+                decision=decision
+            )
+            
+        except Exception as e:
+            logger.error(f"Error processing moral choice: {e}")
+    
+    async def _handle_player_death(self, msg):
+        """Handle player death events."""
+        try:
+            data = json.loads(msg.data.decode())
+            player_id = UUID(data['player_id'])
+            
+            # Update debt of flesh state
+            async with self.postgres.acquire() as conn:
+                await conn.execute(
+                    """
+                    UPDATE story_players
+                    SET debt_of_flesh_state = jsonb_set(
+                        debt_of_flesh_state,
+                        '{death_count}',
+                        COALESCE(debt_of_flesh_state->>'death_count', '0')::int + 1
+                    ),
+                    updated_at = CURRENT_TIMESTAMP
+                    WHERE player_id = $1
+                    """,
+                    player_id
+                )
+            
+            # Store death event
+            event = StoryEvent(
+                player_id=player_id,
+                session_id=UUID(data['session_id']) if data.get('session_id') else None,
+                event_type='player.death',
+                event_data={
+                    'cause': data.get('cause', 'unknown'),
+                    'location': data.get('location'),
+                    'timestamp': data.get('timestamp')
+                }
+            )
+            await self._store_event(event)
+            
+        except Exception as e:
+            logger.error(f"Error processing player death: {e}")
+    
+    async def _handle_soul_echo(self, msg):
+        """Handle Soul Echo encounter events."""
+        try:
+            data = json.loads(msg.data.decode())
+            player_id = UUID(data['player_id'])
+            
+            # Update debt of flesh state
+            async with self.postgres.acquire() as conn:
+                await conn.execute(
+                    """
+                    UPDATE story_players
+                    SET debt_of_flesh_state = jsonb_set(
+                        debt_of_flesh_state,
+                        '{soul_echoes}',
+                        debt_of_flesh_state->'soul_echoes' || $1::jsonb
+                    ),
+                    updated_at = CURRENT_TIMESTAMP
+                    WHERE player_id = $2
+                    """,
+                    json.dumps([{
+                        'echo_id': data['echo_id'],
+                        'encountered_at': data['timestamp'],
+                        'resolved': data.get('resolved', False)
+                    }]),
+                    player_id
+                )
+            
+        except Exception as e:
+            logger.error(f"Error processing soul echo: {e}")
+    
+    async def _initialize_arc_tracking(self, player_id: UUID, arc_id: str) -> None:
+        """Initialize tracking for a new arc."""
+        # Set up time tracking for drift detection
+        tracking_key = f"arc_time:{player_id}:{arc_id}"
+        await self.story_manager.redis.hset(
+            tracking_key,
+            mapping={
+                'started_at': datetime.utcnow().isoformat(),
+                'last_activity': datetime.utcnow().isoformat(),
+                'total_time_seconds': '0'
+            }
+        )
+        await self.story_manager.redis.expire(tracking_key, 86400 * 7)  # 7 days
+    
+    async def _check_arc_completion_effects(self, player_id: UUID, arc_id: str) -> None:
+        """Check narrative effects of completing an arc."""
+        # This would trigger downstream narrative changes
+        # e.g., unlocking new arcs, changing world state
+        logger.info(f"Arc {arc_id} completed for player {player_id}")
+        
+        # Publish arc completion for other systems
+        await self.nc.publish(
+            "story.arc.completed",
+            json.dumps({
+                'player_id': str(player_id),
+                'arc_id': arc_id,
+                'timestamp': datetime.utcnow().isoformat()
+            }).encode()
+        )
+    
+    async def _update_moral_alignment(self, player_id: UUID, moral_delta: float) -> None:
+        """Update player's surgeon-butcher alignment."""
+        async with self.postgres.acquire() as conn:
+            # Clamp between -1.0 and 1.0
+            await conn.execute(
+                """
+                UPDATE story_players
+                SET surgeon_butcher_score = LEAST(1.0, GREATEST(-1.0, 
+                    surgeon_butcher_score + $1
+                )),
+                updated_at = CURRENT_TIMESTAMP
+                WHERE player_id = $2
+                """,
+                moral_delta,
+                player_id
+            )
+    
     async def _check_world_story_conflicts(
         self,
         player_id: UUID,
         world_changes: Dict[str, Any]
     ) -> None:
         """Check for conflicts between world state and story memory."""
-        # This would cross-check world changes against story memory
-        # e.g., NPC marked dead in world but alive in story
-        pass
+        conflicts = []
+        
+        # Check NPC death conflicts
+        if 'npc_deaths' in world_changes:
+            story_snapshot = await self.story_manager.get_story_snapshot(player_id)
+            for npc_id in world_changes['npc_deaths']:
+                # Check if player has recent interactions with dead NPC
+                if npc_id in story_snapshot.relationships:
+                    rel = story_snapshot.relationships[npc_id]
+                    if (datetime.utcnow() - rel.last_update_at).total_seconds() < 600:  # 10 min
+                        conflicts.append({
+                            'type': 'dead_npc_interaction',
+                            'npc_id': npc_id,
+                            'severity': 'high'
+                        })
+        
+        # Emit conflict alerts
+        for conflict in conflicts:
+            await self.nc.publish(
+                "story.conflict.detected",
+                json.dumps({
+                    'player_id': str(player_id),
+                    'conflict': conflict,
+                    'timestamp': datetime.utcnow().isoformat()
+                }).encode()
+            )
+            
+            logger.warning(f"Story conflict detected: {conflict['type']} for player {player_id}")

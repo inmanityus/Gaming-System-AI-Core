@@ -2,6 +2,7 @@
 Drift & Conflict Detector - Analyzes story state for narrative drift and conflicts.
 """
 import asyncio
+import json
 from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple, Any

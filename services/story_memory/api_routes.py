@@ -8,9 +8,10 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 
-from .story_schemas import StorySnapshot, DriftMetrics
+from .story_schemas import StorySnapshot, DriftMetrics, StoryDecision
 from .story_state_manager import StoryStateManager
 from .drift_detector import DriftDetector
+from .snapshot_cache import SnapshotCache
 
 
 router = APIRouter(prefix="/story", tags=["story_memory"])
@@ -35,6 +36,7 @@ class DriftCheckResponse(BaseModel):
 # Dependencies would be injected in the actual service
 story_manager: Optional[StoryStateManager] = None
 drift_detector: Optional[DriftDetector] = None
+snapshot_cache: Optional[SnapshotCache] = None
 
 
 def get_story_manager() -> StoryStateManager:
@@ -51,19 +53,32 @@ def get_drift_detector() -> DriftDetector:
     return drift_detector
 
 
+def get_snapshot_cache() -> SnapshotCache:
+    """Get snapshot cache instance."""
+    if not snapshot_cache:
+        raise HTTPException(status_code=500, detail="Snapshot cache not initialized")
+    return snapshot_cache
+
+
 @router.get("/{player_id}/snapshot", response_model=StorySnapshot)
 async def get_story_snapshot(
     player_id: UUID,
-    story_mgr: StoryStateManager = Depends(get_story_manager)
+    force_refresh: bool = False,
+    cache: SnapshotCache = Depends(get_snapshot_cache)
 ):
     """
     Get complete story snapshot for a player.
     
     Used by Story Teller and Ethelred to get current narrative context.
+    Optimized for < 50ms P99 latency via multi-tier caching.
     """
     try:
-        snapshot = await story_mgr.get_story_snapshot(player_id)
+        snapshot = await cache.get_snapshot(player_id, force_refresh=force_refresh)
+        if not snapshot:
+            raise HTTPException(status_code=404, detail="Player not found")
         return snapshot
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get snapshot: {str(e)}")
 
@@ -174,3 +189,75 @@ async def get_dark_world_standings(
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get standings: {str(e)}")
+
+
+@router.get("/{player_id}/moral-alignment")
+async def get_moral_alignment(
+    player_id: UUID,
+    cache: SnapshotCache = Depends(get_snapshot_cache)
+):
+    """Get player's surgeon-butcher moral alignment."""
+    try:
+        snapshot = await cache.get_snapshot(player_id)
+        if not snapshot:
+            raise HTTPException(status_code=404, detail="Player not found")
+        
+        score = snapshot.surgeon_butcher_score
+        
+        # Interpret the score
+        if score <= -0.7:
+            alignment = "Full Surgeon"
+            description = "Methodical, clinical, preserving humanity"
+        elif score <= -0.3:
+            alignment = "Leaning Surgeon"
+            description = "Careful harvesting with moral considerations"
+        elif score >= 0.7:
+            alignment = "Full Butcher"
+            description = "Brutal efficiency, humanity discarded"
+        elif score >= 0.3:
+            alignment = "Leaning Butcher"
+            description = "Pragmatic harvesting, morality secondary"
+        else:
+            alignment = "Balanced"
+            description = "Walking the line between mercy and brutality"
+        
+        # Calculate moral trend
+        recent_decisions = snapshot.recent_decisions[:5]
+        total_weight = sum(d.moral_weight for d in recent_decisions) if recent_decisions else 0
+        
+        if total_weight > 0.5:
+            trend = "becoming_more_butcher"
+        elif total_weight < -0.5:
+            trend = "becoming_more_surgeon"
+        else:
+            trend = "stable"
+        
+        return {
+            "score": score,
+            "alignment": alignment,
+            "description": description,
+            "recent_trend": trend
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get moral alignment: {str(e)}")
+
+
+@router.get("/cache/stats")
+async def get_cache_stats(
+    cache: SnapshotCache = Depends(get_snapshot_cache)
+):
+    """Get snapshot cache statistics."""
+    return cache.get_stats()
+
+
+@router.post("/cache/warm")
+async def warm_cache(
+    player_ids: list[UUID],
+    cache: SnapshotCache = Depends(get_snapshot_cache)
+):
+    """Pre-warm cache for specified players."""
+    await cache.warm_cache(player_ids)
+    return {"status": "Cache warming initiated", "player_count": len(player_ids)}
