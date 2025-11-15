@@ -1,0 +1,189 @@
+syntax = "proto3";
+
+package ethelred.vision.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+
+// Canonical event envelope for all ETHELRED events (R-SYS-OBS-001)
+message EventEnvelope {
+  string trace_id = 1;
+  string session_id = 2;
+  string player_id = 3;  // Optional for test runs
+  string build_id = 4;
+  
+  google.protobuf.Timestamp start_timestamp = 5;
+  google.protobuf.Timestamp end_timestamp = 6;
+  
+  string domain = 7;  // "4D" for all vision events
+  repeated string goal_tags = 8;  // G-IMMERSION, G-HORROR, G-MORAL, G-LONGTERM
+}
+
+// Camera configuration for 4D capture
+message CameraConfig {
+  string camera_id = 1;
+  string camera_type = 2;  // player_pov, debug, test, cinematic
+  float fov = 3;
+  repeated float position = 4;  // x, y, z
+  repeated float rotation = 5;  // pitch, yaw, roll
+}
+
+// Gameplay event marker within a segment
+message GameplayEvent {
+  string event_id = 1;
+  string event_type = 2;  // damage_taken, death, scare_moment, boss_encounter
+  google.protobuf.Timestamp timestamp = 3;
+  map<string, string> metadata = 4;
+}
+
+// Performance metrics for a segment
+message PerformanceMetrics {
+  float avg_fps = 1;
+  float min_fps = 2;
+  float max_fps = 3;
+  float frame_time_variance = 4;
+  float gpu_utilization = 5;
+  float cpu_utilization = 6;
+  int64 draw_calls = 7;
+  int64 triangles_rendered = 8;
+}
+
+// 4D Segment descriptor (R-4D-IN-001, R-4D-IN-002)
+message Segment4D {
+  string segment_id = 1;
+  EventEnvelope envelope = 2;
+  
+  // Scene context
+  string scene_id = 3;
+  string level_name = 4;
+  string test_scenario = 5;
+  
+  // Capture configuration
+  repeated CameraConfig cameras = 6;
+  string sampling_mode = 7;  // frame_level, window_based, event_based
+  int32 frame_count = 8;
+  google.protobuf.Duration duration = 9;
+  
+  // Media references (not raw data)
+  map<string, string> media_uris = 10;  // camera_id -> S3/storage URI
+  map<string, string> depth_uris = 11;  // camera_id -> depth map URI
+  
+  // Gameplay context
+  repeated GameplayEvent events = 12;
+  PerformanceMetrics performance = 13;
+  
+  // Metadata
+  map<string, string> metadata = 14;
+}
+
+// Request to analyze a 4D segment
+message AnalyzeRequest {
+  Segment4D segment = 1;
+  repeated string detector_types = 2;  // Which detectors to run
+  map<string, string> analysis_params = 3;
+}
+
+// Detection finding from a specific detector
+message DetectorFinding {
+  string detector_type = 1;  // animation, physics, rendering, lighting, performance, flow
+  string issue_id = 2;
+  string issue_type = 3;  // e.g., t_pose, clipping, z_fighting, darkness_too_deep
+  
+  float severity = 4;  // 0.0-1.0
+  float confidence = 5;  // 0.0-1.0
+  
+  // Location in 4D space
+  google.protobuf.Timestamp timestamp = 6;
+  string camera_id = 7;
+  repeated float screen_coords = 8;  // normalized 0-1
+  repeated float world_coords = 9;   // game world coordinates
+  
+  // Evidence
+  string description = 10;
+  repeated string evidence_refs = 11;  // URIs to specific frames/clips
+  map<string, float> metrics = 12;    // Detector-specific measurements
+}
+
+// 4D Vision issue event (R-4D-OUT-001)
+message VisionIssue {
+  EventEnvelope envelope = 1;
+  string segment_id = 2;
+  
+  DetectorFinding finding = 3;
+  
+  // Impact assessment
+  repeated string affected_goals = 4;  // Which game goals are impacted
+  float player_impact = 5;  // Estimated impact on player experience
+  
+  // Explainability (R-SYS-SAFE-004)
+  string explanation = 6;
+  map<string, string> threshold_details = 7;
+}
+
+// Scene-level summary (R-4D-OUT-002)
+message SceneSummary {
+  EventEnvelope envelope = 1;
+  string scene_id = 2;
+  
+  // Aggregate metrics
+  int32 total_segments = 3;
+  int32 analyzed_segments = 4;
+  
+  // Issue breakdown by detector
+  map<string, int32> issue_counts = 5;  // detector_type -> count
+  map<string, float> avg_severities = 6;  // detector_type -> avg severity
+  
+  // Key findings
+  repeated string critical_issues = 7;
+  repeated string recurring_patterns = 8;
+  
+  // Overall scores
+  float visual_quality_score = 9;  // 0.0-1.0
+  float horror_atmosphere_score = 10;  // 0.0-1.0
+  float technical_stability_score = 11;  // 0.0-1.0
+}
+
+// Coverage report (R-4D-OUT-003)
+message CoverageReport {
+  EventEnvelope envelope = 1;
+  string build_id = 2;
+  
+  // Coverage metrics
+  int32 total_scenes = 3;
+  int32 analyzed_scenes = 4;
+  float coverage_percentage = 5;
+  
+  // Breakdown by scene type
+  map<string, float> coverage_by_type = 6;  // horror_scene, combat_scene, etc.
+  
+  // Missing coverage
+  repeated string unanalyzed_scenes = 7;
+  repeated string partial_coverage_scenes = 8;
+}
+
+// Trend analysis
+message TrendReport {
+  EventEnvelope envelope = 1;
+  string build_id = 2;
+  string comparison_build_id = 3;
+  
+  // Regression/improvement tracking
+  message TrendItem {
+    string metric_name = 1;
+    float previous_value = 2;
+    float current_value = 3;
+    float change_percentage = 4;
+    string trend_direction = 5;  // improved, regressed, stable
+  }
+  
+  repeated TrendItem trends = 4;
+  repeated string regression_alerts = 5;
+}
+
+// Service health status
+message HealthStatus {
+  string service = 1;
+  string status = 2;  // healthy, degraded, unhealthy
+  string message = 3;
+  google.protobuf.Timestamp timestamp = 4;
+}
