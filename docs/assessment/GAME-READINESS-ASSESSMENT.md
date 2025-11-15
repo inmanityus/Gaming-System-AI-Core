@@ -21,14 +21,14 @@ High-level view of each ETHELRED domain as of this session:
 | Domain                                      | Code Implemented?                          | Tests Implemented?                    | Requirements & Solutions? | Phase 4 Tasks? | Readiness (ETHELRED-specific)      |
 |---------------------------------------------|--------------------------------------------|--------------------------------------|----------------------------|----------------|------------------------------------|
 | 4D Vision QA                                | ❌ None                                    | ❌ None                              | ✅ v2 reqs + v0.2 solutions | ✅ Tasks v0.1  | **Design-only**                    |
-| Audio Auth & Vocal Simulator QA             | ❌ None                                    | ❌ None                              | ✅ v2 reqs + v0.2 solutions | ✅ Tasks v0.1  | **Design-only**                    |
+| Audio Auth & Vocal Simulator QA             | 🔶 Milestones 1-2 complete                 | 🔶 Unit/integration tests            | ✅ v2 reqs + v0.2 solutions | ✅ Tasks v0.1  | **Partially implemented**          |
 | Engagement & Addiction Analytics            | ❌ None                                    | ❌ None                              | ✅ v2 reqs + v0.1 solutions | ✅ Tasks v0.1  | **Design-only**                    |
 | Content Governance & Content Levels         | ✅ Complete (All milestones)               | ✅ Comprehensive test coverage       | ✅ v2 reqs + v0.1 solutions | ✅ Tasks v0.1  | **Fully implemented**              |
 | Story Memory System                         | ✅ Complete (All milestones)               | ✅ Comprehensive test coverage       | ✅ v2 reqs + v0.1 solutions | ✅ Tasks v0.1  | **Fully implemented**              |
 | Multi-Language Experience                   | ❌ None                                    | ❌ None                              | ✅ v2 reqs + v0.1 solutions | ✅ Tasks v0.1  | **Design-only**                    |
 | Website / Social AI                         | ❌ None                                    | ❌ None                              | ✅ Placeholder v0.2         | ✅ Scope tasks | **Scoped, explicitly deferred**    |
 
-> **Interpretation**: ETHELRED is **architecturally specified** across all seven domains, with **Content Governance having Milestones 1–4 fully implemented** and **Story Memory System completely implemented (all milestones)**. The other five domains remain design-only. The underlying game stack (NATS, core services, vocal synthesis, backend security) is production-grade per existing handoffs. ETHELRED is transitioning from **"well-designed but largely unbuilt"** to **"partially operational"** with two critical subsystems now ready for AWS deployment.
+> **Interpretation**: ETHELRED is **architecturally specified** across all seven domains, with **Content Governance having Milestones 1–4 fully implemented**, **Story Memory System completely implemented (all milestones)**, and **Audio Authentication with Milestones 1-2 complete**. The other four domains remain design-only. The underlying game stack (NATS, core services, vocal synthesis, backend security) is production-grade per existing handoffs. ETHELRED is transitioning from **"well-designed but largely unbuilt"** to **"partially operational"** with three subsystems now ready for AWS deployment.
 
 ---
 
@@ -72,28 +72,36 @@ Each subsection answers:
 
 ### 2.2 Audio Authentication & Vocal Simulator QA
 
-- **Implemented Today**
+- **Implemented Today (Milestones 1-2 Complete)**
   - Vocal Synthesis DSP library and UE5 integration are production-ready (see `Master Test Registry` – 62/62 tests).
-  - However, **no Ethelred audio QA services** (`svc.ethelred.audio.*`) or audio QA schemas exist; current validation is primarily unit/integration-level DSP tests, not ETHELRED-level scoring.
+  - **ETHELRED audio QA foundation now exists:**
+    - Protobuf definitions in `proto/ethelred_audio.proto` for all AUDIO.* events (TAUD-01)
+    - Database schema (`014_audio_authentication.sql`) with full segment/score/report/feedback tables (TAUD-02)
+    - Audio capture service (`ethelred_audio_capture`) with virtual routing, segmentation, and metadata enrichment (TAUD-03)
+    - Virtual audio routing specification for UE5 integration (TAUD-04)
+    - UE5 integration test harness demonstrating multi-bus capture flow (TAUD-05)
+    - Audio metrics service (`ethelred_audio_metrics`) with stub scoring pipeline for all metrics (TAUD-06)
+    - End-to-end pipeline validated: capture → NATS → metrics → scores → database
 
-- **Designed & Planned**
-  - Requirements: `ETHELRED-COMPREHENSIVE-REQUIREMENTS.md` §3 defines metrics for intelligibility, naturalness, archetype conformity, simulator stability, mix quality, and reports/feedback.
-  - Solutions: `ETHELRED-AUDIO-AUTH-SOLUTIONS.md` defines capture, metrics, reports, feedback services, and event schemas.
-  - Tasks: `docs/tasks/ETHELRED-AUDIO-AUTH-TASKS.md` (TAUD-01…13) specify:
-    - AUDIO.* contracts and DB schemas,
-    - capture + metrics + reports + feedback services,
-    - human-speech baselines and archetype profiles,
-    - observability and non-predatory usage checks, plus traceability/readiness.
+- **Designed & Awaiting Implementation (Milestones 3-4)**
+  - Real metric implementations to replace stubs (intelligibility, naturalness, archetype conformity)
+  - Audio aggregation and batch reporting service (TAUD-09)
+  - Feedback service for simulator/archetype recommendations (TAUD-10)
+  - Human speech baselines and archetype voice profiles
+  - Observability dashboards and SLO monitoring (TAUD-11)
+  - Non-predatory usage validation and failure mode testing (TAUD-12)
 
 - **Key Gaps & Risks**
-  - **No ETHELRED audio QA**: No scoring of game audio beyond local DSP tests; no Red Alert sections for audio health per build/language/archetype.
-  - **No adversarial audio tests at system level**: Existing tests validate DSP correctness but not misalignment with archetypes or intelligibility at the game mix level.
-  - **Non-predatory constraints**: Need strong guardrails to ensure metrics are only used for cohort-level tuning, not per-player manipulation.
+  - **Stub metrics only**: Current implementation uses placeholder algorithms; need real DSP/ML implementations
+  - **No aggregation/reporting**: Per-segment scores exist but no build-level reports for Red Alert yet
+  - **Baseline profiles missing**: Need to populate reference data for languages and archetypes
+  - **AWS deployment pending**: Services tested locally but need cloud deployment
 
-- **Next Steps (Phase 4+)**
-  - Implement capture → metrics → reporting pipeline per TAUD-01…09 using existing DSP artifacts as ground truth.
-  - Add audio QA suites to `MASTER-TEST-REGISTRY.md` and integrate into `/test-comprehensive`, including adversarial test sets.
-  - Run architecture/safety review for TAUD-12 before connecting audio metrics to any configuration pipeline.
+- **Next Steps**
+  - Continue with Milestones 3-4: implement real metrics, reports, feedback
+  - Populate baseline profiles from LibriSpeech/CommonVoice/VCTK corpora
+  - Deploy services to AWS and integrate with production NATS cluster
+  - Add audio QA suites to Master Test Registry with adversarial tests
 
 ---
 
@@ -299,7 +307,11 @@ The v2.0 requirements docs for ETHELRED and related systems are **highly impleme
 
 - ETHELRED is **architecturally complete on paper** (v2 requirements + Phase 3 solutions across all seven domains).  
 - Phase 4 task docs now provide **concrete, testable implementation plans** for each domain (`docs/tasks/ETHELRED-*.md`, `docs/tasks/WEBSITE-SOCIAL-AI-TASKS.md`).  
-- **Content Governance & Content Levels now has a first partial implementation slice (Milestones 1–2 baseline)** – schemas/migrations, Content Level Manager + session snapshots in Settings, Content Validator skeleton, and unit/logic-level tests are in place – while all other ETHELRED domains remain design-only.
+- **Three ETHELRED domains now have implementations:**
+  - **Content Governance & Content Levels**: Full implementation (all milestones)
+  - **Story Memory System**: Full implementation (all milestones) 
+  - **Audio Authentication**: Partial implementation (Milestones 1-2 complete with capture/metrics pipeline)
+- All other ETHELRED domains (4D Vision, Engagement, Multi-Language, Website/Social) remain design-only.
 
 Until at least one vertical slice (e.g., **Content Governance + 4D Vision + Audio QA + Story Memory for a small set of scenes**) is implemented and green in `/test-comprehensive`, ETHELRED should be treated as **pre-production design** rather than a live quality gate for The Body Broker.
 

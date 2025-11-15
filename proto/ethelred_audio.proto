@@ -1,0 +1,276 @@
+syntax = "proto3";
+
+package ethelred.audio;
+
+import "google/protobuf/timestamp.proto";
+
+// Canonical envelope for all Ethelred events (as per R-SYS-OBS-001)
+message CanonicalEnvelope {
+    string trace_id = 1;
+    string session_id = 2;
+    string player_id = 3;  // Optional, pseudonymized
+    string build_id = 4;
+    TimeRange timestamp_range = 5;
+    string domain = 6;  // Always "Audio" for this domain
+    string issue_type = 7;
+    Severity severity = 8;
+    float confidence = 9;  // 0.0-1.0
+    repeated string evidence_refs = 10;  // Media URIs
+    repeated string goal_tags = 11;  // e.g., ["G-IMMERSION", "G-HORROR"]
+}
+
+message TimeRange {
+    google.protobuf.Timestamp start = 1;
+    google.protobuf.Timestamp end = 2;
+}
+
+enum Severity {
+    SEVERITY_UNSPECIFIED = 0;
+    SEVERITY_INFO = 1;
+    SEVERITY_WARNING = 2;
+    SEVERITY_ERROR = 3;
+    SEVERITY_CRITICAL = 4;
+}
+
+// Segment types for audio analysis
+enum SegmentType {
+    SEGMENT_TYPE_UNSPECIFIED = 0;
+    SEGMENT_TYPE_DIALOGUE = 1;
+    SEGMENT_TYPE_MONSTER_VOCALIZATION = 2;
+    SEGMENT_TYPE_AMBIENT = 3;
+    SEGMENT_TYPE_MIXED_BUS = 4;
+}
+
+// Speaker roles
+enum SpeakerRole {
+    SPEAKER_ROLE_UNSPECIFIED = 0;
+    SPEAKER_ROLE_NPC = 1;
+    SPEAKER_ROLE_NARRATOR = 2;
+    SPEAKER_ROLE_PLAYER = 3;
+}
+
+// Band classifications
+enum IntelligibilityBand {
+    INTELLIGIBILITY_UNSPECIFIED = 0;
+    INTELLIGIBILITY_ACCEPTABLE = 1;
+    INTELLIGIBILITY_DEGRADED = 2;
+    INTELLIGIBILITY_UNACCEPTABLE = 3;
+}
+
+enum NaturalnessBand {
+    NATURALNESS_UNSPECIFIED = 0;
+    NATURALNESS_OK = 1;
+    NATURALNESS_ROBOTIC = 2;
+    NATURALNESS_MONOTONE = 3;
+}
+
+enum ArchetypeBand {
+    ARCHETYPE_UNSPECIFIED = 0;
+    ARCHETYPE_ON_PROFILE = 1;
+    ARCHETYPE_TOO_CLEAN = 2;
+    ARCHETYPE_TOO_FLAT = 3;
+    ARCHETYPE_MISALIGNED = 4;
+}
+
+enum StabilityBand {
+    STABILITY_UNSPECIFIED = 0;
+    STABILITY_STABLE = 1;
+    STABILITY_UNSTABLE = 2;
+}
+
+enum MixQualityBand {
+    MIX_QUALITY_UNSPECIFIED = 0;
+    MIX_QUALITY_OK = 1;
+    MIX_QUALITY_NOISY = 2;
+    MIX_QUALITY_CLIPPING = 3;
+    MIX_QUALITY_UNBALANCED = 4;
+}
+
+// Speaker information
+message Speaker {
+    string speaker_id = 1;
+    SpeakerRole role = 2;
+    string archetype_id = 3;  // Optional, e.g., "vampire_house_alpha"
+}
+
+// Context metadata for audio segments
+message SegmentContext {
+    string line_id = 1;  // Optional dialogue line ID
+    string scene_id = 2;
+    string experience_id = 3;
+    string emotional_tag = 4;  // e.g., "panic", "calm", "menace"
+    string environment_type = 5;  // e.g., "storm_bridge", "hospital"
+}
+
+// AUDIO.SEGMENT_CREATED event (from capture service to metrics service)
+message SegmentCreatedEvent {
+    CanonicalEnvelope envelope = 1;
+    
+    string segment_id = 2;
+    SegmentType segment_type = 3;
+    Speaker speaker = 4;
+    string language_code = 5;  // e.g., "en-US"
+    SegmentContext context = 6;
+    bool simulator_applied = 7;
+    
+    // Technical capture details
+    string media_uri = 8;  // e.g., "redalert://media/audio/{build_id}/{segment_id}.ogg"
+    int32 sample_rate = 9;
+    int32 bit_depth = 10;
+    int32 channels = 11;
+    float duration_seconds = 12;
+    
+    // Capture metadata
+    string bus_name = 13;  // Which audio bus this came from
+    map<string, string> additional_metadata = 14;
+}
+
+// Scores for a single audio segment
+message SegmentScores {
+    float intelligibility = 1;  // 0.0-1.0
+    float naturalness = 2;      // 0.0-1.0
+    float archetype_conformity = 3;  // 0.0-1.0
+    float simulator_stability = 4;   // 0.0-1.0
+    float mix_quality = 5;          // 0.0-1.0
+}
+
+// Band classifications for scores
+message ScoreBands {
+    IntelligibilityBand intelligibility = 1;
+    NaturalnessBand naturalness = 2;
+    ArchetypeBand archetype_conformity = 3;
+    StabilityBand simulator_stability = 4;
+    MixQualityBand mix_quality = 5;
+}
+
+// AUDIO.SCORES event (per-segment scoring results)
+message AudioScoresEvent {
+    CanonicalEnvelope envelope = 1;
+    
+    string segment_id = 2;
+    SegmentType segment_type = 3;
+    Speaker speaker = 4;
+    string language_code = 5;
+    SegmentContext context = 6;
+    bool simulator_applied = 7;
+    
+    SegmentScores scores = 8;
+    ScoreBands bands = 9;
+    
+    // Additional analysis details
+    map<string, float> additional_metrics = 10;  // e.g., SNR, pitch variability
+}
+
+// Summary statistics for a group of segments
+message SegmentGroupSummary {
+    int32 num_segments = 1;
+    
+    // Score distributions
+    map<string, float> intelligibility_distribution = 2;  // band -> percentage
+    float naturalness_mean = 3;
+    float archetype_conformity_mean = 4;
+    float simulator_stability_mean = 5;
+    float mix_quality_mean = 6;
+    
+    // Common issues
+    repeated string common_deviations = 7;
+}
+
+// Comparison with previous build
+message BuildComparison {
+    string prev_build_id = 1;
+    float archetype_conformity_delta = 2;
+    float simulator_stability_delta = 3;
+    float intelligibility_delta = 4;
+    string notes = 5;
+}
+
+// AUDIO.REPORT event (batch reports per archetype/language/build)
+message AudioReportEvent {
+    CanonicalEnvelope envelope = 1;
+    
+    string report_id = 2;
+    string build_id = 3;
+    string archetype_id = 4;  // Optional, if archetype-specific
+    string language_code = 5;  // Optional, if language-specific
+    string scene_id = 6;      // Optional, if scene-specific
+    
+    SegmentGroupSummary summary = 7;
+    BuildComparison comparison = 8;  // Optional
+    
+    // Report metadata
+    google.protobuf.Timestamp generated_at = 9;
+    string report_type = 10;  // e.g., "archetype_report", "language_report", "scene_report"
+}
+
+// Finding for simulator feedback
+message SimulatorFinding {
+    string dimension = 1;  // e.g., "roughness", "breathiness", "pitch_stability"
+    float observed_mean = 2;
+    float target_range_min = 3;
+    float target_range_max = 4;
+    string recommendation = 5;
+}
+
+// AUDIO.FEEDBACK event (recommendations for simulator/archetype tuning)
+message AudioFeedbackEvent {
+    CanonicalEnvelope envelope = 1;
+    
+    string feedback_id = 2;
+    string build_id = 3;
+    
+    // Simulator feedback (R-AUD-FB-001)
+    message SimulatorFeedback {
+        string archetype_id = 1;
+        string simulator_profile_id = 2;
+        repeated SimulatorFinding findings = 3;
+        string notes = 4;
+    }
+    
+    // Archetype Chain feedback (R-AUD-FB-002)
+    message ArchetypeFeedback {
+        string archetype_id = 1;
+        string language_code = 2;
+        float mean_archetype_conformity = 3;
+        repeated string weak_contexts = 4;  // e.g., ["hospital", "prison_yard"]
+        
+        message TrainingExample {
+            string segment_id = 1;
+            string media_uri = 2;
+            repeated string labels = 3;  // e.g., ["too_clean", "not_monster_like_enough"]
+        }
+        repeated TrainingExample candidate_training_examples = 5;
+    }
+    
+    oneof feedback_type {
+        SimulatorFeedback simulator_feedback = 4;
+        ArchetypeFeedback archetype_feedback = 5;
+    }
+    
+    google.protobuf.Timestamp generated_at = 6;
+}
+
+// Red Alert event for critical audio issues
+message AudioRedAlertEvent {
+    CanonicalEnvelope envelope = 1;
+    
+    string alert_id = 2;
+    string alert_type = 3;  // e.g., "unintelligible_key_line", "major_artifacts", "archetype_regression"
+    string description = 4;
+    
+    // Affected segments/contexts
+    repeated string affected_segment_ids = 5;
+    repeated string affected_scene_ids = 6;
+    string affected_archetype_id = 7;
+    
+    // Metrics that triggered the alert
+    map<string, float> triggering_metrics = 8;
+}
+
+// NATS Subjects:
+// - svc.ethelred.audio.v1.segment_created (queue group: audio-metrics)
+// - svc.ethelred.audio.v1.describe_segment (request/reply)
+// - events.ethelred.audio.v1.scores (broadcast)
+// - events.ethelred.audio.v1.report (broadcast)
+// - events.ethelred.audio.v1.feedback (broadcast)
+// - events.ethelred.audio.v1.red_alert (broadcast)
