@@ -576,3 +576,4 @@ async def main():
 if __name__ == "__main__":
     logger.add("logs/coverage_job.log", rotation="100 MB")
     asyncio.run(main())
+

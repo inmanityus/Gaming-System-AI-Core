@@ -1,6 +1,7 @@
 """
 Archetype conformity analyzer for audio segments.
 Implements TAUD-08 (R-AUD-MET-003).
+Enhanced for production use with configurable thresholds.
 """
 import logging
 from typing import Dict, Tuple, Optional, List
@@ -8,8 +9,32 @@ import numpy as np
 import json
 from scipy import signal
 import librosa
+import os
+from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class ArchetypeAnalyzerConfig:
+    """Configuration for archetype conformity analysis."""
+    # Conformity thresholds (can be overridden via environment)
+    on_profile_threshold: float = float(os.getenv('ARCHETYPE_ON_PROFILE_THRESHOLD', '0.75'))
+    too_clean_threshold: float = float(os.getenv('ARCHETYPE_TOO_CLEAN_THRESHOLD', '0.90'))
+    too_flat_threshold: float = float(os.getenv('ARCHETYPE_TOO_FLAT_THRESHOLD', '0.40'))
+    
+    # Profile loading
+    profiles_path: Optional[str] = os.getenv('ARCHETYPE_PROFILES_PATH')
+    use_database: bool = os.getenv('ARCHETYPE_USE_DATABASE', 'false').lower() == 'true'
+    
+    # Analysis parameters
+    min_pitch_values: int = 10
+    pitch_range: Tuple[float, float] = (50, 500)
+    formant_range: Tuple[float, float] = (200, 4000)
+    
+    # LPC parameters
+    lpc_order: int = 16
+    pre_emphasis: float = 0.97
 
 
 class ArchetypeProfile:
@@ -35,22 +60,100 @@ class ArchetypeConformityAnalyzer:
     Analyzes how well audio conforms to character archetype voice profiles.
     """
     
-    def __init__(self, sample_rate: int = 44100):
+    def __init__(self, sample_rate: int = 48000, config: Optional[ArchetypeAnalyzerConfig] = None):
+        self.config = config or ArchetypeAnalyzerConfig()
         self.sample_rate = sample_rate
         self.profiles = self._load_archetype_profiles()
         
-        # Thresholds for conformity bands
+        # Thresholds for conformity bands (from config)
         self.thresholds = {
-            'on_profile': 0.75,      # >75% conformity
-            'too_clean': 0.90,       # >90% (suspiciously perfect)
-            'too_flat': 0.40,        # 40-60% (lacking character)
-            'misaligned': 0.0        # <40% conformity
+            'on_profile': self.config.on_profile_threshold,
+            'too_clean': self.config.too_clean_threshold,
+            'too_flat': self.config.too_flat_threshold,
+            'misaligned': 0.0
         }
     
     def _load_archetype_profiles(self) -> Dict[str, ArchetypeProfile]:
         """Load archetype voice profiles from configuration."""
-        # In production, load from database or config file
-        # For now, define some example profiles
+        # Try to load from database or config file if configured
+        if self.config.use_database:
+            return self._load_profiles_from_database()
+        elif self.config.profiles_path:
+            return self._load_profiles_from_file(self.config.profiles_path)
+        
+        # Default profiles if no external source configured
+        profiles = {
+            'vampire_alpha': ArchetypeProfile('vampire_alpha', {
+                'f0_range': (80, 150),
+                'f0_mean': 110,
+                'formant_targets': {
+                    'F1': (500, 80),    # Darker vowels
+                    'F2': (1200, 150),  # Back vowels
+                    'F3': (2200, 200)
+                },
+                'roughness_range': (0.3, 0.6),  # Gravelly voice
+                'breathiness_range': (0.1, 0.3),
+                'spectral_tilt': -8.0,  # Darker tone
+                'special_features': ['vocal_fry', 'low_resonance']
+            }),
+            
+            'human_agent': ArchetypeProfile('human_agent', {
+                'f0_range': (100, 200),
+                'f0_mean': 140,
+                'formant_targets': {
+                    'F1': (600, 100),
+                    'F2': (1500, 200),
+                    'F3': (2500, 250)
+                },
+                'roughness_range': (0.0, 0.2),  # Clear voice
+                'breathiness_range': (0.0, 0.1),
+                'spectral_tilt': -5.0,  # Neutral
+                'special_features': ['clear_articulation']
+            }),
+            
+            'corpse_tender': ArchetypeProfile('corpse_tender', {
+                'f0_range': (150, 300),
+                'f0_mean': 200,
+                'formant_targets': {
+                    'F1': (700, 120),   # Higher, more nasal
+                    'F2': (1800, 250),
+                    'F3': (2800, 300)
+                },
+                'roughness_range': (0.2, 0.4),
+                'breathiness_range': (0.3, 0.5),  # Whispery
+                'spectral_tilt': -4.0,  # Brighter, thinner
+                'special_features': ['whisper_quality', 'nasal_resonance']
+            })
+        }
+        
+        return profiles
+    
+    def _load_profiles_from_database(self) -> Dict[str, ArchetypeProfile]:
+        """Load archetype profiles from database."""
+        # TODO: Implement database loading
+        logger.warning("Database loading not yet implemented, falling back to defaults")
+        return self._get_default_profiles()
+    
+    def _load_profiles_from_file(self, path: str) -> Dict[str, ArchetypeProfile]:
+        """Load archetype profiles from JSON file."""
+        try:
+            with open(path, 'r') as f:
+                profiles_data = json.load(f)
+            
+            profiles = {}
+            for archetype_id, profile_data in profiles_data.items():
+                profiles[archetype_id] = ArchetypeProfile(archetype_id, profile_data)
+            
+            logger.info(f"Loaded {len(profiles)} archetype profiles from {path}")
+            return profiles
+            
+        except Exception as e:
+            logger.error(f"Failed to load profiles from {path}: {e}")
+            return self._get_default_profiles()
+    
+    def _get_default_profiles(self) -> Dict[str, ArchetypeProfile]:
+        """Get default archetype profiles."""
+        # Default profiles for horror game archetypes
         profiles = {
             'vampire_alpha': ArchetypeProfile('vampire_alpha', {
                 'f0_range': (80, 150),
@@ -159,15 +262,15 @@ class ArchetypeConformityAnalyzer:
             )
             
             # Get valid pitch values
-            pitch_values = []
+                pitch_values = []
             for t in range(pitches.shape[1]):
                 index = magnitudes[:, t].argmax()
                 if magnitudes[index, t] > 0:
                     pitch = pitches[index, t]
-                    if 50 <= pitch <= 500:  # Valid pitch range
+                    if self.config.pitch_range[0] <= pitch <= self.config.pitch_range[1]:
                         pitch_values.append(pitch)
             
-            if len(pitch_values) < 10:
+            if len(pitch_values) < self.config.min_pitch_values:
                 return 0.5  # Not enough data
             
             pitch_values = np.array(pitch_values)
@@ -196,11 +299,11 @@ class ArchetypeConformityAnalyzer:
         try:
             # Estimate formants using LPC
             # Pre-emphasis
-            pre_emphasis = 0.97
+            pre_emphasis = self.config.pre_emphasis
             emphasized = np.append(audio[0], audio[1:] - pre_emphasis * audio[:-1])
             
             # LPC analysis for formant estimation
-            lpc_order = 16  # For formant analysis at 44.1kHz
+            lpc_order = self.config.lpc_order  # Adjust based on sample rate
             
             # Use autocorrelation method for stability
             correlations = np.correlate(emphasized, emphasized, mode='full')
@@ -219,7 +322,8 @@ class ArchetypeConformityAnalyzer:
             
             # Convert to frequencies and filter
             formant_freqs = sorted(angles * self.sample_rate / (2 * np.pi))
-            formant_freqs = [f for f in formant_freqs if 200 <= f <= 4000]
+            formant_freqs = [f for f in formant_freqs if 
+                           self.config.formant_range[0] <= f <= self.config.formant_range[1]]
             
             if len(formant_freqs) < 3:
                 return 0.5  # Not enough formants detected
@@ -513,3 +617,4 @@ class ArchetypeConformityAnalyzer:
         clarity_score = max(0, clarity_score)
         
         return clarity_score
+

@@ -187,3 +187,4 @@ class PolicyCache:
                 "expired_entries": expired,
                 "max_size": self.max_size,
             }
+

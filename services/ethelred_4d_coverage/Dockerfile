@@ -24,3 +24,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 
 # Run the coverage job
 CMD ["python", "-u", "coverage_job.py"]
+

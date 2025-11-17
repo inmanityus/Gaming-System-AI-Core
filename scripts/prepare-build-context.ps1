@@ -27,3 +27,4 @@ if (Test-Path "services/shared") {
 }
 
 Write-Host "Build context prepared at $BuildContextPath" -ForegroundColor Green
+

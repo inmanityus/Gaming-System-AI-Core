@@ -334,3 +334,4 @@ def generate_prometheus_rules() -> Dict[str, Any]:
             }
         ]
     }
+

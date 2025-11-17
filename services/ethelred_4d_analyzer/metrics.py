@@ -217,3 +217,4 @@ class AnalyzerMetricsCollector:
                 for dt in ["animation", "physics", "rendering", "lighting", "performance", "flow"]
             )
         }
+

@@ -153,3 +153,4 @@ def test_drift_metrics_model():
     assert metrics.drift_type == DriftType.QUEST_ALLOCATION
     assert metrics.severity == DriftSeverity.MODERATE
     assert 0.0 <= metrics.drift_score <= 1.0
+

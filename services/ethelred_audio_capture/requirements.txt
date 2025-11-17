@@ -29,3 +29,4 @@ opentelemetry-instrumentation-asyncpg==0.42b0
 # Utilities
 aiofiles==23.2.1
 python-dotenv==1.0.0
+

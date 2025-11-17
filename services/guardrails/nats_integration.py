@@ -192,3 +192,4 @@ class GuardrailsNATSIntegration:
                     msg.reply,
                     json.dumps({"error": str(e)}).encode()
                 )
+

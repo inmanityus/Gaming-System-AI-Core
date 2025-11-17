@@ -385,3 +385,4 @@ if __name__ == "__main__":
     test_enums()
     
     print("\nAll protobuf schema tests passed! ✅")
+

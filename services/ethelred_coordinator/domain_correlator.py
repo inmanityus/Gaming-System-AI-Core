@@ -337,3 +337,4 @@ class DomainCorrelator:
                 "signals_by_severity": dict(severity_counts),
                 "issues_by_pattern": dict(pattern_counts),
             }
+

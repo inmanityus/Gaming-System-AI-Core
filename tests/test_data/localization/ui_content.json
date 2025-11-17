@@ -1,0 +1,202 @@
+{
+  "ui.button.start": {
+    "en-US": {
+      "text": "Start",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808526",
+      "translator": "test_system"
+    },
+    "ja-JP": {
+      "text": "開始",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808539",
+      "translator": "test_system"
+    },
+    "es-ES": {
+      "text": "Iniciar",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808542",
+      "translator": "test_system"
+    },
+    "zh-CN": {
+      "text": "开始",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808543",
+      "translator": "test_system"
+    },
+    "ko-KR": {
+      "text": "시작",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808544",
+      "translator": "test_system"
+    },
+    "ar-SA": {
+      "text": "ابدأ",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808545",
+      "translator": "test_system"
+    },
+    "fr-FR": {
+      "text": "Démarrer",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808547",
+      "translator": "test_system"
+    },
+    "de-DE": {
+      "text": "Starten",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808548",
+      "translator": "test_system"
+    }
+  },
+  "ui.button.continue": {
+    "en-US": {
+      "text": "Continue",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808549",
+      "translator": "test_system"
+    },
+    "ja-JP": {
+      "text": "続ける",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808550",
+      "translator": "test_system"
+    },
+    "es-ES": {
+      "text": "Continuar",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808551",
+      "translator": "test_system"
+    },
+    "zh-CN": {
+      "text": "继续",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808552",
+      "translator": "test_system"
+    },
+    "ko-KR": {
+      "text": "계속",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808553",
+      "translator": "test_system"
+    },
+    "ar-SA": {
+      "text": "استمر",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808554",
+      "translator": "test_system"
+    },
+    "fr-FR": {
+      "text": "Continuer",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808555",
+      "translator": "test_system"
+    },
+    "de-DE": {
+      "text": "Fortfahren",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808556",
+      "translator": "test_system"
+    }
+  },
+  "ui.menu.settings": {
+    "en-US": {
+      "text": "Settings",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808557",
+      "translator": "test_system"
+    },
+    "ja-JP": {
+      "text": "設定",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808558",
+      "translator": "test_system"
+    },
+    "es-ES": {
+      "text": "Configuración",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808559",
+      "translator": "test_system"
+    },
+    "zh-CN": {
+      "text": "设置",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808560",
+      "translator": "test_system"
+    },
+    "ko-KR": {
+      "text": "설정",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808560",
+      "translator": "test_system"
+    },
+    "ar-SA": {
+      "text": "الإعدادات",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808561",
+      "translator": "test_system"
+    },
+    "fr-FR": {
+      "text": "Paramètres",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808562",
+      "translator": "test_system"
+    },
+    "de-DE": {
+      "text": "Einstellungen",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808563",
+      "translator": "test_system"
+    }
+  },
+  "ui.dialog.confirm": {
+    "en-US": {
+      "text": "Are you sure?",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808564",
+      "translator": "test_system"
+    },
+    "ja-JP": {
+      "text": "よろしいですか？",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808565",
+      "translator": "test_system"
+    },
+    "es-ES": {
+      "text": "¿Está seguro?",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808566",
+      "translator": "test_system"
+    },
+    "zh-CN": {
+      "text": "您确定吗？",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808567",
+      "translator": "test_system"
+    },
+    "ko-KR": {
+      "text": "확실합니까?",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808567",
+      "translator": "test_system"
+    },
+    "ar-SA": {
+      "text": "هل أنت متأكد؟",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808568",
+      "translator": "test_system"
+    },
+    "fr-FR": {
+      "text": "Êtes-vous sûr?",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808569",
+      "translator": "test_system"
+    },
+    "de-DE": {
+      "text": "Sind Sie sicher?",
+      "validated": true,
+      "last_modified": "2025-11-16T18:40:06.808570",
+      "translator": "test_system"
+    }
+  }
+}

@@ -303,3 +303,4 @@ class TelemetryIngester:
             "event_counts": self._event_counts.copy(),
             "last_flush": self._last_flush.isoformat()
         }
+

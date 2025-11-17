@@ -288,3 +288,4 @@ class TestVisionIngestService:
         for result in results:
             assert result["status"] == "success"
             assert "segment_id" in result
+

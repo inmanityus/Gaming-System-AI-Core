@@ -305,3 +305,4 @@ class NaturalnessAnalyzer:
                 'spectral_weight': 0.3
             }
         }
+

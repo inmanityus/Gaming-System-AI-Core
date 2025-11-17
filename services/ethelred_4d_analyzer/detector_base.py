@@ -207,3 +207,4 @@ class StreamingDetector(VisionDetector):
             all_findings.extend(findings)
         
         return self.filter_findings(all_findings)
+

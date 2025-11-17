@@ -233,3 +233,4 @@ COMMENT ON TABLE audio_scores IS 'Per-segment quality metrics. Retained for tren
 COMMENT ON TABLE audio_archetype_reports IS 'Aggregated reports by archetype/language/scene. Used for build-over-build comparisons.';
 COMMENT ON COLUMN audio_segments.media_uri IS 'Reference to audio file in Red Alert media storage. Files follow separate retention policy.';
 COMMENT ON COLUMN audio_feedback.applied IS 'Tracks whether feedback has been reviewed and applied. No automatic application per safety requirements.';
+

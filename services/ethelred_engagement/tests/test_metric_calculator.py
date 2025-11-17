@@ -307,3 +307,4 @@ async def test_moral_tension_no_choices(calculator):
     assert metrics.tension_index == 0.0
     assert metrics.choice_distribution_entropy == 0.0
     assert len(metrics.option_counts) == 0
+

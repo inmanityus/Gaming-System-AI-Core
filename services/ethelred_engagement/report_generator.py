@@ -591,3 +591,4 @@ class AddictionReportGenerator:
         #     await conn.execute(...)
         
         return report_id
+

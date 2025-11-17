@@ -137,3 +137,4 @@ class CoverageMetricsCollector:
     def get_uptime_seconds(self) -> float:
         """Get job uptime in seconds."""
         return time.time() - self._start_time
+

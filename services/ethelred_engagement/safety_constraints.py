@@ -6,6 +6,8 @@ import logging
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 from enum import Enum
+import os
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +36,29 @@ class DisallowedUsage(str, Enum):
     MONETIZATION_TARGETING = "monetization_targeting"
 
 
+@dataclass
+class SafetyConstraintsConfig:
+    """Configuration for safety constraints."""
+    # Minimum cohort size for any analysis (can be overridden via environment)
+    min_cohort_size: int = int(os.getenv('SAFETY_MIN_COHORT_SIZE', '50'))
+    
+    # Maximum frequency for accessing metrics (per context) in seconds
+    max_access_frequency_cohort_analysis: int = int(os.getenv('SAFETY_ACCESS_FREQ_COHORT_ANALYSIS', '3600'))
+    max_access_frequency_design_report: int = int(os.getenv('SAFETY_ACCESS_FREQ_DESIGN_REPORT', '86400'))
+    max_access_frequency_ethics_review: int = int(os.getenv('SAFETY_ACCESS_FREQ_ETHICS_REVIEW', '3600'))
+    max_access_frequency_dashboard: int = int(os.getenv('SAFETY_ACCESS_FREQ_DASHBOARD', '300'))
+    max_access_frequency_build_comparison: int = int(os.getenv('SAFETY_ACCESS_FREQ_BUILD_COMPARISON', '3600'))
+    
+    # Real-time usage threshold
+    real_time_latency_threshold_ms: int = int(os.getenv('SAFETY_REAL_TIME_THRESHOLD_MS', '1000'))
+    
+    # Optimization keywords (comma-separated)
+    optimization_keywords: List[str] = os.getenv(
+        'SAFETY_OPTIMIZATION_KEYWORDS',
+        'optimize,maximize,increase,boost,retention,monetization,conversion'
+    ).split(',')
+
+
 class EngagementSafetyConstraints:
     """
     Enforces architectural constraints ensuring engagement/addiction metrics
@@ -42,21 +67,19 @@ class EngagementSafetyConstraints:
     CRITICAL: This class is the primary safeguard against predatory usage.
     """
     
-    # Minimum cohort size for any analysis
-    MIN_COHORT_SIZE = 50
-    
-    # Maximum frequency for accessing metrics (per context)
-    MAX_ACCESS_FREQUENCY = {
-        UsageContext.COHORT_ANALYSIS: 3600,  # Once per hour
-        UsageContext.DESIGN_REPORT: 86400,    # Once per day
-        UsageContext.ETHICS_REVIEW: 3600,     # Once per hour
-        UsageContext.AGGREGATE_DASHBOARD: 300, # Every 5 minutes
-        UsageContext.BUILD_COMPARISON: 3600    # Once per hour
-    }
-    
-    def __init__(self):
+    def __init__(self, config: Optional[SafetyConstraintsConfig] = None):
+        self.config = config or SafetyConstraintsConfig()
         self.access_log = {}
         self.violation_log = []
+        
+        # Build access frequency map from config
+        self.max_access_frequency = {
+            UsageContext.COHORT_ANALYSIS: self.config.max_access_frequency_cohort_analysis,
+            UsageContext.DESIGN_REPORT: self.config.max_access_frequency_design_report,
+            UsageContext.ETHICS_REVIEW: self.config.max_access_frequency_ethics_review,
+            UsageContext.AGGREGATE_DASHBOARD: self.config.max_access_frequency_dashboard,
+            UsageContext.BUILD_COMPARISON: self.config.max_access_frequency_build_comparison
+        }
     
     def check_usage_allowed(
         self,
@@ -104,7 +127,7 @@ class EngagementSafetyConstraints:
             )
         
         # Check for real-time indicators
-        if metadata.get('real_time', False) or metadata.get('latency_ms', float('inf')) < 1000:
+        if metadata.get('real_time', False) or metadata.get('latency_ms', float('inf')) < self.config.real_time_latency_threshold_ms:
             self._log_violation(
                 DisallowedUsage.REAL_TIME_PERSONALIZATION,
                 "Request indicates real-time usage"
@@ -115,12 +138,8 @@ class EngagementSafetyConstraints:
             )
         
         # Check for optimization context
-        optimization_keywords = [
-            'optimize', 'maximize', 'increase', 'boost', 
-            'retention', 'monetization', 'conversion'
-        ]
         request_purpose = str(metadata.get('purpose', '')).lower()
-        if any(keyword in request_purpose for keyword in optimization_keywords):
+        if any(keyword in request_purpose for keyword in self.config.optimization_keywords):
             self._log_violation(
                 DisallowedUsage.REWARD_OPTIMIZATION,
                 f"Request purpose suggests optimization: {request_purpose}"
@@ -133,9 +152,9 @@ class EngagementSafetyConstraints:
     def _check_cohort_size(self, metadata: Dict[str, Any]):
         """Ensure minimum cohort size for privacy."""
         cohort_size = metadata.get('cohort_size', 0)
-        if cohort_size > 0 and cohort_size < self.MIN_COHORT_SIZE:
+        if cohort_size > 0 and cohort_size < self.config.min_cohort_size:
             raise ConstraintViolation(
-                f"Cohort size {cohort_size} is below minimum {self.MIN_COHORT_SIZE}. "
+                f"Cohort size {cohort_size} is below minimum {self.config.min_cohort_size}. "
                 "Smaller cohorts risk re-identification."
             )
     
@@ -147,7 +166,7 @@ class EngagementSafetyConstraints:
         now = datetime.utcnow().timestamp()
         last_access = self.access_log.get(key, 0)
         
-        min_interval = self.MAX_ACCESS_FREQUENCY.get(context, 3600)
+        min_interval = self.max_access_frequency.get(context, 3600)
         if now - last_access < min_interval:
             remaining = int(min_interval - (now - last_access))
             raise ConstraintViolation(
@@ -265,7 +284,7 @@ class EngagementSafetyConstraints:
         return True
 
 
-# Global constraints instance
+# Global constraints instance (uses environment variables for configuration)
 safety_constraints = EngagementSafetyConstraints()
 
 
@@ -300,3 +319,4 @@ def require_safe_usage(context: UsageContext):
         return wrapper
     
     return decorator
+

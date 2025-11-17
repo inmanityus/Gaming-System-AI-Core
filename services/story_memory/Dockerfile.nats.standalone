@@ -34,3 +34,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
 
 # Run the NATS service
 CMD ["python", "-m", "nats_server"]
+

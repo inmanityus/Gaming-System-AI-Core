@@ -274,3 +274,4 @@ message AudioRedAlertEvent {
 // - events.ethelred.audio.v1.report (broadcast)
 // - events.ethelred.audio.v1.feedback (broadcast)
 // - events.ethelred.audio.v1.red_alert (broadcast)
+

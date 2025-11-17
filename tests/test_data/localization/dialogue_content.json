@@ -1,0 +1,36 @@
+{
+  "dialogue.intro.greeting": {
+    "en-US": {
+      "text": "Welcome to the world of shadows, {player_name}.",
+      "speaker": "narrator",
+      "audio_file": "intro_greeting_en.ogg",
+      "duration_ms": 3500
+    },
+    "ja-JP": {
+      "text": "ようこそ、影の世界へ、{player_name}さん。",
+      "speaker": "narrator",
+      "tts_enabled": true,
+      "tts_voice": "ja-JP-Standard-A"
+    },
+    "es-ES": {
+      "text": "Bienvenido al mundo de las sombras, {player_name}.",
+      "speaker": "narrator",
+      "tts_enabled": true,
+      "tts_voice": "es-ES-Standard-A"
+    }
+  },
+  "dialogue.vampire.threat": {
+    "en-US": {
+      "text": "Your blood smells... exquisite. Come closer.",
+      "speaker": "vampire_lord",
+      "audio_file": "vampire_threat_en.ogg",
+      "emotion": "menacing"
+    },
+    "ja-JP": {
+      "text": "お前の血の匂い...絶妙だ。近くに来い。",
+      "speaker": "vampire_lord",
+      "tts_enabled": true,
+      "emotion": "menacing"
+    }
+  }
+}

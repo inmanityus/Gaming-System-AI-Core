@@ -371,3 +371,4 @@ def handle_degraded_input(
         adjusted_findings.append(adjusted_finding)
     
     return adjusted_findings
+

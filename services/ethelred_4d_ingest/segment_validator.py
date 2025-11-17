@@ -291,3 +291,4 @@ class SegmentValidator:
                     errors.append(f"Invalid {metric}: {value}")
         
         return errors, normalized
+

@@ -258,3 +258,4 @@ class EngagementMetricsResponse(BaseModel):
     aggregates: List[EngagementAggregate]
     total_count: int
     query_time_ms: int
+

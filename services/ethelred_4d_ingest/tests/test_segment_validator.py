@@ -295,3 +295,4 @@ class TestSegmentValidator:
         assert normalized["camera_configs"][0]["position"] == [1, 2, 3]  # Converted to list
         assert isinstance(normalized["start_timestamp"], datetime)
         assert isinstance(normalized["end_timestamp"], datetime)
+

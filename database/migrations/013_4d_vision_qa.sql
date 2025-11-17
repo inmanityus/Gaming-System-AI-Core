@@ -185,3 +185,4 @@ CREATE TABLE IF NOT EXISTS vision_analysis_queue (
     INDEX idx_queue_status (status),
     INDEX idx_queue_priority (priority DESC)
 );
+

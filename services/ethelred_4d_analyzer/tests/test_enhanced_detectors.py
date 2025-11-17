@@ -437,3 +437,4 @@ class TestFlowDetector:
         blocked_findings = [f for f in findings if f.issue_type == "progress_blocked"]
         assert len(blocked_findings) > 0
         assert blocked_findings[0].explainability["signals"]["reset_count"] == 2
+

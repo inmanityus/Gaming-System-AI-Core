@@ -340,3 +340,4 @@ class AudioBuffer:
     def get_duration(self) -> float:
         """Get current buffer duration in seconds."""
         return self.total_samples / self.sample_rate
+

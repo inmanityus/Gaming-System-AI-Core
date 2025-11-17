@@ -550,3 +550,4 @@ class AddictionDetector:
             confidence_percentage=0,
             notes="Cohort size below privacy threshold"
         )
+

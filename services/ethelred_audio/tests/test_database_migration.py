@@ -329,3 +329,4 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"Test failed: {e}")
         print("Make sure PostgreSQL is running locally on port 5432")
+

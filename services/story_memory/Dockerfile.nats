@@ -32,3 +32,4 @@ EXPOSE 8099
 
 # Run the NATS service
 CMD ["python", "-m", "services.story_memory.nats_server"]
+

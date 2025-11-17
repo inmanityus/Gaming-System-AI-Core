@@ -72,3 +72,4 @@ INSERT INTO addiction_risk_thresholds (metric_name, healthy_max, moderate_max, c
 ('consecutive_days_played_p90', 14, 21, 30, '90th percentile of consecutive days played', 'days'),
 ('early_morning_sessions_fraction', 0.05, 0.15, 0.30, 'Fraction of sessions starting between 2am-6am', 'fraction')
 ON CONFLICT (metric_name) DO NOTHING;
+

@@ -334,3 +334,4 @@ class TestCoverageJob:
         
         # Should handle gracefully with no duplicates or errors
         assert job.analyzer.calculate_build_coverage.call_count == 2
+

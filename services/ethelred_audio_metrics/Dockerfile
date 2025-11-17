@@ -40,3 +40,4 @@ HEALTHCHECK --interval=30s --timeout=5s --retries=3 --start-period=60s \
 
 # Run the service
 CMD ["python", "-u", "metrics_service.py"]
+

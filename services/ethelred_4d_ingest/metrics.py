@@ -148,3 +148,4 @@ class IngestMetricsCollector:
     def get_uptime_seconds(self) -> float:
         """Get service uptime in seconds."""
         return time.time() - self._start_time
+

@@ -14,3 +14,4 @@ yum install -y amazon-cloudwatch-agent
 # Start services
 systemctl enable amazon-ecs-agent
 systemctl start amazon-ecs-agent
+

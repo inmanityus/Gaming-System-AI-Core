@@ -257,3 +257,4 @@ class SnapshotCache:
             "latency_p95_ms": round(p95_ms, 2),
             "latency_p99_ms": round(p99_ms, 2),
         }
+

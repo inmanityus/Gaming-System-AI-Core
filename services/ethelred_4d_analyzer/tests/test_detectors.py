@@ -350,3 +350,4 @@ class TestDetectorFiltering:
         # Low severity might not
         goals = detector.calculate_goal_impact("minor_glitch", 0.2)
         assert len(goals) == 0 or "G-IMMERSION" not in goals
+

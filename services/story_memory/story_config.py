@@ -154,3 +154,4 @@ EVENT_TYPE_HANDLERS = {
     "npc.death": "handle_npc_death",
     "soul.echo.encounter": "handle_soul_echo",
 }
+

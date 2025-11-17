@@ -7,8 +7,44 @@ from typing import Dict, List, Any, Tuple, Optional
 from collections import defaultdict
 import asyncpg
 import numpy as np
+import os
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class AddictionIndicatorConfig:
+    """Configuration for addiction risk indicators."""
+    # Time windows for "unhealthy" play patterns (can be overridden via environment)
+    night_time_start: time = time(
+        int(os.getenv('ADDICTION_NIGHT_TIME_START_HOUR', '23')),
+        int(os.getenv('ADDICTION_NIGHT_TIME_START_MINUTE', '0'))
+    )
+    night_time_end: time = time(
+        int(os.getenv('ADDICTION_NIGHT_TIME_END_HOUR', '5')),
+        int(os.getenv('ADDICTION_NIGHT_TIME_END_MINUTE', '0'))
+    )
+    early_morning_start: time = time(
+        int(os.getenv('ADDICTION_EARLY_MORNING_START_HOUR', '2')),
+        int(os.getenv('ADDICTION_EARLY_MORNING_START_MINUTE', '0'))
+    )
+    early_morning_end: time = time(
+        int(os.getenv('ADDICTION_EARLY_MORNING_END_HOUR', '6')),
+        int(os.getenv('ADDICTION_EARLY_MORNING_END_MINUTE', '0'))
+    )
+    
+    # Session thresholds
+    excessive_session_hours: float = float(os.getenv('ADDICTION_EXCESSIVE_SESSION_HOURS', '4.0'))
+    one_more_run_window_minutes: int = int(os.getenv('ADDICTION_ONE_MORE_RUN_WINDOW_MINUTES', '10'))
+    
+    # Risk factor thresholds
+    night_time_fraction_threshold: float = float(os.getenv('ADDICTION_NIGHT_TIME_FRACTION_THRESHOLD', '0.3'))
+    one_more_run_loops_threshold: float = float(os.getenv('ADDICTION_ONE_MORE_RUN_LOOPS_THRESHOLD', '4'))
+    excessive_session_fraction_threshold: float = float(os.getenv('ADDICTION_EXCESSIVE_SESSION_FRACTION_THRESHOLD', '0.25'))
+    consecutive_days_threshold: int = int(os.getenv('ADDICTION_CONSECUTIVE_DAYS_THRESHOLD', '21'))
+    time_between_sessions_threshold: float = float(os.getenv('ADDICTION_TIME_BETWEEN_SESSIONS_THRESHOLD', '8'))
+    weekend_ratio_threshold: float = float(os.getenv('ADDICTION_WEEKEND_RATIO_THRESHOLD', '0.5'))
 
 
 class AddictionIndicatorCalculator:
@@ -19,18 +55,9 @@ class AddictionIndicatorCalculator:
     No individual player metrics are computed or stored.
     """
     
-    # Time windows for "unhealthy" play patterns
-    NIGHT_TIME_START = time(23, 0)  # 11 PM
-    NIGHT_TIME_END = time(5, 0)     # 5 AM
-    EARLY_MORNING_START = time(2, 0)  # 2 AM
-    EARLY_MORNING_END = time(6, 0)    # 6 AM
-    
-    # Session thresholds
-    EXCESSIVE_SESSION_HOURS = 4.0
-    ONE_MORE_RUN_WINDOW_MINUTES = 10  # Window to detect "one more run" behavior
-    
-    def __init__(self, postgres_pool: asyncpg.Pool):
+    def __init__(self, postgres_pool: asyncpg.Pool, config: Optional[AddictionIndicatorConfig] = None):
         self.postgres = postgres_pool
+        self.config = config or AddictionIndicatorConfig()
     
     async def compute_indicators(
         self,
@@ -153,7 +180,7 @@ class AddictionIndicatorCalculator:
             
             # Calculate overlap with night time window
             night_overlap = self._calculate_time_window_overlap(
-                start, end, self.NIGHT_TIME_START, self.NIGHT_TIME_END
+                start, end, self.config.night_time_start, self.config.night_time_end
             )
             night_minutes += night_overlap
         
@@ -182,7 +209,7 @@ class AddictionIndicatorCalculator:
             gap_minutes = (curr_start - prev_end).total_seconds() / 60
             
             # Count as "one more run" if gap is small
-            if 0 < gap_minutes <= self.ONE_MORE_RUN_WINDOW_MINUTES:
+            if 0 < gap_minutes <= self.config.one_more_run_window_minutes:
                 one_more_runs += 1
             
             analyzed_sessions += 1
@@ -212,7 +239,7 @@ class AddictionIndicatorCalculator:
             
             durations_hours.append(duration_hours)
             
-            if duration_hours > self.EXCESSIVE_SESSION_HOURS:
+            if duration_hours > self.config.excessive_session_hours:
                 excessive_count += 1
         
         return {
@@ -269,7 +296,7 @@ class AddictionIndicatorCalculator:
         
         for session in sessions:
             start_time = session['session_start'].time()
-            if self.EARLY_MORNING_START <= start_time <= self.EARLY_MORNING_END:
+            if self.config.early_morning_start <= start_time <= self.config.early_morning_end:
                 early_morning_count += 1
         
         return early_morning_count / len(sessions)
@@ -369,22 +396,22 @@ class AddictionIndicatorCalculator:
         risk_factors = []
         
         # Check each indicator against concerning thresholds
-        if indicators.get('night_time_fraction', 0) > 0.3:
+        if indicators.get('night_time_fraction', 0) > self.config.night_time_fraction_threshold:
             risk_factors.append('excessive_night_play')
         
-        if indicators.get('one_more_run_loops', 0) > 4:
+        if indicators.get('one_more_run_loops', 0) > self.config.one_more_run_loops_threshold:
             risk_factors.append('compulsive_restart_pattern')
         
-        if indicators.get('excessive_session_fraction', 0) > 0.25:
+        if indicators.get('excessive_session_fraction', 0) > self.config.excessive_session_fraction_threshold:
             risk_factors.append('marathon_sessions')
         
-        if indicators.get('consecutive_days_played_p90', 0) > 21:
+        if indicators.get('consecutive_days_played_p90', 0) > self.config.consecutive_days_threshold:
             risk_factors.append('no_break_pattern')
         
-        if indicators.get('avg_time_between_sessions_hours', 0) < 8:
+        if indicators.get('avg_time_between_sessions_hours', 0) < self.config.time_between_sessions_threshold:
             risk_factors.append('insufficient_cooldown')
         
-        if indicators.get('weekend_vs_weekday_ratio', 0) < 0.5:
+        if indicators.get('weekend_vs_weekday_ratio', 0) < self.config.weekend_ratio_threshold:
             risk_factors.append('weekday_dominance')
         
         return risk_factors
@@ -425,3 +452,4 @@ class AddictionIndicatorCalculator:
             'confidence_level': 0.0,
             'risk_factors': []
         }
+

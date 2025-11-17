@@ -300,3 +300,4 @@ async def test_invalid_event_handling(ingester):
     
     success = await ingester.ingest_event(event_data)
     assert success is False
+

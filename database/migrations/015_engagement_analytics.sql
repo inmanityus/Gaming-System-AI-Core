@@ -232,3 +232,4 @@ COMMENT ON TABLE engagement_events IS 'Raw telemetry events with pseudonymized p
 COMMENT ON TABLE addiction_risk_reports IS 'Cohort-level addiction risk indicators. MUST NOT contain individual player data per R-EMO-ADD-002.';
 COMMENT ON COLUMN engagement_events.player_id IS 'Pseudonymized player ID, optional. Never store real identities.';
 COMMENT ON COLUMN addiction_risk_reports.cohort_id IS 'Aggregate cohort identifier only. No individual player tracking allowed.';
+

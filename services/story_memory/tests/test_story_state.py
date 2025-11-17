@@ -162,3 +162,4 @@ def test_arc_progress_model():
     assert progress.arc_id == "dark.moon_clans"
     assert progress.arc_role == ArcRole.MAIN_ARC
     assert progress.progress_state == ProgressState.MID
+

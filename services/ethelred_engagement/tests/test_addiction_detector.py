@@ -342,3 +342,4 @@ async def test_risk_summary_generation(detector):
     assert "7.2 hours daily" in summary
     assert "35% of sessions" in summary
     assert "Regular play during 3-5 AM" in summary
+

@@ -220,3 +220,4 @@ class MediaCache:
         self.access_times.clear()
         self.sizes.clear()
         self.total_size = 0
+

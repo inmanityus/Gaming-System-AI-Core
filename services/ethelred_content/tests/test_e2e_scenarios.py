@@ -379,3 +379,4 @@ async def test_red_alert_integration():
     ]
     
     assert len(violation_publishes) > 0
+

@@ -1,0 +1,39 @@
+{
+  "ui.tooltip.help": {
+    "en-US": {
+      "text": "This is a very long tooltip that contains detailed information about the game mechanics. This is a very long tooltip that contains detailed information about the game mechanics. This is a very long tooltip that contains detailed information about the game mechanics. This is a very long tooltip that contains detailed information about the game mechanics. This is a very long tooltip that contains detailed information about the game mechanics. This is a very long tooltip that contains detailed information about the game mechanics. This is a very long tooltip that contains detailed information about the game mechanics. This is a very long tooltip that contains detailed information about the game mechanics. This is a very long tooltip that contains detailed information about the game mechanics. This is a very long tooltip that contains detailed information about the game mechanics. ",
+      "validated": true
+    },
+    "ja-JP": {
+      "text": "これは非常に長いツールチップで、ゲームメカニクスに関する詳細情報が含まれています。これは非常に長いツールチップで、ゲームメカニクスに関する詳細情報が含まれています。これは非常に長いツールチップで、ゲームメカニクスに関する詳細情報が含まれています。これは非常に長いツールチップで、ゲームメカニクスに関する詳細情報が含まれています。これは非常に長いツールチップで、ゲームメカニクスに関する詳細情報が含まれています。これは非常に長いツールチップで、ゲームメカニクスに関する詳細情報が含まれています。これは非常に長いツールチップで、ゲームメカニクスに関する詳細情報が含まれています。これは非常に長いツールチップで、ゲームメカニクスに関する詳細情報が含まれています。これは非常に長いツールチップで、ゲームメカニクスに関する詳細情報が含まれています。これは非常に長いツールチップで、ゲームメカニクスに関する詳細情報が含まれています。",
+      "validated": true
+    }
+  },
+  "ui.stats.summary": {
+    "en-US": {
+      "text": "Player: {name}, Level: {level}, HP: {hp}/{max_hp}, XP: {xp}/{xp_needed}",
+      "validated": true,
+      "placeholders": [
+        "name",
+        "level",
+        "hp",
+        "max_hp",
+        "xp",
+        "xp_needed"
+      ]
+    }
+  },
+  "ui.achievement.unlock": {
+    "ar-SA": {
+      "text": "‏لقد فتحت الإنجاز: {achievement_name}",
+      "validated": true,
+      "direction": "rtl"
+    }
+  },
+  "ui.special.characters": {
+    "en-US": {
+      "text": "Special chars: <>&\"'©®™€¥£",
+      "validated": true
+    }
+  }
+}

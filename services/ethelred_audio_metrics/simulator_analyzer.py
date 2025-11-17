@@ -353,3 +353,4 @@ class SimulatorStabilityAnalyzer:
                 'skewness': float(skew(audio_data))
             }
         }
+

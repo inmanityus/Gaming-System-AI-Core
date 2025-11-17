@@ -21,3 +21,4 @@ EXPOSE 8000
 
 # Run the service
 CMD ["python", "-m", "main"]
+
