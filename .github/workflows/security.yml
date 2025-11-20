@@ -40,7 +40,7 @@ jobs:
         pip-audit --desc --format json --output pip-audit-report.json
     
     - name: Upload security reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: dependency-scan-reports
@@ -79,7 +79,7 @@ jobs:
         generateSarif: true
     
     - name: Upload Bandit results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: bandit-report
@@ -201,7 +201,7 @@ jobs:
           -x zap-report.xml
     
     - name: Upload ZAP reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: zap-reports
@@ -238,7 +238,7 @@ jobs:
         test -f docs/data-retention-policy.md || echo "WARNING: Data retention policy missing"
     
     - name: Upload compliance reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: compliance-reports
         path: licenses.json
@@ -274,7 +274,7 @@ jobs:
         python scripts/summarize_security_findings.py security-artifacts >> security-summary.md
     
     - name: Upload final report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: security-report
         path: |
@@ -313,3 +313,4 @@ jobs:
               labels: ['security', 'critical', 'automated']
             });
           }
+

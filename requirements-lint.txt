@@ -1,0 +1,23 @@
+# Minimal requirements for linting and code quality checks
+# This file is used by GitHub Actions Code Quality workflow
+
+# Core linting tools
+black==25.11.0
+flake8==7.3.0
+mypy==1.18.0
+pylint==4.0.3
+isort==7.0.0
+radon==6.0.1
+xenon==0.9.3
+pydocstyle==6.3.0
+
+# Basic dependencies needed for import resolution
+fastapi==0.104.1
+pydantic==2.5.0
+requests==2.31.0
+aiohttp==3.9.1
+structlog==23.2.0
+
+# Type stubs for better mypy checking
+types-requests
+types-aiofiles
