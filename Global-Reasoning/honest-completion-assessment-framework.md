@@ -203,3 +203,4 @@ Before declaring complete, answer:
 **Never declare complete until you've verified it's ACTUALLY complete.** Real data, real functionality, real requirements met. Verify, don't assume. Be honest, not optimistic. Respect user investment. Only then declare complete.
 
 
+

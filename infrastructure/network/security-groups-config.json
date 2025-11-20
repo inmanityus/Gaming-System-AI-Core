@@ -1,0 +1,128 @@
+﻿{
+  "security_groups": {
+    "alb": {
+      "id": "sg-0587e444c4f7e29fd",
+      "name": "ai-core-production-alb-sg",
+      "description": "Security group for Application Load Balancer",
+      "ingress_rules": [
+        {
+          "protocol": "tcp",
+          "from_port": 80,
+          "to_port": 80,
+          "source": "0.0.0.0/0",
+          "description": "HTTP from internet"
+        },
+        {
+          "protocol": "tcp",
+          "from_port": 443,
+          "to_port": 443,
+          "source": "0.0.0.0/0",
+          "description": "HTTPS from internet"
+        }
+      ]
+    },
+    "ecs": {
+      "id": "sg-07581d641fe42aab6",
+      "name": "ai-core-production-ecs-sg",
+      "description": "Security group for ECS containers",
+      "ingress_rules": [
+        {
+          "protocol": "tcp",
+          "from_port": 80,
+          "to_port": 80,
+          "source": "sg-0587e444c4f7e29fd",
+          "description": "HTTP from ALB"
+        },
+        {
+          "protocol": "tcp",
+          "from_port": 443,
+          "to_port": 443,
+          "source": "sg-0587e444c4f7e29fd",
+          "description": "HTTPS from ALB"
+        },
+        {
+          "protocol": "tcp",
+          "from_port": 8000,
+          "to_port": 8000,
+          "source": "sg-0587e444c4f7e29fd",
+          "description": "Application port from ALB"
+        }
+      ]
+    },
+    "rds": {
+      "id": "sg-08692d752fe53bbc7",
+      "name": "ai-core-production-rds-sg",
+      "description": "Security group for RDS databases",
+      "ingress_rules": [
+        {
+          "protocol": "tcp",
+          "from_port": 3306,
+          "to_port": 3306,
+          "source": "sg-07581d641fe42aab6",
+          "description": "MySQL from ECS"
+        },
+        {
+          "protocol": "tcp",
+          "from_port": 5432,
+          "to_port": 5432,
+          "source": "sg-07581d641fe42aab6",
+          "description": "PostgreSQL from ECS"
+        }
+      ]
+    },
+    "elasticache": {
+      "id": "sg-097a3e863gf64ccd8",
+      "name": "ai-core-production-elasticache-sg",
+      "description": "Security group for ElastiCache Redis",
+      "ingress_rules": [
+        {
+          "protocol": "tcp",
+          "from_port": 6379,
+          "to_port": 6379,
+          "source": "sg-07581d641fe42aab6",
+          "description": "Redis from ECS"
+        }
+      ]
+    },
+    "opensearch": {
+      "id": "sg-0a8b4f974hg75dde9",
+      "name": "ai-core-production-opensearch-sg",
+      "description": "Security group for OpenSearch domain",
+      "ingress_rules": [
+        {
+          "protocol": "tcp",
+          "from_port": 443,
+          "to_port": 443,
+          "source": "sg-07581d641fe42aab6",
+          "description": "HTTPS from ECS"
+        },
+        {
+          "protocol": "tcp",
+          "from_port": 9200,
+          "to_port": 9200,
+          "source": "sg-07581d641fe42aab6",
+          "description": "OpenSearch API from ECS"
+        }
+      ]
+    },
+    "bastion": {
+      "id": "sg-0b9c5g085ih86eef0",
+      "name": "ai-core-production-bastion-sg",
+      "description": "Security group for Bastion host",
+      "ingress_rules": [
+        {
+          "protocol": "tcp",
+          "from_port": 22,
+          "to_port": 22,
+          "source": "0.0.0.0/0",
+          "description": "SSH from authorized IPs only"
+        }
+      ]
+    }
+  },
+  "creation_date": "2025-11-18",
+  "last_updated": "2025-11-18T23:10:00Z",
+  "updates": {
+    "2025-11-18": "Tightened ECS security group to specific ports (80, 443, 8000)"
+  }
+}

@@ -1,6 +1,6 @@
-﻿# File Listing Prohibition Rule
+# File Listing Prohibition Rule
 
-## ðŸš¨ CRITICAL RULE - MANDATORY ENFORCEMENT
+## 🚨 CRITICAL RULE - MANDATORY ENFORCEMENT
 
 ### **NEVER LIST FILES IN SESSION WINDOW**
 
@@ -41,20 +41,20 @@
    - File listings will cause session blocks
 
 **PROHIBITED ACTIONS**:
-- âŒ list_dir tool calls
-- âŒ ls or dir terminal commands
-- âŒ Get-ChildItem PowerShell commands
-- âŒ Showing file listings in responses
-- âŒ Listing directory contents
-- âŒ Writing reports/milestones/summaries without first accepting all file changes
-- âŒ Allowing Cursor file change dialogs to appear (with file name listings)
+- ❌ list_dir tool calls
+- ❌ ls or dir terminal commands
+- ❌ Get-ChildItem PowerShell commands
+- ❌ Showing file listings in responses
+- ❌ Listing directory contents
+- ❌ Writing reports/milestones/summaries without first accepting all file changes
+- ❌ Allowing Cursor file change dialogs to appear (with file name listings)
 
 **ALLOWED ACTIONS**:
-- âœ… glob_file_search with specific patterns
-- âœ… grep for content search
-- âœ… codebase_search for semantic discovery
-- âœ… ead_file for specific files
-- âœ… Direct file path references
+- ✅ glob_file_search with specific patterns
+- ✅ grep for content search
+- ✅ codebase_search for semantic discovery
+- ✅ ead_file for specific files
+- ✅ Direct file path references
 
 **INTEGRATION**:
 - **Startup**: Rule initialized during startup process
@@ -77,35 +77,35 @@
 
 **EXAMPLES**:
 
-âŒ **WRONG**:
+❌ **WRONG**:
 \\\
 list_dir -target_directory "services"
 \\\
 
-âœ… **CORRECT**:
+✅ **CORRECT**:
 \\\
 glob_file_search -glob_pattern "services/**/*.py"
 \\\
 
-âŒ **WRONG**:
+❌ **WRONG**:
 \\\
 ls scripts/
 \\\
 
-âœ… **CORRECT**:
+✅ **CORRECT**:
 \\\
 glob_file_search -glob_pattern "scripts/*.ps1"
 \\\
 
 **CRITICAL WORKFLOW EXAMPLE**:
 
-âŒ **WRONG** (Will trigger file listing dialog):
+❌ **WRONG** (Will trigger file listing dialog):
 1. Edit files (file1.ts, file2.ts)
 2. Write milestone report mentioning file changes
 3. Cursor shows dialog with file names: "Keep All" / "Reject All"
 4. File names are listed in dialog - VIOLATION
 
-âœ… **CORRECT** (Prevents file listing dialog):
+✅ **CORRECT** (Prevents file listing dialog):
 1. Edit files (file1.ts, file2.ts)
 2. **IMMEDIATELY accept all file changes** (auto-accept)
 3. Then write milestone report mentioning file changes

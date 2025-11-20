@@ -1,0 +1,13 @@
+{
+  "DashboardEndpoint": "https://vpc-ai-core-opensearch-nvkhms5g3kyr2bqvq3f2mqtnd4.us-east-1.es.amazonaws.com/_dashboards/",
+  "CreatedAt": "2025-11-19 11:48:42",
+  "Endpoint": "https://vpc-ai-core-opensearch-nvkhms5g3kyr2bqvq3f2mqtnd4.us-east-1.es.amazonaws.com",
+  "DomainName": "ai-core-opensearch",
+  "SecretName": "ai-core-opensearch-master-credentials",
+  "SecurityGroupId": "sg-0b97209f0ba4fc3c9",
+  "SubnetIds": [
+    "subnet-087eeda0bae6cb2e5",
+    "subnet-0b36e3376d508d01f",
+    "subnet-0523f5b7a55c382f5"
+  ]
+}

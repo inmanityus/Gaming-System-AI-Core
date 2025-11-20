@@ -1,0 +1,11 @@
+# Ignore all private files
+.private/
+*.pem
+*.key
+*.crt
+*.env
+*-credentials.json
+*-secret.yaml
+*-config-prod.json
+secrets.json
+api-keys.txt

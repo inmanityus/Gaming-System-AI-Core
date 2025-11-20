@@ -1,0 +1,34 @@
+{
+  "encrypted": true,
+  "engine": "aurora-postgresql",
+  "instances": [
+    {
+      "identifier": "ai-core-aurora-cluster-writer-1",
+      "instanceClass": "db.r6g.xlarge",
+      "role": "writer"
+    },
+    {
+      "identifier": "ai-core-aurora-cluster-reader-1",
+      "instanceClass": "db.r6g.large",
+      "role": "reader"
+    },
+    {
+      "identifier": "ai-core-aurora-cluster-reader-2",
+      "instanceClass": "db.r6g.large",
+      "role": "reader"
+    }
+  ],
+  "masterUsername": "aicore_admin",
+  "creationDate": "2025-11-19 09:36:38",
+  "database": "aicore",
+  "port": 5432,
+  "secretArn": "arn:aws:secretsmanager:us-east-1:695353648052:secret:rds/ai-core-aurora-cluster/master-credentials",
+  "engineVersion": "15.8",
+  "backupRetention": 30,
+  "deletionProtection": true,
+  "subnetGroup": "ai-core-database-subnet-group",
+  "clusterName": "ai-core-aurora-cluster",
+  "endpoint": "ai-core-aurora-cluster.cluster-cal6eoegigyq.us-east-1.rds.amazonaws.com",
+  "readerEndpoint": "ai-core-aurora-cluster.cluster-ro-cal6eoegigyq.us-east-1.rds.amazonaws.com",
+  "securityGroup": "sg-0712e6d64c6b2d4fd"
+}

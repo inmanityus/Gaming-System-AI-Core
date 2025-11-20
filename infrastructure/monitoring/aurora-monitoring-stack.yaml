@@ -1,0 +1,366 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Comprehensive monitoring and alarms for Gaming System Aurora PostgreSQL'
+
+Parameters:
+  DBClusterIdentifier:
+    Type: String
+    Default: gaming-system-aurora-db-cluster
+    Description: Aurora cluster identifier to monitor
+    
+  Environment:
+    Type: String
+    Default: production
+    Description: Environment name
+    
+  SNSEmailEndpoint:
+    Type: String
+    Description: Email address for alarm notifications
+    Default: alerts@example.com
+
+Resources:
+  # SNS Topic for Database Alarms
+  DBAlarmTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub ${DBClusterIdentifier}-alarms
+      DisplayName: Aurora Database Alarms
+      Subscription:
+        - Endpoint: !Ref SNSEmailEndpoint
+          Protocol: email
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Service
+          Value: Aurora-Monitoring
+
+  # CloudWatch Dashboard
+  AuroraDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: !Sub ${DBClusterIdentifier}-dashboard
+      DashboardBody: !Sub |
+        {
+          "widgets": [
+            {
+              "type": "metric",
+              "x": 0,
+              "y": 0,
+              "width": 12,
+              "height": 6,
+              "properties": {
+                "metrics": [
+                  [ "AWS/RDS", "CPUUtilization", { "stat": "Average" } ],
+                  [ ".", "DatabaseConnections", { "stat": "Sum" } ]
+                ],
+                "period": 300,
+                "stat": "Average",
+                "region": "${AWS::Region}",
+                "title": "CPU and Connections",
+                "dimensions": {
+                  "DBClusterIdentifier": "${DBClusterIdentifier}"
+                }
+              }
+            },
+            {
+              "type": "metric",
+              "x": 12,
+              "y": 0,
+              "width": 12,
+              "height": 6,
+              "properties": {
+                "metrics": [
+                  [ "AWS/RDS", "AuroraReplicaLag", { "stat": "Maximum" } ],
+                  [ ".", "AuroraReplicaLagMaximum" ]
+                ],
+                "period": 60,
+                "stat": "Average",
+                "region": "${AWS::Region}",
+                "title": "Replication Lag",
+                "dimensions": {
+                  "DBClusterIdentifier": "${DBClusterIdentifier}"
+                }
+              }
+            },
+            {
+              "type": "metric",
+              "x": 0,
+              "y": 6,
+              "width": 12,
+              "height": 6,
+              "properties": {
+                "metrics": [
+                  [ "AWS/RDS", "VolumeReadIOPs" ],
+                  [ ".", "VolumeWriteIOPs" ]
+                ],
+                "period": 300,
+                "stat": "Average",
+                "region": "${AWS::Region}",
+                "title": "IOPS",
+                "dimensions": {
+                  "DBClusterIdentifier": "${DBClusterIdentifier}"
+                }
+              }
+            },
+            {
+              "type": "metric",
+              "x": 12,
+              "y": 6,
+              "width": 12,
+              "height": 6,
+              "properties": {
+                "metrics": [
+                  [ "AWS/RDS", "FreeableMemory", { "stat": "Minimum" } ],
+                  [ ".", "BufferCacheHitRatio", { "yAxis": "right" } ]
+                ],
+                "period": 300,
+                "stat": "Average",
+                "region": "${AWS::Region}",
+                "title": "Memory Metrics",
+                "dimensions": {
+                  "DBClusterIdentifier": "${DBClusterIdentifier}"
+                }
+              }
+            }
+          ]
+        }
+
+  # CPU Utilization Alarms
+  WriterCPUAlarmHigh:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${DBClusterIdentifier}-writer-cpu-high
+      AlarmDescription: Writer instance CPU utilization is too high
+      MetricName: CPUUtilization
+      Namespace: AWS/RDS
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 70
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: DBInstanceIdentifier
+          Value: !Sub ${DBClusterIdentifier}-writer
+      AlarmActions:
+        - !Ref DBAlarmTopic
+      TreatMissingData: notBreaching
+
+  ReaderCPUAlarmHigh:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${DBClusterIdentifier}-reader-cpu-high
+      AlarmDescription: Reader instance CPU utilization is too high
+      MetricName: CPUUtilization
+      Namespace: AWS/RDS
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 80
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: DBInstanceIdentifier
+          Value: !Sub ${DBClusterIdentifier}-reader-1
+      AlarmActions:
+        - !Ref DBAlarmTopic
+
+  # Memory Alarms
+  WriterLowMemoryAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${DBClusterIdentifier}-writer-low-memory
+      AlarmDescription: Writer instance has low freeable memory
+      MetricName: FreeableMemory
+      Namespace: AWS/RDS
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 6442450944  # 6GB for r6g.2xlarge (10% of 64GB)
+      ComparisonOperator: LessThanThreshold
+      Dimensions:
+        - Name: DBInstanceIdentifier
+          Value: !Sub ${DBClusterIdentifier}-writer
+      AlarmActions:
+        - !Ref DBAlarmTopic
+
+  # Connection Count Alarms
+  HighConnectionsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${DBClusterIdentifier}-high-connections
+      AlarmDescription: Database connection count is approaching limit
+      MetricName: DatabaseConnections
+      Namespace: AWS/RDS
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 800  # 80% of 1000 max_connections
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: DBClusterIdentifier
+          Value: !Ref DBClusterIdentifier
+      AlarmActions:
+        - !Ref DBAlarmTopic
+
+  # Replication Lag Alarm
+  ReplicationLagAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${DBClusterIdentifier}-replication-lag
+      AlarmDescription: Aurora replication lag is too high
+      MetricName: AuroraReplicaLag
+      Namespace: AWS/RDS
+      Statistic: Maximum
+      Period: 60
+      EvaluationPeriods: 5
+      Threshold: 1000  # 1 second in milliseconds
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: DBClusterIdentifier
+          Value: !Ref DBClusterIdentifier
+      AlarmActions:
+        - !Ref DBAlarmTopic
+
+  # Buffer Cache Hit Ratio Alarm
+  LowCacheHitRatioAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${DBClusterIdentifier}-low-cache-hit-ratio
+      AlarmDescription: Buffer cache hit ratio is below optimal
+      MetricName: BufferCacheHitRatio
+      Namespace: AWS/RDS
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 3
+      Threshold: 97
+      ComparisonOperator: LessThanThreshold
+      Dimensions:
+        - Name: DBClusterIdentifier
+          Value: !Ref DBClusterIdentifier
+      AlarmActions:
+        - !Ref DBAlarmTopic
+
+  # Write Latency Alarm
+  HighWriteLatencyAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${DBClusterIdentifier}-high-write-latency
+      AlarmDescription: Write latency is above acceptable threshold
+      MetricName: WriteLatency
+      Namespace: AWS/RDS
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 0.02  # 20ms
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: DBClusterIdentifier
+          Value: !Ref DBClusterIdentifier
+      AlarmActions:
+        - !Ref DBAlarmTopic
+
+  # Read Latency Alarm
+  HighReadLatencyAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${DBClusterIdentifier}-high-read-latency
+      AlarmDescription: Read latency is above acceptable threshold
+      MetricName: ReadLatency
+      Namespace: AWS/RDS
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 0.02  # 20ms
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: DBClusterIdentifier
+          Value: !Ref DBClusterIdentifier
+      AlarmActions:
+        - !Ref DBAlarmTopic
+
+  # Disk Queue Depth Alarm
+  HighDiskQueueAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${DBClusterIdentifier}-high-disk-queue
+      AlarmDescription: Disk queue depth indicates I/O bottleneck
+      MetricName: DiskQueueDepth
+      Namespace: AWS/RDS
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 20
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: DBClusterIdentifier
+          Value: !Ref DBClusterIdentifier
+      AlarmActions:
+        - !Ref DBAlarmTopic
+
+  # Database Load Alarm (if Performance Insights enabled)
+  HighDBLoadAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${DBClusterIdentifier}-high-db-load
+      AlarmDescription: Database load exceeds vCPU count
+      MetricName: DBLoad
+      Namespace: AWS/RDS
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 8  # vCPU count for r6g.2xlarge
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: DBInstanceIdentifier
+          Value: !Sub ${DBClusterIdentifier}-writer
+      AlarmActions:
+        - !Ref DBAlarmTopic
+      TreatMissingData: notBreaching
+
+  # Storage Space Alarm
+  StorageSpaceAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${DBClusterIdentifier}-storage-space-high
+      AlarmDescription: Aurora storage usage is high
+      MetricName: VolumeBytesUsed
+      Namespace: AWS/RDS
+      Statistic: Maximum
+      Period: 3600
+      EvaluationPeriods: 1
+      Threshold: 5497558138880  # 5TB
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: DBClusterIdentifier
+          Value: !Ref DBClusterIdentifier
+      AlarmActions:
+        - !Ref DBAlarmTopic
+
+  # Backup Status Alarm
+  BackupRetentionAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${DBClusterIdentifier}-backup-retention
+      AlarmDescription: Backup retention period alarm
+      MetricName: BackupRetentionPeriodStorageUsed
+      Namespace: AWS/RDS
+      Statistic: Maximum
+      Period: 3600
+      EvaluationPeriods: 1
+      Threshold: 0
+      ComparisonOperator: LessThanThreshold
+      Dimensions:
+        - Name: DBClusterIdentifier
+          Value: !Ref DBClusterIdentifier
+      AlarmActions:
+        - !Ref DBAlarmTopic
+      TreatMissingData: breaching
+
+Outputs:
+  DashboardURL:
+    Description: CloudWatch Dashboard URL
+    Value: !Sub https://${AWS::Region}.console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#dashboards:name=${DBClusterIdentifier}-dashboard
+    
+  AlarmTopicArn:
+    Description: SNS Topic for database alarms
+    Value: !Ref DBAlarmTopic
+    Export:
+      Name: !Sub ${AWS::StackName}-alarm-topic

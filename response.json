@@ -1,0 +1,1 @@
+{"statusCode": 200, "body": "{\"message\": \"Database initialization completed\", \"cluster_arn\": \"arn:aws:rds:us-east-1:695353648052:cluster:gaming-system-aurora-db-cluster\"}"}

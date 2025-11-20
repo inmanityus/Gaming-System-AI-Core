@@ -1,0 +1,29 @@
+{
+  "Services": {
+    "npc-behavior": {
+      "Image": "695353648052.dkr.ecr.us-east-1.amazonaws.com/bodybroker-services/npc-behavior:20251119-173811",
+      "Issue": "ProxyManager import fixed"
+    },
+    "knowledge-base": {
+      "Image": "695353648052.dkr.ecr.us-east-1.amazonaws.com/bodybroker-services/knowledge-base:20251119-173811",
+      "Issue": "Docker image missing in ECR"
+    },
+    "ai-integration": {
+      "Image": "695353648052.dkr.ecr.us-east-1.amazonaws.com/bodybroker-services/ai-integration:20251119-173811",
+      "Issue": "Logger import added"
+    },
+    "story-teller": {
+      "Image": "695353648052.dkr.ecr.us-east-1.amazonaws.com/bodybroker-services/story-teller:20251119-173811",
+      "Issue": "PostgreSQLPool import fixed"
+    },
+    "orchestration": {
+      "Image": "695353648052.dkr.ecr.us-east-1.amazonaws.com/bodybroker-services/orchestration:20251119-173811",
+      "Issue": "LLMClient import fixed"
+    },
+    "language-system": {
+      "Image": "695353648052.dkr.ecr.us-east-1.amazonaws.com/bodybroker-services/language-system:20251119-173811",
+      "Issue": "grpcio added to requirements"
+    }
+  },
+  "Timestamp": "2025-11-19T17:43:32.1681204-07:00"
+}

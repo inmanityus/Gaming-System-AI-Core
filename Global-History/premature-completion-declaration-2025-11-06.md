@@ -158,3 +158,4 @@
 **Never declare work complete until it's ACTUALLY complete.** Real data, real functionality, real requirements met. Not "good enough," not "close enough," not "it runs." Actually complete.
 
 
+

@@ -1,0 +1,409 @@
+name: Deploy with Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+      services:
+        description: 'Services to deploy (comma-separated or "all")'
+        required: true
+        default: 'all'
+      version:
+        description: 'Version/tag to deploy (leave empty for latest)'
+        required: false
+      rollback:
+        description: 'Rollback to previous version'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  AWS_REGION: us-east-1
+  AWS_ACCOUNT_ID: 695353648052
+  ECR_REGISTRY: 695353648052.dkr.ecr.us-east-1.amazonaws.com
+  ECS_CLUSTER: gaming-system-cluster
+
+jobs:
+  prepare-deployment:
+    name: Prepare Deployment
+    runs-on: ubuntu-latest
+    outputs:
+      services-to-deploy: ${{ steps.prepare.outputs.services }}
+      version-to-deploy: ${{ steps.prepare.outputs.version }}
+      deployment-id: ${{ steps.prepare.outputs.deployment-id }}
+      
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Prepare deployment parameters
+      id: prepare
+      run: |
+        # Generate deployment ID
+        DEPLOYMENT_ID="deploy-$(date +%Y%m%d-%H%M%S)-${{ github.run_id }}"
+        echo "deployment-id=$DEPLOYMENT_ID" >> $GITHUB_OUTPUT
+        
+        # Determine services to deploy
+        if [ "${{ github.event.inputs.services }}" == "all" ]; then
+          SERVICES=$(jq -c '.services | map(select(.has_dockerfile == true or .has_dockerfile_nats == true)) | map(.name)' .github/services.json)
+        else
+          # Convert comma-separated to JSON array
+          IFS=',' read -ra SERVICE_ARRAY <<< "${{ github.event.inputs.services }}"
+          SERVICES=$(printf '%s\n' "${SERVICE_ARRAY[@]}" | jq -R . | jq -s .)
+        fi
+        echo "services=$SERVICES" >> $GITHUB_OUTPUT
+        
+        # Determine version
+        if [ -z "${{ github.event.inputs.version }}" ]; then
+          VERSION="latest"
+        else
+          VERSION="${{ github.event.inputs.version }}"
+        fi
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        
+        # Log deployment plan
+        echo "## Deployment Plan" >> $GITHUB_STEP_SUMMARY
+        echo "- **Environment:** ${{ github.event.inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Version:** $VERSION" >> $GITHUB_STEP_SUMMARY
+        echo "- **Rollback:** ${{ github.event.inputs.rollback }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Services:** $(echo $SERVICES | jq -r '.[]' | tr '\n' ', ' | sed 's/,$//')" >> $GITHUB_STEP_SUMMARY
+
+  save-current-state:
+    name: Save Current State
+    runs-on: ubuntu-latest
+    needs: prepare-deployment
+    permissions:
+      id-token: write
+      contents: read
+      
+    steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+    
+    - name: Save current deployment state
+      run: |
+        # Create deployment state file
+        DEPLOYMENT_STATE="{\"deployment_id\": \"${{ needs.prepare-deployment.outputs.deployment-id }}\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"services\": {}}"
+        
+        # For each service, save current task definition
+        for SERVICE in $(echo '${{ needs.prepare-deployment.outputs.services-to-deploy }}' | jq -r '.[]'); do
+          echo "Saving state for $SERVICE..."
+          
+          # Get current task definition
+          CURRENT_TASK_DEF=$(aws ecs describe-services \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --services $SERVICE \
+            --query 'services[0].taskDefinition' \
+            --output text 2>/dev/null || echo "")
+          
+          if [ ! -z "$CURRENT_TASK_DEF" ] && [ "$CURRENT_TASK_DEF" != "None" ]; then
+            # Get the image from task definition
+            CURRENT_IMAGE=$(aws ecs describe-task-definition \
+              --task-definition $CURRENT_TASK_DEF \
+              --query 'taskDefinition.containerDefinitions[0].image' \
+              --output text)
+            
+            # Add to deployment state
+            DEPLOYMENT_STATE=$(echo $DEPLOYMENT_STATE | jq --arg SERVICE "$SERVICE" --arg TASK_DEF "$CURRENT_TASK_DEF" --arg IMAGE "$CURRENT_IMAGE" \
+              '.services[$SERVICE] = {"taskDefinition": $TASK_DEF, "image": $IMAGE}')
+          fi
+        done
+        
+        # Save to S3 for rollback purposes
+        echo $DEPLOYMENT_STATE | aws s3 cp - \
+          "s3://gaming-system-deployments/${{ github.event.inputs.environment }}/${{ needs.prepare-deployment.outputs.deployment-id }}/state.json"
+        
+        # Also save as artifact
+        echo $DEPLOYMENT_STATE > deployment-state.json
+        
+    - name: Upload deployment state
+      uses: actions/upload-artifact@v3
+      with:
+        name: deployment-state-${{ needs.prepare-deployment.outputs.deployment-id }}
+        path: deployment-state.json
+        retention-days: 30
+
+  deploy-services:
+    name: Deploy - ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    needs: [prepare-deployment, save-current-state]
+    if: github.event.inputs.rollback != 'true'
+    permissions:
+      id-token: write
+      contents: read
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.prepare-deployment.outputs.services-to-deploy) }}
+      fail-fast: false
+      max-parallel: 5
+      
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+    
+    - name: Deploy service
+      id: deploy
+      run: |
+        SERVICE_NAME="${{ matrix.service }}"
+        VERSION="${{ needs.prepare-deployment.outputs.version-to-deploy }}"
+        
+        echo "Deploying $SERVICE_NAME with version $VERSION..."
+        
+        # Check if service exists
+        if ! aws ecs describe-services \
+          --cluster ${{ env.ECS_CLUSTER }} \
+          --services $SERVICE_NAME \
+          --region ${{ env.AWS_REGION }} 2>/dev/null | jq -e '.services[0].status == "ACTIVE"' >/dev/null; then
+          echo "Service $SERVICE_NAME does not exist, skipping..."
+          exit 0
+        fi
+        
+        # Get current task definition
+        CURRENT_TASK_DEF_ARN=$(aws ecs describe-services \
+          --cluster ${{ env.ECS_CLUSTER }} \
+          --services $SERVICE_NAME \
+          --query 'services[0].taskDefinition' \
+          --output text)
+        
+        # Get task definition
+        TASK_DEF=$(aws ecs describe-task-definition \
+          --task-definition $CURRENT_TASK_DEF_ARN \
+          --query 'taskDefinition')
+        
+        # Update image
+        NEW_IMAGE="${{ env.ECR_REGISTRY }}/bodybroker-services/$SERVICE_NAME:$VERSION"
+        
+        # Check if image exists
+        if ! aws ecr describe-images \
+          --repository-name "bodybroker-services/$SERVICE_NAME" \
+          --image-ids imageTag=$VERSION \
+          --region ${{ env.AWS_REGION }} 2>/dev/null; then
+          echo "Image $NEW_IMAGE does not exist!"
+          exit 1
+        fi
+        
+        # Update task definition
+        NEW_TASK_DEF=$(echo $TASK_DEF | jq --arg IMAGE "$NEW_IMAGE" \
+          '.containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)')
+        
+        # Register new task definition
+        NEW_TASK_ARN=$(echo $NEW_TASK_DEF | \
+          aws ecs register-task-definition \
+          --cli-input-json - \
+          --query 'taskDefinition.taskDefinitionArn' \
+          --output text)
+        
+        echo "Registered new task definition: $NEW_TASK_ARN"
+        
+        # Update service
+        aws ecs update-service \
+          --cluster ${{ env.ECS_CLUSTER }} \
+          --service $SERVICE_NAME \
+          --task-definition $NEW_TASK_ARN \
+          --force-new-deployment \
+          --output json > update-result.json
+        
+        echo "task-definition=$NEW_TASK_ARN" >> $GITHUB_OUTPUT
+    
+    - name: Wait for deployment
+      timeout-minutes: 10
+      run: |
+        echo "Waiting for ${{ matrix.service }} to stabilize..."
+        
+        # Wait for service to stabilize
+        if ! aws ecs wait services-stable \
+          --cluster ${{ env.ECS_CLUSTER }} \
+          --services ${{ matrix.service }} \
+          --region ${{ env.AWS_REGION }}; then
+          echo "Service failed to stabilize!"
+          exit 1
+        fi
+        
+        echo "Service stabilized successfully"
+    
+    - name: Verify deployment health
+      run: |
+        # Get service details
+        SERVICE_INFO=$(aws ecs describe-services \
+          --cluster ${{ env.ECS_CLUSTER }} \
+          --services ${{ matrix.service }} \
+          --query 'services[0]')
+        
+        RUNNING=$(echo $SERVICE_INFO | jq -r '.runningCount')
+        DESIRED=$(echo $SERVICE_INFO | jq -r '.desiredCount')
+        
+        echo "Service ${{ matrix.service }}: Running $RUNNING/$DESIRED tasks"
+        
+        if [ "$RUNNING" != "$DESIRED" ]; then
+          echo "Service is not healthy!"
+          exit 1
+        fi
+
+  rollback-deployment:
+    name: Rollback - ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    needs: prepare-deployment
+    if: github.event.inputs.rollback == 'true'
+    permissions:
+      id-token: write
+      contents: read
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.prepare-deployment.outputs.services-to-deploy) }}
+      fail-fast: false
+      max-parallel: 5
+      
+    steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+    
+    - name: Find previous deployment
+      id: find-previous
+      run: |
+        # List recent deployments
+        DEPLOYMENTS=$(aws s3 ls "s3://gaming-system-deployments/${{ github.event.inputs.environment }}/" | \
+          grep "PRE deploy-" | \
+          awk '{print $2}' | \
+          sed 's|/$||' | \
+          sort -r | \
+          head -5)
+        
+        # Find the most recent deployment with this service
+        for DEPLOYMENT in $DEPLOYMENTS; do
+          STATE=$(aws s3 cp "s3://gaming-system-deployments/${{ github.event.inputs.environment }}/$DEPLOYMENT/state.json" - 2>/dev/null || echo "{}")
+          
+          if echo $STATE | jq -e '.services["${{ matrix.service }}"]' >/dev/null 2>&1; then
+            PREVIOUS_TASK_DEF=$(echo $STATE | jq -r '.services["${{ matrix.service }}"].taskDefinition')
+            echo "Found previous deployment: $DEPLOYMENT"
+            echo "Previous task definition: $PREVIOUS_TASK_DEF"
+            echo "task-definition=$PREVIOUS_TASK_DEF" >> $GITHUB_OUTPUT
+            break
+          fi
+        done
+    
+    - name: Rollback service
+      if: steps.find-previous.outputs.task-definition != ''
+      run: |
+        echo "Rolling back ${{ matrix.service }} to ${{ steps.find-previous.outputs.task-definition }}..."
+        
+        aws ecs update-service \
+          --cluster ${{ env.ECS_CLUSTER }} \
+          --service ${{ matrix.service }} \
+          --task-definition ${{ steps.find-previous.outputs.task-definition }} \
+          --force-new-deployment
+        
+        # Wait for rollback to complete
+        aws ecs wait services-stable \
+          --cluster ${{ env.ECS_CLUSTER }} \
+          --services ${{ matrix.service }} \
+          --region ${{ env.AWS_REGION }}
+
+  post-deployment-tests:
+    name: Post-Deployment Tests
+    runs-on: ubuntu-latest
+    needs: [deploy-services, rollback-deployment]
+    if: always() && (needs.deploy-services.result == 'success' || needs.rollback-deployment.result == 'success')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install test dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest requests boto3
+    
+    - name: Run smoke tests
+      env:
+        ENVIRONMENT: ${{ github.event.inputs.environment }}
+        AWS_DEFAULT_REGION: ${{ env.AWS_REGION }}
+      run: |
+        # Create simple smoke test
+        cat > test_deployment.py << 'EOF'
+        import boto3
+        import os
+        
+        def test_services_running():
+            ecs = boto3.client('ecs')
+            cluster = os.environ.get('ECS_CLUSTER', 'gaming-system-cluster')
+            
+            # List all services
+            response = ecs.list_services(cluster=cluster, maxResults=100)
+            service_arns = response['serviceArns']
+            
+            # Check each service
+            unhealthy = []
+            for batch in [service_arns[i:i+10] for i in range(0, len(service_arns), 10)]:
+                services = ecs.describe_services(cluster=cluster, services=batch)['services']
+                
+                for service in services:
+                    if service['runningCount'] != service['desiredCount']:
+                        unhealthy.append(service['serviceName'])
+            
+            assert len(unhealthy) == 0, f"Unhealthy services: {unhealthy}"
+        
+        if __name__ == "__main__":
+            test_services_running()
+            print("All services are healthy!")
+        EOF
+        
+        python test_deployment.py
+
+  deployment-summary:
+    name: Deployment Summary
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [prepare-deployment, save-current-state, deploy-services, rollback-deployment, post-deployment-tests]
+    
+    steps:
+    - name: Generate deployment report
+      run: |
+        echo "## Deployment Report" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Deployment ID:** ${{ needs.prepare-deployment.outputs.deployment-id }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Environment:** ${{ github.event.inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Type:** ${{ github.event.inputs.rollback == 'true' && 'Rollback' || 'Deploy' }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Results" >> $GITHUB_STEP_SUMMARY
+        echo "- State Saved: ${{ needs.save-current-state.result }}" >> $GITHUB_STEP_SUMMARY
+        if [ "${{ github.event.inputs.rollback }}" != "true" ]; then
+          echo "- Deployment: ${{ needs.deploy-services.result }}" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "- Rollback: ${{ needs.rollback-deployment.result }}" >> $GITHUB_STEP_SUMMARY
+        fi
+        echo "- Post-Deploy Tests: ${{ needs.post-deployment-tests.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        # Add warning if any step failed
+        if [ "${{ needs.post-deployment-tests.result }}" != "success" ]; then
+          echo "⚠️ **WARNING:** Post-deployment tests failed. Manual intervention may be required." >> $GITHUB_STEP_SUMMARY
+        fi
+    
+    - name: Send notification
+      if: always()
+      run: |
+        # Placeholder for notification logic (Slack, email, etc.)
+        echo "Deployment ${{ needs.prepare-deployment.outputs.deployment-id }} completed with status: ${{ job.status }}"

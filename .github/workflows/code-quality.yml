@@ -1,0 +1,262 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [ main, develop, 'feature/*' ]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Full history for better analysis
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+    
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cache/pip
+          ~/.cache/pre-commit
+        key: ${{ runner.os }}-quality-${{ hashFiles('**/requirements*.txt', '.pre-commit-config.yaml') }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install black flake8 mypy pylint isort radon xenon
+        pip install -r requirements.txt
+    
+    - name: Format check with Black
+      run: |
+        black --check --diff services tests
+    
+    - name: Import sort check with isort
+      run: |
+        isort --check-only --diff services tests
+    
+    - name: Lint with flake8
+      run: |
+        flake8 services tests \
+          --count \
+          --max-line-length=120 \
+          --statistics \
+          --show-source
+    
+    - name: Type check with mypy
+      run: |
+        mypy services \
+          --python-version 3.13 \
+          --ignore-missing-imports \
+          --show-error-codes \
+          --pretty
+    
+    - name: Lint with pylint
+      run: |
+        pylint services \
+          --rcfile=.pylintrc \
+          --output-format=colorized \
+          --jobs=0
+    
+    - name: Complexity analysis with radon
+      run: |
+        # Cyclomatic complexity
+        radon cc services -a -s
+        
+        # Maintainability index  
+        radon mi services -s
+        
+        # Raw metrics
+        radon raw services -s
+    
+    - name: Code quality with xenon
+      run: |
+        # Fail if cyclomatic complexity > 10
+        xenon --max-absolute B --max-modules B --max-average B services
+
+  test-coverage:
+    name: Test Coverage Analysis
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: gaming_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-test.txt
+    
+    - name: Run tests with coverage
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/gaming_test
+      run: |
+        coverage run -m pytest tests -v
+        coverage xml
+        coverage report
+        coverage html
+    
+    - name: Check coverage threshold
+      run: |
+        coverage report --fail-under=80
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+    
+    - name: Upload coverage HTML report
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-report
+        path: htmlcov/
+
+  sonarcloud:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-test.txt
+    
+    - name: Run tests for SonarCloud
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/gaming_test
+      run: |
+        coverage run -m pytest tests -v --junit-xml=test-results.xml
+        coverage xml
+    
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        args: >
+          -Dsonar.projectKey=gaming-system-ai-core
+          -Dsonar.organization=your-org
+          -Dsonar.sources=services
+          -Dsonar.tests=tests
+          -Dsonar.python.coverage.reportPaths=coverage.xml
+          -Dsonar.python.xunit.reportPath=test-results.xml
+
+  documentation:
+    name: Documentation Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pydocstyle interrogate
+    
+    - name: Check docstring style
+      run: |
+        pydocstyle services --convention=google
+    
+    - name: Check docstring coverage
+      run: |
+        interrogate services \
+          --verbose \
+          --fail-under 80 \
+          --ignore-init-method \
+          --ignore-init-module \
+          --ignore-magic \
+          --ignore-module \
+          --ignore-private
+
+  pr-quality-report:
+    name: PR Quality Report
+    runs-on: ubuntu-latest
+    needs: [code-quality, test-coverage, documentation]
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Generate quality report
+      run: |
+        cat << EOF > quality-report.md
+        ## Code Quality Report
+        
+        ### ✅ Checks Completed
+        
+        - Code formatting (Black)
+        - Import ordering (isort)
+        - Code linting (flake8, pylint)
+        - Type checking (mypy)
+        - Complexity analysis
+        - Test coverage (>80%)
+        - Documentation coverage
+        
+        ### 📊 Metrics
+        
+        See individual job logs for detailed metrics.
+        
+        ### 📝 Next Steps
+        
+        Please ensure all quality checks pass before merging.
+        EOF
+    
+    - name: Comment PR
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const report = fs.readFileSync('quality-report.md', 'utf8');
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: report
+          });

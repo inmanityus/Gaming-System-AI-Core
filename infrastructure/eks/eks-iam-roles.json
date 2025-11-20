@@ -1,0 +1,6 @@
+{
+  "eksServiceRoleArn": "arn:aws:iam::695353648052:role/ai-core-eks-service-role",
+  "eksNodeRoleArn": "arn:aws:iam::695353648052:role/ai-core-eks-node-role",
+  "karpenterRoleArn": "arn:aws:iam::695353648052:role/ai-core-karpenter-controller",
+  "creationDate": "2025-11-18 23:23:20"
+}

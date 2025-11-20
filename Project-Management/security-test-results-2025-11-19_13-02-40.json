@@ -1,0 +1,27 @@
+{
+  "Results": [
+    {
+      "Failed": 0,
+      "Status": "✅ PASSED",
+      "File": "test_security_fixes.py",
+      "Passed": 28
+    },
+    {
+      "Failed": 0,
+      "Status": "✅ PASSED",
+      "File": "test_all_security_fixes.py",
+      "Passed": 24
+    },
+    {
+      "Failed": 0,
+      "Status": "✅ PASSED",
+      "File": "test_security_integration.py",
+      "Passed": 13
+    }
+  ],
+  "PassedTests": 65,
+  "PassRate": 100.0,
+  "Timestamp": "2025-11-19 13:02:40",
+  "FailedTests": 0,
+  "TotalTests": 65
+}

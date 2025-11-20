@@ -1,0 +1,644 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Production-Ready High-Performance Aurora PostgreSQL for Gaming System AI Core v2'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: production
+    AllowedValues:
+      - development
+      - staging
+      - production
+    Description: Environment name
+
+  DBUsername:
+    Type: String
+    Default: dbadmin
+    Description: Database admin username
+    MinLength: 1
+    MaxLength: 63
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+
+  VPCId:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC ID for database deployment
+
+  PrivateSubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: Private subnet IDs for database cluster (min 2 AZs)
+
+  DatabaseName:
+    Type: String
+    Default: gaming_system_ai_core
+    Description: Initial database name
+
+  EnablePerformanceInsights:
+    Type: String
+    Default: 'true'
+    AllowedValues:
+      - 'true'
+      - 'false'
+    Description: Enable Performance Insights for monitoring
+
+  PerformanceInsightsRetention:
+    Type: Number
+    Default: 7
+    AllowedValues: [7, 31, 62, 93, 124, 155, 186, 217, 248, 279, 310, 341, 372, 403, 434, 465, 4, 53, 84, 115, 146, 177, 208, 239, 270, 301, 332, 363, 394, 425, 456, 487, 518, 549, 580, 611, 642, 673, 704, 731]
+    Description: Performance Insights retention period in days
+
+  EnableGlobalDatabase:
+    Type: String
+    Default: 'false'
+    AllowedValues:
+      - 'true'
+      - 'false'
+    Description: Enable Aurora Global Database for cross-region HA
+
+  ApplicationSecurityGroupId:
+    Type: AWS::EC2::SecurityGroup::Id
+    Description: Security group ID of the application tier
+
+Conditions:
+  IsProduction: !Equals [!Ref Environment, production]
+  IsNotDevelopment: !Not [!Equals [!Ref Environment, development]]
+  EnablePerfInsights: !Equals [!Ref EnablePerformanceInsights, 'true']
+  CreateGlobalDB: !And 
+    - !Condition IsProduction
+    - !Equals [!Ref EnableGlobalDatabase, 'true']
+
+Resources:
+  # Database Secrets with rotation
+  DBSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub ${AWS::StackName}-db-credentials
+      Description: Aurora PostgreSQL database credentials
+      GenerateSecretString:
+        SecretStringTemplate: !Sub '{"username": "${DBUsername}"}'
+        GenerateStringKey: 'password'
+        PasswordLength: 32
+        ExcludeCharacters: '"@/\'
+        RequireEachIncludedType: true
+      KmsKeyId: alias/aws/secretsmanager
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-db-secret
+
+  DBSecretRotationLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: SecretRotationPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                  - secretsmanager:UpdateSecretVersionStage
+                  - rds:ModifyDBCluster
+                Resource: '*'
+
+  # DB Subnet Group
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupName: !Sub ${AWS::StackName}-subnet-group
+      DBSubnetGroupDescription: Subnet group for Aurora PostgreSQL cluster
+      SubnetIds: !Ref PrivateSubnetIds
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-subnet-group
+
+  # Optimized DB Cluster Parameter Group
+  DBClusterParameterGroup:
+    Type: AWS::RDS::DBClusterParameterGroup
+    Properties:
+      Description: Optimized for gaming workloads with JSONB and time-series
+      Family: aurora-postgresql15
+      Parameters:
+        # Connection settings (RDS Proxy will handle pooling)
+        max_connections: '2000'
+        
+        # Memory - using specific values per instance class
+        shared_buffers: !If [IsProduction, '16GB', '8GB']
+        effective_cache_size: !If [IsProduction, '48GB', '24GB']
+        work_mem: '16MB'  # Reduced for high connection count
+        maintenance_work_mem: '2GB'
+        autovacuum_work_mem: '1GB'
+        
+        # Write performance
+        wal_buffers: '16MB'
+        checkpoint_completion_target: '0.9'
+        checkpoint_timeout: '30min'
+        max_wal_size: '16GB'
+        min_wal_size: '2GB'
+        wal_compression: 'on'
+        
+        # Query optimization
+        random_page_cost: '1.1'  # SSD optimized
+        effective_io_concurrency: '200'
+        max_parallel_workers_per_gather: '4'
+        max_parallel_workers: '32'
+        parallel_leader_participation: 'on'
+        
+        # JSONB optimizations
+        gin_pending_list_limit: '4MB'
+        
+        # Statistics
+        default_statistics_target: '500'
+        track_io_timing: 'on'
+        
+        # Auto vacuum for time-series
+        autovacuum: 'on'
+        autovacuum_max_workers: '10'
+        autovacuum_naptime: '10s'
+        autovacuum_vacuum_cost_limit: '10000'
+        
+        # Logging
+        log_statement: 'ddl'
+        log_min_duration_statement: '1000'
+        log_checkpoints: 'on'
+        log_lock_waits: 'on'
+        log_temp_files: '0'
+        rds.force_autovacuum_logging_level: 'log'
+        
+        # Extensions and monitoring
+        shared_preload_libraries: 'pg_stat_statements,auto_explain,pg_cron'
+        pg_stat_statements.track: 'all'
+        pg_stat_statements.max: '10000'
+        auto_explain.log_min_duration: '5s'
+        auto_explain.log_analyze: 'on'
+        auto_explain.log_buffers: 'on'
+        
+        # Reserved connections for admin
+        rds.superuser_reserved_connections: '5'
+        
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-cluster-params
+
+  # DB Instance Parameter Group
+  DBInstanceParameterGroup:
+    Type: AWS::RDS::DBParameterGroup
+    Properties:
+      Description: Instance-level performance parameters
+      Family: aurora-postgresql15
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-instance-params
+
+  # Security Groups
+  DBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub ${AWS::StackName}-db-sg
+      GroupDescription: Security group for Aurora PostgreSQL cluster
+      VpcId: !Ref VPCId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          SourceSecurityGroupId: !Ref DBProxySecurityGroup
+          Description: Allow access from RDS Proxy
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          SourceSecurityGroupId: !Ref ApplicationSecurityGroupId
+          Description: Allow direct access from application (for migrations)
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-db-sg
+
+  DBProxySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub ${AWS::StackName}-proxy-sg
+      GroupDescription: Security group for RDS Proxy
+      VpcId: !Ref VPCId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          SourceSecurityGroupId: !Ref ApplicationSecurityGroupId
+          Description: Allow access from application tier
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-proxy-sg
+
+  # Enhanced Monitoring Role
+  EnhancedMonitoringRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${AWS::StackName}-monitoring-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: monitoring.rds.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole
+
+  # Global Database (if enabled for production)
+  GlobalCluster:
+    Type: AWS::RDS::GlobalCluster
+    Condition: CreateGlobalDB
+    Properties:
+      GlobalClusterIdentifier: !Sub ${AWS::StackName}-global
+      Engine: aurora-postgresql
+      EngineVersion: '15.4'
+      StorageEncrypted: true
+      DeletionProtection: true
+
+  # Aurora PostgreSQL Cluster
+  DBCluster:
+    Type: AWS::RDS::DBCluster
+    DependsOn: DBSecret
+    Properties:
+      DBClusterIdentifier: !Sub ${AWS::StackName}-cluster
+      Engine: aurora-postgresql
+      EngineVersion: '15.4'
+      EngineMode: provisioned
+      
+      # Link to global database if enabled
+      GlobalClusterIdentifier: !If
+        - CreateGlobalDB
+        - !Ref GlobalCluster
+        - !Ref AWS::NoValue
+      
+      # Networking
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      VpcSecurityGroupIds:
+        - !Ref DBSecurityGroup
+      
+      # Security
+      StorageEncrypted: true
+      KmsKeyId: alias/aws/rds
+      DeletionProtection: !If [IsNotDevelopment, true, false]
+      CopyTagsToSnapshot: true
+      
+      # Credentials
+      MasterUsername: !Sub '{{resolve:secretsmanager:${DBSecret}:SecretString:username}}'
+      MasterUserPassword: !Sub '{{resolve:secretsmanager:${DBSecret}:SecretString:password}}'
+      DatabaseName: !Ref DatabaseName
+      
+      # Performance
+      DBClusterParameterGroupName: !Ref DBClusterParameterGroup
+      PreferredMaintenanceWindow: sun:05:00-sun:06:00
+      PreferredBackupWindow: 03:00-04:00
+      BackupRetentionPeriod: !If [IsProduction, 35, 7]
+      
+      # Monitoring
+      EnableCloudwatchLogsExports:
+        - postgresql
+      
+      # Backtrack (Aurora feature) - only in production
+      BacktrackWindow: !If [IsProduction, 72, 0]
+      
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-cluster
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Primary Writer Instance
+  DBInstanceWriter:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: !Sub ${AWS::StackName}-writer
+      DBClusterIdentifier: !Ref DBCluster
+      DBInstanceClass: !If
+        - IsProduction
+        - db.r6g.2xlarge  # 8 vCPU, 64 GiB RAM
+        - !If
+          - IsNotDevelopment
+          - db.r6g.xlarge   # 4 vCPU, 32 GiB RAM
+          - db.r6g.large    # 2 vCPU, 16 GiB RAM
+      Engine: aurora-postgresql
+      DBParameterGroupName: !Ref DBInstanceParameterGroup
+      
+      # Performance Insights
+      EnablePerformanceInsights: !If [EnablePerfInsights, true, false]
+      PerformanceInsightsRetentionPeriod: !If
+        - EnablePerfInsights
+        - !Ref PerformanceInsightsRetention
+        - !Ref AWS::NoValue
+      
+      # Enhanced monitoring
+      MonitoringInterval: !If [IsProduction, 15, 60]
+      MonitoringRoleArn: !GetAtt EnhancedMonitoringRole.Arn
+      
+      # High priority for failover
+      PromotionTier: 0
+      
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-writer
+        - Key: Role
+          Value: Writer
+
+  # Read Replica 1
+  DBInstanceReader1:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: !Sub ${AWS::StackName}-reader-1
+      DBClusterIdentifier: !Ref DBCluster
+      DBInstanceClass: !If
+        - IsProduction
+        - db.r6g.xlarge   # 4 vCPU, 32 GiB RAM
+        - !If
+          - IsNotDevelopment
+          - db.r6g.large    # 2 vCPU, 16 GiB RAM
+          - db.t4g.large    # 2 vCPU, 8 GiB RAM (burstable for dev)
+      Engine: aurora-postgresql
+      DBParameterGroupName: !Ref DBInstanceParameterGroup
+      EnablePerformanceInsights: !If [EnablePerfInsights, true, false]
+      MonitoringInterval: 60
+      MonitoringRoleArn: !GetAtt EnhancedMonitoringRole.Arn
+      PromotionTier: 1
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-reader-1
+        - Key: Role
+          Value: Reader
+
+  # Read Replica 2 (only in production)
+  DBInstanceReader2:
+    Type: AWS::RDS::DBInstance
+    Condition: IsProduction
+    Properties:
+      DBInstanceIdentifier: !Sub ${AWS::StackName}-reader-2
+      DBClusterIdentifier: !Ref DBCluster
+      DBInstanceClass: db.r6g.xlarge
+      Engine: aurora-postgresql
+      DBParameterGroupName: !Ref DBInstanceParameterGroup
+      EnablePerformanceInsights: !If [EnablePerfInsights, true, false]
+      MonitoringInterval: 60
+      MonitoringRoleArn: !GetAtt EnhancedMonitoringRole.Arn
+      PromotionTier: 2
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-reader-2
+        - Key: Role
+          Value: Reader
+
+  # Auto-scaling Role
+  AutoScalingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${AWS::StackName}-autoscaling-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: application-autoscaling.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: RDSAutoScalingPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - rds:AddTagsToResource
+                  - rds:CreateDBInstance
+                  - rds:DeleteDBInstance
+                  - rds:DescribeDBClusters
+                  - rds:DescribeDBInstances
+                  - rds:ModifyDBCluster
+                  - cloudwatch:PutMetricAlarm
+                  - cloudwatch:DescribeAlarms
+                  - cloudwatch:DeleteAlarms
+                Resource: '*'
+
+  # Auto-scaling for read replicas
+  DBClusterScalableTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Condition: IsProduction
+    Properties:
+      MaxCapacity: 15
+      MinCapacity: 2  # Always have at least 2 readers in production
+      ResourceId: !Sub cluster:${DBCluster}
+      ScalableDimension: rds:cluster:ReadReplicaCount
+      ServiceNamespace: rds
+      RoleARN: !GetAtt AutoScalingRole.Arn
+
+  DBClusterScalingPolicyCPU:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Condition: IsProduction
+    Properties:
+      PolicyName: !Sub ${AWS::StackName}-cpu-scaling
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId: !Ref DBClusterScalableTarget
+      TargetTrackingScalingPolicyConfiguration:
+        TargetValue: 60.0
+        PredefinedMetricSpecification:
+          PredefinedMetricType: RDSReaderAverageCPUUtilization
+        ScaleInCooldown: 300
+        ScaleOutCooldown: 120
+
+  # RDS Proxy IAM Role
+  DBProxyRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${AWS::StackName}-proxy-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: rds.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: SecretsManagerAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                  - secretsmanager:DescribeSecret
+                Resource: !Ref DBSecret
+              - Effect: Allow
+                Action:
+                  - kms:Decrypt
+                Resource: '*'
+                Condition:
+                  StringEquals:
+                    kms:ViaService: !Sub secretsmanager.${AWS::Region}.amazonaws.com
+
+  # RDS Proxy
+  DBProxy:
+    Type: AWS::RDS::DBProxy
+    Properties:
+      DBProxyName: !Sub ${AWS::StackName}-proxy
+      EngineFamily: POSTGRESQL
+      Auth:
+        - AuthScheme: SECRETS
+          SecretArn: !Ref DBSecret
+          IAMAuth: DISABLED
+      RoleArn: !GetAtt DBProxyRole.Arn
+      VpcSubnetIds: !Ref PrivateSubnetIds
+      VpcSecurityGroupIds:
+        - !Ref DBProxySecurityGroup
+      
+      # Connection pooling for 10k+ gaming sessions
+      MaxConnectionsPercent: 80  # Leave 20% for direct connections
+      MaxIdleConnectionsPercent: 20
+      ConnectionBorrowTimeout: 20  # Fail fast under load
+      SessionPinningFilters: []  # No session pinning for better pooling
+      
+      RequireTLS: true
+      IdleClientTimeout: 1800  # 30 minutes
+      
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-proxy
+
+  DBProxyTargetGroup:
+    Type: AWS::RDS::DBProxyTargetGroup
+    Properties:
+      DBProxyName: !Ref DBProxy
+      DBClusterIdentifiers:
+        - !Ref DBCluster
+      TargetGroupName: default
+      ConnectionPoolConfig:
+        MaxConnectionsPercent: 100
+        MaxIdleConnectionsPercent: 50
+        ConnectionBorrowTimeout: 20
+        SessionPinningFilters: []
+
+  # CloudWatch Alarms
+  DBClusterCPUAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${AWS::StackName}-cluster-high-cpu
+      AlarmDescription: Aurora cluster CPU utilization
+      MetricName: CPUUtilization
+      Namespace: AWS/RDS
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 80
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: DBClusterIdentifier
+          Value: !Ref DBCluster
+      AlarmActions:
+        - !Ref SNSTopic
+      TreatMissingData: notBreaching
+
+  DBConnectionAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${AWS::StackName}-high-connections
+      AlarmDescription: High database connection count
+      MetricName: DatabaseConnections
+      Namespace: AWS/RDS
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 1600  # 80% of max_connections
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: DBClusterIdentifier
+          Value: !Ref DBCluster
+      AlarmActions:
+        - !Ref SNSTopic
+
+  DBReplicaLagAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Condition: IsProduction
+    Properties:
+      AlarmName: !Sub ${AWS::StackName}-replica-lag
+      AlarmDescription: Aurora replica lag
+      MetricName: AuroraReplicaLag
+      Namespace: AWS/RDS
+      Statistic: Maximum
+      Period: 60
+      EvaluationPeriods: 5
+      Threshold: 1000  # 1 second in milliseconds
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: DBClusterIdentifier
+          Value: !Ref DBCluster
+      AlarmActions:
+        - !Ref SNSTopic
+
+  DBFreeableMemoryAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${AWS::StackName}-low-memory
+      AlarmDescription: Low freeable memory
+      MetricName: FreeableMemory
+      Namespace: AWS/RDS
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 2147483648  # 2 GB in bytes
+      ComparisonOperator: LessThanThreshold
+      Dimensions:
+        - Name: DBClusterIdentifier
+          Value: !Ref DBCluster
+      AlarmActions:
+        - !Ref SNSTopic
+
+  # SNS Topic for Alarms
+  SNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub ${AWS::StackName}-db-alarms
+      DisplayName: Database Alarms
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-alarms
+
+Outputs:
+  DBClusterEndpoint:
+    Description: Aurora cluster endpoint (writer)
+    Value: !GetAtt DBCluster.Endpoint.Address
+    Export:
+      Name: !Sub ${AWS::StackName}-cluster-endpoint
+
+  DBClusterReadEndpoint:
+    Description: Aurora cluster read endpoint
+    Value: !GetAtt DBCluster.ReadEndpoint.Address
+    Export:
+      Name: !Sub ${AWS::StackName}-read-endpoint
+
+  DBProxyEndpoint:
+    Description: RDS Proxy endpoint for connection pooling
+    Value: !GetAtt DBProxy.Endpoint
+    Export:
+      Name: !Sub ${AWS::StackName}-proxy-endpoint
+
+  DBSecretArn:
+    Description: Secrets Manager ARN for database credentials
+    Value: !Ref DBSecret
+    Export:
+      Name: !Sub ${AWS::StackName}-secret-arn
+
+  DBName:
+    Description: Database name
+    Value: !Ref DatabaseName
+    Export:
+      Name: !Sub ${AWS::StackName}-database-name
+
+  ConnectionString:
+    Description: Connection string format (replace password)
+    Value: !Sub |
+      postgresql://${DBUsername}:<password>@${DBProxy.Endpoint}:5432/${DatabaseName}
+    Export:
+      Name: !Sub ${AWS::StackName}-connection-string

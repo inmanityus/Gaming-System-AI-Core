@@ -1,0 +1,921 @@
+{
+  "execution_time": "0:00:15.640612",
+  "start_time": "2025-11-18T23:11:49.792329",
+  "end_time": "2025-11-18T23:12:05.432946",
+  "test_results": {
+    "test_aws_organizations.py": {
+      "success": false,
+      "stdout": "============================= test session starts =============================\nplatform win32 -- Python 3.14.0, pytest-8.4.2, pluggy-1.6.0 -- C:\\Users\\kento\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nbenchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)\nmetadata: {'Python': '3.14.0', 'Platform': 'Windows-11-10.0.26200-SP0', 'Packages': {'pytest': '8.4.2', 'pluggy': '1.6.0'}, 'Plugins': {'anyio': '4.11.0', 'hypothesis': '6.147.0', 'locust': '2.42.3', 'asyncio': '1.2.0', 'benchmark': '5.2.3', 'cov': '7.0.0', 'html': '4.1.1', 'json-report': '1.5.0', 'metadata': '3.1.1', 'mock': '3.15.1'}, 'AWS_REGION': 'us-east-1'}\nrootdir: E:\\Vibe Code\\Gaming System\\AI Core\nconfigfile: pytest.ini\nplugins: anyio-4.11.0, hypothesis-6.147.0, locust-2.42.3, asyncio-1.2.0, benchmark-5.2.3, cov-7.0.0, html-4.1.1, json-report-1.5.0, metadata-3.1.1, mock-3.15.1\nasyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollecting ... collected 9 items\n\ntest_aws_organizations.py::TestAWSOrganizations::test_organization_exists \n------------------------------- live log setup --------------------------------\n2025-11-18 23:11:52 [    INFO] botocore.credentials: Found credentials in shared credentials file: ~/.aws/credentials\nPASSED                                                                   [ 11%]\ntest_aws_organizations.py::TestAWSOrganizations::test_organizational_units_exist PASSED [ 22%]\ntest_aws_organizations.py::TestAWSOrganizations::test_service_control_policy_exists PASSED [ 33%]\ntest_aws_organizations.py::TestAWSOrganizations::test_cloudtrail_configured PASSED [ 44%]\ntest_aws_organizations.py::TestAWSOrganizations::test_cloudtrail_s3_bucket PASSED [ 55%]\ntest_aws_organizations.py::TestAWSOrganizations::test_scp_attachment PASSED [ 66%]\ntest_aws_organizations.py::TestAWSOrganizations::test_cloudtrail_event_selectors PASSED [ 77%]\ntest_aws_organizations.py::TestAWSOrganizationsCompliance::test_ou_structure_compliance PASSED [ 88%]\ntest_aws_organizations.py::TestAWSOrganizationsCompliance::test_scp_least_privilege PASSED [100%]\nWARNING: Failed to generate report: No data to report.\n\n\nERROR: Coverage failure: total of 0 is less than fail-under=80\n\n\n--------------------------------- JSON report ---------------------------------\nreport saved to: test_report.json\n=============================== tests coverage ================================\n_______________ coverage: platform win32, python 3.14.0-final-0 _______________\n\nFAIL Required test coverage of 80% not reached. Total coverage: 0.00%\n============================== 9 passed in 6.08s ==============================\n",
+      "stderr": "C:\\Users\\kento\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\coverage\\inorout.py:521: CoverageWarning: Module services was never imported. (module-not-imported); see https://coverage.readthedocs.io/en/7.11.2/messages.html#warning-module-not-imported\n  self.warn(f\"Module {pkg} was never imported.\", slug=\"module-not-imported\")\nC:\\Users\\kento\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\coverage\\control.py:950: CoverageWarning: No data was collected. (no-data-collected); see https://coverage.readthedocs.io/en/7.11.2/messages.html#warning-no-data-collected\n  self._warn(\"No data was collected.\", slug=\"no-data-collected\")\nC:\\Users\\kento\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\pytest_cov\\plugin.py:363: CovReportWarning: Failed to generate report: No data to report.\n\n  warnings.warn(CovReportWarning(message), stacklevel=1)\n",
+      "report": {
+        "created": 1763532717.9869823,
+        "duration": 6.084072113037109,
+        "exitcode": 1,
+        "root": "E:\\Vibe Code\\Gaming System\\AI Core",
+        "environment": {},
+        "summary": {
+          "passed": 9,
+          "total": 9,
+          "collected": 9
+        },
+        "collectors": [
+          {
+            "nodeid": "",
+            "outcome": "passed",
+            "result": [
+              {
+                "nodeid": "tests/infrastructure/test_aws_organizations.py",
+                "type": "Module"
+              }
+            ]
+          },
+          {
+            "nodeid": "tests/infrastructure/test_aws_organizations.py::TestAWSOrganizations",
+            "outcome": "passed",
+            "result": [
+              {
+                "nodeid": "tests/infrastructure/test_aws_organizations.py::TestAWSOrganizations::test_organization_exists",
+                "type": "Function",
+                "lineno": 30
+              },
+              {
+                "nodeid": "tests/infrastructure/test_aws_organizations.py::TestAWSOrganizations::test_organizational_units_exist",
+                "type": "Function",
+                "lineno": 41
+              },
+              {
+                "nodeid": "tests/infrastructure/test_aws_organizations.py::TestAWSOrganizations::test_service_control_policy_exists",
+                "type": "Function",
+                "lineno": 57
+              },
+              {
+                "nodeid": "tests/infrastructure/test_aws_organizations.py::TestAWSOrganizations::test_cloudtrail_configured",
+                "type": "Function",
+                "lineno": 91
+              },
+              {
+                "nodeid": "tests/infrastructure/test_aws_organizations.py::TestAWSOrganizations::test_cloudtrail_s3_bucket",
+                "type": "Function",
+                "lineno": 110
+              },
+              {
+                "nodeid": "tests/infrastructure/test_aws_organizations.py::TestAWSOrganizations::test_scp_attachment",
+                "type": "Function",
+                "lineno": 146
+              },
+              {
+                "nodeid": "tests/infrastructure/test_aws_organizations.py::TestAWSOrganizations::test_cloudtrail_event_selectors",
+                "type": "Function",
+                "lineno": 163
+              }
+            ]
+          },
+          {
+            "nodeid": "tests/infrastructure/test_aws_organizations.py::TestAWSOrganizationsCompliance",
+            "outcome": "passed",
+            "result": [
+              {
+                "nodeid": "tests/infrastructure/test_aws_organizations.py::TestAWSOrganizationsCompliance::test_ou_structure_compliance",
+                "type": "Function",
+                "lineno": 192
+              },
+              {
+                "nodeid": "tests/infrastructure/test_aws_organizations.py::TestAWSOrganizationsCompliance::test_scp_least_privilege",
+                "type": "Function",
+                "lineno": 210
+              }
+            ]
+          },
+          {
+            "nodeid": "tests/infrastructure/test_aws_organizations.py",
+            "outcome": "passed",
+            "result": [
+              {
+                "nodeid": "tests/infrastructure/test_aws_organizations.py::TestAWSOrganizations",
+                "type": "Class"
+              },
+              {
+                "nodeid": "tests/infrastructure/test_aws_organizations.py::TestAWSOrganizationsCompliance",
+                "type": "Class"
+              }
+            ]
+          }
+        ],
+        "tests": [
+          {
+            "nodeid": "tests/infrastructure/test_aws_organizations.py::TestAWSOrganizations::test_organization_exists",
+            "lineno": 30,
+            "outcome": "passed",
+            "keywords": [
+              "test_organization_exists",
+              "TestAWSOrganizations",
+              "test_aws_organizations.py",
+              "infrastructure",
+              "tests",
+              "AI Core",
+              ""
+            ],
+            "setup": {
+              "duration": 0.0910808999906294,
+              "outcome": "passed",
+              "log": [
+                {
+                  "name": "botocore.credentials",
+                  "msg": "Found credentials in shared credentials file: ~/.aws/credentials",
+                  "args": null,
+                  "levelname": "INFO",
+                  "levelno": 20,
+                  "pathname": "C:\\Users\\kento\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\botocore\\credentials.py",
+                  "filename": "credentials.py",
+                  "module": "credentials",
+                  "exc_info": null,
+                  "exc_text": null,
+                  "stack_info": null,
+                  "lineno": 1364,
+                  "funcName": "load",
+                  "created": 1763532712.1815097,
+                  "msecs": 181.0,
+                  "relativeCreated": 1256.3827,
+                  "thread": 82940,
+                  "threadName": "MainThread",
+                  "processName": "MainProcess",
+                  "process": 75000,
+                  "taskName": null,
+                  "asctime": "2025-11-18 23:11:52"
+                }
+              ]
+            },
+            "call": {
+              "duration": 2.019618099962827,
+              "outcome": "passed",
+              "stdout": "\u2713 Organization exists: o-6tct78x2kr\n"
+            },
+            "teardown": {
+              "duration": 0.00022620003437623382,
+              "outcome": "passed"
+            }
+          },
+          {
+            "nodeid": "tests/infrastructure/test_aws_organizations.py::TestAWSOrganizations::test_organizational_units_exist",
+            "lineno": 41,
+            "outcome": "passed",
+            "keywords": [
+              "test_organizational_units_exist",
+              "TestAWSOrganizations",
+              "test_aws_organizations.py",
+              "infrastructure",
+              "tests",
+              "AI Core",
+              ""
+            ],
+            "setup": {
+              "duration": 0.00017479999223724008,
+              "outcome": "passed"
+            },
+            "call": {
+              "duration": 0.36481419997289777,
+              "outcome": "passed",
+              "stdout": "\u2713 OU exists: Development\n\u2713 OU exists: Staging\n\u2713 OU exists: Production\n\u2713 OU exists: Security\n\u2713 OU exists: Finance\n"
+            },
+            "teardown": {
+              "duration": 0.0001786999637261033,
+              "outcome": "passed"
+            }
+          },
+          {
+            "nodeid": "tests/infrastructure/test_aws_organizations.py::TestAWSOrganizations::test_service_control_policy_exists",
+            "lineno": 57,
+            "outcome": "passed",
+            "keywords": [
+              "test_service_control_policy_exists",
+              "TestAWSOrganizations",
+              "test_aws_organizations.py",
+              "infrastructure",
+              "tests",
+              "AI Core",
+              ""
+            ],
+            "setup": {
+              "duration": 0.00012669997522607446,
+              "outcome": "passed"
+            },
+            "call": {
+              "duration": 0.2873620999744162,
+              "outcome": "passed",
+              "stdout": "\u2713 Baseline SCP exists: BaselineSecurityPolicy\n\u2713 SCP denies: organizations:LeaveOrganization\n\u2713 SCP denies: account:CloseAccount\n\u2713 SCP denies: cloudtrail:StopLogging\n\u2713 SCP denies: cloudtrail:DeleteTrail\n"
+            },
+            "teardown": {
+              "duration": 0.00011629995424300432,
+              "outcome": "passed"
+            }
+          },
+          {
+            "nodeid": "tests/infrastructure/test_aws_organizations.py::TestAWSOrganizations::test_cloudtrail_configured",
+            "lineno": 91,
+            "outcome": "passed",
+            "keywords": [
+              "test_cloudtrail_configured",
+              "TestAWSOrganizations",
+              "test_aws_organizations.py",
+              "infrastructure",
+              "tests",
+              "AI Core",
+              ""
+            ],
+            "setup": {
+              "duration": 0.0052890999941155314,
+              "outcome": "passed"
+            },
+            "call": {
+              "duration": 0.7189213000237942,
+              "outcome": "passed",
+              "stdout": "\u2713 Organization CloudTrail exists: ai-core-organization-trail\n\u2713 CloudTrail is actively logging\n"
+            },
+            "teardown": {
+              "duration": 0.00020519999088719487,
+              "outcome": "passed"
+            }
+          },
+          {
+            "nodeid": "tests/infrastructure/test_aws_organizations.py::TestAWSOrganizations::test_cloudtrail_s3_bucket",
+            "lineno": 110,
+            "outcome": "passed",
+            "keywords": [
+              "test_cloudtrail_s3_bucket",
+              "TestAWSOrganizations",
+              "test_aws_organizations.py",
+              "infrastructure",
+              "tests",
+              "AI Core",
+              ""
+            ],
+            "setup": {
+              "duration": 0.04483510000864044,
+              "outcome": "passed"
+            },
+            "call": {
+              "duration": 0.6622779999743216,
+              "outcome": "passed",
+              "stdout": "\u2713 CloudTrail S3 bucket exists: ai-core-cloudtrail-logs-695353648052\n\u2713 S3 bucket policy allows CloudTrail\n\u2713 S3 bucket encryption enabled\n"
+            },
+            "teardown": {
+              "duration": 0.00018669996643438935,
+              "outcome": "passed"
+            }
+          },
+          {
+            "nodeid": "tests/infrastructure/test_aws_organizations.py::TestAWSOrganizations::test_scp_attachment",
+            "lineno": 146,
+            "outcome": "passed",
+            "keywords": [
+              "test_scp_attachment",
+              "TestAWSOrganizations",
+              "test_aws_organizations.py",
+              "infrastructure",
+              "tests",
+              "AI Core",
+              ""
+            ],
+            "setup": {
+              "duration": 0.0001860000193119049,
+              "outcome": "passed"
+            },
+            "call": {
+              "duration": 0.3491354999714531,
+              "outcome": "passed",
+              "stdout": "\u2713 Baseline SCP attached to root OU\n"
+            },
+            "teardown": {
+              "duration": 0.00015350000467151403,
+              "outcome": "passed"
+            }
+          },
+          {
+            "nodeid": "tests/infrastructure/test_aws_organizations.py::TestAWSOrganizations::test_cloudtrail_event_selectors",
+            "lineno": 163,
+            "outcome": "passed",
+            "keywords": [
+              "test_cloudtrail_event_selectors",
+              "TestAWSOrganizations",
+              "test_aws_organizations.py",
+              "infrastructure",
+              "tests",
+              "AI Core",
+              ""
+            ],
+            "setup": {
+              "duration": 0.00011030002497136593,
+              "outcome": "passed"
+            },
+            "call": {
+              "duration": 0.166755500016734,
+              "outcome": "passed",
+              "stdout": "\u2713 CloudTrail capturing management events\n"
+            },
+            "teardown": {
+              "duration": 0.0017174000386148691,
+              "outcome": "passed"
+            }
+          },
+          {
+            "nodeid": "tests/infrastructure/test_aws_organizations.py::TestAWSOrganizationsCompliance::test_ou_structure_compliance",
+            "lineno": 192,
+            "outcome": "passed",
+            "keywords": [
+              "test_ou_structure_compliance",
+              "TestAWSOrganizationsCompliance",
+              "test_aws_organizations.py",
+              "infrastructure",
+              "tests",
+              "AI Core",
+              ""
+            ],
+            "setup": {
+              "duration": 0.0017782000359147787,
+              "outcome": "passed"
+            },
+            "call": {
+              "duration": 0.7647812999784946,
+              "outcome": "passed",
+              "stdout": "\u2713 OU structure follows AWS best practices\n"
+            },
+            "teardown": {
+              "duration": 0.00011780002387240529,
+              "outcome": "passed"
+            }
+          },
+          {
+            "nodeid": "tests/infrastructure/test_aws_organizations.py::TestAWSOrganizationsCompliance::test_scp_least_privilege",
+            "lineno": 210,
+            "outcome": "passed",
+            "keywords": [
+              "test_scp_least_privilege",
+              "TestAWSOrganizationsCompliance",
+              "test_aws_organizations.py",
+              "infrastructure",
+              "tests",
+              "AI Core",
+              ""
+            ],
+            "setup": {
+              "duration": 0.0001023999648168683,
+              "outcome": "passed"
+            },
+            "call": {
+              "duration": 0.317369399999734,
+              "outcome": "passed",
+              "stdout": "\u2713 SCP follows least privilege principle\n"
+            },
+            "teardown": {
+              "duration": 0.00021090003428980708,
+              "outcome": "passed"
+            }
+          }
+        ]
+      },
+      "return_code": 1
+    },
+    "test_network_foundation.py": {
+      "success": false,
+      "stdout": "============================= test session starts =============================\nplatform win32 -- Python 3.14.0, pytest-8.4.2, pluggy-1.6.0 -- C:\\Users\\kento\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe\ncachedir: .pytest_cache\nhypothesis profile 'default'\nbenchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)\nmetadata: {'Python': '3.14.0', 'Platform': 'Windows-11-10.0.26200-SP0', 'Packages': {'pytest': '8.4.2', 'pluggy': '1.6.0'}, 'Plugins': {'anyio': '4.11.0', 'hypothesis': '6.147.0', 'locust': '2.42.3', 'asyncio': '1.2.0', 'benchmark': '5.2.3', 'cov': '7.0.0', 'html': '4.1.1', 'json-report': '1.5.0', 'metadata': '3.1.1', 'mock': '3.15.1'}, 'AWS_REGION': 'us-east-1'}\nrootdir: E:\\Vibe Code\\Gaming System\\AI Core\nconfigfile: pytest.ini\nplugins: anyio-4.11.0, hypothesis-6.147.0, locust-2.42.3, asyncio-1.2.0, benchmark-5.2.3, cov-7.0.0, html-4.1.1, json-report-1.5.0, metadata-3.1.1, mock-3.15.1\nasyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollecting ... collected 14 items\n\ntest_network_foundation.py::TestNetworkFoundation::test_vpc_configuration \n------------------------------- live log setup --------------------------------\n2025-11-18 23:11:59 [    INFO] botocore.credentials: Found credentials in shared credentials file: ~/.aws/credentials\nPASSED                                                                   [  7%]\ntest_network_foundation.py::TestNetworkFoundation::test_availability_zones PASSED [ 14%]\ntest_network_foundation.py::TestNetworkFoundation::test_subnet_configuration PASSED [ 21%]\ntest_network_foundation.py::TestNetworkFoundation::test_internet_gateway PASSED [ 28%]\ntest_network_foundation.py::TestNetworkFoundation::test_nat_gateways_high_availability PASSED [ 35%]\ntest_network_foundation.py::TestNetworkFoundation::test_route_tables PASSED [ 42%]\ntest_network_foundation.py::TestNetworkFoundation::test_security_groups PASSED [ 50%]\ntest_network_foundation.py::TestNetworkFoundation::test_security_group_rules PASSED [ 57%]\ntest_network_foundation.py::TestNetworkFoundation::test_db_subnet_group PASSED [ 64%]\ntest_network_foundation.py::TestNetworkSecurity::test_no_default_security_group_rules PASSED [ 71%]\ntest_network_foundation.py::TestNetworkSecurity::test_private_subnets_no_public_ips PASSED [ 78%]\ntest_network_foundation.py::TestNetworkSecurity::test_network_acls PASSED [ 85%]\ntest_network_foundation.py::TestHighAvailability::test_multi_az_deployment PASSED [ 92%]\ntest_network_foundation.py::TestHighAvailability::test_nat_gateway_redundancy PASSED [100%]\nWARNING: Failed to generate report: No data to report.\n\n\nERROR: Coverage failure: total of 0 is less than fail-under=80\n\n\n--------------------------------- JSON report ---------------------------------\nreport saved to: test_report.json\n=============================== tests coverage ================================\n_______________ coverage: platform win32, python 3.14.0-final-0 _______________\n\nFAIL Required test coverage of 80% not reached. Total coverage: 0.00%\n============================= 14 passed in 5.42s ==============================\n",
+      "stderr": "C:\\Users\\kento\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\coverage\\inorout.py:521: CoverageWarning: Module services was never imported. (module-not-imported); see https://coverage.readthedocs.io/en/7.11.2/messages.html#warning-module-not-imported\n  self.warn(f\"Module {pkg} was never imported.\", slug=\"module-not-imported\")\nC:\\Users\\kento\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\coverage\\control.py:950: CoverageWarning: No data was collected. (no-data-collected); see https://coverage.readthedocs.io/en/7.11.2/messages.html#warning-no-data-collected\n  self._warn(\"No data was collected.\", slug=\"no-data-collected\")\nC:\\Users\\kento\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\pytest_cov\\plugin.py:363: CovReportWarning: Failed to generate report: No data to report.\n\n  warnings.warn(CovReportWarning(message), stacklevel=1)\n",
+      "report": {
+        "created": 1763532724.9648247,
+        "duration": 5.418888330459595,
+        "exitcode": 1,
+        "root": "E:\\Vibe Code\\Gaming System\\AI Core",
+        "environment": {},
+        "summary": {
+          "passed": 14,
+          "total": 14,
+          "collected": 14
+        },
+        "collectors": [
+          {
+            "nodeid": "",
+            "outcome": "passed",
+            "result": [
+              {
+                "nodeid": "tests/infrastructure/test_network_foundation.py",
+                "type": "Module"
+              }
+            ]
+          },
+          {
+            "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkFoundation",
+            "outcome": "passed",
+            "result": [
+              {
+                "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkFoundation::test_vpc_configuration",
+                "type": "Function",
+                "lineno": 29
+              },
+              {
+                "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkFoundation::test_availability_zones",
+                "type": "Function",
+                "lineno": 52
+              },
+              {
+                "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkFoundation::test_subnet_configuration",
+                "type": "Function",
+                "lineno": 65
+              },
+              {
+                "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkFoundation::test_internet_gateway",
+                "type": "Function",
+                "lineno": 98
+              },
+              {
+                "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkFoundation::test_nat_gateways_high_availability",
+                "type": "Function",
+                "lineno": 116
+              },
+              {
+                "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkFoundation::test_route_tables",
+                "type": "Function",
+                "lineno": 137
+              },
+              {
+                "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkFoundation::test_security_groups",
+                "type": "Function",
+                "lineno": 160
+              },
+              {
+                "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkFoundation::test_security_group_rules",
+                "type": "Function",
+                "lineno": 184
+              },
+              {
+                "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkFoundation::test_db_subnet_group",
+                "type": "Function",
+                "lineno": 203
+              }
+            ]
+          },
+          {
+            "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkSecurity",
+            "outcome": "passed",
+            "result": [
+              {
+                "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkSecurity::test_no_default_security_group_rules",
+                "type": "Function",
+                "lineno": 237
+              },
+              {
+                "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkSecurity::test_private_subnets_no_public_ips",
+                "type": "Function",
+                "lineno": 261
+              },
+              {
+                "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkSecurity::test_network_acls",
+                "type": "Function",
+                "lineno": 276
+              }
+            ]
+          },
+          {
+            "nodeid": "tests/infrastructure/test_network_foundation.py::TestHighAvailability",
+            "outcome": "passed",
+            "result": [
+              {
+                "nodeid": "tests/infrastructure/test_network_foundation.py::TestHighAvailability::test_multi_az_deployment",
+                "type": "Function",
+                "lineno": 306
+              },
+              {
+                "nodeid": "tests/infrastructure/test_network_foundation.py::TestHighAvailability::test_nat_gateway_redundancy",
+                "type": "Function",
+                "lineno": 328
+              }
+            ]
+          },
+          {
+            "nodeid": "tests/infrastructure/test_network_foundation.py",
+            "outcome": "passed",
+            "result": [
+              {
+                "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkFoundation",
+                "type": "Class"
+              },
+              {
+                "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkSecurity",
+                "type": "Class"
+              },
+              {
+                "nodeid": "tests/infrastructure/test_network_foundation.py::TestHighAvailability",
+                "type": "Class"
+              }
+            ]
+          }
+        ],
+        "tests": [
+          {
+            "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkFoundation::test_vpc_configuration",
+            "lineno": 29,
+            "outcome": "passed",
+            "keywords": [
+              "test_vpc_configuration",
+              "TestNetworkFoundation",
+              "test_network_foundation.py",
+              "infrastructure",
+              "tests",
+              "AI Core",
+              ""
+            ],
+            "setup": {
+              "duration": 0.11667519999900833,
+              "outcome": "passed",
+              "log": [
+                {
+                  "name": "botocore.credentials",
+                  "msg": "Found credentials in shared credentials file: ~/.aws/credentials",
+                  "args": null,
+                  "levelname": "INFO",
+                  "levelno": 20,
+                  "pathname": "C:\\Users\\kento\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\botocore\\credentials.py",
+                  "filename": "credentials.py",
+                  "module": "credentials",
+                  "exc_info": null,
+                  "exc_text": null,
+                  "stack_info": null,
+                  "lineno": 1364,
+                  "funcName": "load",
+                  "created": 1763532719.7754185,
+                  "msecs": 775.0,
+                  "relativeCreated": 1045.1631,
+                  "thread": 77012,
+                  "threadName": "MainThread",
+                  "processName": "MainProcess",
+                  "process": 79100,
+                  "taskName": null,
+                  "asctime": "2025-11-18 23:11:59"
+                }
+              ]
+            },
+            "call": {
+              "duration": 1.0209822000470012,
+              "outcome": "passed",
+              "stdout": "\u2713 VPC configured correctly: vpc-0684c566fb7cc6b12\n"
+            },
+            "teardown": {
+              "duration": 0.00015919998986646533,
+              "outcome": "passed"
+            }
+          },
+          {
+            "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkFoundation::test_availability_zones",
+            "lineno": 52,
+            "outcome": "passed",
+            "keywords": [
+              "test_availability_zones",
+              "TestNetworkFoundation",
+              "test_network_foundation.py",
+              "infrastructure",
+              "tests",
+              "AI Core",
+              ""
+            ],
+            "setup": {
+              "duration": 0.00011419999646022916,
+              "outcome": "passed"
+            },
+            "call": {
+              "duration": 0.20300109998788685,
+              "outcome": "passed",
+              "stdout": "\u2713 Resources span 3 availability zones: ['us-east-1a', 'us-east-1b', 'us-east-1c']\n"
+            },
+            "teardown": {
+              "duration": 0.00011819996871054173,
+              "outcome": "passed"
+            }
+          },
+          {
+            "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkFoundation::test_subnet_configuration",
+            "lineno": 65,
+            "outcome": "passed",
+            "keywords": [
+              "test_subnet_configuration",
+              "TestNetworkFoundation",
+              "test_network_foundation.py",
+              "infrastructure",
+              "tests",
+              "AI Core",
+              ""
+            ],
+            "setup": {
+              "duration": 9.039998985826969e-05,
+              "outcome": "passed"
+            },
+            "call": {
+              "duration": 0.10090269998181611,
+              "outcome": "passed",
+              "stdout": "\u2713 Subnet exists: 10.0.1.0/24\n\u2713 Subnet exists: 10.0.2.0/24\n\u2713 Subnet exists: 10.0.3.0/24\n\u2713 Subnet exists: 10.0.11.0/24\n\u2713 Subnet exists: 10.0.12.0/24\n\u2713 Subnet exists: 10.0.13.0/24\n\u2713 Subnet exists: 10.0.21.0/24\n\u2713 Subnet exists: 10.0.22.0/24\n\u2713 Subnet exists: 10.0.23.0/24\n\u2713 No overlapping subnet CIDR blocks\n"
+            },
+            "teardown": {
+              "duration": 0.00010760000441223383,
+              "outcome": "passed"
+            }
+          },
+          {
+            "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkFoundation::test_internet_gateway",
+            "lineno": 98,
+            "outcome": "passed",
+            "keywords": [
+              "test_internet_gateway",
+              "TestNetworkFoundation",
+              "test_network_foundation.py",
+              "infrastructure",
+              "tests",
+              "AI Core",
+              ""
+            ],
+            "setup": {
+              "duration": 0.00014449999434873462,
+              "outcome": "passed"
+            },
+            "call": {
+              "duration": 0.12078509997809306,
+              "outcome": "passed",
+              "stdout": "\u2713 Internet Gateway attached: igw-0f0294a162bf53e51\n"
+            },
+            "teardown": {
+              "duration": 0.00010150001617148519,
+              "outcome": "passed"
+            }
+          },
+          {
+            "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkFoundation::test_nat_gateways_high_availability",
+            "lineno": 116,
+            "outcome": "passed",
+            "keywords": [
+              "test_nat_gateways_high_availability",
+              "TestNetworkFoundation",
+              "test_network_foundation.py",
+              "infrastructure",
+              "tests",
+              "AI Core",
+              ""
+            ],
+            "setup": {
+              "duration": 9.189994307234883e-05,
+              "outcome": "passed"
+            },
+            "call": {
+              "duration": 0.6347650999668986,
+              "outcome": "passed",
+              "stdout": "\u2713 NAT Gateways in 3 AZs for high availability\n"
+            },
+            "teardown": {
+              "duration": 0.00012280000373721123,
+              "outcome": "passed"
+            }
+          },
+          {
+            "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkFoundation::test_route_tables",
+            "lineno": 137,
+            "outcome": "passed",
+            "keywords": [
+              "test_route_tables",
+              "TestNetworkFoundation",
+              "test_network_foundation.py",
+              "infrastructure",
+              "tests",
+              "AI Core",
+              ""
+            ],
+            "setup": {
+              "duration": 9.360001422464848e-05,
+              "outcome": "passed"
+            },
+            "call": {
+              "duration": 0.13260859996080399,
+              "outcome": "passed",
+              "stdout": "\u2713 Route tables configured: 1 public, 3 private\n"
+            },
+            "teardown": {
+              "duration": 0.00010790000669658184,
+              "outcome": "passed"
+            }
+          },
+          {
+            "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkFoundation::test_security_groups",
+            "lineno": 160,
+            "outcome": "passed",
+            "keywords": [
+              "test_security_groups",
+              "TestNetworkFoundation",
+              "test_network_foundation.py",
+              "infrastructure",
+              "tests",
+              "AI Core",
+              ""
+            ],
+            "setup": {
+              "duration": 8.859997615218163e-05,
+              "outcome": "passed"
+            },
+            "call": {
+              "duration": 0.23748780001187697,
+              "outcome": "passed",
+              "stdout": "\u2713 Security group exists: ai-core-production-alb-sg\n\u2713 Security group exists: ai-core-production-ecs-sg\n\u2713 Security group exists: ai-core-production-rds-sg\n\u2713 Security group exists: ai-core-production-elasticache-sg\n\u2713 Security group exists: ai-core-production-opensearch-sg\n\u2713 Security group exists: ai-core-production-bastion-sg\n"
+            },
+            "teardown": {
+              "duration": 0.00010080001084133983,
+              "outcome": "passed"
+            }
+          },
+          {
+            "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkFoundation::test_security_group_rules",
+            "lineno": 184,
+            "outcome": "passed",
+            "keywords": [
+              "test_security_group_rules",
+              "TestNetworkFoundation",
+              "test_network_foundation.py",
+              "infrastructure",
+              "tests",
+              "AI Core",
+              ""
+            ],
+            "setup": {
+              "duration": 8.730002446100116e-05,
+              "outcome": "passed"
+            },
+            "call": {
+              "duration": 0.11761100002331659,
+              "outcome": "passed",
+              "stdout": "\u2713 Security group ai-core-production-ecs-sg follows least privilege\n\u2713 Security group ai-core-production-elasticache-sg follows least privilege\n\u2713 Security group ai-core-production-rds-sg follows least privilege\n\u2713 Security group ai-core-production-bastion-sg follows least privilege\n\u2713 Security group ai-core-production-alb-sg follows least privilege\n\u2713 Security group ai-core-production-opensearch-sg follows least privilege\n"
+            },
+            "teardown": {
+              "duration": 0.00010250002378597856,
+              "outcome": "passed"
+            }
+          },
+          {
+            "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkFoundation::test_db_subnet_group",
+            "lineno": 203,
+            "outcome": "passed",
+            "keywords": [
+              "test_db_subnet_group",
+              "TestNetworkFoundation",
+              "test_network_foundation.py",
+              "infrastructure",
+              "tests",
+              "AI Core",
+              ""
+            ],
+            "setup": {
+              "duration": 0.01026760000968352,
+              "outcome": "passed"
+            },
+            "call": {
+              "duration": 0.6397601999924518,
+              "outcome": "passed",
+              "stdout": "\u2713 DB subnet group configured with 3 AZs\n"
+            },
+            "teardown": {
+              "duration": 0.0009225999820046127,
+              "outcome": "passed"
+            }
+          },
+          {
+            "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkSecurity::test_no_default_security_group_rules",
+            "lineno": 237,
+            "outcome": "passed",
+            "keywords": [
+              "test_no_default_security_group_rules",
+              "TestNetworkSecurity",
+              "test_network_foundation.py",
+              "infrastructure",
+              "tests",
+              "AI Core",
+              ""
+            ],
+            "setup": {
+              "duration": 0.003409299999475479,
+              "outcome": "passed"
+            },
+            "call": {
+              "duration": 0.49045709997881204,
+              "outcome": "passed",
+              "stdout": "\u2713 Default security group properly restricted\n"
+            },
+            "teardown": {
+              "duration": 0.00011899997480213642,
+              "outcome": "passed"
+            }
+          },
+          {
+            "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkSecurity::test_private_subnets_no_public_ips",
+            "lineno": 261,
+            "outcome": "passed",
+            "keywords": [
+              "test_private_subnets_no_public_ips",
+              "TestNetworkSecurity",
+              "test_network_foundation.py",
+              "infrastructure",
+              "tests",
+              "AI Core",
+              ""
+            ],
+            "setup": {
+              "duration": 9.099999442696571e-05,
+              "outcome": "passed"
+            },
+            "call": {
+              "duration": 0.12603970000054687,
+              "outcome": "passed",
+              "stdout": "\u2713 Private subnets don't auto-assign public IPs\n"
+            },
+            "teardown": {
+              "duration": 0.00011560000712051988,
+              "outcome": "passed"
+            }
+          },
+          {
+            "nodeid": "tests/infrastructure/test_network_foundation.py::TestNetworkSecurity::test_network_acls",
+            "lineno": 276,
+            "outcome": "passed",
+            "keywords": [
+              "test_network_acls",
+              "TestNetworkSecurity",
+              "test_network_foundation.py",
+              "infrastructure",
+              "tests",
+              "AI Core",
+              ""
+            ],
+            "setup": {
+              "duration": 0.00013289996422827244,
+              "outcome": "passed"
+            },
+            "call": {
+              "duration": 0.11656309996033087,
+              "outcome": "passed",
+              "stdout": "\u2713 Network ACLs properly configured\n"
+            },
+            "teardown": {
+              "duration": 0.00012749998131766915,
+              "outcome": "passed"
+            }
+          },
+          {
+            "nodeid": "tests/infrastructure/test_network_foundation.py::TestHighAvailability::test_multi_az_deployment",
+            "lineno": 306,
+            "outcome": "passed",
+            "keywords": [
+              "test_multi_az_deployment",
+              "TestHighAvailability",
+              "test_network_foundation.py",
+              "infrastructure",
+              "tests",
+              "AI Core",
+              ""
+            ],
+            "setup": {
+              "duration": 0.0033890000195242465,
+              "outcome": "passed"
+            },
+            "call": {
+              "duration": 0.47949390002759174,
+              "outcome": "passed",
+              "stdout": "\u2713 database subnets span 3 AZs\n"
+            },
+            "teardown": {
+              "duration": 0.00011840002844110131,
+              "outcome": "passed"
+            }
+          },
+          {
+            "nodeid": "tests/infrastructure/test_network_foundation.py::TestHighAvailability::test_nat_gateway_redundancy",
+            "lineno": 328,
+            "outcome": "passed",
+            "keywords": [
+              "test_nat_gateway_redundancy",
+              "TestHighAvailability",
+              "test_network_foundation.py",
+              "infrastructure",
+              "tests",
+              "AI Core",
+              ""
+            ],
+            "setup": {
+              "duration": 9.079999290406704e-05,
+              "outcome": "passed"
+            },
+            "call": {
+              "duration": 0.6319526000297628,
+              "outcome": "passed",
+              "stdout": "\u2713 NAT Gateways provide redundancy across all AZs\n"
+            },
+            "teardown": {
+              "duration": 0.0001506999833509326,
+              "outcome": "passed"
+            }
+          }
+        ]
+      },
+      "return_code": 1
+    }
+  }
+}

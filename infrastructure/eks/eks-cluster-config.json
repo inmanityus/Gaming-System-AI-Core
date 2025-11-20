@@ -1,0 +1,54 @@
+{
+  "roleArn": "arn:aws:iam::695353648052:role/ai-core-eks-service-role",
+  "resourcesVpcConfig": {
+    "endpointPublicAccess": true,
+    "securityGroupIds": [
+      "sg-09aa82ecfe5d5ca99"
+    ],
+    "publicAccessCidrs": [
+      "0.0.0.0/0"
+    ],
+    "subnetIds": [
+      "subnet-0523f5b7a55c382f5",
+      "subnet-087eeda0bae6cb2e5",
+      "subnet-0b36e3376d508d01f",
+      "subnet-038e48ab8ecc18a2a",
+      "subnet-0cdad7e8fe32d932d",
+      "subnet-03a637a62435b6e6a"
+    ],
+    "endpointPrivateAccess": true
+  },
+  "name": "ai-core-ml-cluster",
+  "version": "1.28",
+  "encryptionConfig": [
+    {
+      "provider": {
+        "keyArn": null
+      },
+      "resources": [
+        "secrets"
+      ]
+    }
+  ],
+  "tags": {
+    "Project": "AI-Core",
+    "Purpose": "ML-Workloads",
+    "Environment": "production",
+    "ManagedBy": "PowerShell",
+    "Name": "ai-core-ml-cluster"
+  },
+  "logging": {
+    "clusterLogging": [
+      {
+        "types": [
+          "api",
+          "audit",
+          "authenticator",
+          "controllerManager",
+          "scheduler"
+        ],
+        "enabled": true
+      }
+    ]
+  }
+}

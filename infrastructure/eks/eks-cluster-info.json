@@ -1,0 +1,12 @@
+{
+  "securityGroupId": "sg-09aa82ecfe5d5ca99",
+  "region": "us-east-1",
+  "certificateAuthority": null,
+  "endpoint": null,
+  "clusterName": "ai-core-ml-cluster",
+  "oidcIssuer": null,
+  "vpcId": "vpc-0684c566fb7cc6b12",
+  "privateSubnetIds": "subnet-0523f5b7a55c382f5,subnet-087eeda0bae6cb2e5,subnet-0b36e3376d508d01f",
+  "creationDate": "2025-11-18 23:55:06",
+  "publicSubnetIds": "subnet-038e48ab8ecc18a2a,subnet-0cdad7e8fe32d932d,subnet-03a637a62435b6e6a"
+}

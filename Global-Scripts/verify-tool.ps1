@@ -12,7 +12,8 @@ param(
     [ValidateSet(
         "Python", "Pip", "Node", "NPM", "Docker", "Git", "AWS", 
         "Terraform", "Kubectl", "PowerShell7", "UnrealEngine",
-        "UnrealBuildTool", "UnrealUAT", "UnrealVersionSelector", "Psql"
+        "UnrealBuildTool", "UnrealUAT", "UnrealVersionSelector", "Psql",
+        "VS2026", "MSBuild", "MSVC", "VS2026DevCmd"
     )]
     [string]$Tool,
     

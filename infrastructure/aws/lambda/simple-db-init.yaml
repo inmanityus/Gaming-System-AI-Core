@@ -1,0 +1,153 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Simple Lambda to initialize Aurora database'
+
+Resources:
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+      Policies:
+        - PolicyName: SecretAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: 
+                  - secretsmanager:GetSecretValue
+                  - rds-data:ExecuteStatement
+                  - rds-data:BatchExecuteStatement
+                  - rds:DescribeDBClusters
+                Resource: '*'
+
+  InitFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: simple-aurora-init
+      Runtime: python3.11
+      Handler: index.lambda_handler
+      Role: !GetAtt LambdaRole.Arn
+      Timeout: 300
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+
+          def lambda_handler(event, context):
+              # Use RDS Data API which doesn't require VPC or psycopg
+              rds_data = boto3.client('rds-data')
+              secrets = boto3.client('secretsmanager')
+              
+              cluster_arn = 'arn:aws:rds:us-east-1:695353648052:cluster:gaming-system-aurora-db-cluster'
+              secret_arn = 'arn:aws:secretsmanager:us-east-1:695353648052:secret:gaming-system-aurora-db-db-credentials-qYLEZ7'
+              
+              try:
+                  # First, create the database if it doesn't exist
+                  response = rds_data.execute_statement(
+                      resourceArn=cluster_arn,
+                      secretArn=secret_arn,
+                      database='postgres',
+                      sql='CREATE DATABASE gaming_system_ai_core'
+                  )
+                  print("Database created successfully")
+              except Exception as e:
+                  if 'already exists' in str(e):
+                      print("Database already exists")
+                  else:
+                      print(f"Error creating database: {e}")
+              
+              # Create schemas
+              schemas_sql = """
+                  CREATE SCHEMA IF NOT EXISTS audio_analytics;
+                  CREATE SCHEMA IF NOT EXISTS engagement;
+                  CREATE SCHEMA IF NOT EXISTS localization;
+                  CREATE SCHEMA IF NOT EXISTS language_system;
+                  CREATE SCHEMA IF NOT EXISTS users;
+                  CREATE SCHEMA IF NOT EXISTS ethelred;
+              """
+              
+              try:
+                  response = rds_data.batch_execute_statement(
+                      resourceArn=cluster_arn,
+                      secretArn=secret_arn,
+                      database='gaming_system_ai_core',
+                      sql=schemas_sql
+                  )
+                  print("Schemas created successfully")
+              except Exception as e:
+                  print(f"Error creating schemas: {e}")
+              
+              # Create main table
+              table_sql = """
+                  CREATE TABLE IF NOT EXISTS audio_analytics.audio_metrics (
+                      id SERIAL PRIMARY KEY,
+                      analysis_id UUID NOT NULL UNIQUE DEFAULT gen_random_uuid(),
+                      user_id VARCHAR(255) NOT NULL,
+                      session_id VARCHAR(255) NOT NULL,
+                      sample_rate INTEGER NOT NULL CHECK (sample_rate > 0),
+                      duration_seconds FLOAT NOT NULL CHECK (duration_seconds > 0),
+                      intelligibility_score FLOAT NOT NULL CHECK (intelligibility_score >= 0 AND intelligibility_score <= 1),
+                      confidence_level FLOAT CHECK (confidence_level >= 0 AND confidence_level <= 1),
+                      archetype VARCHAR(100),
+                      archetype_matches JSONB,
+                      metadata JSONB,
+                      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                      updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                  )
+              """
+              
+              try:
+                  response = rds_data.execute_statement(
+                      resourceArn=cluster_arn,
+                      secretArn=secret_arn,
+                      database='gaming_system_ai_core',
+                      sql=table_sql
+                  )
+                  print("Table created successfully")
+              except Exception as e:
+                  print(f"Error creating table: {e}")
+              
+              # Create archetype profiles table
+              profiles_sql = """
+                  CREATE TABLE IF NOT EXISTS audio_analytics.archetype_profiles (
+                      id SERIAL PRIMARY KEY,
+                      archetype_name VARCHAR(100) NOT NULL UNIQUE,
+                      description TEXT,
+                      frequency_profile JSONB NOT NULL,
+                      spectral_characteristics JSONB NOT NULL,
+                      temporal_patterns JSONB NOT NULL,
+                      active BOOLEAN DEFAULT true,
+                      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                      updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                  )
+              """
+              
+              try:
+                  response = rds_data.execute_statement(
+                      resourceArn=cluster_arn,
+                      secretArn=secret_arn,
+                      database='gaming_system_ai_core',
+                      sql=profiles_sql
+                  )
+                  print("Archetype profiles table created")
+              except Exception as e:
+                  print(f"Error creating profiles table: {e}")
+              
+              return {
+                  'statusCode': 200,
+                  'body': json.dumps({
+                      'message': 'Database initialization completed',
+                      'cluster_arn': cluster_arn
+                  })
+              }
+
+Outputs:
+  FunctionName:
+    Value: !Ref InitFunction

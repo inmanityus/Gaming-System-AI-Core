@@ -1,0 +1,22 @@
+{
+    "CommandId": "5a5cd391-5598-460d-ad3d-445a7c13fe50",
+    "InstanceId": "i-05ae98da13b9c215e",
+    "Comment": "",
+    "DocumentName": "AWS-RunShellScript",
+    "DocumentVersion": "$DEFAULT",
+    "PluginName": "aws:runShellScript",
+    "ResponseCode": 2,
+    "ExecutionStartDateTime": "2025-11-17T20:41:38.214Z",
+    "ExecutionElapsedTime": "PT0.903S",
+    "ExecutionEndDateTime": "2025-11-17T20:41:38.214Z",
+    "Status": "Failed",
+    "StatusDetails": "Failed",
+    "StandardOutputContent": "",
+    "StandardOutputUrl": "",
+    "StandardErrorContent": "download failed: s3://befreefitness-phase3-backups/temp/init_aurora_db.py to ../../tmp/init_aurora_db.py An error occurred (AccessDenied) when calling the GetObject operation: User: arn:aws:sts::695353648052:assumed-role/gaming-system-bastion-BastionRole-RQwv7TqH9U0V/i-05ae98da13b9c215e is not authorized to perform: kms:Decrypt on resource: arn:aws:kms:us-east-1:695353648052:key/aef14644-ebf7-4dd7-b308-b74090411c74 because no identity-based policy allows the kms:Decrypt action\nchmod: cannot access '/tmp/init_aurora_db.py': No such file or directory\npython3: can't open file '/tmp/init_aurora_db.py': [Errno 2] No such file or directory\nfailed to run commands: exit status 2",
+    "StandardErrorUrl": "",
+    "CloudWatchOutputConfig": {
+        "CloudWatchLogGroupName": "",
+        "CloudWatchOutputEnabled": false
+    }
+}

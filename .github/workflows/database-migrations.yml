@@ -1,0 +1,306 @@
+name: Database Migrations
+
+on:
+  push:
+    paths:
+      - 'infrastructure/database/migrations/**'
+      - '.github/workflows/database-migrations.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to run migrations on'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      dry_run:
+        description: 'Run in dry-run mode'
+        required: false
+        default: true
+        type: boolean
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  validate-migrations:
+    name: Validate Migrations
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install alembic sqlalchemy psycopg2-binary
+    
+    - name: Validate migration files
+      run: |
+        # Check for migration conflicts
+        python scripts/validate_migrations.py
+    
+    - name: Test migrations on local database
+      run: |
+        # Start test postgres
+        docker run -d \
+          --name test-postgres \
+          -e POSTGRES_PASSWORD=test \
+          -e POSTGRES_DB=gaming_test \
+          -p 5432:5432 \
+          postgres:15-alpine
+        
+        # Wait for postgres
+        sleep 10
+        
+        # Run migrations
+        export DATABASE_URL="postgresql://postgres:test@localhost:5432/gaming_test"
+        alembic upgrade head
+        
+        # Verify schema
+        python scripts/verify_schema.py
+
+  backup-database:
+    name: Backup Database
+    runs-on: ubuntu-latest
+    needs: validate-migrations
+    if: github.event.inputs.environment == 'production' || (github.ref == 'refs/heads/main' && github.event_name == 'push')
+    permissions:
+      id-token: write
+      contents: read
+    
+    steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+        aws-region: ${{ env.AWS_REGION }}
+    
+    - name: Create database snapshot
+      id: snapshot
+      run: |
+        SNAPSHOT_ID="pre-migration-$(date +%Y%m%d-%H%M%S)"
+        ENVIRONMENT=${{ github.event.inputs.environment || 'staging' }}
+        
+        # Get RDS instance identifier
+        DB_INSTANCE=$(aws rds describe-db-instances \
+          --filters "Name=tag:Environment,Values=${ENVIRONMENT}" \
+          --query 'DBInstances[0].DBInstanceIdentifier' \
+          --output text)
+        
+        # Create snapshot
+        aws rds create-db-snapshot \
+          --db-instance-identifier $DB_INSTANCE \
+          --db-snapshot-identifier $SNAPSHOT_ID
+        
+        # Wait for snapshot to complete
+        aws rds wait db-snapshot-completed \
+          --db-snapshot-identifier $SNAPSHOT_ID
+        
+        echo "snapshot_id=$SNAPSHOT_ID" >> $GITHUB_OUTPUT
+        echo "db_instance=$DB_INSTANCE" >> $GITHUB_OUTPUT
+
+  run-migrations:
+    name: Run Migrations
+    runs-on: ubuntu-latest
+    needs: [validate-migrations, backup-database]
+    if: always() && needs.validate-migrations.result == 'success'
+    permissions:
+      id-token: write
+      contents: read
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install alembic sqlalchemy psycopg2-binary boto3
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+        aws-region: ${{ env.AWS_REGION }}
+    
+    - name: Get database connection
+      id: db_connection
+      run: |
+        ENVIRONMENT=${{ github.event.inputs.environment || 'staging' }}
+        
+        # Get connection details from Secrets Manager
+        SECRET_NAME="gaming-system/${ENVIRONMENT}/database"
+        DB_SECRET=$(aws secretsmanager get-secret-value \
+          --secret-id $SECRET_NAME \
+          --query SecretString \
+          --output text)
+        
+        # Parse connection details
+        DB_HOST=$(echo $DB_SECRET | jq -r '.host')
+        DB_PORT=$(echo $DB_SECRET | jq -r '.port')
+        DB_NAME=$(echo $DB_SECRET | jq -r '.dbname')
+        DB_USER=$(echo $DB_SECRET | jq -r '.username')
+        DB_PASS=$(echo $DB_SECRET | jq -r '.password')
+        
+        # Construct database URL (masked in logs)
+        echo "::add-mask::$DB_PASS"
+        echo "database_url=postgresql://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}" >> $GITHUB_OUTPUT
+    
+    - name: Run migrations (dry run)
+      if: github.event.inputs.dry_run == 'true' || github.event.inputs.dry_run == ''
+      run: |
+        export DATABASE_URL="${{ steps.db_connection.outputs.database_url }}"
+        
+        # Show current version
+        echo "Current database version:"
+        alembic current
+        
+        # Show pending migrations
+        echo "Pending migrations:"
+        alembic history -v
+        
+        # Dry run - show SQL that would be executed
+        alembic upgrade head --sql
+    
+    - name: Run migrations (actual)
+      if: github.event.inputs.dry_run == 'false'
+      run: |
+        export DATABASE_URL="${{ steps.db_connection.outputs.database_url }}"
+        
+        # Record pre-migration state
+        alembic current > pre_migration_version.txt
+        
+        # Run migrations
+        alembic upgrade head
+        
+        # Record post-migration state
+        alembic current > post_migration_version.txt
+        
+        # Show what changed
+        echo "Migration completed:"
+        echo "Before: $(cat pre_migration_version.txt)"
+        echo "After: $(cat post_migration_version.txt)"
+    
+    - name: Verify migration success
+      if: github.event.inputs.dry_run == 'false'
+      run: |
+        export DATABASE_URL="${{ steps.db_connection.outputs.database_url }}"
+        
+        # Run schema verification
+        python scripts/verify_schema.py
+        
+        # Run data integrity checks
+        python scripts/verify_data_integrity.py
+
+  rollback-on-failure:
+    name: Rollback on Failure
+    runs-on: ubuntu-latest
+    needs: run-migrations
+    if: failure() && github.event.inputs.dry_run == 'false'
+    permissions:
+      id-token: write
+      contents: read
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+        aws-region: ${{ env.AWS_REGION }}
+    
+    - name: Restore from snapshot
+      run: |
+        ENVIRONMENT=${{ github.event.inputs.environment || 'staging' }}
+        SNAPSHOT_ID=${{ needs.backup-database.outputs.snapshot_id }}
+        
+        echo "Migration failed! Restoring from snapshot: $SNAPSHOT_ID"
+        
+        # Get current instance details
+        DB_INSTANCE=$(aws rds describe-db-instances \
+          --filters "Name=tag:Environment,Values=${ENVIRONMENT}" \
+          --query 'DBInstances[0].DBInstanceIdentifier' \
+          --output text)
+        
+        # Create new instance from snapshot
+        NEW_INSTANCE="${DB_INSTANCE}-restored-$(date +%Y%m%d%H%M%S)"
+        
+        aws rds restore-db-instance-from-db-snapshot \
+          --db-instance-identifier $NEW_INSTANCE \
+          --db-snapshot-identifier $SNAPSHOT_ID
+        
+        echo "Restore initiated. Manual intervention required to switch instances."
+    
+    - name: Send alert
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        text: |
+          ⚠️ Database migration failed!
+          Environment: ${{ github.event.inputs.environment || 'staging' }}
+          Snapshot available: ${{ needs.backup-database.outputs.snapshot_id }}
+          Manual intervention required for rollback.
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+  update-documentation:
+    name: Update Documentation
+    runs-on: ubuntu-latest
+    needs: run-migrations
+    if: success() && github.event.inputs.dry_run == 'false'
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Update schema documentation
+      run: |
+        # Generate schema documentation
+        python scripts/generate_schema_docs.py > docs/database/schema.md
+        
+        # Update migration history
+        echo "## Migration History" >> docs/database/migrations.md
+        echo "" >> docs/database/migrations.md
+        echo "| Date | Version | Description | Environment |" >> docs/database/migrations.md
+        echo "|------|---------|-------------|-------------|" >> docs/database/migrations.md
+        echo "| $(date -u +"%Y-%m-%d %H:%M UTC") | ${{ github.sha }} | ${{ github.event.head_commit.message }} | ${{ github.event.inputs.environment || 'staging' }} |" >> docs/database/migrations.md
+    
+    - name: Commit documentation
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add docs/database/
+        git diff --staged --quiet || git commit -m "Update database documentation after migration"
+        git push
+
+  notify-success:
+    name: Notify Success
+    runs-on: ubuntu-latest
+    needs: [run-migrations, update-documentation]
+    if: success() && github.event.inputs.dry_run == 'false'
+    
+    steps:
+    - name: Send success notification
+      uses: 8398a7/action-slack@v3
+      with:
+        status: success
+        text: |
+          ✅ Database migration completed successfully!
+          Environment: ${{ github.event.inputs.environment || 'staging' }}
+          Version: ${{ github.sha }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}

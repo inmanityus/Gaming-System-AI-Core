@@ -1,0 +1,57 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Deny",
+            "Action": [
+                "ec2:TerminateInstances"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringNotEquals": {
+                    "aws:PrincipalOrgID": "${aws:PrincipalOrgID}"
+                }
+            }
+        },
+        {
+            "Effect": "Deny",
+            "Action": [
+                "organizations:LeaveOrganization",
+                "account:CloseAccount"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Deny",
+            "Action": [
+                "cloudtrail:StopLogging",
+                "cloudtrail:DeleteTrail",
+                "cloudtrail:UpdateTrail",
+                "cloudtrail:PutEventSelectors"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Deny",
+            "Action": [
+                "config:DeleteConfigurationRecorder",
+                "config:DeleteDeliveryChannel",
+                "config:StopConfigurationRecorder"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Deny",
+            "Action": [
+                "guardduty:DeleteDetector",
+                "guardduty:UpdateDetector"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringNotEquals": {
+                    "guardduty:Enable": "true"
+                }
+            }
+        }
+    ]
+}

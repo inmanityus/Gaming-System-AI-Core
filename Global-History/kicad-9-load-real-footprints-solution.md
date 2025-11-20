@@ -203,3 +203,4 @@ Verified on:
 **The solution was simple once found**: `pcbnew.FootprintLoad(library_directory, footprint_name)` is a module-level function that works perfectly when you pass the `.pretty` directory path and footprint name. The challenge was finding this correct API usage after trying multiple incorrect approaches.
 
 
+

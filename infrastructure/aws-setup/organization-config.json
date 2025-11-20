@@ -1,0 +1,85 @@
+{
+  "organization": {
+    "id": "o-6tct78x2kr",
+    "arn": "arn:aws:organizations::695353648052:organization/o-6tct78x2kr",
+    "feature_set": "ALL",
+    "master_account_id": "695353648052"
+  },
+  "organizational_units": [
+    {
+      "name": "Development",
+      "id": "ou-widy-development",
+      "parent": "r-widy",
+      "purpose": "Development and testing environments"
+    },
+    {
+      "name": "Staging",
+      "id": "ou-widy-staging",
+      "parent": "r-widy",
+      "purpose": "Pre-production staging environments"
+    },
+    {
+      "name": "Production",
+      "id": "ou-widy-production",
+      "parent": "r-widy",
+      "purpose": "Production workloads"
+    },
+    {
+      "name": "Security",
+      "id": "ou-widy-security",
+      "parent": "r-widy",
+      "purpose": "Security and audit accounts"
+    },
+    {
+      "name": "Finance",
+      "id": "ou-widy-finance",
+      "parent": "r-widy",
+      "purpose": "Billing and cost management"
+    }
+  ],
+  "service_control_policies": {
+    "baseline": {
+      "id": "p-ide1on7d",
+      "name": "BaselineSecurityPolicy",
+      "description": "Baseline security controls for all accounts",
+      "attached_to": ["r-widy"],
+      "denies": [
+        "organizations:LeaveOrganization",
+        "account:CloseAccount",
+        "cloudtrail:StopLogging",
+        "cloudtrail:DeleteTrail",
+        "config:DeleteConfigurationRecorder",
+        "config:DeleteDeliveryChannel",
+        "config:StopConfigurationRecorder"
+      ]
+    }
+  },
+  "cloudtrail": {
+    "name": "ai-core-organization-trail",
+    "is_organization_trail": true,
+    "s3_bucket": "ai-core-cloudtrail-logs-695353648052",
+    "encryption_enabled": true,
+    "log_file_validation": true,
+    "event_selectors": {
+      "management_events": true,
+      "data_events": false
+    }
+  },
+  "security_services": {
+    "guardduty": {
+      "enabled": true,
+      "detector_id": "a0cd4d5d24de44bd58c71486515a272f",
+      "finding_publishing_frequency": "FIFTEEN_MINUTES"
+    },
+    "security_hub": {
+      "enabled": true,
+      "standards": ["default"]
+    },
+    "vpc_flow_logs": {
+      "enabled": true,
+      "flow_log_id": "fl-0a6fa61f3d6b5955d"
+    }
+  },
+  "creation_date": "2025-11-18",
+  "last_security_update": "2025-11-18T23:10:00Z"
+}

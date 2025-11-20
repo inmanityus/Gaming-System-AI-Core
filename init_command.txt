@@ -1,0 +1,57 @@
+cat > /tmp/init_db.py << 'SCRIPT_END'
+import boto3
+import json
+import psycopg2
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+
+# Get credentials
+client = boto3.client('secretsmanager', region_name='us-east-1')
+secret = client.get_secret_value(SecretId='arn:aws:secretsmanager:us-east-1:695353648052:secret:gaming-system-aurora-db-db-credentials-qYLEZ7')
+creds = json.loads(secret['SecretString'])
+
+# Create database
+try:
+    conn = psycopg2.connect(host='gaming-system-aurora-db-cluster.cluster-cal6eoegigyq.us-east-1.rds.amazonaws.com', port=5432, database='postgres', user=creds['username'], password=creds['password'])
+    conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+    cur = conn.cursor()
+    cur.execute('CREATE DATABASE gaming_system_ai_core;')
+    print('Database created!')
+except:
+    print('Database already exists')
+
+# Connect to new database
+conn = psycopg2.connect(host='gaming-system-aurora-db-cluster.cluster-cal6eoegigyq.us-east-1.rds.amazonaws.com', port=5432, database='gaming_system_ai_core', user=creds['username'], password=creds['password'])
+cur = conn.cursor()
+
+# Create schemas
+for schema in ['audio_analytics', 'engagement', 'users', 'ethelred']:
+    cur.execute(f'CREATE SCHEMA IF NOT EXISTS {schema};')
+    
+# Create table
+cur.execute('''CREATE TABLE IF NOT EXISTS audio_analytics.audio_metrics (
+    id SERIAL PRIMARY KEY,
+    analysis_id UUID DEFAULT gen_random_uuid() UNIQUE,
+    user_id VARCHAR(255),
+    session_id VARCHAR(255),
+    sample_rate INT,
+    duration_seconds FLOAT,
+    intelligibility_score FLOAT,
+    confidence_level FLOAT,
+    archetype VARCHAR(100),
+    archetype_matches JSONB,
+    metadata JSONB,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);''')
+
+# Create view
+cur.execute('CREATE OR REPLACE VIEW ethelred.audio_metrics AS SELECT * FROM audio_analytics.audio_metrics;')
+
+# Insert test data
+for i in range(100):
+    cur.execute('INSERT INTO audio_analytics.audio_metrics (user_id, session_id, sample_rate, duration_seconds, intelligibility_score) VALUES (%s, %s, %s, %s, %s) ON CONFLICT DO NOTHING;', ('test_user_perf', f'session_{i+1}', 48000, 3.5, 0.85))
+
+conn.commit()
+print('Database initialized!')
+SCRIPT_END
+python3 /tmp/init_db.py

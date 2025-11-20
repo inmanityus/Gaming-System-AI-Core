@@ -89,23 +89,27 @@ $KnownPaths = @{
         "C:\Program Files\PowerShell\7\pwsh.exe"
     )
     
-    # Unreal Engine 5.6.1
+    # Unreal Engine 5.7 (Updated from 5.6.1)
     UnrealEngine = @(
+        "C:\Program Files\Epic Games\UE_5.7\Engine\Binaries\Win64\UnrealEditor.exe",
         "C:\Program Files\Epic Games\UE_5.6\Engine\Binaries\Win64\UnrealEditor.exe"
     )
     
     # Unreal Build Tool
     UnrealBuildTool = @(
+        "C:\Program Files\Epic Games\UE_5.7\Engine\Build\BatchFiles\Build.bat",
         "C:\Program Files\Epic Games\UE_5.6\Engine\Build\BatchFiles\Build.bat"
     )
     
     # Unreal Automation Tool (UAT)
     UnrealUAT = @(
+        "C:\Program Files\Epic Games\UE_5.7\Engine\Build\BatchFiles\RunUAT.bat",
         "C:\Program Files\Epic Games\UE_5.6\Engine\Build\BatchFiles\RunUAT.bat"
     )
     
     # Unreal Version Selector
     UnrealVersionSelector = @(
+        "C:\Program Files\Epic Games\UE_5.7\Engine\Binaries\DotNET\UnrealVersionSelector\UnrealVersionSelector.exe",
         "C:\Program Files\Epic Games\UE_5.6\Engine\Binaries\DotNET\UnrealVersionSelector\UnrealVersionSelector.exe"
     )
     
@@ -114,6 +118,30 @@ $KnownPaths = @{
         "C:\Program Files\PostgreSQL\16\bin\psql.exe",
         "C:\Program Files\PostgreSQL\15\bin\psql.exe",
         "C:\Program Files\PostgreSQL\14\bin\psql.exe"
+    )
+    
+    # Visual Studio 2026 Build Tools (VERIFIED)
+    VS2026 = @(
+        "C:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools",
+        "C:\Program Files\Microsoft Visual Studio\18\BuildTools"
+    )
+    
+    # MSBuild 2026
+    MSBuild = @(
+        "C:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools\MSBuild\Current\Bin\MSBuild.exe",
+        "C:\Program Files\Microsoft Visual Studio\18\BuildTools\MSBuild\Current\Bin\MSBuild.exe"
+    )
+    
+    # MSVC 2026 Compiler
+    MSVC = @(
+        "C:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools\VC\Tools\MSVC\14.50.35717\bin\Hostx64\x64\cl.exe",
+        "C:\Program Files\Microsoft Visual Studio\18\BuildTools\VC\Tools\MSVC\14.50.35717\bin\Hostx64\x64\cl.exe"
+    )
+    
+    # VS2026 Developer Command Prompt
+    VS2026DevCmd = @(
+        "C:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools\VC\Auxiliary\Build\vcvars64.bat",
+        "C:\Program Files\Microsoft Visual Studio\18\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
     )
 }
 

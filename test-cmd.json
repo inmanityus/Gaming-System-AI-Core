@@ -1,0 +1,48 @@
+{
+    "Command": {
+        "CommandId": "1770203a-2b40-459c-a870-7226d829b009",
+        "DocumentName": "AWS-RunShellScript",
+        "DocumentVersion": "$DEFAULT",
+        "Comment": "",
+        "ExpiresAfter": "2025-11-17T15:44:34.846000-07:00",
+        "Parameters": {
+            "commands": [
+                "echo Hello from bastion",
+                "python3 --version",
+                "psql --version"
+            ]
+        },
+        "InstanceIds": [
+            "i-05ae98da13b9c215e"
+        ],
+        "Targets": [],
+        "RequestedDateTime": "2025-11-17T13:44:34.846000-07:00",
+        "Status": "Pending",
+        "StatusDetails": "Pending",
+        "OutputS3Region": "us-east-1",
+        "OutputS3BucketName": "",
+        "OutputS3KeyPrefix": "",
+        "MaxConcurrency": "50",
+        "MaxErrors": "0",
+        "TargetCount": 1,
+        "CompletedCount": 0,
+        "ErrorCount": 0,
+        "DeliveryTimedOutCount": 0,
+        "ServiceRole": "",
+        "NotificationConfig": {
+            "NotificationArn": "",
+            "NotificationEvents": [],
+            "NotificationType": ""
+        },
+        "CloudWatchOutputConfig": {
+            "CloudWatchLogGroupName": "",
+            "CloudWatchOutputEnabled": false
+        },
+        "TimeoutSeconds": 3600,
+        "AlarmConfiguration": {
+            "IgnorePollAlarmFailure": false,
+            "Alarms": []
+        },
+        "TriggeredAlarms": []
+    }
+}

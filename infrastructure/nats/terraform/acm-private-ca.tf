@@ -32,7 +32,7 @@ resource "aws_acmpca_certificate" "nats_ca_cert" {
   certificate_signing_request = aws_acmpca_certificate_authority.nats_ca.certificate_signing_request
   signing_algorithm           = "SHA512WITHRSA"
 
-  template_arn = "arn:aws:acmpca:::template/RootCACertificate/V1"
+  template_arn = "arn:aws:acm-pca:::template/RootCACertificate/V1"
 
   validity {
     type  = "YEARS"

@@ -1,0 +1,421 @@
+name: Release Process
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      prerelease:
+        description: 'Create as prerelease'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  prepare-release:
+    name: Prepare Release
+    runs-on: ubuntu-latest
+    outputs:
+      new_version: ${{ steps.version.outputs.new_version }}
+      changelog: ${{ steps.changelog.outputs.changelog }}
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install semver gitpython
+    
+    - name: Calculate new version
+      id: version
+      run: |
+        # Get current version from last tag
+        CURRENT_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+        CURRENT_VERSION=${CURRENT_VERSION#v}  # Remove 'v' prefix
+        
+        # Calculate new version
+        NEW_VERSION=$(python -c "
+        import semver
+        current = semver.VersionInfo.parse('$CURRENT_VERSION')
+        if '${{ github.event.inputs.release_type }}' == 'major':
+            new = current.bump_major()
+        elif '${{ github.event.inputs.release_type }}' == 'minor':
+            new = current.bump_minor()
+        else:
+            new = current.bump_patch()
+        
+        if ${{ github.event.inputs.prerelease }}:
+            new = new.replace(prerelease='rc.1')
+        
+        print(str(new))
+        ")
+        
+        echo "new_version=v$NEW_VERSION" >> $GITHUB_OUTPUT
+        echo "New version will be: v$NEW_VERSION"
+    
+    - name: Generate changelog
+      id: changelog
+      run: |
+        # Generate changelog since last release
+        python scripts/generate_changelog.py > CHANGELOG_NEW.md
+        
+        # Read changelog
+        CHANGELOG=$(<CHANGELOG_NEW.md)
+        
+        # Output for next steps (handle multiline)
+        echo "changelog<<EOF" >> $GITHUB_OUTPUT
+        echo "$CHANGELOG" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+    
+    - name: Update version files
+      run: |
+        NEW_VERSION="${{ steps.version.outputs.new_version }}"
+        VERSION_NUMBER=${NEW_VERSION#v}  # Remove 'v' prefix
+        
+        # Update Python packages
+        find services -name "setup.py" -o -name "pyproject.toml" | while read file; do
+          sed -i "s/version = .*/version = \"$VERSION_NUMBER\"/" "$file" 2>/dev/null || true
+        done
+        
+        # Update package.json files
+        find . -name "package.json" | while read file; do
+          jq ".version = \"$VERSION_NUMBER\"" "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+        done
+        
+        # Update VERSION file
+        echo "$VERSION_NUMBER" > VERSION
+    
+    - name: Update CHANGELOG.md
+      run: |
+        # Prepend new changelog to existing
+        echo "# Changelog" > CHANGELOG_TEMP.md
+        echo "" >> CHANGELOG_TEMP.md
+        echo "## [${{ steps.version.outputs.new_version }}] - $(date +%Y-%m-%d)" >> CHANGELOG_TEMP.md
+        cat CHANGELOG_NEW.md >> CHANGELOG_TEMP.md
+        echo "" >> CHANGELOG_TEMP.md
+        
+        # Append existing changelog (skip first line)
+        tail -n +2 CHANGELOG.md >> CHANGELOG_TEMP.md 2>/dev/null || true
+        
+        mv CHANGELOG_TEMP.md CHANGELOG.md
+    
+    - name: Create release commit
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        
+        git add -A
+        git commit -m "chore: release ${{ steps.version.outputs.new_version }}"
+        
+        # Create tag
+        git tag -a "${{ steps.version.outputs.new_version }}" -m "Release ${{ steps.version.outputs.new_version }}"
+    
+    - name: Push changes
+      run: |
+        git push origin HEAD:${{ github.ref }}
+        git push origin "${{ steps.version.outputs.new_version }}"
+
+  run-release-tests:
+    name: Run Release Tests
+    runs-on: ubuntu-latest
+    needs: prepare-release
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ needs.prepare-release.outputs.new_version }}
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-test.txt
+    
+    - name: Run comprehensive tests
+      run: |
+        # Run all test suites
+        pytest tests -v \
+          --junit-xml=test-results/release-tests.xml \
+          --cov=services \
+          --cov-report=xml
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: release-test-results
+        path: test-results/
+
+  build-release-artifacts:
+    name: Build Release Artifacts
+    runs-on: ubuntu-latest
+    needs: [prepare-release, run-release-tests]
+    
+    strategy:
+      matrix:
+        service: [
+          ethelred-audio,
+          ethelred-engagement,
+          multi-language,
+          api-gateway
+        ]
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ needs.prepare-release.outputs.new_version }}
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./services/${{ matrix.service }}/Dockerfile
+        push: false
+        tags: |
+          gaming-system/${{ matrix.service }}:${{ needs.prepare-release.outputs.new_version }}
+          gaming-system/${{ matrix.service }}:latest
+        outputs: type=docker,dest=${{ matrix.service }}.tar
+    
+    - name: Upload Docker image
+      uses: actions/upload-artifact@v3
+      with:
+        name: docker-${{ matrix.service }}
+        path: ${{ matrix.service }}.tar
+
+  create-github-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [prepare-release, run-release-tests, build-release-artifacts]
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ needs.prepare-release.outputs.new_version }}
+    
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: release-artifacts
+    
+    - name: Create source archives
+      run: |
+        # Create source tarball
+        git archive --format=tar.gz --prefix=gaming-system-${{ needs.prepare-release.outputs.new_version }}/ \
+          -o gaming-system-${{ needs.prepare-release.outputs.new_version }}.tar.gz \
+          ${{ needs.prepare-release.outputs.new_version }}
+        
+        # Create source zip
+        git archive --format=zip --prefix=gaming-system-${{ needs.prepare-release.outputs.new_version }}/ \
+          -o gaming-system-${{ needs.prepare-release.outputs.new_version }}.zip \
+          ${{ needs.prepare-release.outputs.new_version }}
+    
+    - name: Generate release notes
+      run: |
+        cat << EOF > RELEASE_NOTES.md
+        ## Gaming System AI Core ${{ needs.prepare-release.outputs.new_version }}
+        
+        ### Release Highlights
+        
+        ${{ needs.prepare-release.outputs.changelog }}
+        
+        ### Installation
+        
+        #### Docker Images
+        
+        \`\`\`bash
+        docker load < ethelred-audio.tar
+        docker load < ethelred-engagement.tar
+        docker load < multi-language.tar
+        docker load < api-gateway.tar
+        \`\`\`
+        
+        #### From Source
+        
+        \`\`\`bash
+        tar -xzf gaming-system-${{ needs.prepare-release.outputs.new_version }}.tar.gz
+        cd gaming-system-${{ needs.prepare-release.outputs.new_version }}
+        pip install -r requirements.txt
+        \`\`\`
+        
+        ### Documentation
+        
+        See the [documentation](https://github.com/${{ github.repository }}/tree/${{ needs.prepare-release.outputs.new_version }}/docs) for detailed information.
+        
+        ### Breaking Changes
+        
+        None in this release.
+        
+        ### Known Issues
+        
+        See [open issues](https://github.com/${{ github.repository }}/issues) for known problems.
+        EOF
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ needs.prepare-release.outputs.new_version }}
+        name: Release ${{ needs.prepare-release.outputs.new_version }}
+        body_path: RELEASE_NOTES.md
+        draft: false
+        prerelease: ${{ github.event.inputs.prerelease }}
+        files: |
+          gaming-system-*.tar.gz
+          gaming-system-*.zip
+          release-artifacts/**/*.tar
+
+  publish-docker-images:
+    name: Publish Docker Images
+    runs-on: ubuntu-latest
+    needs: [prepare-release, create-github-release]
+    if: github.event.inputs.prerelease == 'false'
+    permissions:
+      id-token: write
+      contents: read
+    
+    strategy:
+      matrix:
+        service: [
+          ethelred-audio,
+          ethelred-engagement,
+          multi-language,
+          api-gateway
+        ]
+    
+    steps:
+    - name: Download Docker image
+      uses: actions/download-artifact@v3
+      with:
+        name: docker-${{ matrix.service }}
+    
+    - name: Load Docker image
+      run: |
+        docker load < ${{ matrix.service }}.tar
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+        aws-region: us-east-1
+    
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+    
+    - name: Push to ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      run: |
+        # Tag for ECR
+        docker tag gaming-system/${{ matrix.service }}:${{ needs.prepare-release.outputs.new_version }} \
+          $ECR_REGISTRY/${{ matrix.service }}:${{ needs.prepare-release.outputs.new_version }}
+        
+        docker tag gaming-system/${{ matrix.service }}:latest \
+          $ECR_REGISTRY/${{ matrix.service }}:latest
+        
+        # Push to ECR
+        docker push $ECR_REGISTRY/${{ matrix.service }}:${{ needs.prepare-release.outputs.new_version }}
+        docker push $ECR_REGISTRY/${{ matrix.service }}:latest
+
+  update-documentation:
+    name: Update Documentation
+    runs-on: ubuntu-latest
+    needs: [prepare-release, create-github-release]
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ needs.prepare-release.outputs.new_version }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Update documentation
+      run: |
+        # Update version in docs
+        find docs -name "*.md" -exec sed -i "s/gaming-system:v[0-9.]\+/gaming-system:${{ needs.prepare-release.outputs.new_version }}/g" {} \;
+        
+        # Generate API documentation
+        python scripts/generate_api_docs.py > docs/api/reference.md
+        
+        # Update README badges
+        sed -i "s/version-v[0-9.]\+-/version-${{ needs.prepare-release.outputs.new_version }}-/g" README.md
+    
+    - name: Commit documentation updates
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        
+        git add docs/ README.md
+        git diff --staged --quiet || git commit -m "docs: update for ${{ needs.prepare-release.outputs.new_version }}"
+        git push
+
+  notify-release:
+    name: Notify Release
+    runs-on: ubuntu-latest
+    needs: [prepare-release, create-github-release, publish-docker-images]
+    if: always()
+    
+    steps:
+    - name: Send Slack notification
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        text: |
+          🚀 Release ${{ needs.prepare-release.outputs.new_version }} completed!
+          Type: ${{ github.event.inputs.release_type }}
+          Prerelease: ${{ github.event.inputs.prerelease }}
+          
+          View release: https://github.com/${{ github.repository }}/releases/tag/${{ needs.prepare-release.outputs.new_version }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+    
+    - name: Create announcement issue
+      uses: actions/github-script@v6
+      if: github.event.inputs.prerelease == 'false'
+      with:
+        script: |
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: `📢 Release Announcement: ${needs.prepare-release.outputs.new_version}`,
+            body: `
+              A new version has been released!
+              
+              **Version:** ${needs.prepare-release.outputs.new_version}
+              **Release Type:** ${{ github.event.inputs.release_type }}
+              
+              ### What's New
+              
+              ${needs.prepare-release.outputs.changelog}
+              
+              ### Get Started
+              
+              - [Download Release](https://github.com/${{ github.repository }}/releases/tag/${needs.prepare-release.outputs.new_version})
+              - [View Documentation](https://github.com/${{ github.repository }}/tree/${needs.prepare-release.outputs.new_version}/docs)
+              
+              Please report any issues you encounter.
+            `,
+            labels: ['announcement', 'release']
+          });

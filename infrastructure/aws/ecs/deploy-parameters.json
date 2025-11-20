@@ -1,0 +1,26 @@
+[
+  {
+    "ParameterKey": "VPCId",
+    "ParameterValue": "vpc-045c9e283c23ae01e"
+  },
+  {
+    "ParameterKey": "PrivateSubnetIds",
+    "ParameterValue": "subnet-042a9a5caeee61455,subnet-0e0b470d6ebc8065d,subnet-0725bf0a99b2c44ed"
+  },
+  {
+    "ParameterKey": "PublicSubnetIds",
+    "ParameterValue": "subnet-0dc768f3432060394,subnet-02c4f6387279b89ce,subnet-0222fe58a7d5858ee"
+  },
+  {
+    "ParameterKey": "DBSecretArn",
+    "ParameterValue": "arn:aws:secretsmanager:us-east-1:695353648052:secret:gaming-system-aurora-db-db-credentials-qYLEZ7"
+  },
+  {
+    "ParameterKey": "DBClusterEndpoint",
+    "ParameterValue": "gaming-system-aurora-db-cluster.cluster-cal6eoegigyq.us-east-1.rds.amazonaws.com"
+  },
+  {
+    "ParameterKey": "DBReadEndpoint",
+    "ParameterValue": "gaming-system-aurora-db-cluster.cluster-ro-cal6eoegigyq.us-east-1.rds.amazonaws.com"
+  }
+]

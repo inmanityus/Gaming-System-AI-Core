@@ -1,0 +1,88 @@
+{
+    "cluster": {
+        "name": "gaming-ai-gold-tier",
+        "arn": "arn:aws:eks:us-east-1:695353648052:cluster/gaming-ai-gold-tier",
+        "createdAt": "2025-11-03T16:55:53.770000-07:00",
+        "version": "1.29",
+        "endpoint": "https://C7069D0480BA652995F075C2E583525E.gr7.us-east-1.eks.amazonaws.com",
+        "roleArn": "arn:aws:iam::695353648052:role/gaming-ai-gold-tier-cluster-20251103235527247600000001",
+        "resourcesVpcConfig": {
+            "subnetIds": [
+                "subnet-0b2a16f919e052e5d",
+                "subnet-0005204be891dc874",
+                "subnet-0a62fb83eaaa5573c"
+            ],
+            "securityGroupIds": [
+                "sg-0856f1c48eb290219"
+            ],
+            "clusterSecurityGroupId": "sg-0c38a88a49d94cd7d",
+            "vpcId": "vpc-0684c566fb7cc6b12",
+            "endpointPublicAccess": false,
+            "endpointPrivateAccess": true,
+            "publicAccessCidrs": [
+                "0.0.0.0/0"
+            ]
+        },
+        "kubernetesNetworkConfig": {
+            "serviceIpv4Cidr": "172.20.0.0/16",
+            "ipFamily": "ipv4",
+            "elasticLoadBalancing": {
+                "enabled": false
+            }
+        },
+        "logging": {
+            "clusterLogging": [
+                {
+                    "types": [
+                        "api",
+                        "audit",
+                        "authenticator"
+                    ],
+                    "enabled": true
+                },
+                {
+                    "types": [
+                        "controllerManager",
+                        "scheduler"
+                    ],
+                    "enabled": false
+                }
+            ]
+        },
+        "identity": {
+            "oidc": {
+                "issuer": "https://oidc.eks.us-east-1.amazonaws.com/id/C7069D0480BA652995F075C2E583525E"
+            }
+        },
+        "status": "ACTIVE",
+        "certificateAuthority": {
+            "data": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCVENDQWUyZ0F3SUJBZ0lJWFIzRGZtYTR6QjB3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TlRFeE1ETXlNelUyTkRGYUZ3MHpOVEV4TURJd01EQXhOREZhTUJVeApFekFSQmdOVkJBTVRDbXQxWW1WeWJtVjBaWE13Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLCkFvSUJBUURkb2xZZG5qR0hjcWFPOHE3K3piUGh1anIyZVE0VitCSlVUVkhLN1JuaU03NThvSlV5VnM5amdJUVUKNHVJWWdKa2FEcHNMLzJnUGI1Sk1sZjRZRGJjOUttNUd4VjdqaUpuN3dIVDdrYU1QYkFOaThlMjc2L2VtRDNvSQpZMjZ0UEpYME1WOXFzS0ZXK2NaK2h4ZHRibkNRWHA0WkVOY1NlM2g4ajM1Ymt5Q0FUQk1lOUp0eUd5M0pkTzA2CmpqaHVsaHRjdFFkeXR1cUxLTWs0YlhHcVBSZkQwUVJNcjJaYkV1NlFGNVJPV0pBd01DVmtOTFpXQlc1V1EzeGEKZlB2VEZLN0l1RWJvZXZSZm9WeHF0eFZqSWNRam1FMHVlOW5Dd3cydjVnbUQ1UUNNeGVzaURVZGdQZjZ0aUpQRQoxWmJCV2xXQzlBUEFrS1JjWUVzckgya1ljOVNOQWdNQkFBR2pXVEJYTUE0R0ExVWREd0VCL3dRRUF3SUNwREFQCkJnTlZIUk1CQWY4RUJUQURBUUgvTUIwR0ExVWREZ1FXQkJTUk84eU9JeWtiQUF2NVBJUGxGdlRCOW13NGFqQVYKQmdOVkhSRUVEakFNZ2dwcmRXSmxjbTVsZEdWek1BMEdDU3FHU0liM0RRRUJDd1VBQTRJQkFRQVBVcjJ0L21oUgpnLzhST1IyNVk5YjZKQlZ6YjIyNForSmRpVC9vMGtmeU5tZ0hRWkZUUmdQZDZiOUVoaHBLZEtzVWp0WnBPeHB6Cm4vN2NlbG9JUmFHZGNrR1VNVktNWjhmd1JQbFF5Ui9DZllOc2t6UTdYaTNoRVE0RWRkQURmVzZkbHdxRkJJN3IKckdXZ09RdFA2UHprd3Z0RTFwcWd6TVR1cTBSRE5yVHJ0cXRJTEUvNGFmVjVOSjVSdXd1YWZYQ05VMjlUcXMzbAphTHZySFVSQ1E3VzkvdWhpcDNpOElUaS9rdjl3R2prSVBhb1NHWmYwR1RWQkpWVE9rRTFOOFZ0Q3Yxai9veTFYClRUOU9LdUVFTnQzZjRVSDh1ZnhMVDZkVGxETTRMaGh5RG9ac1NsTG5ONUdrRnZpSzYva01hcEp2bnl6VW04b0QKNVJpUXp2Z3Y5UHRwCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K"
+        },
+        "platformVersion": "eks.55",
+        "tags": {
+            "Project": "Gaming-AI-Core",
+            "Environment": "production",
+            "terraform-aws-modules": "eks",
+            "Purpose": "Real-Time-NPC-Inference",
+            "ManagedBy": "Terraform",
+            "Tier": "Gold"
+        },
+        "encryptionConfig": [
+            {
+                "resources": [
+                    "secrets"
+                ],
+                "provider": {
+                    "keyArn": "arn:aws:kms:us-east-1:695353648052:key/34fc3b18-ae68-436a-a811-eca88b64bef8"
+                }
+            }
+        ],
+        "accessConfig": {
+            "authenticationMode": "API_AND_CONFIG_MAP"
+        },
+        "upgradePolicy": {
+            "supportType": "EXTENDED"
+        },
+        "deletionProtection": false
+    }
+}

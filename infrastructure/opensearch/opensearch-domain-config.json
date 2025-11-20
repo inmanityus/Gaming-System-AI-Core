@@ -1,0 +1,55 @@
+{
+  "AdvancedSecurityOptions": {
+    "InternalUserDatabaseEnabled": true,
+    "Enabled": true,
+    "MasterUserOptions": {
+      "MasterUserName": "opensearch_admin",
+      "MasterUserPassword": "vH7Xgs(FDdlY^#xxOopp0Dln"
+    }
+  },
+  "EngineVersion": "OpenSearch_2.11",
+  "EBSOptions": {
+    "EBSEnabled": true,
+    "Throughput": 125,
+    "VolumeSize": 100,
+    "VolumeType": "gp3",
+    "Iops": 3000
+  },
+  "VPCOptions": {
+    "SecurityGroupIds": [
+      "sg-0b97209f0ba4fc3c9"
+    ],
+    "SubnetIds": [
+      "subnet-087eeda0bae6cb2e5",
+      "subnet-0b36e3376d508d01f",
+      "subnet-0523f5b7a55c382f5"
+    ]
+  },
+  "NodeToNodeEncryptionOptions": {
+    "Enabled": true
+  },
+  "EncryptionAtRestOptions": {
+    "Enabled": true
+  },
+  "DomainEndpointOptions": {
+    "TLSSecurityPolicy": "Policy-Min-TLS-1-2-2019-07",
+    "EnforceHTTPS": true
+  },
+  "ClusterConfig": {
+    "DedicatedMasterCount": 3,
+    "ZoneAwarenessConfig": {
+      "AvailabilityZoneCount": 3
+    },
+    "DedicatedMasterType": "t3.small.search",
+    "ZoneAwarenessEnabled": true,
+    "InstanceType": "t3.medium.search",
+    "InstanceCount": 3,
+    "DedicatedMasterEnabled": true
+  },
+  "DomainName": "ai-core-opensearch",
+  "AdvancedOptions": {
+    "override_main_response_version": "false",
+    "rest.action.multi.allow_explicit_index": "true",
+    "indices.query.bool.max_clause_count": "10000"
+  }
+}

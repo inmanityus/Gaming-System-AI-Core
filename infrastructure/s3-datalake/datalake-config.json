@@ -1,0 +1,35 @@
+{
+  "region": "us-east-1",
+  "buckets": [
+    {
+      "type": "raw",
+      "name": "ai-core-datalake-raw-695353648052"
+    },
+    {
+      "type": "processed",
+      "name": "ai-core-datalake-processed-695353648052"
+    },
+    {
+      "type": "curated",
+      "name": "ai-core-datalake-curated-695353648052"
+    },
+    {
+      "type": "ml-artifacts",
+      "name": "ai-core-datalake-ml-artifacts-695353648052"
+    },
+    {
+      "type": "logs",
+      "name": "ai-core-datalake-logs-695353648052"
+    }
+  ],
+  "account_id": "695353648052",
+  "kms_key": {
+    "alias": "alias/ai-core-datalake",
+    "id": "eb6aec9c-0912-4d55-90a5-217df621f0b9"
+  },
+  "athena": {
+    "results_bucket": "s3://ai-core-datalake-athena-results-695353648052/query-results/",
+    "database": "ai_core_datalake"
+  },
+  "created_at": "2025-11-19 11:55:19"
+}

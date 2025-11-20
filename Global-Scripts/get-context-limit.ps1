@@ -89,3 +89,4 @@ if ($currentModel -and $contextSizes.ContainsKey($currentModel)) {
     # Return conservative default
     return 115200  # Smallest context size as safe default
 }
+

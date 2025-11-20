@@ -1,0 +1,303 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com
+  ECS_CLUSTER: gaming-system-cluster
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Images
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+    
+    strategy:
+      matrix:
+        service: [
+          ethelred-audio,
+          ethelred-engagement,
+          multi-language,
+          api-gateway
+        ]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+        aws-region: ${{ env.AWS_REGION }}
+    
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+    
+    - name: Generate metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.ECR_REGISTRY }}/${{ matrix.service }}
+        tags: |
+          type=ref,event=branch
+          type=sha,prefix={{branch}}-
+          type=raw,value=${{ github.event.inputs.environment || 'staging' }}
+    
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./services/${{ matrix.service }}/Dockerfile
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        build-args: |
+          BUILD_VERSION=${{ github.sha }}
+          BUILD_DATE=${{ github.event.repository.updated_at }}
+
+  deploy-infrastructure:
+    name: Deploy Infrastructure
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    permissions:
+      id-token: write
+      contents: read
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+        aws-region: ${{ env.AWS_REGION }}
+    
+    - name: Deploy CloudFormation Stack
+      run: |
+        aws cloudformation deploy \
+          --template-file infrastructure/cloudformation/main.yaml \
+          --stack-name gaming-system-${{ github.event.inputs.environment || 'staging' }} \
+          --parameter-overrides \
+            EnvironmentName=${{ github.event.inputs.environment || 'staging' }} \
+            ImageTag=${{ github.sha }} \
+          --capabilities CAPABILITY_NAMED_IAM \
+          --no-fail-on-empty-changeset
+
+  deploy-services:
+    name: Deploy Services
+    runs-on: ubuntu-latest
+    needs: [build-and-push, deploy-infrastructure]
+    permissions:
+      id-token: write
+      contents: read
+    
+    strategy:
+      matrix:
+        service: [
+          ethelred-audio,
+          ethelred-engagement,
+          multi-language,
+          api-gateway
+        ]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+        aws-region: ${{ env.AWS_REGION }}
+    
+    - name: Deploy to ECS
+      run: |
+        # Update task definition with new image
+        TASK_DEFINITION=$(aws ecs describe-task-definition \
+          --task-definition ${{ matrix.service }}-${{ github.event.inputs.environment || 'staging' }} \
+          --query taskDefinition)
+        
+        NEW_TASK_DEF=$(echo $TASK_DEFINITION | \
+          jq --arg IMAGE "${{ env.ECR_REGISTRY }}/${{ matrix.service }}:${{ github.sha }}" \
+          '.containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn) | del(.revision) | del(.status) | del(.requiresAttributes) | del(.compatibilities) | del(.registeredAt) | del(.registeredBy)')
+        
+        NEW_TASK_ARN=$(aws ecs register-task-definition \
+          --cli-input-json "$NEW_TASK_DEF" \
+          --query 'taskDefinition.taskDefinitionArn' \
+          --output text)
+        
+        # Update service
+        aws ecs update-service \
+          --cluster ${{ env.ECS_CLUSTER }} \
+          --service ${{ matrix.service }}-${{ github.event.inputs.environment || 'staging' }} \
+          --task-definition $NEW_TASK_ARN \
+          --force-new-deployment
+    
+    - name: Wait for deployment
+      run: |
+        aws ecs wait services-stable \
+          --cluster ${{ env.ECS_CLUSTER }} \
+          --services ${{ matrix.service }}-${{ github.event.inputs.environment || 'staging' }}
+
+  run-smoke-tests:
+    name: Run Smoke Tests
+    runs-on: ubuntu-latest
+    needs: deploy-services
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest requests
+    
+    - name: Run smoke tests
+      env:
+        API_ENDPOINT: ${{ secrets[format('API_ENDPOINT_{0}', github.event.inputs.environment || 'STAGING')] }}
+      run: |
+        pytest tests/smoke -v --api-endpoint=$API_ENDPOINT
+
+  rollback-on-failure:
+    name: Rollback on Failure
+    runs-on: ubuntu-latest
+    needs: [deploy-services, run-smoke-tests]
+    if: failure()
+    permissions:
+      id-token: write
+      contents: read
+    
+    steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+        aws-region: ${{ env.AWS_REGION }}
+    
+    - name: Rollback services
+      run: |
+        for service in ethelred-audio ethelred-engagement multi-language api-gateway; do
+          # Get previous task definition
+          PREVIOUS_TASK_DEF=$(aws ecs describe-service \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --service ${service}-${{ github.event.inputs.environment || 'staging' }} \
+            --query 'service.deployments[1].taskDefinition' \
+            --output text || echo "")
+          
+          if [ ! -z "$PREVIOUS_TASK_DEF" ]; then
+            echo "Rolling back ${service} to ${PREVIOUS_TASK_DEF}"
+            aws ecs update-service \
+              --cluster ${{ env.ECS_CLUSTER }} \
+              --service ${service}-${{ github.event.inputs.environment || 'staging' }} \
+              --task-definition $PREVIOUS_TASK_DEF \
+              --force-new-deployment
+          fi
+        done
+
+  update-monitoring:
+    name: Update Monitoring
+    runs-on: ubuntu-latest
+    needs: run-smoke-tests
+    permissions:
+      id-token: write
+      contents: read
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+        aws-region: ${{ env.AWS_REGION }}
+    
+    - name: Update CloudWatch Dashboard
+      run: |
+        aws cloudwatch put-dashboard \
+          --dashboard-name "gaming-system-${{ github.event.inputs.environment || 'staging' }}" \
+          --dashboard-body file://infrastructure/cloudwatch/dashboards/main.json
+    
+    - name: Create deployment marker
+      run: |
+        aws cloudwatch put-metric-data \
+          --namespace "GamingSystem/Deployments" \
+          --metric-name "DeploymentSuccess" \
+          --value 1 \
+          --dimensions Environment=${{ github.event.inputs.environment || 'staging' }},Version=${{ github.sha }}
+    
+    - name: Send notification
+      uses: 8398a7/action-slack@v3
+      if: always()
+      with:
+        status: ${{ job.status }}
+        text: |
+          Deployment to ${{ github.event.inputs.environment || 'staging' }} ${{ job.status }}
+          Version: ${{ github.sha }}
+          Actor: ${{ github.actor }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: [run-smoke-tests, update-monitoring]
+    if: github.event.inputs.environment == 'production'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Generate changelog
+      id: changelog
+      run: |
+        # Get commits since last tag
+        LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+        if [ -z "$LAST_TAG" ]; then
+          CHANGELOG=$(git log --pretty=format:"- %s" --reverse)
+        else
+          CHANGELOG=$(git log ${LAST_TAG}..HEAD --pretty=format:"- %s" --reverse)
+        fi
+        echo "changelog<<EOF" >> $GITHUB_OUTPUT
+        echo "$CHANGELOG" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+    
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.run_number }}
+        release_name: Release v${{ github.run_number }}
+        body: |
+          ## Changes in this Release
+          ${{ steps.changelog.outputs.changelog }}
+          
+          ## Docker Images
+          - ethelred-audio: `${{ env.ECR_REGISTRY }}/ethelred-audio:${{ github.sha }}`
+          - ethelred-engagement: `${{ env.ECR_REGISTRY }}/ethelred-engagement:${{ github.sha }}`
+          - multi-language: `${{ env.ECR_REGISTRY }}/multi-language:${{ github.sha }}`
+          - api-gateway: `${{ env.ECR_REGISTRY }}/api-gateway:${{ github.sha }}`
+        draft: false
+        prerelease: false

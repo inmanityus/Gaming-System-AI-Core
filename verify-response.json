@@ -1,0 +1,1 @@
+{"statusCode": 500, "body": "{\"error\": \"An error occurred (HttpEndpointNotEnabledException) when calling the ExecuteStatement operation: HttpEndpoint is not enabled for resource arn:aws:rds:us-east-1:695353648052:cluster:gaming-system-aurora-db-cluster.\"}"}

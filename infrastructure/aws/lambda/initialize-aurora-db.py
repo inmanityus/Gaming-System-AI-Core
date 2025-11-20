@@ -1,0 +1,224 @@
+"""
+Lambda function to initialize Aurora database schema from within VPC
+"""
+import json
+import boto3
+import psycopg
+from psycopg import sql
+import os
+
+
+def get_db_credentials(secret_arn):
+    """Retrieve database credentials from Secrets Manager."""
+    client = boto3.client('secretsmanager')
+    response = client.get_secret_value(SecretId=secret_arn)
+    return json.loads(response['SecretString'])
+
+
+def lambda_handler(event, context):
+    """Lambda handler to initialize database."""
+    # Get configuration
+    cluster_endpoint = event.get('cluster_endpoint', 
+                                'gaming-system-aurora-db-cluster.cluster-cal6eoegigyq.us-east-1.rds.amazonaws.com')
+    secret_arn = event.get('secret_arn', 
+                          'arn:aws:secretsmanager:us-east-1:695353648052:secret:gaming-system-aurora-db-db-credentials-qYLEZ7')
+    
+    # Get credentials
+    credentials = get_db_credentials(secret_arn)
+    
+    try:
+        # Connect to the default postgres database first
+        conn_string = f"host={cluster_endpoint} port=5432 dbname=postgres user={credentials['username']} password={credentials['password']} sslmode=require"
+        
+        with psycopg.connect(conn_string) as conn:
+            conn.autocommit = True  # Required for CREATE DATABASE
+            with conn.cursor() as cur:
+                # Check if database exists
+                cur.execute(
+                    "SELECT 1 FROM pg_database WHERE datname = %s",
+                    ('gaming_system_ai_core',)
+                )
+                
+                if not cur.fetchone():
+                    # Create database
+                    cur.execute(sql.SQL("CREATE DATABASE {}").format(
+                        sql.Identifier('gaming_system_ai_core')
+                    ))
+                    print("Database created successfully")
+                else:
+                    print("Database already exists")
+        
+        # Now connect to the new database and create schema
+        conn_string = f"host={cluster_endpoint} port=5432 dbname=gaming_system_ai_core user={credentials['username']} password={credentials['password']} sslmode=require"
+        
+        with psycopg.connect(conn_string) as conn:
+            with conn.cursor() as cur:
+                # Create schemas
+                schemas = [
+                    'audio_analytics',
+                    'engagement', 
+                    'localization',
+                    'language_system',
+                    'users',
+                    'ethelred'
+                ]
+                
+                for schema in schemas:
+                    cur.execute(f"CREATE SCHEMA IF NOT EXISTS {schema}")
+                
+                # Create audio_analytics tables
+                cur.execute("""
+                    CREATE TABLE IF NOT EXISTS audio_analytics.audio_metrics (
+                        id SERIAL PRIMARY KEY,
+                        analysis_id UUID NOT NULL UNIQUE DEFAULT gen_random_uuid(),
+                        user_id VARCHAR(255) NOT NULL,
+                        session_id VARCHAR(255) NOT NULL,
+                        sample_rate INTEGER NOT NULL CHECK (sample_rate > 0),
+                        duration_seconds FLOAT NOT NULL CHECK (duration_seconds > 0),
+                        intelligibility_score FLOAT NOT NULL CHECK (intelligibility_score >= 0 AND intelligibility_score <= 1),
+                        confidence_level FLOAT CHECK (confidence_level >= 0 AND confidence_level <= 1),
+                        archetype VARCHAR(100),
+                        archetype_matches JSONB,
+                        metadata JSONB,
+                        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                    )
+                """)
+                
+                cur.execute("""
+                    CREATE INDEX IF NOT EXISTS idx_audio_metrics_user_session 
+                    ON audio_analytics.audio_metrics(user_id, session_id)
+                """)
+                
+                cur.execute("""
+                    CREATE INDEX IF NOT EXISTS idx_audio_metrics_created_at 
+                    ON audio_analytics.audio_metrics(created_at DESC)
+                """)
+                
+                # Create archetype profiles table
+                cur.execute("""
+                    CREATE TABLE IF NOT EXISTS audio_analytics.archetype_profiles (
+                        id SERIAL PRIMARY KEY,
+                        archetype_name VARCHAR(100) NOT NULL UNIQUE,
+                        description TEXT,
+                        frequency_profile JSONB NOT NULL,
+                        spectral_characteristics JSONB NOT NULL,
+                        temporal_patterns JSONB NOT NULL,
+                        active BOOLEAN DEFAULT true,
+                        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                    )
+                """)
+                
+                # Create other schema tables
+                cur.execute("""
+                    CREATE TABLE IF NOT EXISTS engagement.sessions (
+                        id SERIAL PRIMARY KEY,
+                        session_id UUID NOT NULL UNIQUE DEFAULT gen_random_uuid(),
+                        user_id VARCHAR(255) NOT NULL,
+                        start_time TIMESTAMP WITH TIME ZONE NOT NULL,
+                        end_time TIMESTAMP WITH TIME ZONE,
+                        duration_seconds FLOAT,
+                        events JSONB DEFAULT '[]'::jsonb,
+                        metrics JSONB DEFAULT '{}'::jsonb,
+                        addiction_indicators JSONB,
+                        safety_scores JSONB,
+                        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                    )
+                """)
+                
+                cur.execute("""
+                    CREATE TABLE IF NOT EXISTS users.preferences (
+                        id SERIAL PRIMARY KEY,
+                        user_id VARCHAR(255) NOT NULL UNIQUE,
+                        language_code VARCHAR(10) DEFAULT 'en-US',
+                        timezone VARCHAR(50) DEFAULT 'UTC',
+                        audio_quality VARCHAR(20) DEFAULT 'high',
+                        safety_mode VARCHAR(20) DEFAULT 'moderate',
+                        engagement_limits JSONB DEFAULT '{}'::jsonb,
+                        feature_flags JSONB DEFAULT '{}'::jsonb,
+                        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                    )
+                """)
+                
+                # Create ethelred view for backwards compatibility
+                cur.execute("""
+                    CREATE OR REPLACE VIEW ethelred.audio_metrics AS
+                    SELECT
+                        id,
+                        analysis_id,
+                        user_id,
+                        session_id,
+                        sample_rate,
+                        duration_seconds,
+                        intelligibility_score,
+                        confidence_level,
+                        archetype,
+                        archetype_matches,
+                        metadata,
+                        created_at AS analysis_timestamp,
+                        updated_at
+                    FROM audio_analytics.audio_metrics
+                """)
+                
+                # Insert default archetype profiles
+                cur.execute("""
+                    INSERT INTO audio_analytics.archetype_profiles 
+                    (archetype_name, description, frequency_profile, spectral_characteristics, temporal_patterns) 
+                    VALUES 
+                    ('vampire_alpha', 'Vampire archetype - smooth, hypnotic',
+                        '{"low_freq": 0.3, "mid_freq": 0.5, "high_freq": 0.2}'::jsonb,
+                        '{"resonance": 0.8, "breathiness": 0.2, "clarity": 0.9}'::jsonb,
+                        '{"cadence": "slow", "pauses": "frequent", "emphasis": "subtle"}'::jsonb),
+                    ('zombie_beta', 'Zombie archetype - rough, guttural',
+                        '{"low_freq": 0.6, "mid_freq": 0.3, "high_freq": 0.1}'::jsonb,
+                        '{"resonance": 0.2, "breathiness": 0.7, "clarity": 0.3}'::jsonb,
+                        '{"cadence": "irregular", "pauses": "random", "emphasis": "harsh"}'::jsonb),
+                    ('werewolf_gamma', 'Werewolf archetype - dynamic, shifting',
+                        '{"low_freq": 0.5, "mid_freq": 0.3, "high_freq": 0.2}'::jsonb,
+                        '{"resonance": 0.5, "breathiness": 0.4, "clarity": 0.6}'::jsonb,
+                        '{"cadence": "variable", "pauses": "short", "emphasis": "growling"}'::jsonb)
+                    ON CONFLICT (archetype_name) DO NOTHING
+                """)
+                
+                # Insert some test data for performance testing
+                cur.execute("""
+                    INSERT INTO audio_analytics.audio_metrics 
+                    (user_id, session_id, sample_rate, duration_seconds, intelligibility_score, confidence_level, archetype, metadata)
+                    SELECT 
+                        'test_user_perf',
+                        'session_' || generate_series,
+                        48000,
+                        3.5,
+                        0.75 + (random() * 0.2),
+                        0.8 + (random() * 0.15),
+                        CASE (generate_series % 3)
+                            WHEN 0 THEN 'vampire_alpha'
+                            WHEN 1 THEN 'zombie_beta'
+                            ELSE 'werewolf_gamma'
+                        END,
+                        jsonb_build_object('test', true, 'index', generate_series)
+                    FROM generate_series(1, 100)
+                    ON CONFLICT (analysis_id) DO NOTHING
+                """)
+                
+                conn.commit()
+        
+        return {
+            'statusCode': 200,
+            'body': json.dumps({
+                'message': 'Database initialized successfully',
+                'database': 'gaming_system_ai_core',
+                'schemas': schemas
+            })
+        }
+        
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return {
+            'statusCode': 500,
+            'body': json.dumps({
+                'error': str(e)
+            })
+        }

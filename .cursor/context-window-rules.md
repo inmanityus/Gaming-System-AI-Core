@@ -1,6 +1,6 @@
-﻿# Context Window Monitoring Rules
+# Context Window Monitoring Rules
 
-## ðŸš¨ CRITICAL RULE - MANDATORY ENFORCEMENT
+## 🚨 CRITICAL RULE - MANDATORY ENFORCEMENT
 
 ### **CONTEXT WINDOW THRESHOLD - 60% RULE**
 
@@ -22,8 +22,8 @@
 
 **THRESHOLD LEVELS**:
 - **< 60%**: Normal operation, continue monitoring
-- **â‰¥ 60%**: Trigger /clean-session immediately
-- **Still â‰¥ 60% after cleanup**: Trigger /handoff immediately
+- **≥ 60%**: Trigger /clean-session immediately
+- **Still ≥ 60% after cleanup**: Trigger /handoff immediately
 
 **INTEGRATION**:
 - **Startup**: Monitor initialized during startup process

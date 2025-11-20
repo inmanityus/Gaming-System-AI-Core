@@ -1,0 +1,173 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'VPC Endpoints for ECR access from private subnets'
+
+Parameters:
+  VPCId:
+    Type: String
+    Default: vpc-045c9e283c23ae01e
+    
+  PrivateSubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+    Default: subnet-042a9a5caeee61455,subnet-0e0b470d6ebc8065d,subnet-0725bf0a99b2c44ed
+    
+  SecurityGroupId:
+    Type: String
+    Default: sg-0c5b0b6c70baf787e
+
+Resources:
+  # Security Group for VPC Endpoints
+  VPCEndpointSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for VPC endpoints
+      VpcId: !Ref VPCId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 172.31.0.0/16  # VPC CIDR
+      Tags:
+        - Key: Name
+          Value: vpc-endpoints-sg
+          
+  # ECR API Endpoint
+  ECRAPIEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref VPCId
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.ecr.api
+      VpcEndpointType: Interface
+      PrivateDnsEnabled: true
+      SubnetIds: !Ref PrivateSubnetIds
+      SecurityGroupIds:
+        - !Ref VPCEndpointSecurityGroup
+        
+  # ECR DKR Endpoint  
+  ECRDKREndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref VPCId
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.ecr.dkr
+      VpcEndpointType: Interface
+      PrivateDnsEnabled: true
+      SubnetIds: !Ref PrivateSubnetIds
+      SecurityGroupIds:
+        - !Ref VPCEndpointSecurityGroup
+        
+  # S3 Gateway Endpoint (for ECR image layers)
+  S3Endpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref VPCId
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.s3
+      VpcEndpointType: Gateway
+      RouteTableIds:
+        - !Ref PrivateRouteTable1
+        - !Ref PrivateRouteTable2
+        - !Ref PrivateRouteTable3
+        
+  # Get Route Tables for private subnets
+  PrivateRouteTable1:
+    Type: AWS::CloudFormation::CustomResource
+    Properties:
+      ServiceToken: !GetAtt GetRouteTableFunction.Arn
+      SubnetId: !Select [0, !Ref PrivateSubnetIds]
+      
+  PrivateRouteTable2:
+    Type: AWS::CloudFormation::CustomResource
+    Properties:
+      ServiceToken: !GetAtt GetRouteTableFunction.Arn
+      SubnetId: !Select [1, !Ref PrivateSubnetIds]
+      
+  PrivateRouteTable3:
+    Type: AWS::CloudFormation::CustomResource
+    Properties:
+      ServiceToken: !GetAtt GetRouteTableFunction.Arn
+      SubnetId: !Select [2, !Ref PrivateSubnetIds]
+      
+  # Lambda function to get route table IDs
+  GetRouteTableFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: python3.11
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import cfnresponse
+          
+          def handler(event, context):
+              try:
+                  if event['RequestType'] == 'Delete':
+                      cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
+                      return
+                      
+                  ec2 = boto3.client('ec2')
+                  subnet_id = event['ResourceProperties']['SubnetId']
+                  
+                  response = ec2.describe_route_tables(
+                      Filters=[
+                          {'Name': 'association.subnet-id', 'Values': [subnet_id]}
+                      ]
+                  )
+                  
+                  if response['RouteTables']:
+                      route_table_id = response['RouteTables'][0]['RouteTableId']
+                  else:
+                      # Get main route table for VPC
+                      vpc_response = ec2.describe_subnets(SubnetIds=[subnet_id])
+                      vpc_id = vpc_response['Subnets'][0]['VpcId']
+                      
+                      rt_response = ec2.describe_route_tables(
+                          Filters=[
+                              {'Name': 'vpc-id', 'Values': [vpc_id]},
+                              {'Name': 'association.main', 'Values': ['true']}
+                          ]
+                      )
+                      route_table_id = rt_response['RouteTables'][0]['RouteTableId']
+                      
+                  cfnresponse.send(event, context, cfnresponse.SUCCESS, 
+                                   {'RouteTableId': route_table_id},
+                                   route_table_id)
+                                   
+              except Exception as e:
+                  print(str(e))
+                  cfnresponse.send(event, context, cfnresponse.FAILED, {})
+                  
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: EC2DescribePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:DescribeRouteTables
+                  - ec2:DescribeSubnets
+                Resource: '*'
+
+Outputs:
+  ECRAPIEndpointId:
+    Description: ECR API VPC Endpoint ID
+    Value: !Ref ECRAPIEndpoint
+    
+  ECRDKREndpointId:
+    Description: ECR DKR VPC Endpoint ID
+    Value: !Ref ECRDKREndpoint
+    
+  S3EndpointId:
+    Description: S3 VPC Endpoint ID
+    Value: !Ref S3Endpoint

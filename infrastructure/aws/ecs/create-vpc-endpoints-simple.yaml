@@ -1,0 +1,60 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'VPC Endpoints for ECR access from private subnets'
+
+Parameters:
+  VPCId:
+    Type: String
+    Default: vpc-045c9e283c23ae01e
+    
+  PrivateSubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+    Default: subnet-042a9a5caeee61455,subnet-0e0b470d6ebc8065d,subnet-0725bf0a99b2c44ed
+
+Resources:
+  # Security Group for VPC Endpoints
+  VPCEndpointSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for VPC endpoints
+      VpcId: !Ref VPCId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 172.31.0.0/16  # VPC CIDR
+      Tags:
+        - Key: Name
+          Value: vpc-endpoints-sg
+          
+  # ECR API Endpoint
+  ECRAPIEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref VPCId
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.ecr.api
+      VpcEndpointType: Interface
+      PrivateDnsEnabled: true
+      SubnetIds: !Ref PrivateSubnetIds
+      SecurityGroupIds:
+        - !Ref VPCEndpointSecurityGroup
+        
+  # ECR DKR Endpoint  
+  ECRDKREndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref VPCId
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.ecr.dkr
+      VpcEndpointType: Interface
+      PrivateDnsEnabled: true
+      SubnetIds: !Ref PrivateSubnetIds
+      SecurityGroupIds:
+        - !Ref VPCEndpointSecurityGroup
+
+Outputs:
+  ECRAPIEndpointId:
+    Description: ECR API VPC Endpoint ID
+    Value: !Ref ECRAPIEndpoint
+    
+  ECRDKREndpointId:
+    Description: ECR DKR VPC Endpoint ID
+    Value: !Ref ECRDKREndpoint

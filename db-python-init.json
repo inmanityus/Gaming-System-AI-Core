@@ -1,0 +1,48 @@
+{
+    "Command": {
+        "CommandId": "5a5cd391-5598-460d-ad3d-445a7c13fe50",
+        "DocumentName": "AWS-RunShellScript",
+        "DocumentVersion": "$DEFAULT",
+        "Comment": "",
+        "ExpiresAfter": "2025-11-17T15:41:37.975000-07:00",
+        "Parameters": {
+            "commands": [
+                "aws s3 cp s3://befreefitness-phase3-backups/temp/init_aurora_db.py /tmp/init_aurora_db.py",
+                "chmod +x /tmp/init_aurora_db.py",
+                "python3 /tmp/init_aurora_db.py"
+            ]
+        },
+        "InstanceIds": [
+            "i-05ae98da13b9c215e"
+        ],
+        "Targets": [],
+        "RequestedDateTime": "2025-11-17T13:41:37.975000-07:00",
+        "Status": "Pending",
+        "StatusDetails": "Pending",
+        "OutputS3Region": "us-east-1",
+        "OutputS3BucketName": "",
+        "OutputS3KeyPrefix": "",
+        "MaxConcurrency": "50",
+        "MaxErrors": "0",
+        "TargetCount": 1,
+        "CompletedCount": 0,
+        "ErrorCount": 0,
+        "DeliveryTimedOutCount": 0,
+        "ServiceRole": "",
+        "NotificationConfig": {
+            "NotificationArn": "",
+            "NotificationEvents": [],
+            "NotificationType": ""
+        },
+        "CloudWatchOutputConfig": {
+            "CloudWatchLogGroupName": "",
+            "CloudWatchOutputEnabled": false
+        },
+        "TimeoutSeconds": 3600,
+        "AlarmConfiguration": {
+            "IgnorePollAlarmFailure": false,
+            "Alarms": []
+        },
+        "TriggeredAlarms": []
+    }
+}

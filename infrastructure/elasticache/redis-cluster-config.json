@@ -1,0 +1,29 @@
+{
+  "engine": "redis",
+  "automaticFailover": true,
+  "multiAZ": true,
+  "snapshotRetention": 7,
+  "parameterGroup": "ai-core-redis7-params",
+  "clusterMode": {
+    "numNodeGroups": 3,
+    "enabled": true,
+    "replicasPerNodeGroup": 2
+  },
+  "securityGroup": "sg-0b5ed4ef59263dd04",
+  "nodeType": "cache.r7g.xlarge",
+  "engineVersion": null,
+  "replicationGroupId": "ai-core-redis-cluster",
+  "encryption": {
+    "atRest": true,
+    "transit": true
+  },
+  "authEnabled": true,
+  "configurationEndpoint": {
+    "port": null,
+    "address": null
+  },
+  "clusterName": "ai-core-redis-cluster",
+  "secretArn": "arn:aws:secretsmanager:us-east-1:695353648052:secret:elasticache/ai-core-redis-cluster/auth-token",
+  "subnetGroup": "ai-core-redis-subnet-group-v2",
+  "creationDate": "2025-11-19 09:48:02"
+}

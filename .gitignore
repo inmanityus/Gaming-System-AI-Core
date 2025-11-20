@@ -108,9 +108,23 @@ vocal-chord-research/vcpkg/installed/
 # AWS
 *.pem
 *.key
+*.crt
+.cursor/aws/
 
-# Secrets
+# Secrets and API Keys
 *secret*
 *SECRET*
 *credentials*
 *CREDENTIALS*
+api-keys.txt
+api-keys.env
+secrets.json
+*-secret.yaml
+*-credentials.json
+*-config-prod.json
+docs/security/.private/
+
+# Backup files that might contain secrets
+.env.backup
+*.env.bak
+config.backup.*

@@ -1,0 +1,31 @@
+{
+  "TotalTests": 160,
+  "PassedTests": 0,
+  "UnverifiedTests": 98,
+  "Timestamp": "2025-11-19 13:48:58",
+  "Results": [
+    {
+      "Passed": 0,
+      "Total": 62,
+      "Failed": 0,
+      "Status": "❌ FAILED",
+      "Suite": "Vocal Synthesis"
+    },
+    {
+      "Passed": 0,
+      "Total": 65,
+      "Failed": 0,
+      "Status": "⚠️ PYTEST NOT INSTALLED",
+      "Suite": "Backend Security"
+    },
+    {
+      "Passed": 0,
+      "Total": 33,
+      "Failed": 0,
+      "Status": "⚠️ MANUAL ONLY",
+      "Suite": "UE5 Game Systems"
+    }
+  ],
+  "FailedTests": 0,
+  "PassRate": 0.0
+}

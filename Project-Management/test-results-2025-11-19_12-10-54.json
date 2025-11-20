@@ -1,0 +1,31 @@
+{
+  "TotalTests": 119,
+  "Results": [
+    {
+      "Status": "❌ FAILED",
+      "Total": 62,
+      "Failed": 0,
+      "Passed": 0,
+      "Suite": "Vocal Synthesis"
+    },
+    {
+      "Status": "⚠️ NOT FOUND",
+      "Total": 24,
+      "Failed": 0,
+      "Passed": 0,
+      "Suite": "Backend Security"
+    },
+    {
+      "Status": "⚠️ MANUAL ONLY",
+      "Total": 33,
+      "Failed": 0,
+      "Passed": 0,
+      "Suite": "UE5 Game Systems"
+    }
+  ],
+  "PassRate": 0.0,
+  "UnverifiedTests": 57,
+  "Timestamp": "2025-11-19 12:10:54",
+  "FailedTests": 0,
+  "PassedTests": 0
+}

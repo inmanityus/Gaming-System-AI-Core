@@ -1,0 +1,56 @@
+{
+  "account_id": "695353648052",
+  "created_at": "2025-11-19 11:59:31",
+  "keys": [
+    {
+      "description": "KMS key for general S3 storage encryption",
+      "keyId": "3a42cd0a-b4e8-4845-a38b-1faa7b2d3ae7",
+      "type": "storage",
+      "alias": "alias/ai-core-storage",
+      "keyArn": "arn:aws:kms:us-east-1:695353648052:key/3a42cd0a-b4e8-4845-a38b-1faa7b2d3ae7"
+    },
+    {
+      "description": "KMS key for EKS secrets encryption",
+      "keyId": "16bf11fc-66b8-4aeb-a56c-1c1586dc0c03",
+      "type": "eks",
+      "alias": "alias/ai-core-eks",
+      "keyArn": "arn:aws:kms:us-east-1:695353648052:key/16bf11fc-66b8-4aeb-a56c-1c1586dc0c03"
+    },
+    {
+      "description": "KMS key for CloudWatch Logs and CloudTrail encryption",
+      "keyId": "8db63b0c-c5fa-4bf0-a0e8-22dc489369b2",
+      "type": "logs",
+      "alias": "alias/ai-core-logs",
+      "keyArn": "arn:aws:kms:us-east-1:695353648052:key/8db63b0c-c5fa-4bf0-a0e8-22dc489369b2"
+    },
+    {
+      "description": "KMS key for application secrets and configuration",
+      "keyId": "f03810f0-4dfe-46e7-b2b6-35af5878886e",
+      "type": "application",
+      "alias": "alias/ai-core-application",
+      "keyArn": "arn:aws:kms:us-east-1:695353648052:key/f03810f0-4dfe-46e7-b2b6-35af5878886e"
+    },
+    {
+      "description": "KMS key for OpenSearch domain encryption",
+      "keyId": "b9b71d60-2f0d-4ac5-b1fb-ea4d96a6564e",
+      "type": "opensearch",
+      "alias": "alias/ai-core-opensearch",
+      "keyArn": "arn:aws:kms:us-east-1:695353648052:key/b9b71d60-2f0d-4ac5-b1fb-ea4d96a6564e"
+    },
+    {
+      "description": "KMS key for AWS Backup encryption",
+      "keyId": "c282f1ca-5281-4137-95f6-47356e000481",
+      "type": "backup",
+      "alias": "alias/ai-core-backup",
+      "keyArn": "arn:aws:kms:us-east-1:695353648052:key/c282f1ca-5281-4137-95f6-47356e000481"
+    },
+    {
+      "description": "KMS key for RDS Aurora and Redis encryption",
+      "keyId": "4ade26b4-5401-45db-af90-197ff4eb9634",
+      "type": "database",
+      "alias": "alias/ai-core-database",
+      "keyArn": "arn:aws:kms:us-east-1:695353648052:key/4ade26b4-5401-45db-af90-197ff4eb9634"
+    }
+  ],
+  "region": "us-east-1"
+}

@@ -1,0 +1,46 @@
+{
+    "Command": {
+        "CommandId": "b214c564-ac4f-4e64-a165-da51e8b4233e",
+        "DocumentName": "AWS-RunShellScript",
+        "DocumentVersion": "$DEFAULT",
+        "Comment": "",
+        "ExpiresAfter": "2025-11-17T15:43:30.238000-07:00",
+        "Parameters": {
+            "commands": [
+                "echo aW1wb3J0IGJvdG8zDQppbXBvcnQganNvbg0KaW1wb3J0IHBzeWNvcGcyDQpmcm9tIHBzeWNvcGcyLmV4dGVuc2lvbnMgaW1wb3J0IElTT0xBVElPTl9MRVZFTF9BVVRPQ09NTUlUDQoNCnByaW50KCJTdGFydGluZyBkYXRhYmFzZSBpbml0aWFsaXphdGlvbi4uLiIpDQoNCnRyeToNCiAgICAjIEdldCBjcmVkZW50aWFscw0KICAgIGNsaWVudCA9IGJvdG8zLmNsaWVudCgnc2VjcmV0c21hbmFnZXInLCByZWdpb25fbmFtZT0ndXMtZWFzdC0xJykNCiAgICBzZWNyZXQgPSBjbGllbnQuZ2V0X3NlY3JldF92YWx1ZShTZWNyZXRJZD0nYXJuOmF3czpzZWNyZXRzbWFuYWdlcjp1cy1lYXN0LTE6Njk1MzUzNjQ4MDUyOnNlY3JldDpnYW1pbmctc3lzdGVtLWF1cm9yYS1kYi1kYi1jcmVkZW50aWFscy1xWUxFWjcnKQ0KICAgIGNyZWRzID0ganNvbi5sb2FkcyhzZWNyZXRbJ1NlY3JldFN0cmluZyddKQ0KICAgIHByaW50KCJHb3QgY3JlZGVudGlhbHMiKQ0KICAgIA0KICAgICMgQ3JlYXRlIGRhdGFiYXNlDQogICAgY29ubiA9IHBzeWNvcGcyLmNvbm5lY3QoDQogICAgICAgIGhvc3Q9J2dhbWluZy1zeXN0ZW0tYXVyb3JhLWRiLWNsdXN0ZXIuY2x1c3Rlci1jYWw2ZW9lZ2lneXEudXMtZWFzdC0xLnJkcy5hbWF6b25hd3MuY29tJywNCiAgICAgICAgcG9ydD01NDMyLA0KICAgICAgICBkYXRhYmFzZT0ncG9zdGdyZXMnLA0KICAgICAgICB1c2VyPWNyZWRzWyd1c2VybmFtZSddLA0KICAgICAgICBwYXNzd29yZD1jcmVkc1sncGFzc3dvcmQnXQ0KICAgICkNCiAgICBjb25uLnNldF9pc29sYXRpb25fbGV2ZWwoSVNPTEFUSU9OX0xFVkVMX0FVVE9DT01NSVQpDQogICAgY3VyID0gY29ubi5jdXJzb3IoKQ0KICAgIA0KICAgIHRyeToNCiAgICAgICAgY3VyLmV4ZWN1dGUoJ0NSRUFURSBEQVRBQkFTRSBnYW1pbmdfc3lzdGVtX2FpX2NvcmU7JykNCiAgICAgICAgcHJpbnQoJ0RhdGFiYXNlIGNyZWF0ZWQhJykNCiAgICBleGNlcHQgcHN5Y29wZzIuZXJyb3JzLkR1cGxpY2F0ZURhdGFiYXNlOg0KICAgICAgICBwcmludCgnRGF0YWJhc2UgYWxyZWFkeSBleGlzdHMnKQ0KICAgIA0KICAgIGN1ci5jbG9zZSgpDQogICAgY29ubi5jbG9zZSgpDQogICAgDQogICAgIyBDb25uZWN0IHRvIG5ldyBkYXRhYmFzZSBhbmQgY3JlYXRlIG1pbmltYWwgc2NoZW1hDQogICAgY29ubiA9IHBzeWNvcGcyLmNvbm5lY3QoDQogICAgICAgIGhvc3Q9J2dhbWluZy1zeXN0ZW0tYXVyb3JhLWRiLWNsdXN0ZXIuY2x1c3Rlci1jYWw2ZW9lZ2lneXEudXMtZWFzdC0xLnJkcy5hbWF6b25hd3MuY29tJywNCiAgICAgICAgcG9ydD01NDMyLA0KICAgICAgICBkYXRhYmFzZT0nZ2FtaW5nX3N5c3RlbV9haV9jb3JlJywNCiAgICAgICAgdXNlcj1jcmVkc1sndXNlcm5hbWUnXSwNCiAgICAgICAgcGFzc3dvcmQ9Y3JlZHNbJ3Bhc3N3b3JkJ10NCiAgICApDQogICAgY3VyID0gY29ubi5jdXJzb3IoKQ0KICAgIA0KICAgICMgQ3JlYXRlIHNjaGVtYQ0KICAgIGN1ci5leGVjdXRlKCdDUkVBVEUgU0NIRU1BIElGIE5PVCBFWElTVFMgYXVkaW9fYW5hbHl0aWNzOycpDQogICAgY3VyLmV4ZWN1dGUoJ0NSRUFURSBTQ0hFTUEgSUYgTk9UIEVYSVNUUyBldGhlbHJlZDsnKQ0KICAgIHByaW50KCdTY2hlbWFzIGNyZWF0ZWQnKQ0KICAgIA0KICAgICMgQ3JlYXRlIHNpbXBsZSB0YWJsZQ0KICAgIGN1ci5leGVjdXRlKCcnJw0KICAgIENSRUFURSBUQUJMRSBJRiBOT1QgRVhJU1RTIGF1ZGlvX2FuYWx5dGljcy5hdWRpb19tZXRyaWNzICgNCiAgICAgICAgaWQgU0VSSUFMIFBSSU1BUlkgS0VZLA0KICAgICAgICB1c2VyX2lkIFZBUkNIQVIoMjU1KSwNCiAgICAgICAgaW50ZWxsaWdpYmlsaXR5X3Njb3JlIEZMT0FUDQogICAgKTsNCiAgICAnJycpDQogICAgcHJpbnQoJ1RhYmxlIGNyZWF0ZWQnKQ0KICAgIA0KICAgICMgSW5zZXJ0IHRlc3QgZGF0YQ0KICAgIGN1ci5leGVjdXRlKCJJTlNFUlQgSU5UTyBhdWRpb19hbmFseXRpY3MuYXVkaW9fbWV0cmljcyAodXNlcl9pZCwgaW50ZWxsaWdpYmlsaXR5X3Njb3JlKSBWQUxVRVMgKCd0ZXN0X3VzZXJfcGVyZicsIDAuODUpOyIpDQogICAgDQogICAgY29ubi5jb21taXQoKQ0KICAgIGN1ci5jbG9zZSgpDQogICAgY29ubi5jbG9zZSgpDQogICAgDQogICAgcHJpbnQoJ0RhdGFiYXNlIGluaXRpYWxpemF0aW9uIGNvbXBsZXRlIScpDQogICAgDQpleGNlcHQgRXhjZXB0aW9uIGFzIGU6DQogICAgcHJpbnQoZidFcnJvcjoge3N0cihlKX0nKQ0K | base64 -d | python3"
+            ]
+        },
+        "InstanceIds": [
+            "i-05ae98da13b9c215e"
+        ],
+        "Targets": [],
+        "RequestedDateTime": "2025-11-17T13:43:30.238000-07:00",
+        "Status": "Pending",
+        "StatusDetails": "Pending",
+        "OutputS3Region": "us-east-1",
+        "OutputS3BucketName": "",
+        "OutputS3KeyPrefix": "",
+        "MaxConcurrency": "50",
+        "MaxErrors": "0",
+        "TargetCount": 1,
+        "CompletedCount": 0,
+        "ErrorCount": 0,
+        "DeliveryTimedOutCount": 0,
+        "ServiceRole": "",
+        "NotificationConfig": {
+            "NotificationArn": "",
+            "NotificationEvents": [],
+            "NotificationType": ""
+        },
+        "CloudWatchOutputConfig": {
+            "CloudWatchLogGroupName": "",
+            "CloudWatchOutputEnabled": false
+        },
+        "TimeoutSeconds": 3600,
+        "AlarmConfiguration": {
+            "IgnorePollAlarmFailure": false,
+            "Alarms": []
+        },
+        "TriggeredAlarms": []
+    }
+}

@@ -1,0 +1,46 @@
+{
+    "Command": {
+        "CommandId": "071ff8ba-a6af-4de6-8ca2-27b23c05546e",
+        "DocumentName": "AWS-RunShellScript",
+        "DocumentVersion": "$DEFAULT",
+        "Comment": "",
+        "ExpiresAfter": "2025-11-17T15:42:23.361000-07:00",
+        "Parameters": {
+            "commands": [
+                "cat > /tmp/init_db.py << 'SCRIPT_END'\nimport boto3\nimport json\nimport psycopg2\nfrom psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT\n\n# Get credentials\nclient = boto3.client('secretsmanager', region_name='us-east-1')\nsecret = client.get_secret_value(SecretId='arn:aws:secretsmanager:us-east-1:695353648052:secret:gaming-system-aurora-db-db-credentials-qYLEZ7')\ncreds = json.loads(secret['SecretString'])\n\n# Create database\ntry:\n    conn = psycopg2.connect(host='gaming-system-aurora-db-cluster.cluster-cal6eoegigyq.us-east-1.rds.amazonaws.com', port=5432, database='postgres', user=creds['username'], password=creds['password'])\n    conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)\n    cur = conn.cursor()\n    cur.execute('CREATE DATABASE gaming_system_ai_core;')\n    print('Database created!')\nexcept:\n    print('Database already exists')\n\n# Connect to new database\nconn = psycopg2.connect(host='gaming-system-aurora-db-cluster.cluster-cal6eoegigyq.us-east-1.rds.amazonaws.com', port=5432, database='gaming_system_ai_core', user=creds['username'], password=creds['password'])\ncur = conn.cursor()\n\n# Create schemas\nfor schema in ['audio_analytics', 'engagement', 'users', 'ethelred']:\n    cur.execute(f'CREATE SCHEMA IF NOT EXISTS {schema};')\n    \n# Create table\ncur.execute('''CREATE TABLE IF NOT EXISTS audio_analytics.audio_metrics (\n    id SERIAL PRIMARY KEY,\n    analysis_id UUID DEFAULT gen_random_uuid() UNIQUE,\n    user_id VARCHAR(255),\n    session_id VARCHAR(255),\n    sample_rate INT,\n    duration_seconds FLOAT,\n    intelligibility_score FLOAT,\n    confidence_level FLOAT,\n    archetype VARCHAR(100),\n    archetype_matches JSONB,\n    metadata JSONB,\n    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,\n    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP\n);''')\n\n# Create view\ncur.execute('CREATE OR REPLACE VIEW ethelred.audio_metrics AS SELECT * FROM audio_analytics.audio_metrics;')\n\n# Insert test data\nfor i in range(100):\n    cur.execute('INSERT INTO audio_analytics.audio_metrics (user_id, session_id, sample_rate, duration_seconds, intelligibility_score) VALUES (%s, %s, %s, %s, %s) ON CONFLICT DO NOTHING;', ('test_user_perf', f'session_{i+1}', 48000, 3.5, 0.85))\n\nconn.commit()\nprint('Database initialized!')\nSCRIPT_END\npython3 /tmp/init_db.py\r\n"
+            ]
+        },
+        "InstanceIds": [
+            "i-05ae98da13b9c215e"
+        ],
+        "Targets": [],
+        "RequestedDateTime": "2025-11-17T13:42:23.361000-07:00",
+        "Status": "Pending",
+        "StatusDetails": "Pending",
+        "OutputS3Region": "us-east-1",
+        "OutputS3BucketName": "",
+        "OutputS3KeyPrefix": "",
+        "MaxConcurrency": "50",
+        "MaxErrors": "0",
+        "TargetCount": 1,
+        "CompletedCount": 0,
+        "ErrorCount": 0,
+        "DeliveryTimedOutCount": 0,
+        "ServiceRole": "",
+        "NotificationConfig": {
+            "NotificationArn": "",
+            "NotificationEvents": [],
+            "NotificationType": ""
+        },
+        "CloudWatchOutputConfig": {
+            "CloudWatchLogGroupName": "",
+            "CloudWatchOutputEnabled": false
+        },
+        "TimeoutSeconds": 3600,
+        "AlarmConfiguration": {
+            "IgnorePollAlarmFailure": false,
+            "Alarms": []
+        },
+        "TriggeredAlarms": []
+    }
+}

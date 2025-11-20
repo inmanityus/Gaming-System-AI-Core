@@ -1,0 +1,34 @@
+{
+  "vpc": {
+    "id": "vpc-0684c566fb7cc6b12",
+    "cidr": "10.0.0.0/16",
+    "name": "gaming-ai-gold-tier-vpc",
+    "dns_hostnames": true,
+    "dns_support": true,
+    "tags": {
+      "Name": "gaming-ai-gold-tier-vpc",
+      "Environment": "production",
+      "Project": "Gaming-AI-Core",
+      "Purpose": "Real-Time-NPC-Inference",
+      "Tier": "Gold",
+      "ManagedBy": "Terraform"
+    }
+  },
+  "internet_gateway": {
+    "id": "igw-0f0294a162bf53e51",
+    "attached": true
+  },
+  "flow_logs": {
+    "enabled": true,
+    "id": "fl-0a6fa61f3d6b5955d",
+    "destination": "s3://ai-core-cloudtrail-logs-695353648052/vpc-flow-logs/",
+    "traffic_type": "ALL"
+  },
+  "availability_zones": [
+    "us-east-1a",
+    "us-east-1b",
+    "us-east-1c"
+  ],
+  "region": "us-east-1",
+  "creation_date": "2025-11-18"
+}

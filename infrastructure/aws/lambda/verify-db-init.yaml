@@ -1,0 +1,98 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Lambda to verify database initialization'
+
+Resources:
+  VerifyRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: RDSDataAPI
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - rds-data:ExecuteStatement
+                  - secretsmanager:GetSecretValue
+                Resource: '*'
+
+  VerifyFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: verify-aurora-init
+      Runtime: python3.11
+      Handler: index.lambda_handler
+      Role: !GetAtt VerifyRole.Arn
+      Timeout: 60
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+
+          def lambda_handler(event, context):
+              rds_data = boto3.client('rds-data')
+              
+              cluster_arn = 'arn:aws:rds:us-east-1:695353648052:cluster:gaming-system-aurora-db-cluster'
+              secret_arn = 'arn:aws:secretsmanager:us-east-1:695353648052:secret:gaming-system-aurora-db-db-credentials-qYLEZ7'
+              
+              try:
+                  # Check tables
+                  response = rds_data.execute_statement(
+                      resourceArn=cluster_arn,
+                      secretArn=secret_arn,
+                      database='gaming_system_ai_core',
+                      sql="""
+                          SELECT table_schema, table_name 
+                          FROM information_schema.tables 
+                          WHERE table_schema IN ('audio_analytics', 'engagement', 'users')
+                          ORDER BY table_schema, table_name
+                      """
+                  )
+                  
+                  tables = []
+                  for row in response.get('records', []):
+                      schema = row[0].get('stringValue')
+                      table = row[1].get('stringValue')
+                      tables.append(f"{schema}.{table}")
+                  
+                  # Check test data
+                  count_response = rds_data.execute_statement(
+                      resourceArn=cluster_arn,
+                      secretArn=secret_arn,
+                      database='gaming_system_ai_core',
+                      sql="SELECT COUNT(*) FROM audio_analytics.audio_metrics WHERE user_id = 'test_user_perf'"
+                  )
+                  
+                  test_count = count_response['records'][0][0].get('longValue', 0)
+                  
+                  return {
+                      'statusCode': 200,
+                      'body': json.dumps({
+                          'status': 'success',
+                          'tables_found': len(tables),
+                          'tables': tables,
+                          'test_data_count': test_count
+                      })
+                  }
+                  
+              except Exception as e:
+                  print(f"Error: {str(e)}")
+                  return {
+                      'statusCode': 500,
+                      'body': json.dumps({
+                          'error': str(e)
+                      })
+                  }
+
+Outputs:
+  FunctionName:
+    Value: !Ref VerifyFunction

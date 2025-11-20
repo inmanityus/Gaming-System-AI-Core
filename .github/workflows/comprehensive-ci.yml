@@ -1,0 +1,428 @@
+name: Comprehensive CI/CD
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.11'
+  AWS_REGION: us-east-1
+  AWS_ACCOUNT_ID: 695353648052
+  ECR_REGISTRY: 695353648052.dkr.ecr.us-east-1.amazonaws.com
+  ECS_CLUSTER: gaming-system-cluster
+
+jobs:
+  setup:
+    name: Setup and Validate
+    runs-on: ubuntu-latest
+    outputs:
+      services-matrix: ${{ steps.services.outputs.matrix }}
+      deployable-services: ${{ steps.services.outputs.deployable }}
+      version: ${{ steps.version.outputs.version }}
+      
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Generate version
+      id: version
+      run: |
+        echo "version=$(date +%Y%m%d)-$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+    
+    - name: Read services configuration
+      id: services
+      run: |
+        # Filter services that have Dockerfiles
+        DEPLOYABLE=$(jq -c '.services | map(select(.has_dockerfile == true or .has_dockerfile_nats == true))' .github/services.json)
+        echo "deployable=$DEPLOYABLE" >> $GITHUB_OUTPUT
+        
+        # Create matrix for all services (for testing)
+        MATRIX=$(jq -c '.services' .github/services.json)
+        echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+    
+    - name: Validate service structure
+      run: |
+        # Check that all services have required files
+        for service in $(jq -r '.services[] | .path' .github/services.json); do
+          if [ ! -d "$service" ]; then
+            echo "ERROR: Service directory not found: $service"
+            exit 1
+          fi
+        done
+
+  lint-and-validate:
+    name: Lint and Import Check - ${{ matrix.service.name }}
+    runs-on: ubuntu-latest
+    needs: setup
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.setup.outputs.services-matrix) }}
+      fail-fast: false
+      
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ matrix.service.name }}-${{ hashFiles(format('{0}/requirements*.txt', matrix.service.path)) }}
+    
+    - name: Install linting tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 black mypy pylint
+    
+    - name: Install service dependencies
+      run: |
+        if [ -f "${{ matrix.service.path }}/requirements.txt" ]; then
+          pip install -r "${{ matrix.service.path }}/requirements.txt"
+        fi
+    
+    - name: Check Python imports
+      run: |
+        echo "Checking imports for ${{ matrix.service.name }}"
+        cd "${{ matrix.service.path }}"
+        python -m compileall . || exit 1
+    
+    - name: Validate Python syntax
+      run: |
+        cd "${{ matrix.service.path }}"
+        python -m py_compile $(find . -name "*.py" -type f) || exit 1
+
+  smoke-test-local:
+    name: Smoke Test - ${{ matrix.service.name }}
+    runs-on: ubuntu-latest
+    needs: [setup, lint-and-validate]
+    if: needs.setup.outputs.deployable-services != '[]'
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.setup.outputs.deployable-services) }}
+      fail-fast: false
+      
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Determine Dockerfile
+      id: dockerfile
+      run: |
+        if [ "${{ matrix.service.has_dockerfile_nats }}" == "true" ]; then
+          echo "file=${{ matrix.service.path }}/Dockerfile.nats" >> $GITHUB_OUTPUT
+        else
+          echo "file=${{ matrix.service.path }}/Dockerfile" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ${{ steps.dockerfile.outputs.file }}
+        load: true
+        tags: local/${{ matrix.service.name }}:smoke
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        build-args: |
+          BUILD_VERSION=${{ needs.setup.outputs.version }}
+    
+    - name: Run container smoke test
+      timeout-minutes: 2
+      run: |
+        # Start container with minimal environment
+        docker run -d \
+          --name ${{ matrix.service.name }}-smoke \
+          -e POSTGRES_HOST=localhost \
+          -e POSTGRES_PASSWORD=test \
+          -e REDIS_URL=redis://localhost:6379 \
+          -e NATS_URL=nats://localhost:4222 \
+          local/${{ matrix.service.name }}:smoke || exit 1
+        
+        # Wait for service to start (max 30 seconds)
+        for i in {1..30}; do
+          if docker logs ${{ matrix.service.name }}-smoke 2>&1 | grep -E "(started|listening|ready|connected)"; then
+            echo "Service started successfully"
+            break
+          fi
+          
+          # Check if container is still running
+          if ! docker ps | grep -q ${{ matrix.service.name }}-smoke; then
+            echo "Container exited prematurely"
+            docker logs ${{ matrix.service.name }}-smoke
+            exit 1
+          fi
+          
+          sleep 1
+        done
+        
+        # Check for import errors or crashes
+        if docker logs ${{ matrix.service.name }}-smoke 2>&1 | grep -E "(ImportError|ModuleNotFoundError|SyntaxError|IndentationError)"; then
+          echo "Import or syntax errors detected!"
+          docker logs ${{ matrix.service.name }}-smoke
+          exit 1
+        fi
+        
+        # Container survived startup
+        echo "Smoke test passed!"
+    
+    - name: Cleanup
+      if: always()
+      run: |
+        docker stop ${{ matrix.service.name }}-smoke || true
+        docker rm ${{ matrix.service.name }}-smoke || true
+
+  build-and-push:
+    name: Build & Push - ${{ matrix.service.name }}
+    runs-on: ubuntu-latest
+    needs: [setup, smoke-test-local]
+    if: github.event_name == 'push' && needs.setup.outputs.deployable-services != '[]'
+    permissions:
+      id-token: write
+      contents: read
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.setup.outputs.deployable-services) }}
+      fail-fast: false
+      
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+    
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+    
+    - name: Check/Create ECR Repository
+      run: |
+        REPO_NAME="bodybroker-services/${{ matrix.service.name }}"
+        
+        # Check if repository exists
+        if ! aws ecr describe-repositories --repository-names $REPO_NAME --region ${{ env.AWS_REGION }} 2>/dev/null; then
+          echo "Creating ECR repository: $REPO_NAME"
+          aws ecr create-repository \
+            --repository-name $REPO_NAME \
+            --region ${{ env.AWS_REGION }} \
+            --image-scanning-configuration scanOnPush=true
+        fi
+    
+    - name: Determine Dockerfile
+      id: dockerfile
+      run: |
+        if [ "${{ matrix.service.has_dockerfile_nats }}" == "true" ]; then
+          echo "file=${{ matrix.service.path }}/Dockerfile.nats" >> $GITHUB_OUTPUT
+        else
+          echo "file=${{ matrix.service.path }}/Dockerfile" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ${{ steps.dockerfile.outputs.file }}
+        push: true
+        tags: |
+          ${{ env.ECR_REGISTRY }}/bodybroker-services/${{ matrix.service.name }}:${{ needs.setup.outputs.version }}
+          ${{ env.ECR_REGISTRY }}/bodybroker-services/${{ matrix.service.name }}:${{ github.sha }}
+          ${{ env.ECR_REGISTRY }}/bodybroker-services/${{ matrix.service.name }}:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        build-args: |
+          BUILD_VERSION=${{ needs.setup.outputs.version }}
+          BUILD_DATE=${{ github.event.head_commit.timestamp }}
+    
+    - name: Scan image for vulnerabilities
+      run: |
+        aws ecr wait image-scan-complete \
+          --repository-name bodybroker-services/${{ matrix.service.name }} \
+          --image-id imageTag=${{ needs.setup.outputs.version }} \
+          --region ${{ env.AWS_REGION }} || true
+        
+        aws ecr describe-image-scan-findings \
+          --repository-name bodybroker-services/${{ matrix.service.name }} \
+          --image-id imageTag=${{ needs.setup.outputs.version }} \
+          --region ${{ env.AWS_REGION }} || true
+
+  deploy-to-ecs:
+    name: Deploy to ECS - ${{ matrix.service.name }}
+    runs-on: ubuntu-latest
+    needs: [setup, build-and-push]
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      id-token: write
+      contents: read
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.setup.outputs.deployable-services) }}
+      fail-fast: false
+      max-parallel: 5  # Limit concurrent deployments
+      
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+    
+    - name: Check if ECS service exists
+      id: check-service
+      run: |
+        if aws ecs describe-services \
+          --cluster ${{ env.ECS_CLUSTER }} \
+          --services ${{ matrix.service.name }} \
+          --region ${{ env.AWS_REGION }} 2>/dev/null | jq -e '.services[0].status == "ACTIVE"' >/dev/null; then
+          echo "exists=true" >> $GITHUB_OUTPUT
+        else
+          echo "exists=false" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Update ECS service
+      if: steps.check-service.outputs.exists == 'true'
+      run: |
+        # Get current task definition
+        TASK_DEF_ARN=$(aws ecs describe-services \
+          --cluster ${{ env.ECS_CLUSTER }} \
+          --services ${{ matrix.service.name }} \
+          --query 'services[0].taskDefinition' \
+          --output text)
+        
+        # Get task definition JSON
+        TASK_DEF=$(aws ecs describe-task-definition \
+          --task-definition $TASK_DEF_ARN \
+          --query 'taskDefinition')
+        
+        # Update image in task definition
+        NEW_IMAGE="${{ env.ECR_REGISTRY }}/bodybroker-services/${{ matrix.service.name }}:${{ needs.setup.outputs.version }}"
+        NEW_TASK_DEF=$(echo $TASK_DEF | jq --arg IMAGE "$NEW_IMAGE" '.containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)')
+        
+        # Register new task definition
+        NEW_TASK_ARN=$(echo $NEW_TASK_DEF | aws ecs register-task-definition --cli-input-json - --query 'taskDefinition.taskDefinitionArn' --output text)
+        
+        # Update service
+        aws ecs update-service \
+          --cluster ${{ env.ECS_CLUSTER }} \
+          --service ${{ matrix.service.name }} \
+          --task-definition $NEW_TASK_ARN \
+          --force-new-deployment
+        
+        # Wait for service to stabilize (max 5 minutes)
+        aws ecs wait services-stable \
+          --cluster ${{ env.ECS_CLUSTER }} \
+          --services ${{ matrix.service.name }} \
+          --region ${{ env.AWS_REGION }} || echo "Service did not stabilize in time"
+
+  post-deploy-verification:
+    name: Post-Deploy Verification
+    runs-on: ubuntu-latest
+    needs: [deploy-to-ecs]
+    if: always() && needs.deploy-to-ecs.result == 'success'
+    
+    steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+    
+    - name: Check service health
+      run: |
+        # Get all services
+        SERVICES=$(aws ecs list-services --cluster ${{ env.ECS_CLUSTER }} --output json | jq -r '.serviceArns[]')
+        
+        UNHEALTHY_COUNT=0
+        TOTAL_COUNT=0
+        
+        # Check each service
+        for SERVICE_ARN in $SERVICES; do
+          TOTAL_COUNT=$((TOTAL_COUNT + 1))
+          SERVICE_NAME=$(echo $SERVICE_ARN | awk -F'/' '{print $NF}')
+          
+          # Get service details
+          SERVICE_INFO=$(aws ecs describe-services \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --services $SERVICE_NAME \
+            --query 'services[0].[runningCount, desiredCount, deployments[0].rolloutState]' \
+            --output json)
+          
+          RUNNING=$(echo $SERVICE_INFO | jq -r '.[0]')
+          DESIRED=$(echo $SERVICE_INFO | jq -r '.[1]')
+          STATE=$(echo $SERVICE_INFO | jq -r '.[2]')
+          
+          echo "Service: $SERVICE_NAME - Running: $RUNNING/$DESIRED - State: $STATE"
+          
+          if [ "$RUNNING" != "$DESIRED" ] || [ "$STATE" != "COMPLETED" ]; then
+            echo "  ⚠️  Service unhealthy!"
+            UNHEALTHY_COUNT=$((UNHEALTHY_COUNT + 1))
+          fi
+        done
+        
+        echo "Total services: $TOTAL_COUNT"
+        echo "Unhealthy services: $UNHEALTHY_COUNT"
+        
+        if [ $UNHEALTHY_COUNT -gt 0 ]; then
+          echo "Some services are unhealthy!"
+          exit 1
+        fi
+
+  rollback-on-failure:
+    name: Rollback on Failure
+    runs-on: ubuntu-latest
+    needs: [post-deploy-verification]
+    if: failure()
+    permissions:
+      id-token: write
+      contents: read
+      
+    steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+    
+    - name: Initiate rollback
+      run: |
+        echo "Deployment verification failed - initiating rollback"
+        # Implementation depends on your rollback strategy
+        # Could be reverting to previous task definitions, 
+        # triggering a separate rollback workflow, etc.
+
+  summary:
+    name: CI/CD Summary
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [setup, lint-and-validate, smoke-test-local, build-and-push, deploy-to-ecs, post-deploy-verification]
+    
+    steps:
+    - name: Generate summary
+      run: |
+        echo "## CI/CD Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Version:** ${{ needs.setup.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Trigger:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Job Results" >> $GITHUB_STEP_SUMMARY
+        echo "- Setup: ${{ needs.setup.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Lint & Validate: ${{ needs.lint-and-validate.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Smoke Tests: ${{ needs.smoke-test-local.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Build & Push: ${{ needs.build-and-push.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Deploy to ECS: ${{ needs.deploy-to-ecs.result }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Post-Deploy Verification: ${{ needs.post-deploy-verification.result }}" >> $GITHUB_STEP_SUMMARY
