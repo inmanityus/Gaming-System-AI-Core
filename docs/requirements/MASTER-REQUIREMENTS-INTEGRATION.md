@@ -38,13 +38,19 @@
    - Scope: 15 different game experience types
    - Integration: Provides content structure for Story Teller to use
 
+7. **SKIN-AND-MATERIALS-SYSTEMS-REQUIREMENTS.md** ⭐ NEW
+   - Status: ACTIVE - Critical for realism
+   - Scope: Advanced skin simulation and material physics
+   - Integration: Enhances all NPCs and environments
+   - Priority: CRITICAL - Major differentiator
+
 ### Expansion Requirements (Future Features)
-7. **MULTI-LANGUAGE-EXPANSION-REQUIREMENTS.md**
+8. **MULTI-LANGUAGE-EXPANSION-REQUIREMENTS.md**
    - Status: PLANNED - Phase 3
    - Scope: Internationalization
    - Integration: Will extend Story Teller for multiple languages
 
-8. **WEBSITE-SOCIAL-AI-REQUIREMENTS.md**
+9. **WEBSITE-SOCIAL-AI-REQUIREMENTS.md**
    - Status: PLANNED - Phase 3
    - Scope: Web presence and social features
    - Integration: Separate system using same AI infrastructure
@@ -94,6 +100,32 @@ From AUTONOMOUS-AI-CORE-REQUIREMENTS-V2:
    - Before: 1 Story Teller service
    - Impact: More complex but more scalable
 
+### Skin and Materials Systems (NEW)
+Critical new systems for unprecedented realism:
+
+1. **Multi-Layer Skin System**
+   - Dynamic skin with damage, aging, expressions
+   - GPU-driven soft-body physics
+   - Species-specific features (scales, fur, bioluminescence)
+   - Occupation-based variations
+
+2. **Advanced Materials System**
+   - Unified material properties (visual, physical, acoustic)
+   - Dynamic weathering and environmental effects
+   - Procedural material generation
+   - Combat-specific interactions
+
+3. **GPU Architecture**
+   - Full GPU compute pipeline
+   - 60 FPS @ 4K with 100+ NPCs
+   - Unified LOD system
+   - Dynamic texture streaming
+
+4. **AI Integration**
+   - NPCs perceive damage and materials
+   - Story Teller generates new materials
+   - Behavioral responses to visual states
+
 ---
 
 ## 3. REQUIREMENT CONFLICTS & RESOLUTIONS
@@ -122,18 +154,18 @@ From AUTONOMOUS-AI-CORE-REQUIREMENTS-V2:
 
 ## 4. IMPLEMENTATION PRIORITIES
 
-### Phase 1: Story Teller Core (Months 1-4) 🔴 CRITICAL
+### Phase 1: Core Systems (Months 1-4) 🔴 CRITICAL
 1. Complete Story Teller AI Detection System
-2. Integrate with existing infrastructure
+2. Skin & Materials Systems (parallel development)
 3. Deploy multi-model ensemble
-4. Implement review and detection layers
+4. GPU compute infrastructure
 5. Launch with 10,000 user capacity
 
 ### Phase 2: System Enhancement (Months 5-6) 🟡 HIGH
 1. Ethelred testing system
 2. Enhanced memory system
-3. Advanced monitoring
-4. Cost optimization
+3. Advanced skin features (species, aging)
+4. Novel material generation
 5. Scale to 50,000 users
 
 ### Phase 3: Expansion (Months 7-12) 🟢 MEDIUM
@@ -153,6 +185,7 @@ All systems share:
 - PostgreSQL + pgvector
 - Redis caching layer
 - Kafka message bus
+- GPU compute nodes
 - Monitoring stack
 
 ### Independent Components
@@ -168,6 +201,9 @@ Systems interact via:
 - Shared lore database
 - Common API gateway
 - Unified monitoring
+- Material generation API
+- Damage event system
+- AI perception hooks
 
 ---
 
@@ -175,9 +211,10 @@ Systems interact via:
 
 ### Infrastructure Costs (Monthly)
 - Story Teller System: ~$35,000
+- Skin & Materials Systems: ~$15,000 (GPU compute)
 - Ethelred System: ~$5,000
 - Supporting Services: ~$10,000
-- **Total**: ~$50,000/month
+- **Total**: ~$65,000/month
 
 ### API Costs (Usage-Based)
 - OpenAI/Claude/Gemini: ~$10,000
@@ -186,15 +223,15 @@ Systems interact via:
 - **Total**: ~$13,000/month
 
 ### Total Monthly Cost
-- Infrastructure: $50,000
+- Infrastructure: $65,000
 - APIs: $13,000
-- Buffer (20%): $12,600
-- **Grand Total**: ~$75,600/month
+- Buffer (20%): $15,600
+- **Grand Total**: ~$93,600/month
 
 ### Revenue Requirements
-- Break-even: 1,500 players at $50/month
+- Break-even: 1,872 players at $50/month
 - Target: 10,000 players at $50/month = $500k/month
-- Margin at target: 85%
+- Margin at target: 81%
 
 ---
 
@@ -205,6 +242,8 @@ Systems interact via:
 2. **Model API Limits** - Mitigated by multiple providers
 3. **Latency at Scale** - Mitigated by caching and tiering
 4. **Cost Overruns** - Mitigated by usage monitoring
+5. **GPU Performance** - Mitigated by aggressive LOD and culling
+6. **Visual Quality** - Mitigated by dedicated polish phase
 
 ### Business Risks
 1. **Premium Pricing** - Justified by unique quality
@@ -255,10 +294,11 @@ Systems interact via:
 ## 10. NEXT STEPS
 
 ### Immediate (Week 1)
-1. Finalize team allocation
-2. Begin infrastructure setup
+1. Finalize team allocation (including graphics engineers)
+2. Begin infrastructure setup (GPU clusters)
 3. Start model adapter development
-4. Create first sprint plan
+4. Create Skin/Materials plugin structure
+5. Create first sprint plan
 
 ### Short Term (Month 1)
 1. Complete Phase 1 infrastructure
