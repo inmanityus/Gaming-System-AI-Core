@@ -9,12 +9,14 @@ When switching to "other models," the system has been defaulting to older GPT-4 
 ## 🏆 CURRENT BEST MODELS (2025-11-03)
 
 **Top Tier Models (Currently Best):**
-1. **Claude 4.5 Sonnet** - Best overall reasoning, code analysis, and problem-solving
-2. **GPT-5.1 Codex High** - Best for coding tasks, specialized code generation and review (UPGRADED from GPT-Codex-2)
-3. **GPT-5.1 High** - Excellent general purpose, high-stakes accuracy (UPGRADED from GPT-5)
-4. **Gemini 2.5 Pro** - Best for reasoning, math, and scientific tasks
+1. **Grok 4** - #1 on SWE-Bench (75.0%), #1 on GPQA Diamond (87.5%), best for complex codebase navigation
+2. **Claude 4.5 Sonnet** - Best overall reasoning, code analysis, and problem-solving
+3. **GPT-5.1 Codex High** - Best for coding tasks, specialized code generation and review (UPGRADED from GPT-Codex-2)
+4. **GPT-5.1 High** - Excellent general purpose, high-stakes accuracy (UPGRADED from GPT-5)
+5. **Gemini 2.5 Pro** - Best for reasoning, math, and scientific tasks
 
 **Direct Access Available:**
+- **Grok 4**: Direct access via X_AI_API_KEY (model: `grok-4-latest`)
 - **GPT-5.1 Codex High**: Direct access via OPEN_AI_KEY (NOT OpenRouter key) - UPGRADED from GPT-Codex-2
 - **GPT-5.1 High**: Direct access via OPEN_AI_KEY - UPGRADED from GPT-5
 - **Gemini 2.5 Pro**: Direct access available
@@ -91,6 +93,31 @@ When switching to "other models," the system has been defaulting to older GPT-4 
 - `x-ai/grok-4` ✅ (Flagship)
 - `x-ai/grok-4-fast` ✅ (Fast version)
 - `x-ai/grok-code-fast-1` ✅ (Coding specialized)
+
+**Direct Access:**
+- **Grok 4**: Direct access via X_AI_API_KEY
+  - Model: `grok-4-latest`
+  - Endpoint: `https://api.x.ai/v1/chat/completions`
+  - Key: Available in global keys list (some projects have their own)
+  - Usage: Direct xAI API calls, not through OpenRouter
+  - Best for: Complex codebase navigation, multi-file refactoring, reasoning tasks
+  - Top performer: 75.0% on SWE-Bench, 87.5% on GPQA Diamond
+  
+  **Example Usage:**
+  ```bash
+  curl https://api.x.ai/v1/chat/completions \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $X_AI_API_KEY" \
+    -d '{
+      "messages": [
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Your prompt here"}
+      ],
+      "model": "grok-4-latest",
+      "stream": false,
+      "temperature": 0
+    }'
+  ```
 
 **Forbidden Models:**
 - Grok 3 ❌
@@ -203,11 +230,11 @@ When a specific model is unavailable, fall back in this order:
 
 ### Provider Selection
 When selecting which provider to use:
-1. **Claude 4.5 Sonnet:** Best for complex reasoning, agentic workflows, and extended autonomous tasks (CURRENTLY BEST)
-2. **GPT-5.1 Codex High:** Best for coding tasks, specialized code generation and review (UPGRADED - Direct access via OPEN_AI_KEY)
-3. **GPT-5.1 High:** Best for general purpose, coding, and high-stakes accuracy (UPGRADED)
-4. **Gemini 2.5 Pro:** Best for reasoning, math, and scientific tasks (Direct access available)
-5. **Grok 4:** Best for real-time applications and multimodal tasks
+1. **Grok 4:** #1 on benchmarks - Best for complex codebase navigation, software engineering, and reasoning (Direct access via X_AI_API_KEY)
+2. **Claude 4.5 Sonnet:** Best for complex reasoning, agentic workflows, and extended autonomous tasks
+3. **GPT-5.1 Codex High:** Best for coding tasks, specialized code generation and review (UPGRADED - Direct access via OPEN_AI_KEY)
+4. **GPT-5.1 High:** Best for general purpose, coding, and high-stakes accuracy (UPGRADED)
+5. **Gemini 2.5 Pro:** Best for reasoning, math, and scientific tasks (Direct access available)
 6. **DeepSeek V3+:** Best for reasoning and Chinese-language tasks (Minimum V3)
 7. **Mistral:** Best for European languages and cost-effective coding
 8. **Qwen:** Best for coding and multilingual tasks
@@ -277,6 +304,12 @@ When user requests "other models" or "different AI models":
 - **Ad-hoc:** Update immediately when new generations released
 
 ### Version History
+- **2025-11-20:** Added Grok 4 Direct Access
+  - Added direct API access details for Grok 4 (`grok-4-latest`)
+  - Moved Grok 4 to #1 position in top tier models (75% SWE-Bench, 87.5% GPQA Diamond)
+  - Added example curl command for direct xAI API usage
+  - Updated provider selection order to reflect benchmark performance
+
 - **2025-11-13:** MAJOR UPDATE - GPT-5.1 Release
   - **UPGRADED**: GPT-5 → GPT-5.1
   - **UPGRADED**: GPT-5 Pro → GPT-5.1 High
@@ -305,5 +338,5 @@ When user requests "other models" or "different AI models":
 **Status:** Active  
 **Priority:** High  
 **Enforcement:** Mandatory  
-**Last Updated:** 2025-11-13 (MAJOR UPDATE: GPT-5.1 Release)
+**Last Updated:** 2025-11-20 (Added Grok 4 Direct Access)
 
