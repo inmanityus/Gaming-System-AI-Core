@@ -1,0 +1,243 @@
+name: Security Scanning
+
+on:
+  schedule:
+    - cron: '0 0 * * 1'  # Weekly on Monday
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '**/*.py'
+      - '**/*.js'
+      - '**/*.ts'
+      - '**/requirements.txt'
+      - '**/package.json'
+      - '**/Dockerfile*'
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  # CodeQL analysis for multiple languages
+  codeql-analysis:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['python', 'javascript']
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-and-quality
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: "/language:${{ matrix.language }}"
+
+  # Python-specific security scanning
+  python-security:
+    name: Python Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install security tools
+        run: |
+          pip install --upgrade pip
+          pip install bandit safety pip-audit semgrep
+          
+      - name: Run Bandit
+        run: |
+          bandit -r services/ -f json -o bandit-report.json || true
+          
+          # Check for high severity issues
+          if [ -f bandit-report.json ]; then
+            high_issues=$(jq '.metrics.SEVERITY_HIGH // 0' bandit-report.json)
+            if [ "$high_issues" -gt 0 ]; then
+              echo "::error::Found $high_issues high severity security issues"
+              jq '.results[] | select(.issue_severity == "HIGH")' bandit-report.json
+              exit 1
+            fi
+          fi
+          
+      - name: Upload Bandit results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: bandit-report
+          path: bandit-report.json
+          
+      - name: Check dependencies with Safety
+        run: |
+          # Check each service's requirements
+          for req_file in $(find services -name requirements.txt); do
+            echo "Checking $req_file"
+            safety check -r "$req_file" --json --output safety-report.json || {
+              echo "::warning::Vulnerabilities found in $req_file"
+              cat safety-report.json | jq '.vulnerabilities[]'
+            }
+          done
+          
+      - name: Run pip-audit
+        run: |
+          for req_file in $(find services -name requirements.txt); do
+            echo "Auditing $req_file"
+            pip-audit -r "$req_file" --desc || true
+          done
+          
+      - name: Run Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/python
+            p/owasp-top-ten
+
+  # Container security scanning
+  container-security:
+    name: Container Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Trivy on Dockerfiles
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'config'
+          hide-progress: false
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+          
+      - name: Run Hadolint on Dockerfiles
+        run: |
+          # Install hadolint
+          wget -q https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-x86_64
+          chmod +x hadolint-Linux-x86_64
+          
+          # Scan all Dockerfiles
+          find . -name "Dockerfile*" -type f | while read dockerfile; do
+            echo "Scanning $dockerfile"
+            ./hadolint-Linux-x86_64 "$dockerfile" || true
+          done
+
+  # Dependency license checking
+  license-check:
+    name: License Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check Python licenses
+        run: |
+          pip install pip-licenses
+          
+          # Check each service
+          for req_file in $(find services -name requirements.txt); do
+            service_dir=$(dirname "$req_file")
+            echo "Checking licenses for $service_dir"
+            
+            cd "$service_dir"
+            pip install -r requirements.txt
+            pip-licenses --fail-on="GPL;LGPL" --format=json > licenses.json || {
+              echo "::error::Found incompatible licenses in $service_dir"
+              cat licenses.json | jq '.[] | select(.License | contains("GPL"))'
+              exit 1
+            }
+            cd -
+          done
+
+  # Secret scanning
+  secret-scan:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for secret scanning
+          
+      - name: TruffleHog OSS
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          
+      - name: GitLeaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Infrastructure as Code security
+  iac-security:
+    name: IaC Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Checkov scan
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: infrastructure/
+          framework: cloudformation,terraform
+          output_format: sarif
+          output_file_path: checkov-results.sarif
+          
+      - name: Upload Checkov results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: checkov-results.sarif
+
+  # Consolidated security report
+  security-report:
+    name: Security Report
+    needs: [codeql-analysis, python-security, container-security, license-check, secret-scan, iac-security]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create security summary
+        run: |
+          echo "## Security Scan Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Add status for each job
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| CodeQL Analysis | ${{ needs.codeql-analysis.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Python Security | ${{ needs.python-security.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Container Security | ${{ needs.container-security.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| License Check | ${{ needs.license-check.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Secret Scan | ${{ needs.secret-scan.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| IaC Security | ${{ needs.iac-security.result }} |" >> $GITHUB_STEP_SUMMARY
+          
+          # Fail if any security check failed
+          if [ "${{ contains(needs.*.result, 'failure') }}" == "true" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "⚠️ **Security issues detected!** Please review the findings above." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "✅ **All security checks passed!**" >> $GITHUB_STEP_SUMMARY
+          fi

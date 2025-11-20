@@ -1,0 +1,322 @@
+name: Deploy with Environment Promotion
+
+on:
+  workflow_dispatch:
+    inputs:
+      service_name:
+        description: 'Service to deploy'
+        required: true
+        type: choice
+        options:
+          - all-changed
+          - knowledge-base
+          - ai-integration
+          - language-system
+          - story-teller
+          - npc-behavior
+          - orchestration
+          # Add all other services here
+      image_tag:
+        description: 'Docker image tag (git SHA or version)'
+        required: true
+        type: string
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+      deployment_strategy:
+        description: 'Deployment strategy'
+        required: true
+        type: choice
+        options:
+          - rolling
+          - blue-green
+          - canary
+        default: 'rolling'
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: 695353648052.dkr.ecr.us-east-1.amazonaws.com/bodybroker-services
+
+jobs:
+  pre-deployment-checks:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    outputs:
+      services-to-deploy: ${{ steps.determine-services.outputs.services }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Determine services to deploy
+        id: determine-services
+        run: |
+          if [[ "${{ github.event.inputs.service_name }}" == "all-changed" ]]; then
+            # Get list of services with matching image tag
+            SERVICES=$(aws ecr list-images \
+              --repository-name bodybroker-services \
+              --region ${{ env.AWS_REGION }} \
+              --filter tagStatus=TAGGED \
+              --query "imageIds[?contains(imageTag, '${{ github.event.inputs.image_tag }}')].imageTag" \
+              --output json | jq -r '.[] | split("-")[0:-1] | join("-")')
+            
+            echo "services=$(echo $SERVICES | jq -R -s -c 'split("\n") | map(select(length > 0))')" >> $GITHUB_OUTPUT
+          else
+            echo "services=[\"${{ github.event.inputs.service_name }}\"]" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Verify image exists
+        run: |
+          for service in $(echo '${{ steps.determine-services.outputs.services }}' | jq -r '.[]'); do
+            IMAGE="${{ env.ECR_REPOSITORY }}:${service}-${{ github.event.inputs.image_tag }}"
+            
+            aws ecr describe-images \
+              --repository-name bodybroker-services \
+              --region ${{ env.AWS_REGION }} \
+              --image-ids imageTag="${service}-${{ github.event.inputs.image_tag }}" \
+              || (echo "Image not found: $IMAGE" && exit 1)
+          done
+
+  deploy-staging:
+    needs: pre-deployment-checks
+    if: ${{ github.event.inputs.environment == 'staging' }}
+    runs-on: ubuntu-latest
+    environment: staging
+    permissions:
+      id-token: write
+      contents: read
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.pre-deployment-checks.outputs.services-to-deploy) }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::695353648052:role/github-actions-deploy-staging
+          aws-region: ${{ env.AWS_REGION }}
+          
+      - name: Deploy to staging
+        run: |
+          CLUSTER="gaming-system-cluster-staging"
+          SERVICE="${{ matrix.service }}"
+          IMAGE="${{ env.ECR_REPOSITORY }}:${SERVICE}-${{ github.event.inputs.image_tag }}"
+          
+          # Update task definition
+          TASK_DEF=$(aws ecs describe-task-definition \
+            --task-definition $SERVICE \
+            --region ${{ env.AWS_REGION }} \
+            --query 'taskDefinition')
+            
+          NEW_TASK_DEF=$(echo $TASK_DEF | jq \
+            --arg IMAGE "$IMAGE" \
+            '.containerDefinitions[0].image = $IMAGE | 
+             {family: .family, executionRoleArn: .executionRoleArn, 
+              networkMode: .networkMode, requiresCompatibilities: .requiresCompatibilities,
+              cpu: .cpu, memory: .memory, containerDefinitions: .containerDefinitions}')
+              
+          NEW_TASK_ARN=$(echo $NEW_TASK_DEF | \
+            aws ecs register-task-definition \
+            --cli-input-json file:///dev/stdin \
+            --region ${{ env.AWS_REGION }} \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+            
+          # Deploy with selected strategy
+          if [[ "${{ github.event.inputs.deployment_strategy }}" == "blue-green" ]]; then
+            # Create CodeDeploy deployment for blue-green
+            aws deploy create-deployment \
+              --application-name gaming-system-$SERVICE \
+              --deployment-group-name staging-blue-green \
+              --revision '{"revisionType":"ECS","ecsRevision":{"taskDefinition":"'$NEW_TASK_ARN'","containerName":"'$SERVICE'","containerPort":8000}}' \
+              --region ${{ env.AWS_REGION }}
+          elif [[ "${{ github.event.inputs.deployment_strategy }}" == "canary" ]]; then
+            # Update service with canary deployment
+            aws ecs update-service \
+              --cluster $CLUSTER \
+              --service $SERVICE \
+              --task-definition $NEW_TASK_ARN \
+              --deployment-configuration "deploymentCircuitBreaker={enable=true,rollback=true},maximumPercent=200,minimumHealthyPercent=100" \
+              --region ${{ env.AWS_REGION }}
+              
+            # Wait and monitor canary metrics
+            sleep 300  # 5 minutes
+            
+            # Check CloudWatch alarms
+            ALARMS=$(aws cloudwatch describe-alarms \
+              --alarm-names "${SERVICE}-staging-error-rate" "${SERVICE}-staging-latency" \
+              --region ${{ env.AWS_REGION }} \
+              --query 'MetricAlarms[?StateValue==`ALARM`]')
+              
+            if [ "$(echo $ALARMS | jq length)" -gt 0 ]; then
+              echo "Canary deployment failed - alarms triggered"
+              aws ecs update-service \
+                --cluster $CLUSTER \
+                --service $SERVICE \
+                --task-definition $SERVICE \
+                --force-new-deployment \
+                --region ${{ env.AWS_REGION }}
+              exit 1
+            fi
+          else
+            # Standard rolling update
+            aws ecs update-service \
+              --cluster $CLUSTER \
+              --service $SERVICE \
+              --task-definition $NEW_TASK_ARN \
+              --force-new-deployment \
+              --region ${{ env.AWS_REGION }}
+          fi
+          
+      - name: Wait for deployment
+        run: |
+          aws ecs wait services-stable \
+            --cluster gaming-system-cluster-staging \
+            --services ${{ matrix.service }} \
+            --region ${{ env.AWS_REGION }}
+            
+      - name: Run post-deployment tests
+        run: |
+          SERVICE_URL="https://staging-api.bodybrokergame.com/${{ matrix.service }}"
+          
+          # Health check
+          curl -f "$SERVICE_URL/health" || exit 1
+          
+          # Run service-specific integration tests
+          if [ -f "tests/integration/${{ matrix.service }}_test.sh" ]; then
+            bash "tests/integration/${{ matrix.service }}_test.sh" "$SERVICE_URL"
+          fi
+
+  deploy-production:
+    needs: pre-deployment-checks
+    if: ${{ github.event.inputs.environment == 'production' }}
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      id-token: write
+      contents: read
+    strategy:
+      matrix:
+        service: ${{ fromJson(needs.pre-deployment-checks.outputs.services-to-deploy) }}
+      max-parallel: 1  # Deploy one service at a time to production
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::695353648052:role/github-actions-deploy-production
+          aws-region: ${{ env.AWS_REGION }}
+          
+      - name: Verify staging deployment
+        run: |
+          # Ensure this exact image is running in staging successfully
+          STAGING_IMAGE=$(aws ecs describe-services \
+            --cluster gaming-system-cluster-staging \
+            --services ${{ matrix.service }} \
+            --region ${{ env.AWS_REGION }} \
+            --query 'services[0].taskDefinition' \
+            --output text | \
+            xargs -I {} aws ecs describe-task-definition \
+            --task-definition {} \
+            --region ${{ env.AWS_REGION }} \
+            --query 'taskDefinition.containerDefinitions[0].image' \
+            --output text)
+            
+          EXPECTED_IMAGE="${{ env.ECR_REPOSITORY }}:${{ matrix.service }}-${{ github.event.inputs.image_tag }}"
+          
+          if [ "$STAGING_IMAGE" != "$EXPECTED_IMAGE" ]; then
+            echo "Image not deployed to staging first: $EXPECTED_IMAGE"
+            exit 1
+          fi
+          
+      - name: Create deployment backup
+        run: |
+          # Save current task definition as backup
+          aws ecs describe-task-definition \
+            --task-definition ${{ matrix.service }} \
+            --region ${{ env.AWS_REGION }} \
+            --query 'taskDefinition' > /tmp/backup-task-def.json
+            
+          # Tag current image as backup
+          CURRENT_IMAGE=$(cat /tmp/backup-task-def.json | jq -r '.containerDefinitions[0].image')
+          BACKUP_TAG="${{ matrix.service }}-production-backup-$(date +%Y%m%d-%H%M%S)"
+          
+          aws ecr put-image-tag \
+            --repository-name bodybroker-services \
+            --image-digest $(aws ecr describe-images \
+              --repository-name bodybroker-services \
+              --image-ids imageTag=$(echo $CURRENT_IMAGE | cut -d: -f2) \
+              --region ${{ env.AWS_REGION }} \
+              --query 'imageDetails[0].imageDigest' \
+              --output text) \
+            --image-tag $BACKUP_TAG \
+            --region ${{ env.AWS_REGION }}
+            
+      - name: Deploy to production
+        run: |
+          # Similar deployment logic as staging but with production cluster
+          CLUSTER="gaming-system-cluster"
+          SERVICE="${{ matrix.service }}"
+          IMAGE="${{ env.ECR_REPOSITORY }}:${SERVICE}-${{ github.event.inputs.image_tag }}"
+          
+          # Deploy using blue-green for production
+          aws deploy create-deployment \
+            --application-name gaming-system-$SERVICE \
+            --deployment-group-name production-blue-green \
+            --revision '{"revisionType":"ECS","ecsRevision":{"taskDefinition":"'$NEW_TASK_ARN'","containerName":"'$SERVICE'","containerPort":8000}}' \
+            --deployment-config-name CodeDeployDefault.ECSAllAtOnceBlueGreen \
+            --region ${{ env.AWS_REGION }}
+            
+      - name: Monitor deployment
+        run: |
+          # Monitor CloudWatch metrics and alarms
+          ./scripts/monitor-production-deployment.sh ${{ matrix.service }} ${{ github.event.inputs.image_tag }}
+
+  rollback:
+    needs: [pre-deployment-checks, deploy-staging, deploy-production]
+    if: ${{ failure() }}
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::695353648052:role/github-actions-deploy-${{ github.event.inputs.environment }}
+          aws-region: ${{ env.AWS_REGION }}
+          
+      - name: Automatic rollback
+        run: |
+          CLUSTER="gaming-system-cluster${{ github.event.inputs.environment == 'staging' && '-staging' || '' }}"
+          
+          for service in $(echo '${{ needs.pre-deployment-checks.outputs.services-to-deploy }}' | jq -r '.[]'); do
+            echo "Rolling back $service in ${{ github.event.inputs.environment }}"
+            
+            # Get previous task definition
+            PREVIOUS_TASK_DEF=$(aws ecs describe-service \
+              --cluster $CLUSTER \
+              --service $service \
+              --region ${{ env.AWS_REGION }} \
+              --query 'service.deployments[1].taskDefinition' \
+              --output text)
+              
+            if [ "$PREVIOUS_TASK_DEF" != "None" ]; then
+              aws ecs update-service \
+                --cluster $CLUSTER \
+                --service $service \
+                --task-definition $PREVIOUS_TASK_DEF \
+                --force-new-deployment \
+                --region ${{ env.AWS_REGION }}
+            fi
+          done
+          
+      - name: Send rollback notification
+        if: always()
+        run: |
+          # Send notification to Slack/Teams/PagerDuty
+          echo "Deployment rollback initiated for ${{ github.event.inputs.service_name }} in ${{ github.event.inputs.environment }}"

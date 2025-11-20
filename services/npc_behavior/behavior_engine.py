@@ -23,7 +23,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 # from state_manager.connection_pool import get_postgres_pool, get_redis_pool, PostgreSQLPool, RedisPool
 import asyncpg
 import redis.asyncio as redis
-from typing import Optional, Any as PostgreSQLPool, Any as RedisPool, Any as LLMClient, Any as ProxyManager, Any as CognitiveLayer
+from .behavioral_proxy import ProxyManager
+from .cognitive_layer import CognitiveLayer
 
 _logger = logging.getLogger(__name__)
 

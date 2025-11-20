@@ -13,6 +13,8 @@ pandas==2.0.3
 librosa==0.10.1  # For audio processing
 soundfile==0.12.1  # For audio file I/O
 scipy==1.11.4  # For signal processing
+grpcio==1.60.0  # For gRPC communication
+grpcio-tools==1.60.0  # For gRPC code generation
 
 # TTS Provider SDKs
 azure-cognitiveservices-speech==1.32.1  # Azure TTS

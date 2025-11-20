@@ -9,7 +9,7 @@ from uuid import UUID
 import asyncpg
 
 # Type aliases for database connections
-PostgreSQLPool = Any
+PostgreSQLPool = asyncpg.Pool
 
 
 class StoryNode:

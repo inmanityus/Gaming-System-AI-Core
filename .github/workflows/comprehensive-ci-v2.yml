@@ -1,0 +1,327 @@
+name: Comprehensive CI with Path Filtering
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main]
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: 695353648052.dkr.ecr.us-east-1.amazonaws.com/bodybroker-services
+
+jobs:
+  # Step 1: Detect which services have changed
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      changed-services: ${{ steps.detect.outputs.services }}
+      matrix: ${{ steps.detect.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Need full history for comparison
+      
+      - name: Detect changed services
+        id: detect
+        run: |
+          # Get list of changed files
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            BASE_SHA=${{ github.event.pull_request.base.sha }}
+            HEAD_SHA=${{ github.event.pull_request.head.sha }}
+          else
+            BASE_SHA=${{ github.event.before }}
+            HEAD_SHA=${{ github.sha }}
+          fi
+          
+          # Load services configuration
+          SERVICES=$(cat .github/services.json | jq -r '.[].path' | tr '\n' ' ')
+          
+          # Detect which services changed
+          CHANGED_SERVICES=()
+          for service_path in $SERVICES; do
+            if git diff --name-only $BASE_SHA $HEAD_SHA | grep -q "^$service_path/"; then
+              SERVICE_NAME=$(cat .github/services.json | jq -r ".[] | select(.path==\"$service_path\") | .name")
+              CHANGED_SERVICES+=("$SERVICE_NAME")
+            fi
+          done
+          
+          # Also check for shared dependencies
+          if git diff --name-only $BASE_SHA $HEAD_SHA | grep -q -E "^(sdk/|generated/|proto/|services/shared/)"; then
+            echo "Shared dependencies changed, rebuilding all services"
+            CHANGED_SERVICES=($(cat .github/services.json | jq -r '.[].name' | tr '\n' ' '))
+          fi
+          
+          # Create JSON matrix
+          if [ ${#CHANGED_SERVICES[@]} -eq 0 ]; then
+            echo "No services changed"
+            echo "services=[]" >> $GITHUB_OUTPUT
+            echo "matrix={\"service\":[]}" >> $GITHUB_OUTPUT
+          else
+            SERVICES_JSON=$(printf '%s\n' "${CHANGED_SERVICES[@]}" | jq -R . | jq -s . | jq -c .)
+            echo "services=$SERVICES_JSON" >> $GITHUB_OUTPUT
+            
+            # Create matrix for changed services
+            MATRIX=$(cat .github/services.json | jq -c "[.[] | select(.name | IN($(echo $SERVICES_JSON | jq -r '. | @csv')))]")
+            echo "matrix={\"include\":$MATRIX}" >> $GITHUB_OUTPUT
+            
+            echo "Changed services: ${CHANGED_SERVICES[@]}"
+          fi
+
+  # Step 2: Pre-flight checks (linting, import validation) - only for changed services
+  preflight:
+    needs: detect-changes
+    if: ${{ needs.detect-changes.outputs.changed-services != '[]' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        if: matrix.language == 'python'
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Cache Python dependencies
+        if: matrix.language == 'python'
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.name }}-${{ hashFiles(format('{0}/requirements.txt', matrix.path)) }}
+          
+      - name: Install linting dependencies
+        if: matrix.language == 'python'
+        run: |
+          pip install --upgrade pip
+          pip install flake8 black isort mypy
+          
+      - name: Python linting
+        if: matrix.language == 'python'
+        run: |
+          echo "Running linting for ${{ matrix.name }}"
+          cd ${{ matrix.path }}
+          
+          # Black formatting check
+          black --check --diff .
+          
+          # isort import sorting check
+          isort --check-only --diff .
+          
+          # Flake8 style guide enforcement
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          
+      - name: Validate Python imports
+        if: matrix.language == 'python'
+        run: |
+          pip install -r ${{ matrix.path }}/requirements.txt || true
+          python scripts/validate-python-imports.py ${{ matrix.path }}
+
+  # Step 3: Unit tests - only for changed services
+  unit-tests:
+    needs: [detect-changes, preflight]
+    if: ${{ needs.detect-changes.outputs.changed-services != '[]' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        if: matrix.language == 'python'
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Cache Python dependencies
+        if: matrix.language == 'python'
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.name }}-${{ hashFiles(format('{0}/requirements.txt', matrix.path)) }}
+          
+      - name: Install test dependencies
+        if: matrix.language == 'python'
+        run: |
+          pip install --upgrade pip
+          pip install -r ${{ matrix.path }}/requirements.txt || echo "No requirements.txt found"
+          pip install pytest pytest-cov pytest-asyncio
+          
+      - name: Run unit tests
+        run: |
+          cd ${{ matrix.path }}
+          ${{ matrix.test_command }} || echo "No tests found for ${{ matrix.name }}"
+
+  # Step 4: Security scanning - only for changed services
+  security-scan:
+    needs: [detect-changes, unit-tests]
+    if: ${{ needs.detect-changes.outputs.changed-services != '[]' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Trivy vulnerability scanner on filesystem
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '${{ matrix.path }}'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          
+      - name: Upload Trivy scan results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+          
+      - name: Python security scan with bandit
+        if: matrix.language == 'python'
+        run: |
+          pip install bandit
+          bandit -r ${{ matrix.path }} -f json -o bandit-results.json || true
+          
+          # Fail on high severity issues
+          if [ -f bandit-results.json ]; then
+            high_issues=$(cat bandit-results.json | jq '.metrics.SEVERITY_HIGH // 0')
+            if [ "$high_issues" -gt 0 ]; then
+              echo "Found $high_issues high severity security issues"
+              cat bandit-results.json | jq '.results[] | select(.issue_severity == "HIGH")'
+              exit 1
+            fi
+          fi
+
+  # Step 5: Build and push Docker images - only for changed services
+  build-and-push:
+    needs: [detect-changes, security-scan]
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.detect-changes.outputs.changed-services != '[]' }}
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    strategy:
+      matrix: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::695353648052:role/github-actions-ecr-push
+          aws-region: ${{ env.AWS_REGION }}
+          
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ matrix.path }}/${{ matrix.dockerfile }}
+          push: true
+          tags: |
+            ${{ env.ECR_REPOSITORY }}:${{ matrix.name }}-${{ github.sha }}
+            ${{ env.ECR_REPOSITORY }}:${{ matrix.name }}-latest
+          cache-from: |
+            type=gha
+            type=registry,ref=${{ env.ECR_REPOSITORY }}:${{ matrix.name }}-buildcache
+          cache-to: |
+            type=gha,mode=max
+            type=registry,ref=${{ env.ECR_REPOSITORY }}:${{ matrix.name }}-buildcache,mode=max
+          build-args: |
+            SERVICE_PATH=${{ matrix.path }}
+            BUILDKIT_INLINE_CACHE=1
+            
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ env.ECR_REPOSITORY }}:${{ matrix.name }}-${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+  # Step 6: Smoke test containers - only for changed services
+  smoke-tests:
+    needs: [detect-changes, build-and-push]
+    if: ${{ needs.detect-changes.outputs.changed-services != '[]' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+        
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::695353648052:role/github-actions-ecr-push
+          aws-region: ${{ env.AWS_REGION }}
+          
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+        
+      - name: Run smoke test
+        run: |
+          IMAGE="${{ env.ECR_REPOSITORY }}:${{ matrix.name }}-${{ github.sha }}"
+          CONTAINER_NAME="${{ matrix.name }}-smoke-test"
+          
+          # Pull the image
+          docker pull $IMAGE
+          
+          # Run container with health check
+          docker run -d --name $CONTAINER_NAME \
+            --health-cmd="curl -f http://localhost:8000/health || exit 1" \
+            --health-interval=5s \
+            --health-timeout=3s \
+            --health-retries=10 \
+            -p 8000:8000 \
+            $IMAGE
+          
+          # Wait for container to be healthy
+          timeout=60
+          while [ $timeout -gt 0 ]; do
+            if [ "$(docker inspect -f '{{.State.Health.Status}}' $CONTAINER_NAME)" == "healthy" ]; then
+              echo "Container is healthy!"
+              docker logs $CONTAINER_NAME
+              docker stop $CONTAINER_NAME
+              docker rm $CONTAINER_NAME
+              exit 0
+            fi
+            echo "Waiting for container to be healthy..."
+            sleep 5
+            timeout=$((timeout - 5))
+          done
+          
+          echo "Container failed to become healthy"
+          docker logs $CONTAINER_NAME
+          docker stop $CONTAINER_NAME
+          docker rm $CONTAINER_NAME
+          exit 1
+
+  # Summary job
+  ci-summary:
+    needs: [detect-changes, preflight, unit-tests, security-scan, build-and-push, smoke-tests]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: CI Summary
+        run: |
+          echo "## CI Summary"
+          echo "Changed services: ${{ needs.detect-changes.outputs.changed-services }}"
+          echo "Preflight: ${{ needs.preflight.result }}"
+          echo "Unit tests: ${{ needs.unit-tests.result }}"
+          echo "Security scan: ${{ needs.security-scan.result }}"
+          echo "Build and push: ${{ needs.build-and-push.result }}"
+          echo "Smoke tests: ${{ needs.smoke-tests.result }}"

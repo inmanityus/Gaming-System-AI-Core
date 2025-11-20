@@ -1,0 +1,115 @@
+name: 'Setup Python with Advanced Caching'
+description: 'Setup Python environment with optimized caching for dependencies'
+
+inputs:
+  python-version:
+    description: 'Python version to use'
+    required: true
+    default: '3.11'
+  service-path:
+    description: 'Path to the service directory'
+    required: true
+  cache-key-prefix:
+    description: 'Prefix for cache keys'
+    required: false
+    default: 'python'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ inputs.python-version }}
+        
+    - name: Get pip cache directory
+      id: pip-cache
+      shell: bash
+      run: |
+        echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
+        
+    - name: Cache pip packages
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.pip-cache.outputs.dir }}
+        key: ${{ runner.os }}-${{ inputs.cache-key-prefix }}-pip-${{ hashFiles(format('{0}/requirements.txt', inputs.service-path)) }}-${{ hashFiles(format('{0}/requirements-*.txt', inputs.service-path)) }}
+        restore-keys: |
+          ${{ runner.os }}-${{ inputs.cache-key-prefix }}-pip-${{ hashFiles(format('{0}/requirements.txt', inputs.service-path)) }}-
+          ${{ runner.os }}-${{ inputs.cache-key-prefix }}-pip-
+          
+    - name: Cache Python virtual environment
+      uses: actions/cache@v3
+      with:
+        path: ${{ inputs.service-path }}/.venv
+        key: ${{ runner.os }}-${{ inputs.cache-key-prefix }}-venv-${{ hashFiles(format('{0}/requirements.txt', inputs.service-path)) }}-${{ hashFiles(format('{0}/requirements-*.txt', inputs.service-path)) }}
+        restore-keys: |
+          ${{ runner.os }}-${{ inputs.cache-key-prefix }}-venv-
+          
+    - name: Install pip-tools and wheel
+      shell: bash
+      run: |
+        pip install --upgrade pip pip-tools wheel setuptools
+        
+    - name: Create virtual environment if not cached
+      shell: bash
+      working-directory: ${{ inputs.service-path }}
+      run: |
+        if [ ! -d ".venv" ]; then
+          python -m venv .venv
+        fi
+        
+    - name: Install dependencies with retry
+      shell: bash
+      working-directory: ${{ inputs.service-path }}
+      run: |
+        source .venv/bin/activate
+        
+        # Function to install with retry
+        install_with_retry() {
+          local max_attempts=3
+          local attempt=1
+          
+          while [ $attempt -le $max_attempts ]; do
+            echo "Installation attempt $attempt of $max_attempts"
+            
+            if pip install --no-deps -r requirements.txt && \
+               pip install -r requirements.txt; then
+              echo "Installation successful"
+              return 0
+            else
+              echo "Installation failed"
+              if [ $attempt -lt $max_attempts ]; then
+                echo "Retrying in 5 seconds..."
+                sleep 5
+                # Clear corrupted cache
+                pip cache purge
+              fi
+            fi
+            
+            attempt=$((attempt + 1))
+          done
+          
+          return 1
+        }
+        
+        # Install dependencies
+        if [ -f "requirements.txt" ]; then
+          install_with_retry || exit 1
+        fi
+        
+        # Install test dependencies if they exist
+        if [ -f "requirements-test.txt" ]; then
+          pip install -r requirements-test.txt
+        fi
+        
+        # Install dev dependencies if they exist
+        if [ -f "requirements-dev.txt" ]; then
+          pip install -r requirements-dev.txt
+        fi
+        
+    - name: Save pip freeze output
+      shell: bash
+      working-directory: ${{ inputs.service-path }}
+      run: |
+        source .venv/bin/activate
+        pip freeze > pip-freeze.txt

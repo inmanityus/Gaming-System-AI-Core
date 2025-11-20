@@ -18,6 +18,13 @@ from .layers import (
 # Import shared models
 from .models_schemas import ContentRequest, ContentResponse
 
+# Import LLMClient - using absolute import for Docker
+try:
+    from services.ai_integration.llm_client import LLMClient
+except ImportError:
+    # Fallback for local development
+    from ..ai_integration.llm_client import LLMClient
+
 logger = logging.getLogger(__name__)
 
 

@@ -11,7 +11,7 @@ from uuid import UUID, uuid4
 import asyncpg
 
 # Type aliases for database connections
-PostgreSQLPool = Any
+PostgreSQLPool = asyncpg.Pool
 
 
 class AssetTemplate:

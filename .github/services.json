@@ -1,0 +1,376 @@
+{
+  "services": [
+    {
+      "name": "ai_inference",
+      "path": "services/ai_inference",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "ai_integration",
+      "path": "services/ai_integration",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "ai_models",
+      "path": "services/ai_models",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "ai_player_simulator",
+      "path": "services/ai_player_simulator",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "ai_router",
+      "path": "services/ai_router",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "api",
+      "path": "services/api",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "auth",
+      "path": "services/auth",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "body_broker_integration",
+      "path": "services/body_broker_integration",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "broker_book",
+      "path": "services/broker_book",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "cache",
+      "path": "services/cache",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "capability-registry",
+      "path": "services/capability-registry",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "clients",
+      "path": "services/clients",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "death_system",
+      "path": "services/death_system",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "drug_economy",
+      "path": "services/drug_economy",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "environmental_narrative",
+      "path": "services/environmental_narrative",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "ethelred_4d_analyzer",
+      "path": "services/ethelred_4d_analyzer",
+      "type": "python",
+      "has_dockerfile": true
+    },
+    {
+      "name": "ethelred_4d_coverage",
+      "path": "services/ethelred_4d_coverage",
+      "type": "python",
+      "has_dockerfile": true
+    },
+    {
+      "name": "ethelred_4d_ingest",
+      "path": "services/ethelred_4d_ingest",
+      "type": "python",
+      "has_dockerfile": true
+    },
+    {
+      "name": "ethelred_audio",
+      "path": "services/ethelred_audio",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "ethelred_audio_capture",
+      "path": "services/ethelred_audio_capture",
+      "type": "python",
+      "has_dockerfile": true
+    },
+    {
+      "name": "ethelred_audio_feedback",
+      "path": "services/ethelred_audio_feedback",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "ethelred_audio_metrics",
+      "path": "services/ethelred_audio_metrics",
+      "type": "python",
+      "has_dockerfile": true
+    },
+    {
+      "name": "ethelred_audio_reports",
+      "path": "services/ethelred_audio_reports",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "ethelred_content",
+      "path": "services/ethelred_content",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "ethelred_coordinator",
+      "path": "services/ethelred_coordinator",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "ethelred_engagement",
+      "path": "services/ethelred_engagement",
+      "type": "python",
+      "has_dockerfile": true
+    },
+    {
+      "name": "ethelred_integration",
+      "path": "services/ethelred_integration",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "event_bus",
+      "path": "services/event_bus",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "feedback",
+      "path": "services/feedback",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "gpu_metrics_publisher",
+      "path": "services/gpu_metrics_publisher",
+      "type": "python",
+      "has_dockerfile": true
+    },
+    {
+      "name": "guardrails",
+      "path": "services/guardrails",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "harvesting",
+      "path": "services/harvesting",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "knowledge_base",
+      "path": "services/knowledge_base",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "language_system",
+      "path": "services/language_system",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "localization",
+      "path": "services/localization",
+      "type": "python",
+      "has_dockerfile": true
+    },
+    {
+      "name": "localization_metrics",
+      "path": "services/localization_metrics",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "memory",
+      "path": "services/memory",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "model_management",
+      "path": "services/model_management",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "morality",
+      "path": "services/morality",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "negotiation",
+      "path": "services/negotiation",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "npc_behavior",
+      "path": "services/npc_behavior",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "orchestration",
+      "path": "services/orchestration",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "payment",
+      "path": "services/payment",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "performance_budget",
+      "path": "services/performance_budget",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "performance_mode",
+      "path": "services/performance_mode",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "quest_system",
+      "path": "services/quest_system",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "router",
+      "path": "services/router",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "session_snapshot",
+      "path": "services/session_snapshot",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "settings",
+      "path": "services/settings",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "shared",
+      "path": "services/shared",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "srl_rlvr_training",
+      "path": "services/srl_rlvr_training",
+      "type": "python",
+      "has_dockerfile": true
+    },
+    {
+      "name": "state_manager",
+      "path": "services/state_manager",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "story_memory",
+      "path": "services/story_memory",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "story_teller",
+      "path": "services/story_teller",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "storyteller",
+      "path": "services/storyteller",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "time_manager",
+      "path": "services/time_manager",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "token_management",
+      "path": "services/token_management",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "ue-version-monitor",
+      "path": "services/ue-version-monitor",
+      "type": "python",
+      "has_dockerfile": true
+    },
+    {
+      "name": "ui_snapshot_testing",
+      "path": "services/ui_snapshot_testing",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "weather_manager",
+      "path": "services/weather_manager",
+      "type": "python",
+      "has_dockerfile_nats": true
+    },
+    {
+      "name": "weavers_loom",
+      "path": "services/weavers_loom",
+      "type": "python",
+      "has_dockerfile": false
+    },
+    {
+      "name": "world_state",
+      "path": "services/world_state",
+      "type": "python",
+      "has_dockerfile_nats": true
+    }
+  ]
+}
