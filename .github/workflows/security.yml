@@ -2,9 +2,9 @@ name: Security Scanning
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ master, develop ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
   schedule:
     - cron: '0 2 * * *'  # Daily at 2 AM UTC
   workflow_dispatch:
@@ -171,7 +171,7 @@ jobs:
   api-security-test:
     name: API Security Testing
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/master'
     
     steps:
     - uses: actions/checkout@v4
@@ -298,7 +298,7 @@ jobs:
     
     - name: Create security issue if critical findings
       uses: actions/github-script@v6
-      if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/master'
       with:
         script: |
           const fs = require('fs');

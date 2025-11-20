@@ -2,7 +2,7 @@ name: Deploy to AWS
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   workflow_dispatch:
     inputs:
       environment:
@@ -94,7 +94,7 @@ jobs:
     - name: Deploy CloudFormation Stack
       run: |
         aws cloudformation deploy \
-          --template-file infrastructure/cloudformation/main.yaml \
+          --template-file infrastructure/cloudformation/master.yaml \
           --stack-name gaming-system-${{ github.event.inputs.environment || 'staging' }} \
           --parameter-overrides \
             EnvironmentName=${{ github.event.inputs.environment || 'staging' }} \
@@ -238,7 +238,7 @@ jobs:
       run: |
         aws cloudwatch put-dashboard \
           --dashboard-name "gaming-system-${{ github.event.inputs.environment || 'staging' }}" \
-          --dashboard-body file://infrastructure/cloudwatch/dashboards/main.json
+          --dashboard-body file://infrastructure/cloudwatch/dashboards/master.json
     
     - name: Create deployment marker
       run: |

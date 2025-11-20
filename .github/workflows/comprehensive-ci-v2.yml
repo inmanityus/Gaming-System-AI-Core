@@ -2,9 +2,9 @@ name: Comprehensive CI with Path Filtering
 
 on:
   pull_request:
-    branches: [main, develop]
+    branches: [master, develop]
   push:
-    branches: [main]
+    branches: [master]
 
 env:
   AWS_REGION: us-east-1
@@ -199,7 +199,7 @@ jobs:
   # Step 5: Build and push Docker images - only for changed services
   build-and-push:
     needs: [detect-changes, security-scan]
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.detect-changes.outputs.changed-services != '[]' }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' && needs.detect-changes.outputs.changed-services != '[]' }}
     runs-on: ubuntu-latest
     permissions:
       id-token: write
